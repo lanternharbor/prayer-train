@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import { PostUpdateForm } from "./post-update-form";
 import { TrainStatusControls } from "./train-status-controls";
+import { VisibilityToggle } from "./visibility-toggle";
 
 export const metadata: Metadata = {
   title: "Manage PrayerTrain",
@@ -118,6 +119,9 @@ export default async function ManagePage({
           <p className="text-xs text-muted-foreground">Prayers Prayed</p>
         </div>
       </div>
+
+      {/* Visibility */}
+      <VisibilityToggle trainId={train.id} currentlyPublic={train.isPublic} />
 
       {/* Status Controls */}
       <TrainStatusControls trainId={train.id} currentStatus={train.status} />

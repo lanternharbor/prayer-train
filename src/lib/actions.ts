@@ -23,6 +23,7 @@ export async function createPrayerTrain(formData: FormData) {
   const situationDetail = formData.get("situationDetail") as string;
   const durationDays = parseInt(formData.get("durationDays") as string) || 30;
   const slotsPerDay = parseInt(formData.get("slotsPerDay") as string) || 3;
+  const isPublic = formData.get("isPublic") === "true";
   const prayerTypeIds = (formData.get("prayerTypeIds") as string)
     ?.split(",")
     .filter(Boolean);
@@ -45,6 +46,7 @@ export async function createPrayerTrain(formData: FormData) {
       startDate,
       endDate,
       slotsPerDay,
+      isPublic,
     },
   });
 
@@ -264,4 +266,28 @@ export async function updateTrainStatus(
 
   revalidatePath(`/p/${train.slug}`);
   revalidatePath(`/p/${train.slug}/manage`);
+  revalidatePath("/browse");
+}
+
+// ─── Toggle Train Visibility (Organizer) ────────────────────
+
+export async function toggleTrainVisibility(trainId: string, isPublic: boolean) {
+  const session = await auth();
+  if (!session?.user?.id) redirect("/signin");
+
+  const train = await prisma.prayerTrain.findUnique({
+    where: { id: trainId },
+  });
+
+  if (!train || train.organizerId !== session.user.id) {
+    throw new Error("Only the organizer can change visibility.");
+  }
+
+  await prisma.prayerTrain.update({
+    where: { id: trainId },
+    data: { isPublic },
+  });
+
+  revalidatePath(`/p/${train.slug}/manage`);
+  revalidatePath("/browse");
 }

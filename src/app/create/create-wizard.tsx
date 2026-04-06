@@ -70,6 +70,7 @@ export function CreateWizard({
   const [durationDays, setDurationDays] = useState(30);
   const [customDuration, setCustomDuration] = useState("");
   const [slotsPerDay, setSlotsPerDay] = useState(3);
+  const [isPublic, setIsPublic] = useState(true);
   const [selectedPrayerIds, setSelectedPrayerIds] = useState<string[]>([]);
 
   // Smart prayer suggestions based on situation
@@ -113,6 +114,7 @@ export function CreateWizard({
       (customDuration ? parseInt(customDuration) : durationDays).toString()
     );
     formData.set("slotsPerDay", slotsPerDay.toString());
+    formData.set("isPublic", isPublic ? "true" : "false");
     formData.set("prayerTypeIds", selectedPrayerIds.join(","));
     await createPrayerTrain(formData);
   };
@@ -329,6 +331,35 @@ export function CreateWizard({
             <p className="text-xs text-muted-foreground mt-2">
               More slots = more people can participate each day
             </p>
+          </div>
+
+          {/* Public directory toggle */}
+          <div className="flex items-start gap-4 p-4 rounded-lg bg-cream-50 border border-cream-300">
+            <button
+              type="button"
+              role="switch"
+              aria-checked={isPublic}
+              onClick={() => setIsPublic(!isPublic)}
+              className={`relative inline-flex h-7 w-12 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors ${
+                isPublic ? "bg-gold-400" : "bg-cream-400"
+              }`}
+            >
+              <span
+                className={`pointer-events-none inline-block h-6 w-6 rounded-full bg-white shadow-sm transform transition-transform ${
+                  isPublic ? "translate-x-5" : "translate-x-0"
+                }`}
+              />
+            </button>
+            <div>
+              <p className="text-sm font-medium text-navy-700">
+                List on public directory
+              </p>
+              <p className="text-xs text-muted-foreground mt-0.5">
+                Allow anyone to find this prayer train on the{" "}
+                <span className="font-medium">Find a PrayerTrain</span> page.
+                Turn off to keep it private (link-only).
+              </p>
+            </div>
           </div>
         </div>
       )}

@@ -25,16 +25,16 @@ export async function Header() {
           {/* Desktop Nav */}
           <div className="hidden md:flex items-center gap-8">
             <Link
+              href="/browse"
+              className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+            >
+              Find a PrayerTrain
+            </Link>
+            <Link
               href="/prayers"
               className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
             >
               Prayer Library
-            </Link>
-            <Link
-              href="/prayers/novenas"
-              className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
-            >
-              Novenas
             </Link>
             {session?.user ? (
               <>

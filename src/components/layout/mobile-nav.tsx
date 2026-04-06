@@ -21,18 +21,18 @@ export function MobileNav({ isSignedIn }: { isSignedIn: boolean }) {
         <div className="absolute top-16 left-0 right-0 bg-card border-b border-border shadow-lg">
           <div className="px-4 py-4 space-y-3">
             <Link
+              href="/browse"
+              className="block px-3 py-2 text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted rounded-lg transition-colors"
+              onClick={() => setOpen(false)}
+            >
+              Find a PrayerTrain
+            </Link>
+            <Link
               href="/prayers"
               className="block px-3 py-2 text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted rounded-lg transition-colors"
               onClick={() => setOpen(false)}
             >
               Prayer Library
-            </Link>
-            <Link
-              href="/prayers/novenas"
-              className="block px-3 py-2 text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted rounded-lg transition-colors"
-              onClick={() => setOpen(false)}
-            >
-              Novenas
             </Link>
             {isSignedIn ? (
               <>

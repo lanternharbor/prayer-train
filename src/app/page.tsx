@@ -8,6 +8,7 @@ import {
   ArrowRight,
   Sparkles,
   Church,
+  Search,
 } from "lucide-react";
 
 export default function HomePage() {
@@ -45,11 +46,11 @@ export default function HomePage() {
                 <ArrowRight className="w-5 h-5" />
               </Link>
               <Link
-                href="/prayers"
+                href="/browse"
                 className="inline-flex items-center justify-center gap-2 px-8 py-3.5 border-2 border-white/30 text-white font-semibold rounded-lg hover:bg-white/10 transition-colors text-lg"
               >
-                <BookOpen className="w-5 h-5" />
-                Explore Prayers
+                <Search className="w-5 h-5" />
+                Find a PrayerTrain
               </Link>
             </div>
           </div>

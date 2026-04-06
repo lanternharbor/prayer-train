@@ -1,26 +1,175 @@
 @import "tailwindcss";
 
+/* ─── PrayerTrain Design Tokens ─────────────────────────────── */
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Primary palette */
+  --navy-50: #eef0f6;
+  --navy-100: #d4d8e8;
+  --navy-200: #a9b1d1;
+  --navy-300: #7e8aba;
+  --navy-400: #5363a3;
+  --navy-500: #2d3a6e;
+  --navy-600: #242e58;
+  --navy-700: #1a2142;
+  --navy-800: #11152c;
+  --navy-900: #0a0c1a;
+
+  /* Gold accent */
+  --gold-50: #fdf8ef;
+  --gold-100: #f9edcf;
+  --gold-200: #f2d89f;
+  --gold-300: #ebc36f;
+  --gold-400: #d4a843;
+  --gold-500: #b8902e;
+  --gold-600: #947324;
+  --gold-700: #70571b;
+  --gold-800: #4c3b12;
+  --gold-900: #281e09;
+
+  /* Warm neutrals */
+  --cream-50: #fefdfb;
+  --cream-100: #faf8f5;
+  --cream-200: #f5f0ea;
+  --cream-300: #e8e0d5;
+  --cream-400: #d4c9b8;
+  --cream-500: #b8a994;
+  --cream-600: #9a8a72;
+  --cream-700: #6e6150;
+  --cream-800: #453d32;
+  --cream-900: #1e1a14;
+
+  /* Semantic */
+  --background: var(--cream-100);
+  --foreground: var(--navy-800);
+  --card: #ffffff;
+  --card-foreground: var(--navy-800);
+  --primary: var(--navy-600);
+  --primary-foreground: #ffffff;
+  --accent: var(--gold-400);
+  --accent-foreground: var(--navy-900);
+  --muted: var(--cream-200);
+  --muted-foreground: var(--cream-700);
+  --border: var(--cream-300);
+
+  /* Slot states */
+  --slot-open: #e8f5e9;
+  --slot-open-border: #81c784;
+  --slot-claimed: #fff3e0;
+  --slot-claimed-border: var(--gold-400);
+  --slot-completed: #e3f2fd;
+  --slot-completed-border: #64b5f6;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-border: var(--border);
+
+  --color-navy-50: var(--navy-50);
+  --color-navy-100: var(--navy-100);
+  --color-navy-200: var(--navy-200);
+  --color-navy-300: var(--navy-300);
+  --color-navy-400: var(--navy-400);
+  --color-navy-500: var(--navy-500);
+  --color-navy-600: var(--navy-600);
+  --color-navy-700: var(--navy-700);
+  --color-navy-800: var(--navy-800);
+  --color-navy-900: var(--navy-900);
+
+  --color-gold-50: var(--gold-50);
+  --color-gold-100: var(--gold-100);
+  --color-gold-200: var(--gold-200);
+  --color-gold-300: var(--gold-300);
+  --color-gold-400: var(--gold-400);
+  --color-gold-500: var(--gold-500);
+  --color-gold-600: var(--gold-600);
+  --color-gold-700: var(--gold-700);
+  --color-gold-800: var(--gold-800);
+  --color-gold-900: var(--gold-900);
+
+  --color-cream-50: var(--cream-50);
+  --color-cream-100: var(--cream-100);
+  --color-cream-200: var(--cream-200);
+  --color-cream-300: var(--cream-300);
+  --color-cream-400: var(--cream-400);
+  --color-cream-500: var(--cream-500);
+  --color-cream-600: var(--cream-600);
+  --color-cream-700: var(--cream-700);
+  --color-cream-800: var(--cream-800);
+  --color-cream-900: var(--cream-900);
+
+  --color-slot-open: var(--slot-open);
+  --color-slot-open-border: var(--slot-open-border);
+  --color-slot-claimed: var(--slot-claimed);
+  --color-slot-claimed-border: var(--slot-claimed-border);
+  --color-slot-completed: var(--slot-completed);
+  --color-slot-completed-border: var(--slot-completed-border);
+
+  --font-heading: "EB Garamond", Georgia, "Times New Roman", serif;
+  --font-body: "DM Sans", system-ui, -apple-system, sans-serif;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
+/* ─── Base Styles ───────────────────────────────────────────── */
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-body);
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-heading);
+}
+
+/* ─── Utilities ─────────────────────────────────────────────── */
+
+.prayer-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 1.5rem;
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+.prayer-card:hover {
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+  transform: translateY(-1px);
+}
+
+.slot-open {
+  background: var(--slot-open);
+  border: 1.5px solid var(--slot-open-border);
+  border-radius: 8px;
+}
+
+.slot-claimed {
+  background: var(--slot-claimed);
+  border: 1.5px solid var(--slot-claimed-border);
+  border-radius: 8px;
+}
+
+.slot-completed {
+  background: var(--slot-completed);
+  border: 1.5px solid var(--slot-completed-border);
+  border-radius: 8px;
+}
+
+/* Gold decorative accent line */
+.gold-accent::after {
+  content: "";
+  display: block;
+  width: 60px;
+  height: 3px;
+  background: var(--accent);
+  margin-top: 0.75rem;
+  border-radius: 2px;
 }

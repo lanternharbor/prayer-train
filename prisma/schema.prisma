@@ -1,0 +1,239 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ─── Auth Models (NextAuth) ─────────────────────────────────────
+
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String    @unique
+  emailVerified DateTime?
+  image         String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  accounts      Account[]
+  sessions      Session[]
+
+  // PrayerTrain relations
+  organizedTrains PrayerTrain[]   @relation("Organizer")
+  claimedSlots    PrayerSlot[]    @relation("ClaimedBy")
+  guestbookEntries GuestbookEntry[]
+  trainUpdates    TrainUpdate[]
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+// ─── PrayerTrain Core ───────────────────────────────────────────
+
+enum SituationCategory {
+  ILLNESS
+  SURGERY
+  MENTAL_HEALTH
+  GRIEF
+  PREGNANCY
+  FERTILITY
+  MARRIAGE
+  FAMILY
+  FINANCIAL
+  CAREER
+  CONVERSION
+  DISCERNMENT
+  GENERAL
+  OTHER
+}
+
+enum TrainStatus {
+  ACTIVE
+  PAUSED
+  COMPLETED
+  CANCELLED
+}
+
+enum SlotStatus {
+  OPEN
+  CLAIMED
+  COMPLETED
+}
+
+enum PrayerCategory {
+  NOVENA
+  ROSARY
+  CHAPLET
+  LITANY
+  SHORT_PRAYER
+  MASS_SACRAMENTAL
+  SCRIPTURE
+  DEVOTION
+}
+
+enum DifficultyLevel {
+  BEGINNER
+  INTERMEDIATE
+  ADVANCED
+}
+
+model PrayerTrain {
+  id          String   @id @default(cuid())
+  slug        String   @unique
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Organizer
+  organizerId String
+  organizer   User     @relation("Organizer", fields: [organizerId], references: [id])
+
+  // Recipient info
+  recipientName     String
+  recipientRelation String?
+  recipientImageUrl String?
+  intention         String   @db.Text
+  situation         SituationCategory
+  situationDetail   String?  @db.Text
+
+  // Train config
+  startDate   DateTime
+  endDate     DateTime
+  slotsPerDay Int       @default(3)
+  status      TrainStatus @default(ACTIVE)
+
+  // Privacy
+  isPublic    Boolean  @default(false)
+  showNames   Boolean  @default(true)
+
+  // Relations
+  slots       PrayerSlot[]
+  guestbook   GuestbookEntry[]
+  updates     TrainUpdate[]
+
+  @@index([slug])
+  @@index([organizerId])
+}
+
+model PrayerType {
+  id          String   @id @default(cuid())
+  slug        String   @unique
+  name        String
+  category    PrayerCategory
+  description String   @db.Text
+  instructions String? @db.Text
+  prayerText  String?  @db.Text
+  duration    Int      // minutes
+  difficulty  DifficultyLevel
+  daysRequired Int     @default(1) // 9 for novenas, 1 for most
+  patronSaint String?
+  feastDay    String?
+  situationTags SituationCategory[]
+  imageUrl    String?
+  sourceUrl   String?
+  createdAt   DateTime @default(now())
+
+  // Relations
+  slots       PrayerSlot[]
+
+  @@index([category])
+  @@index([slug])
+}
+
+model PrayerSlot {
+  id          String     @id @default(cuid())
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+
+  // Which train and day
+  trainId     String
+  train       PrayerTrain @relation(fields: [trainId], references: [id], onDelete: Cascade)
+  date        DateTime
+  slotIndex   Int        // 0, 1, 2 for 3 slots/day
+
+  // What prayer
+  prayerTypeId String
+  prayerType   PrayerType @relation(fields: [prayerTypeId], references: [id])
+
+  // Who claimed it
+  status      SlotStatus @default(OPEN)
+  claimedById String?
+  claimedBy   User?      @relation("ClaimedBy", fields: [claimedById], references: [id])
+  claimedAt   DateTime?
+  claimerName String?    // for non-auth users
+  claimerEmail String?   // for non-auth users
+  completedAt DateTime?
+
+  // Novena grouping — all slots in a novena share the same groupId
+  novenaGroupId String?
+
+  @@unique([trainId, date, slotIndex])
+  @@index([trainId])
+  @@index([claimedById])
+  @@index([novenaGroupId])
+}
+
+model GuestbookEntry {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+
+  trainId   String
+  train     PrayerTrain @relation(fields: [trainId], references: [id], onDelete: Cascade)
+
+  authorId  String?
+  author    User?    @relation(fields: [authorId], references: [id])
+  authorName String  // displayed name (works for non-auth too)
+  message   String   @db.Text
+
+  @@index([trainId])
+}
+
+model TrainUpdate {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+
+  trainId   String
+  train     PrayerTrain @relation(fields: [trainId], references: [id], onDelete: Cascade)
+
+  authorId  String
+  author    User     @relation(fields: [authorId], references: [id])
+  title     String
+  content   String   @db.Text
+
+  @@index([trainId])
+}

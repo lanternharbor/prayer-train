@@ -26,12 +26,12 @@ export async function GET(
   const startDate = formatIcsDate(date, 8, 0); // 8:00 AM
   const endDate = formatIcsDate(date, 8, slot.prayerType.duration);
 
-  const baseUrl = process.env.NEXTAUTH_URL || "https://prayer-train.vercel.app";
+  const baseUrl = process.env.NEXTAUTH_URL || "https://ourfaithtrain.com";
 
   const ics = [
     "BEGIN:VCALENDAR",
     "VERSION:2.0",
-    "PRODID:-//PrayerTrains//EN",
+    "PRODID:-//OurFaithTrain//EN",
     "CALSCALE:GREGORIAN",
     "METHOD:PUBLISH",
     "BEGIN:VEVENT",
@@ -40,9 +40,9 @@ export async function GET(
     `SUMMARY:Pray ${slot.prayerType.name} for ${slot.train.recipientName}`,
     `DESCRIPTION:${escapeIcs(buildDescription(slot))}`,
     `URL:${baseUrl}/p/${slot.train.slug}`,
-    `UID:${slot.id}@prayertrain`,
+    `UID:${slot.id}@ourfaithtrain`,
     "STATUS:CONFIRMED",
-    `CATEGORIES:Prayer,PrayerTrain`,
+    `CATEGORIES:Prayer,FaithTrain`,
     "BEGIN:VALARM",
     "TRIGGER:-PT15M",
     "ACTION:DISPLAY",

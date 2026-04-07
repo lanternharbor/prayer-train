@@ -10,7 +10,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   providers: [
     Resend({
       apiKey: process.env.RESEND_API_KEY,
-      from: "PrayerTrains <onboarding@resend.dev>",
+      from: "OurFaithTrain <onboarding@resend.dev>",
     }),
     ...(process.env.GOOGLE_CLIENT_ID
       ? [

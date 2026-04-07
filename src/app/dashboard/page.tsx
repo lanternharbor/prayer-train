@@ -82,7 +82,7 @@ export default async function DashboardPage() {
             className="inline-flex items-center gap-2 px-4 py-2 bg-gold-400 text-navy-900 font-medium rounded-lg hover:bg-gold-300 transition-colors text-sm"
           >
             <Plus className="w-4 h-4" />
-            New PrayerTrain
+            New FaithTrain
           </Link>
           <SignOutButton />
         </div>
@@ -137,11 +137,11 @@ export default async function DashboardPage() {
         </div>
       )}
 
-      {/* My PrayerTrains (Organizer) */}
+      {/* My FaithTrains (Organizer) */}
       <div className="mb-10">
         <h2 className="font-heading text-xl font-semibold text-navy-800 mb-4 flex items-center gap-2">
           <CalendarDays className="w-5 h-5 text-gold-500" />
-          My PrayerTrains
+          My FaithTrains
         </h2>
         {organizedTrains.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -207,7 +207,7 @@ export default async function DashboardPage() {
               className="inline-flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground text-sm font-medium rounded-lg hover:bg-navy-700 transition-colors"
             >
               <Plus className="w-4 h-4" />
-              Start Your First PrayerTrain
+              Start Your First FaithTrain
             </Link>
           </div>
         )}

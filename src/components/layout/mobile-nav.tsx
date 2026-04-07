@@ -25,7 +25,7 @@ export function MobileNav({ isSignedIn }: { isSignedIn: boolean }) {
               className="block px-3 py-2 text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted rounded-lg transition-colors"
               onClick={() => setOpen(false)}
             >
-              Find a PrayerTrain
+              Find a FaithTrain
             </Link>
             <Link
               href="/prayers"
@@ -48,7 +48,7 @@ export function MobileNav({ isSignedIn }: { isSignedIn: boolean }) {
                   className="block px-3 py-2 text-sm font-medium text-primary-foreground bg-primary rounded-lg text-center"
                   onClick={() => setOpen(false)}
                 >
-                  Start a PrayerTrain
+                  Start a FaithTrain
                 </Link>
               </>
             ) : (
@@ -65,7 +65,7 @@ export function MobileNav({ isSignedIn }: { isSignedIn: boolean }) {
                   className="block px-3 py-2 text-sm font-medium text-primary-foreground bg-primary rounded-lg text-center"
                   onClick={() => setOpen(false)}
                 >
-                  Start a PrayerTrain
+                  Start a FaithTrain
                 </Link>
               </>
             )}

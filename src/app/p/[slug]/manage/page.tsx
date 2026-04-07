@@ -16,7 +16,7 @@ import { TrainStatusControls } from "./train-status-controls";
 import { VisibilityToggle } from "./visibility-toggle";
 
 export const metadata: Metadata = {
-  title: "Manage PrayerTrain",
+  title: "Manage FaithTrain",
 };
 
 export default async function ManagePage({

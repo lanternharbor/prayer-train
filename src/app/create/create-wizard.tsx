@@ -417,7 +417,7 @@ export function CreateWizard({
               </p>
               <p className="text-xs text-muted-foreground mt-0.5">
                 Allow anyone to find this prayer train on the{" "}
-                <span className="font-medium">Find a PrayerTrain</span> page.
+                <span className="font-medium">Find a FaithTrain</span> page.
                 Turn off to keep it private (link-only).
               </p>
             </div>
@@ -544,7 +544,7 @@ export function CreateWizard({
             ) : (
               <Heart className="w-4 h-4" />
             )}
-            {loading ? "Creating..." : "Create PrayerTrain"}
+            {loading ? "Creating..." : "Create FaithTrain"}
           </button>
         )}
       </div>

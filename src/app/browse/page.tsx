@@ -19,7 +19,7 @@ import { SituationCategory } from "@/generated/prisma/client";
 import { RecipientAvatar, PrayingHandsIcon, CrossIcon } from "@/components/ui/catholic-icons";
 
 export const metadata: Metadata = {
-  title: "Find a PrayerTrain",
+  title: "Find a FaithTrain",
   description:
     "Browse active prayer trains and sign up to pray for someone in need. No account required.",
 };
@@ -64,7 +64,7 @@ export default async function BrowsePage({
       {/* Header */}
       <div className="mb-8">
         <h1 className="font-heading text-3xl sm:text-4xl font-bold text-navy-800 mb-3 gold-accent">
-          Find a PrayerTrain
+          Find a FaithTrain
         </h1>
         <p className="text-muted-foreground text-lg max-w-2xl">
           Browse active prayer trains and sign up to pray for someone in need.
@@ -236,7 +236,7 @@ export default async function BrowsePage({
             className="inline-flex items-center gap-2 px-6 py-3 bg-primary text-primary-foreground font-medium rounded-lg hover:bg-navy-700 transition-colors"
           >
             <Heart className="w-4 h-4" />
-            Start a PrayerTrain
+            Start a FaithTrain
           </Link>
         </div>
       )}

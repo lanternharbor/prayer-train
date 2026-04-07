@@ -42,7 +42,7 @@ export async function GET(request: Request) {
     if (!email) continue;
 
     try {
-      const baseUrl = process.env.NEXTAUTH_URL || "https://prayer-train.vercel.app";
+      const baseUrl = process.env.NEXTAUTH_URL || "https://ourfaithtrain.com";
       await sendDailyReminder({
         to: email,
         claimerName: name,

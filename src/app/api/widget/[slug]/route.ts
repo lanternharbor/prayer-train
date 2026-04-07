@@ -3,7 +3,7 @@ import { prisma } from "@/lib/db";
 
 // Embeddable widget for parish websites
 // Usage: Add to any website with:
-// <iframe src="https://prayer-train.vercel.app/api/widget/[slug]" width="400" height="300" frameborder="0"></iframe>
+// <iframe src="https://ourfaithtrain.com/api/widget/[slug]" width="400" height="300" frameborder="0"></iframe>
 
 export async function GET(
   request: Request,
@@ -31,7 +31,7 @@ export async function GET(
   const open = total - claimed - completed;
   const fill = total > 0 ? Math.round(((claimed + completed) / total) * 100) : 0;
 
-  const baseUrl = process.env.NEXTAUTH_URL || "https://prayer-train.vercel.app";
+  const baseUrl = process.env.NEXTAUTH_URL || "https://ourfaithtrain.com";
 
   const html = `<!DOCTYPE html>
 <html>
@@ -72,7 +72,7 @@ export async function GET(
       Sign Up to Pray
     </a>
   </div>
-  <p class="footer">Powered by <a href="${baseUrl}" target="_blank">PrayerTrains</a></p>
+  <p class="footer">Powered by <a href="${baseUrl}" target="_blank">OurFaithTrain</a></p>
 </body>
 </html>`;
 

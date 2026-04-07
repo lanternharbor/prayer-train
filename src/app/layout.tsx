@@ -23,6 +23,7 @@ export const metadata: Metadata = {
   },
   description:
     "Coordinate prayer coverage for loved ones. Create a prayer train, invite your community, and ensure continuous spiritual support through organized daily prayer commitments.",
+  manifest: "/manifest.json",
   icons: {
     icon: [
       { url: "/favicon-32.png", sizes: "32x32", type: "image/png" },

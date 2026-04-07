@@ -20,6 +20,7 @@ import {
   RosaryIcon,
   CrossDivider,
 } from "@/components/ui/catholic-icons";
+import { PrayerCounter } from "@/components/prayer-counter";
 
 export default function HomePage() {
   return (
@@ -84,6 +85,9 @@ export default function HomePage() {
           </div>
         </div>
       </section>
+
+      {/* Prayer Counter */}
+      <PrayerCounter />
 
       {/* How It Works */}
       <section className="py-20 sm:py-28">

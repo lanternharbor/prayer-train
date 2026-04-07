@@ -173,7 +173,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Testimonials / Community Voices */}
+      {/* Testimonials / Community Voices — uncomment when we have real stories
       <section className="py-20 sm:py-28">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
@@ -186,29 +186,15 @@ export default function HomePage() {
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <TestimonialCard
-              quote="When my husband was diagnosed, our parish rallied around us. 47 people signed up to pray specific novenas on specific days. We could feel it."
-              name="Maria S."
-              role="St. Anthony Parish"
-              initials="MS"
-            />
-            <TestimonialCard
-              quote="I shared the link in our prayer group chat and within an hour every slot was filled. The calendar turning gold was the most beautiful thing I'd ever seen."
-              name="Fr. Thomas K."
-              role="Pastor"
-              initials="TK"
-            />
-            <TestimonialCard
-              quote="My grandmother didn't need an account — she just typed her name and email and committed to praying the Rosary every Tuesday. Simple enough for anyone."
-              name="Katie M."
-              role="Organizer"
-              initials="KM"
+              quote=""
+              name=""
+              role=""
+              initials=""
             />
           </div>
-          <p className="text-center text-xs text-muted-foreground mt-8">
-            These represent the kind of stories we hope to hear from you.
-          </p>
         </div>
       </section>
+      */}
 
       {/* Our Story */}
       <section className="py-16 sm:py-20 bg-navy-700 text-white">

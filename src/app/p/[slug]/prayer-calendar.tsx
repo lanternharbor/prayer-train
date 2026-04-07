@@ -2,7 +2,8 @@
 
 import { useState } from "react";
 import { formatDate } from "@/lib/utils";
-import { Clock, User, Check, BookOpen } from "lucide-react";
+import { markSlotComplete } from "@/lib/actions";
+import { Clock, User, Check, BookOpen, Loader2 } from "lucide-react";
 import { ClaimModal } from "./claim-modal";
 
 type Slot = {
@@ -116,9 +117,21 @@ function SlotCard({
   trainActive: boolean;
   onClaim: () => void;
 }) {
-  const isOpen = slot.status === "OPEN";
-  const isClaimed = slot.status === "CLAIMED";
-  const isCompleted = slot.status === "COMPLETED";
+  const [marking, setMarking] = useState(false);
+  const [completed, setCompleted] = useState(slot.status === "COMPLETED");
+  const isOpen = slot.status === "OPEN" && !completed;
+  const isClaimed = slot.status === "CLAIMED" && !completed;
+
+  const handleMarkPrayed = async () => {
+    setMarking(true);
+    try {
+      await markSlotComplete(slot.id);
+      setCompleted(true);
+    } catch {
+      // Slot may not belong to this user — that's ok
+    }
+    setMarking(false);
+  };
 
   return (
     <div
@@ -134,7 +147,7 @@ function SlotCard({
         <span className="font-medium text-navy-700 text-xs truncate">
           {slot.prayerType.name}
         </span>
-        {isCompleted && <Check className="w-3.5 h-3.5 text-blue-500" />}
+        {completed && <Check className="w-3.5 h-3.5 text-blue-500" />}
       </div>
       <div className="flex items-center gap-2 text-xs text-muted-foreground">
         <Clock className="w-3 h-3" />
@@ -149,11 +162,27 @@ function SlotCard({
           Sign up to pray
         </button>
       ) : isClaimed && slot.claimerName ? (
-        <div className="mt-2 flex items-center gap-1 text-xs text-amber-700">
-          <User className="w-3 h-3" />
-          {slot.claimerName}
+        <div className="mt-2 space-y-1.5">
+          <div className="flex items-center gap-1 text-xs text-amber-700">
+            <User className="w-3 h-3" />
+            {slot.claimerName}
+          </div>
+          <button
+            onClick={handleMarkPrayed}
+            disabled={marking}
+            className="w-full py-1.5 text-xs font-medium bg-white/80 hover:bg-white border border-gold-300 rounded text-gold-700 hover:text-gold-800 transition-colors flex items-center justify-center gap-1"
+          >
+            {marking ? (
+              <Loader2 className="w-3 h-3 animate-spin" />
+            ) : (
+              <>
+                <Check className="w-3 h-3" />
+                I prayed
+              </>
+            )}
+          </button>
         </div>
-      ) : isCompleted && slot.claimerName ? (
+      ) : completed && slot.claimerName ? (
         <div className="mt-2 flex items-center gap-1 text-xs text-blue-600">
           <Check className="w-3 h-3" />
           {slot.claimerName} — prayed

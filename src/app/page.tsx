@@ -7,9 +7,17 @@ import {
   BookOpen,
   ArrowRight,
   Sparkles,
-  Church,
   Search,
 } from "lucide-react";
+import {
+  CrossIcon,
+  SacredHeartIcon,
+  PrayingHandsIcon,
+  CandleIcon,
+  DoveIcon,
+  RosaryIcon,
+  CrossDivider,
+} from "@/components/ui/catholic-icons";
 
 export default function HomePage() {
   return (
@@ -23,7 +31,7 @@ export default function HomePage() {
         <div className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-24 sm:py-32">
           <div className="max-w-3xl mx-auto text-center">
             <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/10 border border-white/20 text-sm text-gold-200 mb-8">
-              <Church className="w-4 h-4" />
+              <CrossIcon className="w-4 h-4" />
               <span>Catholic Prayer Coordination</span>
             </div>
             <h1 className="font-heading text-4xl sm:text-5xl lg:text-6xl font-bold leading-tight mb-6">
@@ -72,25 +80,27 @@ export default function HomePage() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 lg:gap-12">
             <StepCard
               step={1}
-              icon={<Heart className="w-7 h-7" />}
+              icon={<SacredHeartIcon className="w-7 h-7" />}
               title="Create a PrayerTrain"
               description="Tell us about the person and their situation. We'll suggest appropriate prayers and generate a calendar of prayer slots."
             />
             <StepCard
               step={2}
-              icon={<Users className="w-7 h-7" />}
+              icon={<PrayingHandsIcon className="w-7 h-7" />}
               title="Share with Your Community"
               description="Send the link to your parish, prayer group, family, and friends. They pick specific prayers on specific days to commit to."
             />
             <StepCard
               step={3}
-              icon={<Bell className="w-7 h-7" />}
+              icon={<CandleIcon className="w-7 h-7" />}
               title="Pray Together"
               description="Volunteers receive daily reminders with their prayer instructions. The organizer can post updates and see the prayer wall fill up."
             />
           </div>
         </div>
       </section>
+
+      <CrossDivider className="max-w-6xl mx-auto px-4" />
 
       {/* Features */}
       <section className="py-20 bg-cream-50">
@@ -106,7 +116,7 @@ export default function HomePage() {
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             <FeatureCard
-              icon={<BookOpen className="w-5 h-5 text-gold-500" />}
+              icon={<RosaryIcon className="w-5 h-5 text-gold-500" />}
               title="40+ Curated Prayers"
               description="Novenas, rosaries, chaplets, litanies, short prayers, and scripture passages — all with full instructions."
             />
@@ -116,22 +126,22 @@ export default function HomePage() {
               description="See at a glance which days are covered and which need prayer warriors. Novena blocks span 9 days as connected units."
             />
             <FeatureCard
-              icon={<Sparkles className="w-5 h-5 text-gold-500" />}
+              icon={<DoveIcon className="w-5 h-5 text-gold-500" />}
               title="Smart Suggestions"
               description="Select a situation and we recommend the most appropriate prayers. Illness? Try the Novena to the Sacred Heart. Finances? St. Joseph has you covered."
             />
             <FeatureCard
-              icon={<Users className="w-5 h-5 text-gold-500" />}
+              icon={<PrayingHandsIcon className="w-5 h-5 text-gold-500" />}
               title="Easy Sign-Up"
               description="Volunteers can claim prayer slots with just their name and email — no account required. Share one link and watch the calendar fill up."
             />
             <FeatureCard
-              icon={<Bell className="w-5 h-5 text-gold-500" />}
+              icon={<CandleIcon className="w-5 h-5 text-gold-500" />}
               title="Daily Reminders"
               description="Prayer warriors receive email reminders on their committed days with the full prayer text and instructions."
             />
             <FeatureCard
-              icon={<Heart className="w-5 h-5 text-gold-500" />}
+              icon={<SacredHeartIcon className="w-5 h-5 text-gold-500" />}
               title="Encouragement Wall"
               description="Friends and family can leave messages of encouragement and spiritual support on the prayer train's guestbook."
             />
@@ -142,6 +152,7 @@ export default function HomePage() {
       {/* CTA */}
       <section className="py-20 sm:py-28">
         <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <CrossIcon className="w-8 h-8 text-gold-400 mx-auto mb-6" />
           <h2 className="font-heading text-3xl sm:text-4xl font-bold text-navy-800 mb-4">
             Someone needs your prayers
           </h2>

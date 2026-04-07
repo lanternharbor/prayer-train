@@ -22,6 +22,7 @@ import { ClaimModal } from "./claim-modal";
 import { Guestbook } from "./guestbook";
 import { UpdatesFeed } from "./updates-feed";
 import { ShareButton } from "./share-button";
+import { CrossIcon, CrossDivider, RecipientAvatar, CandleIcon } from "@/components/ui/catholic-icons";
 
 export async function generateMetadata({
   params,
@@ -96,6 +97,13 @@ export default async function PrayerTrainPage({
     <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
       {/* Header */}
       <div className="mb-8">
+        <div className="flex items-start gap-5 mb-4">
+          <RecipientAvatar
+            imageUrl={train.recipientImageUrl}
+            name={train.recipientName}
+            size="lg"
+          />
+          <div className="flex-1">
         <div className="flex items-center gap-2 mb-3 flex-wrap">
           <span className="px-2.5 py-0.5 rounded-full text-xs font-medium bg-navy-100 text-navy-700">
             {formatSituation(train.situation)}
@@ -145,6 +153,8 @@ export default async function PrayerTrainPage({
             </Link>
           )}
         </div>
+          </div>{/* close flex-1 */}
+        </div>{/* close flex avatar row */}
       </div>
 
       {/* Progress Bar */}
@@ -190,9 +200,12 @@ export default async function PrayerTrainPage({
       {/* Share */}
       <ShareButton slug={slug} recipientName={train.recipientName} />
 
+      <CrossDivider />
+
       {/* Calendar */}
       <div className="mb-10">
-        <h2 className="font-heading text-2xl font-semibold text-navy-800 mb-4">
+        <h2 className="font-heading text-2xl font-semibold text-navy-800 mb-4 flex items-center gap-2">
+          <CrossIcon className="w-5 h-5 text-gold-400" />
           Prayer Calendar
         </h2>
         <PrayerCalendar slotsByDate={slotsByDate} trainStatus={train.status} />

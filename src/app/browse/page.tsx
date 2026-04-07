@@ -16,6 +16,7 @@ import {
   HandHeart,
 } from "lucide-react";
 import { SituationCategory } from "@/generated/prisma/client";
+import { RecipientAvatar, PrayingHandsIcon, CrossIcon } from "@/components/ui/catholic-icons";
 
 export const metadata: Metadata = {
   title: "Find a PrayerTrain",
@@ -166,9 +167,16 @@ export default async function BrowsePage({
                 </div>
 
                 {/* Name & Intention */}
-                <h2 className="font-heading text-xl font-semibold text-navy-800 group-hover:text-navy-600 transition-colors mb-2">
-                  Prayers for {train.recipientName}
-                </h2>
+                <div className="flex items-center gap-3 mb-2">
+                  <RecipientAvatar
+                    imageUrl={train.recipientImageUrl}
+                    name={train.recipientName}
+                    size="sm"
+                  />
+                  <h2 className="font-heading text-xl font-semibold text-navy-800 group-hover:text-navy-600 transition-colors">
+                    Prayers for {train.recipientName}
+                  </h2>
+                </div>
                 <p className="text-sm text-muted-foreground leading-relaxed mb-4 line-clamp-3 flex-1">
                   {train.intention}
                 </p>
@@ -212,7 +220,7 @@ export default async function BrowsePage({
         </div>
       ) : (
         <div className="text-center py-20">
-          <HandHeart className="w-14 h-14 text-muted-foreground/20 mx-auto mb-4" />
+          <PrayingHandsIcon className="w-14 h-14 text-gold-300 mx-auto mb-4" />
           <h2 className="font-heading text-2xl font-semibold text-navy-700 mb-3">
             {q || situation
               ? "No prayer trains match your search"

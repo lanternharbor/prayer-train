@@ -173,3 +173,39 @@ h1, h2, h3, h4, h5, h6 {
   margin-top: 0.75rem;
   border-radius: 2px;
 }
+
+/* Photo upload area */
+.photo-upload {
+  position: relative;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.photo-upload:hover {
+  opacity: 0.85;
+}
+
+.photo-upload input[type="file"] {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+/* Subtle watermark cross behind content */
+.watermark-cross {
+  position: relative;
+}
+
+.watermark-cross::before {
+  content: "\271A";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 12rem;
+  color: var(--navy-100);
+  opacity: 0.15;
+  pointer-events: none;
+  z-index: 0;
+}

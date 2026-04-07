@@ -7,6 +7,7 @@ import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { addDays, eachDayOfInterval } from "date-fns";
 import { SituationCategory, SlotStatus } from "@/generated/prisma/client";
+import { put } from "@vercel/blob";
 
 // ─── Create PrayerTrain ─────────────────────────────────────
 
@@ -33,6 +34,21 @@ export async function createPrayerTrain(formData: FormData) {
   startDate.setHours(0, 0, 0, 0);
   const endDate = addDays(startDate, durationDays - 1);
 
+  // Handle photo upload
+  let recipientImageUrl: string | null = null;
+  const photoFile = formData.get("recipientPhoto") as File | null;
+  if (photoFile && photoFile.size > 0) {
+    try {
+      const blob = await put(`prayer-train/${slug}-${Date.now()}.${photoFile.type.split("/")[1] || "jpg"}`, photoFile, {
+        access: "public",
+      });
+      recipientImageUrl = blob.url;
+    } catch (e) {
+      console.error("Photo upload failed:", e);
+      // Continue without photo — not a blocking error
+    }
+  }
+
   // Create the train
   const train = await prisma.prayerTrain.create({
     data: {
@@ -40,6 +56,7 @@ export async function createPrayerTrain(formData: FormData) {
       organizerId: session.user.id,
       recipientName,
       recipientRelation: recipientRelation || null,
+      recipientImageUrl,
       intention,
       situation,
       situationDetail: situationDetail || null,

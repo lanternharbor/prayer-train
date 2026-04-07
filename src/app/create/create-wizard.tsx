@@ -14,7 +14,9 @@ import {
   Star,
   Check,
   Loader2,
+  Camera,
 } from "lucide-react";
+import { CrossIcon } from "@/components/ui/catholic-icons";
 import type { PrayerCategory, SituationCategory, DifficultyLevel } from "@/generated/prisma/client";
 
 type PrayerTypeSelect = {
@@ -64,6 +66,8 @@ export function CreateWizard({
   // Form state
   const [recipientName, setRecipientName] = useState("");
   const [recipientRelation, setRecipientRelation] = useState("");
+  const [recipientPhoto, setRecipientPhoto] = useState<File | null>(null);
+  const [photoPreview, setPhotoPreview] = useState<string | null>(null);
   const [intention, setIntention] = useState("");
   const [situation, setSituation] = useState<SituationCategory | "">("");
   const [situationDetail, setSituationDetail] = useState("");
@@ -106,6 +110,9 @@ export function CreateWizard({
     const formData = new FormData();
     formData.set("recipientName", recipientName);
     formData.set("recipientRelation", recipientRelation);
+    if (recipientPhoto) {
+      formData.set("recipientPhoto", recipientPhoto);
+    }
     formData.set("intention", intention);
     formData.set("situation", situation);
     formData.set("situationDetail", situationDetail);
@@ -188,6 +195,60 @@ export function CreateWizard({
               placeholder="e.g., My father, Our parishioner, A friend"
               className="w-full px-4 py-2.5 border border-border rounded-lg bg-cream-50 focus:outline-none focus:ring-2 focus:ring-gold-400/50 focus:border-gold-400 transition"
             />
+          </div>
+
+          {/* Photo upload */}
+          <div>
+            <label className="block text-sm font-medium text-navy-700 mb-1.5">
+              Photo <span className="text-xs text-muted-foreground font-normal">(optional)</span>
+            </label>
+            <p className="text-xs text-muted-foreground mb-3">
+              A photo helps prayer warriors feel connected to the person they&apos;re praying for
+            </p>
+            <div className="flex items-center gap-4">
+              <label className="photo-upload w-20 h-20 rounded-full bg-cream-100 border-2 border-dashed border-cream-400 flex items-center justify-center overflow-hidden hover:border-gold-400 transition-colors cursor-pointer">
+                {photoPreview ? (
+                  <img
+                    src={photoPreview}
+                    alt="Preview"
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <Camera className="w-6 h-6 text-muted-foreground" />
+                )}
+                <input
+                  type="file"
+                  accept="image/jpeg,image/png,image/webp"
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    if (file) {
+                      if (file.size > 5 * 1024 * 1024) {
+                        alert("Photo must be under 5MB");
+                        return;
+                      }
+                      setRecipientPhoto(file);
+                      setPhotoPreview(URL.createObjectURL(file));
+                    }
+                  }}
+                />
+              </label>
+              <div className="text-xs text-muted-foreground">
+                {photoPreview ? (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setRecipientPhoto(null);
+                      setPhotoPreview(null);
+                    }}
+                    className="text-red-500 hover:text-red-600 font-medium"
+                  >
+                    Remove photo
+                  </button>
+                ) : (
+                  <span>JPG, PNG, or WebP. Max 5MB.</span>
+                )}
+              </div>
+            </div>
           </div>
 
           <div>

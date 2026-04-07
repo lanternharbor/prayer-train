@@ -1,6 +1,6 @@
 import Link from "next/link";
-import Image from "next/image";
 import { Heart } from "lucide-react";
+import { CrossIcon } from "@/components/ui/catholic-icons";
 
 export function Footer() {
   return (
@@ -10,13 +10,7 @@ export function Footer() {
           {/* Brand */}
           <div className="md:col-span-2">
             <div className="flex items-center gap-2 mb-3">
-              <Image
-                src="/logo.png"
-                alt="PrayerTrain"
-                width={32}
-                height={32}
-                className="w-8 h-8 object-contain"
-              />
+              <CrossIcon className="w-4 h-4 text-gold-500" />
               <span className="font-heading text-lg font-semibold text-navy-700">
                 PrayerTrain
               </span>

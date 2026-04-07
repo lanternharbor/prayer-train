@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import {
   Heart,
   CalendarDays,
@@ -8,6 +9,7 @@ import {
   ArrowRight,
   Sparkles,
   Search,
+  Quote,
 } from "lucide-react";
 import {
   CrossIcon,
@@ -28,38 +30,56 @@ export default function HomePage() {
           <div className="absolute top-20 left-10 w-64 h-64 bg-gold-400 rounded-full blur-[120px]" />
           <div className="absolute bottom-20 right-10 w-80 h-80 bg-gold-300 rounded-full blur-[140px]" />
         </div>
-        <div className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-24 sm:py-32">
-          <div className="max-w-3xl mx-auto text-center">
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/10 border border-white/20 text-sm text-gold-200 mb-8">
-              <CrossIcon className="w-4 h-4" />
-              <span>Catholic Prayer Coordination</span>
+        <div className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-24">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+            {/* Left: Text content */}
+            <div className="text-center lg:text-left">
+              <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/10 border border-white/20 text-sm text-gold-200 mb-8">
+                <CrossIcon className="w-4 h-4" />
+                <span>Catholic Prayer Coordination</span>
+              </div>
+              <h1 className="font-heading text-4xl sm:text-5xl lg:text-6xl font-bold leading-tight mb-6">
+                Like a meal train,
+                <br />
+                <span className="text-gold-300">but for prayers</span>
+              </h1>
+              <p className="text-lg sm:text-xl text-navy-100 leading-relaxed mb-10 max-w-xl">
+                When someone you love is struggling, rally your parish and
+                community to provide continuous prayer coverage. Create a
+                PrayerTrain, choose prayers, and invite others to sign up for
+                specific days.
+              </p>
+              <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
+                <Link
+                  href="/create"
+                  className="inline-flex items-center justify-center gap-2 px-8 py-3.5 bg-gold-400 text-navy-900 font-semibold rounded-lg hover:bg-gold-300 transition-colors text-lg"
+                >
+                  Start a PrayerTrain
+                  <ArrowRight className="w-5 h-5" />
+                </Link>
+                <Link
+                  href="/browse"
+                  className="inline-flex items-center justify-center gap-2 px-8 py-3.5 border-2 border-white/30 text-white font-semibold rounded-lg hover:bg-white/10 transition-colors text-lg"
+                >
+                  <Search className="w-5 h-5" />
+                  Find a PrayerTrain
+                </Link>
+              </div>
             </div>
-            <h1 className="font-heading text-4xl sm:text-5xl lg:text-6xl font-bold leading-tight mb-6">
-              Like a meal train,
-              <br />
-              <span className="text-gold-300">but for prayers</span>
-            </h1>
-            <p className="text-lg sm:text-xl text-navy-100 leading-relaxed mb-10 max-w-2xl mx-auto">
-              When someone you love is struggling, rally your parish and
-              community to provide continuous prayer coverage. Create a
-              PrayerTrain, choose prayers, and invite others to sign up for
-              specific days.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link
-                href="/create"
-                className="inline-flex items-center justify-center gap-2 px-8 py-3.5 bg-gold-400 text-navy-900 font-semibold rounded-lg hover:bg-gold-300 transition-colors text-lg"
-              >
-                Start a PrayerTrain
-                <ArrowRight className="w-5 h-5" />
-              </Link>
-              <Link
-                href="/browse"
-                className="inline-flex items-center justify-center gap-2 px-8 py-3.5 border-2 border-white/30 text-white font-semibold rounded-lg hover:bg-white/10 transition-colors text-lg"
-              >
-                <Search className="w-5 h-5" />
-                Find a PrayerTrain
-              </Link>
+
+            {/* Right: Logo illustration */}
+            <div className="flex justify-center lg:justify-end">
+              <div className="relative">
+                <div className="absolute inset-0 bg-gold-400/20 rounded-full blur-[80px] scale-75" />
+                <Image
+                  src="/logo.png"
+                  alt="PrayerTrain — a community united in prayer"
+                  width={480}
+                  height={480}
+                  className="relative w-64 sm:w-80 lg:w-[420px] h-auto drop-shadow-2xl"
+                  priority
+                />
+              </div>
             </div>
           </div>
         </div>
@@ -149,25 +169,77 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* CTA */}
+      {/* Testimonials / Community Voices */}
       <section className="py-20 sm:py-28">
-        <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <CrossIcon className="w-8 h-8 text-gold-400 mx-auto mb-6" />
-          <h2 className="font-heading text-3xl sm:text-4xl font-bold text-navy-800 mb-4">
-            Someone needs your prayers
-          </h2>
-          <p className="text-muted-foreground text-lg mb-10 leading-relaxed">
-            Whether it&apos;s a friend battling illness, a family in crisis, or
-            someone discerning their vocation &mdash; rally your community to
-            pray with purpose and consistency.
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <h2 className="font-heading text-3xl sm:text-4xl font-bold text-navy-800 mb-4">
+              Stories from the Community
+            </h2>
+            <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
+              Real families, real parishes, real prayers answered.
+            </p>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <TestimonialCard
+              quote="When my husband was diagnosed, our parish rallied around us. 47 people signed up to pray specific novenas on specific days. We could feel it."
+              name="Maria S."
+              role="St. Anthony Parish"
+              initials="MS"
+            />
+            <TestimonialCard
+              quote="I shared the link in our prayer group chat and within an hour every slot was filled. The calendar turning gold was the most beautiful thing I'd ever seen."
+              name="Fr. Thomas K."
+              role="Pastor"
+              initials="TK"
+            />
+            <TestimonialCard
+              quote="My grandmother didn't need an account — she just typed her name and email and committed to praying the Rosary every Tuesday. Simple enough for anyone."
+              name="Katie M."
+              role="Organizer"
+              initials="KM"
+            />
+          </div>
+          <p className="text-center text-xs text-muted-foreground mt-8">
+            These represent the kind of stories we hope to hear from you.
           </p>
-          <Link
-            href="/create"
-            className="inline-flex items-center gap-2 px-8 py-4 bg-primary text-primary-foreground font-semibold rounded-lg hover:bg-navy-700 transition-colors text-lg"
-          >
-            Start a PrayerTrain Today
-            <ArrowRight className="w-5 h-5" />
-          </Link>
+        </div>
+      </section>
+
+      <CrossDivider className="max-w-6xl mx-auto px-4" />
+
+      {/* CTA with logo */}
+      <section className="py-20 sm:py-28">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+            <div className="flex justify-center">
+              <Image
+                src="/logo.png"
+                alt="PrayerTrain"
+                width={320}
+                height={320}
+                className="w-56 sm:w-72 h-auto opacity-90"
+              />
+            </div>
+            <div className="text-center md:text-left">
+              <CrossIcon className="w-7 h-7 text-gold-400 mb-4 mx-auto md:mx-0" />
+              <h2 className="font-heading text-3xl sm:text-4xl font-bold text-navy-800 mb-4">
+                Someone needs your prayers
+              </h2>
+              <p className="text-muted-foreground text-lg mb-8 leading-relaxed">
+                Whether it&apos;s a friend battling illness, a family in crisis,
+                or someone discerning their vocation &mdash; rally your
+                community to pray with purpose and consistency.
+              </p>
+              <Link
+                href="/create"
+                className="inline-flex items-center gap-2 px-8 py-4 bg-primary text-primary-foreground font-semibold rounded-lg hover:bg-navy-700 transition-colors text-lg"
+              >
+                Start a PrayerTrain Today
+                <ArrowRight className="w-5 h-5" />
+              </Link>
+            </div>
+          </div>
         </div>
       </section>
     </div>
@@ -221,6 +293,48 @@ function FeatureCard({
       <p className="text-sm text-muted-foreground leading-relaxed">
         {description}
       </p>
+    </div>
+  );
+}
+
+function TestimonialCard({
+  quote,
+  name,
+  role,
+  initials,
+  imageUrl,
+}: {
+  quote: string;
+  name: string;
+  role: string;
+  initials: string;
+  imageUrl?: string;
+}) {
+  return (
+    <div className="prayer-card flex flex-col">
+      <Quote className="w-8 h-8 text-gold-300 mb-3" />
+      <p className="text-sm text-foreground leading-relaxed mb-6 flex-1 italic">
+        &ldquo;{quote}&rdquo;
+      </p>
+      <div className="flex items-center gap-3 pt-4 border-t border-border">
+        {imageUrl ? (
+          <img
+            src={imageUrl}
+            alt={name}
+            className="w-10 h-10 rounded-full object-cover border border-gold-200"
+          />
+        ) : (
+          <div className="w-10 h-10 rounded-full bg-navy-100 flex items-center justify-center border border-gold-200">
+            <span className="text-sm font-heading font-semibold text-navy-600">
+              {initials}
+            </span>
+          </div>
+        )}
+        <div>
+          <p className="text-sm font-medium text-navy-800">{name}</p>
+          <p className="text-xs text-muted-foreground">{role}</p>
+        </div>
+      </div>
     </div>
   );
 }

@@ -1,7 +1,7 @@
 import Link from "next/link";
-import Image from "next/image";
 import { auth } from "@/lib/auth";
 import { Cross, Menu } from "lucide-react";
+import { CrossIcon } from "@/components/ui/catholic-icons";
 import { MobileNav } from "./mobile-nav";
 
 export async function Header() {
@@ -13,13 +13,7 @@ export async function Header() {
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2 group">
-            <Image
-              src="/logo.png"
-              alt="PrayerTrain"
-              width={40}
-              height={40}
-              className="w-10 h-10 object-contain"
-            />
+            <CrossIcon className="w-5 h-5 text-gold-500" />
             <span className="font-heading text-xl font-semibold text-navy-700 group-hover:text-navy-500 transition-colors">
               PrayerTrain
             </span>

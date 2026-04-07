@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { auth } from "@/lib/auth";
 import { Cross, Menu } from "lucide-react";
 import { MobileNav } from "./mobile-nav";
@@ -11,12 +12,14 @@ export async function Header() {
       <nav className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
-          <Link href="/" className="flex items-center gap-2.5 group">
-            <div className="w-8 h-8 rounded-full bg-navy-600 flex items-center justify-center">
-              <span className="text-white text-sm font-heading font-bold">
-                PT
-              </span>
-            </div>
+          <Link href="/" className="flex items-center gap-2 group">
+            <Image
+              src="/logo.png"
+              alt="PrayerTrain"
+              width={40}
+              height={40}
+              className="w-10 h-10 object-contain"
+            />
             <span className="font-heading text-xl font-semibold text-navy-700 group-hover:text-navy-500 transition-colors">
               PrayerTrain
             </span>

@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import { SignInForm } from "./signin-form";
 
 export const metadata: Metadata = {
@@ -16,11 +17,13 @@ export default async function SignInPage({
     <div className="min-h-[80vh] flex items-center justify-center px-4">
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
-          <div className="w-14 h-14 rounded-full bg-navy-600 flex items-center justify-center mx-auto mb-4">
-            <span className="text-white text-xl font-heading font-bold">
-              PT
-            </span>
-          </div>
+          <Image
+            src="/logo.png"
+            alt="PrayerTrain"
+            width={64}
+            height={64}
+            className="w-16 h-16 object-contain mx-auto mb-4"
+          />
           <h1 className="font-heading text-3xl font-bold text-navy-800 mb-2">
             Welcome to PrayerTrain
           </h1>

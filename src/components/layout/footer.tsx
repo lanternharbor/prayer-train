@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { Heart } from "lucide-react";
 
 export function Footer() {
@@ -8,12 +9,14 @@ export function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           {/* Brand */}
           <div className="md:col-span-2">
-            <div className="flex items-center gap-2.5 mb-3">
-              <div className="w-7 h-7 rounded-full bg-navy-600 flex items-center justify-center">
-                <span className="text-white text-xs font-heading font-bold">
-                  PT
-                </span>
-              </div>
+            <div className="flex items-center gap-2 mb-3">
+              <Image
+                src="/logo.png"
+                alt="PrayerTrain"
+                width={32}
+                height={32}
+                className="w-8 h-8 object-contain"
+              />
               <span className="font-heading text-lg font-semibold text-navy-700">
                 PrayerTrain
               </span>

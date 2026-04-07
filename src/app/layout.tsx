@@ -23,11 +23,19 @@ export const metadata: Metadata = {
   },
   description:
     "Coordinate prayer coverage for loved ones. Create a prayer train, invite your community, and ensure continuous spiritual support through organized daily prayer commitments.",
+  icons: {
+    icon: [
+      { url: "/favicon-32.png", sizes: "32x32", type: "image/png" },
+      { url: "/favicon-16.png", sizes: "16x16", type: "image/png" },
+    ],
+    apple: "/apple-touch-icon.png",
+  },
   openGraph: {
     title: "PrayerTrain — Organized Prayer for Those in Need",
     description:
       "Like a meal train, but for prayers. Create a prayer train for someone in need and invite your community to sign up for specific prayers on specific days.",
     type: "website",
+    images: [{ url: "/logo.png", width: 512, height: 512 }],
   },
 };
 

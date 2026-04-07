@@ -210,6 +210,50 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* Our Story */}
+      <section className="py-16 sm:py-20 bg-navy-700 text-white">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 md:grid-cols-[200px_1fr] gap-8 items-start">
+            <div className="flex justify-center md:justify-start">
+              <Image
+                src="/logo.png"
+                alt="PrayerTrain"
+                width={180}
+                height={180}
+                className="w-36 h-auto opacity-90"
+              />
+            </div>
+            <div>
+              <h2 className="font-heading text-2xl sm:text-3xl font-bold mb-4 text-center md:text-left">
+                Why We Built This
+              </h2>
+              <p className="text-navy-100 leading-relaxed mb-4">
+                In late 2025 and early 2026, three of our children faced
+                life-threatening medical crises &mdash; a premature baby who
+                spent 73 days in the NICU, a newborn needing open heart surgery
+                at five days old, and a child with a severe respiratory crisis
+                requiring intubation.
+              </p>
+              <p className="text-navy-100 leading-relaxed mb-6">
+                Through the grace of God and the care of Boston
+                Children&apos;s Hospital, all three came through. What sustained
+                us was knowing our community was praying &mdash; specific
+                prayers, on specific days, with real commitment. We built
+                PrayerTrain so the next family in crisis can have that same
+                support.
+              </p>
+              <Link
+                href="/our-story"
+                className="inline-flex items-center gap-2 text-gold-300 hover:text-gold-200 font-medium transition-colors"
+              >
+                Read the full story
+                <ArrowRight className="w-4 h-4" />
+              </Link>
+            </div>
+          </div>
+        </div>
+      </section>
+
       <CrossDivider className="max-w-6xl mx-auto px-4" />
 
       {/* CTA with logo */}

@@ -73,7 +73,7 @@ export default function OurStoryPage() {
                 Open heart surgery at five days old
               </p>
               <p className="text-muted-foreground text-sm">
-                A baby born in January needed open heart surgery when he was just
+                A baby born in January needed open heart surgery when she was just
                 five days old. There is no preparing yourself for handing your
                 newborn to a surgical team and waiting.
               </p>
@@ -100,9 +100,9 @@ export default function OurStoryPage() {
         <CrossDivider />
 
         <p className="text-lg">
-          Through the grace of God and the extraordinary care of{" "}
-          <strong>Boston Children&apos;s Hospital</strong>, all three children
-          came out on top. Every single one.
+          <strong>Through the grace of God</strong> and the extraordinary care
+          of Boston Children&apos;s Hospital, all three children came out on
+          top. Every single one.
         </p>
 
         <p>

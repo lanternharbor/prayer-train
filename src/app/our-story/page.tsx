@@ -12,7 +12,7 @@ import {
 export const metadata: Metadata = {
   title: "Our Story",
   description:
-    "PrayerTrain was born from one family's experience with three children facing serious medical challenges — and the community of prayer that carried them through.",
+    "PrayerTrain was born from the Keough and Green families' experience with three children facing life-threatening medical crises — and the community of prayer that carried them through.",
 };
 
 export default function OurStoryPage() {
@@ -40,9 +40,13 @@ export default function OurStoryPage() {
       {/* The Story */}
       <article className="prose-custom space-y-6 text-foreground leading-relaxed">
         <p className="text-lg">
-          In late 2025 and early 2026, our family walked through a season that
-          tested everything we had. Within just a few months, three of our
-          children faced life-threatening medical crises.
+          The Keough and Green families are a close-knit extended family in
+          Massachusetts &mdash; the kind where aunties and uncles show up
+          without being asked, where grandmas and papas drop everything, and
+          where the mothers and fathers lean on each other through whatever
+          comes. In late 2025 and early 2026, that bond was tested like never
+          before when three children across our family faced life-threatening
+          medical crises within months of each other.
         </p>
 
         <div className="prayer-card border-l-4 border-l-gold-400">
@@ -50,12 +54,12 @@ export default function OurStoryPage() {
             <CandleIcon className="w-5 h-5 text-gold-500 shrink-0 mt-1" />
             <div>
               <p className="font-heading font-semibold text-navy-800 mb-1">
-                Our premature baby
+                A premature baby &mdash; 73 days in the NICU
               </p>
               <p className="text-muted-foreground text-sm">
-                Born at just 30 weeks, our little one spent 73 days in the NICU.
-                Seventy-three days of monitors, of hoping, of praying through
-                every alarm and every setback.
+                Born at just 30 weeks, one of our little ones spent 73 days in
+                the NICU. Seventy-three days of monitors, of hoping, of praying
+                through every alarm and every setback.
               </p>
             </div>
           </div>
@@ -69,9 +73,9 @@ export default function OurStoryPage() {
                 Open heart surgery at five days old
               </p>
               <p className="text-muted-foreground text-sm">
-                Our baby born in January needed open heart surgery when he was
-                just five days old. There is no preparing yourself for handing
-                your newborn to a surgical team and waiting.
+                A baby born in January needed open heart surgery when he was just
+                five days old. There is no preparing yourself for handing your
+                newborn to a surgical team and waiting.
               </p>
             </div>
           </div>
@@ -85,9 +89,9 @@ export default function OurStoryPage() {
                 A severe respiratory crisis
               </p>
               <p className="text-muted-foreground text-sm">
-                Then another of our children faced a severe respiratory crisis
-                that required intubation. Another hospital room. Another set of
-                prayers sent upward.
+                Then another child in the family faced a severe respiratory
+                crisis requiring intubation. Another hospital room. Another set
+                of prayers sent upward.
               </p>
             </div>
           </div>
@@ -97,16 +101,18 @@ export default function OurStoryPage() {
 
         <p className="text-lg">
           Through the grace of God and the extraordinary care of{" "}
-          <strong>Boston Children&apos;s Hospital</strong>, all three of our
-          children came out on top. Every single one.
+          <strong>Boston Children&apos;s Hospital</strong>, all three children
+          came out on top. Every single one.
         </p>
 
         <p>
-          But what sustained us through those months wasn&apos;t just medicine.
-          It was the knowledge that people were praying. Friends, family,
-          parishioners, and even strangers committed to specific prayers on
-          specific days. Novenas were offered. Rosaries were prayed. Masses were
-          said. We could feel it.
+          But what carried our families through those months wasn&apos;t just
+          medicine. It was the village. The aunties who took shifts at the
+          hospital. The uncles who handled everything at home. The grandmas and
+          papas who never left our sides. And underneath all of it &mdash; the
+          prayers. Friends, parishioners, and even strangers committed to
+          specific prayers on specific days. Novenas were offered. Rosaries were
+          prayed. Masses were said. We could feel it.
         </p>
 
         <p>
@@ -118,15 +124,15 @@ export default function OurStoryPage() {
         </p>
 
         <p className="text-lg font-heading font-semibold text-navy-800">
-          That&apos;s why we built PrayerTrain.
+          That&apos;s why the Keough and Green families built PrayerTrain.
         </p>
 
         <p>
           We built it so that the next family sitting in a NICU, the next
-          parents waiting outside an OR, the next person facing a crisis they
-          can&apos;t control &mdash; can know with certainty that their community
-          is lifting them up in organized, continuous prayer. Every day. Every
-          slot. Every intention covered.
+          parents waiting outside an OR, the next extended family rallying
+          around a child in crisis &mdash; can know with certainty that their
+          community is lifting them up in organized, continuous prayer. Every
+          day. Every slot. Every intention covered.
         </p>
 
         <div className="text-center py-8">

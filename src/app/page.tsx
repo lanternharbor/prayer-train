@@ -228,19 +228,20 @@ export default function HomePage() {
                 Why We Built This
               </h2>
               <p className="text-navy-100 leading-relaxed mb-4">
-                In late 2025 and early 2026, three of our children faced
-                life-threatening medical crises &mdash; a premature baby who
-                spent 73 days in the NICU, a newborn needing open heart surgery
-                at five days old, and a child with a severe respiratory crisis
-                requiring intubation.
+                The Keough and Green families are a close-knit extended family
+                in Massachusetts. In late 2025 and early 2026, three children
+                across our family faced life-threatening crises &mdash; a
+                premature baby who spent 73 days in the NICU, a newborn needing
+                open heart surgery at five days old, and a child with a severe
+                respiratory crisis requiring intubation.
               </p>
               <p className="text-navy-100 leading-relaxed mb-6">
-                Through the grace of God and the care of Boston
-                Children&apos;s Hospital, all three came through. What sustained
-                us was knowing our community was praying &mdash; specific
-                prayers, on specific days, with real commitment. We built
-                PrayerTrain so the next family in crisis can have that same
-                support.
+                Through the grace of God, the care of Boston
+                Children&apos;s Hospital, and the village of aunties, uncles,
+                grandmas, and papas who never left our sides &mdash; all three
+                came through. What sustained us underneath it all was the
+                prayers. We built PrayerTrain so the next family in crisis can
+                have that same organized spiritual support.
               </p>
               <Link
                 href="/our-story"

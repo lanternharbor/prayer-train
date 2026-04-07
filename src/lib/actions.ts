@@ -34,18 +34,23 @@ export async function createPrayerTrain(formData: FormData) {
   startDate.setHours(0, 0, 0, 0);
   const endDate = addDays(startDate, durationDays - 1);
 
-  // Handle photo upload
+  // Handle photo upload (with timeout to prevent hanging)
   let recipientImageUrl: string | null = null;
   const photoFile = formData.get("recipientPhoto") as File | null;
-  if (photoFile && photoFile.size > 0) {
+  if (photoFile && photoFile.size > 0 && process.env.BLOB_READ_WRITE_TOKEN) {
     try {
-      const blob = await put(`prayer-train/${slug}-${Date.now()}.${photoFile.type.split("/")[1] || "jpg"}`, photoFile, {
-        access: "public",
-      });
+      const uploadPromise = put(
+        `prayer-train/${slug}-${Date.now()}.${photoFile.type.split("/")[1] || "jpg"}`,
+        photoFile,
+        { access: "public" }
+      );
+      const timeoutPromise = new Promise<never>((_, reject) =>
+        setTimeout(() => reject(new Error("Upload timeout")), 8000)
+      );
+      const blob = await Promise.race([uploadPromise, timeoutPromise]);
       recipientImageUrl = blob.url;
     } catch (e) {
-      console.error("Photo upload failed:", e);
-      // Continue without photo — not a blocking error
+      console.error("Photo upload failed (continuing without photo):", e);
     }
   }
 

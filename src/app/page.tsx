@@ -74,7 +74,7 @@ export default function HomePage() {
                 <div className="absolute inset-0 bg-gold-400/20 rounded-full blur-[80px] scale-75" />
                 <Image
                   src="/logo.png"
-                  alt="PrayerTrain — a community united in prayer"
+                  alt="PrayerTrains — a community united in prayer"
                   width={480}
                   height={480}
                   className="relative w-64 sm:w-80 lg:w-[420px] h-auto drop-shadow-2xl"
@@ -94,7 +94,7 @@ export default function HomePage() {
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="font-heading text-3xl sm:text-4xl font-bold text-navy-800 mb-4">
-              How PrayerTrain Works
+              How PrayerTrains Works
             </h2>
             <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
               Three simple steps to surround someone in organized, continuous
@@ -217,7 +217,7 @@ export default function HomePage() {
             <div className="flex justify-center md:justify-start">
               <Image
                 src="/logo.png"
-                alt="PrayerTrain"
+                alt="PrayerTrains"
                 width={180}
                 height={180}
                 className="w-36 h-auto opacity-90"
@@ -240,7 +240,7 @@ export default function HomePage() {
                 Children&apos;s Hospital, and the village of aunties, uncles,
                 grandmas, and papas who never left our sides &mdash; all three
                 came through. What sustained us underneath it all was the
-                prayers. We built PrayerTrain so the next family in crisis can
+                prayers. We built PrayerTrains so the next family in crisis can
                 have that same organized spiritual support.
               </p>
               <Link
@@ -264,7 +264,7 @@ export default function HomePage() {
             <div className="flex justify-center">
               <Image
                 src="/logo.png"
-                alt="PrayerTrain"
+                alt="PrayerTrains"
                 width={320}
                 height={320}
                 className="w-56 sm:w-72 h-auto opacity-90"

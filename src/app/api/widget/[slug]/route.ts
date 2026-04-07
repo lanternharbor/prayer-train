@@ -72,7 +72,7 @@ export async function GET(
       Sign Up to Pray
     </a>
   </div>
-  <p class="footer">Powered by <a href="${baseUrl}" target="_blank">PrayerTrain</a></p>
+  <p class="footer">Powered by <a href="${baseUrl}" target="_blank">PrayerTrains</a></p>
 </body>
 </html>`;
 

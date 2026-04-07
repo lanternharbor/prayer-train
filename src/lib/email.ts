@@ -2,7 +2,7 @@ import { Resend } from "resend";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
-const FROM = process.env.EMAIL_FROM || "PrayerTrain <noreply@prayertrain.org>";
+const FROM = process.env.EMAIL_FROM || "PrayerTrains <noreply@prayertrain.org>";
 
 export async function sendClaimConfirmation({
   to,
@@ -59,7 +59,7 @@ export async function sendClaimConfirmation({
             </a>
           </div>
           <p style="text-align: center; color: #b8a994; font-size: 12px; margin-top: 32px;">
-            PrayerTrain — Organized prayer for those in need
+            PrayerTrains — Organized prayer for those in need
           </p>
         </div>
       `,
@@ -129,7 +129,7 @@ export async function sendDailyReminder({
             </a>
           </div>
           <p style="text-align: center; color: #b8a994; font-size: 12px; margin-top: 32px;">
-            PrayerTrain — Organized prayer for those in need
+            PrayerTrains — Organized prayer for those in need
           </p>
         </div>
       `,

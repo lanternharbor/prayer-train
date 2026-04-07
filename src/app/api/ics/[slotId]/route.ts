@@ -31,7 +31,7 @@ export async function GET(
   const ics = [
     "BEGIN:VCALENDAR",
     "VERSION:2.0",
-    "PRODID:-//PrayerTrain//EN",
+    "PRODID:-//PrayerTrains//EN",
     "CALSCALE:GREGORIAN",
     "METHOD:PUBLISH",
     "BEGIN:VEVENT",

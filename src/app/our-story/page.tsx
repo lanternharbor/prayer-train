@@ -12,7 +12,7 @@ import {
 export const metadata: Metadata = {
   title: "Our Story",
   description:
-    "PrayerTrain was born from the Keough and Green families' experience with three children facing life-threatening medical crises — and the community of prayer that carried them through.",
+    "PrayerTrains was born from the Keough and Green families' experience with three children facing life-threatening medical crises — and the community of prayer that carried them through.",
 };
 
 export default function OurStoryPage() {
@@ -22,13 +22,13 @@ export default function OurStoryPage() {
       <div className="text-center mb-12">
         <Image
           src="/logo.png"
-          alt="PrayerTrain"
+          alt="PrayerTrains"
           width={200}
           height={200}
           className="w-32 h-auto mx-auto mb-8"
         />
         <h1 className="font-heading text-3xl sm:text-4xl font-bold text-navy-800 mb-4">
-          Why PrayerTrain Exists
+          Why PrayerTrains Exists
         </h1>
         <p className="text-lg text-muted-foreground italic">
           Born from crisis. Built on faith. Sustained by community.
@@ -124,7 +124,7 @@ export default function OurStoryPage() {
         </p>
 
         <p className="text-lg font-heading font-semibold text-navy-800">
-          That&apos;s why the Keough and Green families built PrayerTrain.
+          That&apos;s why the Keough and Green families built PrayerTrains.
         </p>
 
         <p>

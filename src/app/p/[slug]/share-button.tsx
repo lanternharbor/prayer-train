@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Share2, Copy, Check } from "lucide-react";
+import { Share2, Copy, Check, QrCode, Download } from "lucide-react";
 
 export function ShareButton({
   slug,
@@ -46,22 +46,33 @@ export function ShareButton({
           Invite friends, family, and your parish to sign up for prayer slots.
         </p>
       </div>
-      <button
-        onClick={handleCopy}
-        className="flex items-center gap-2 px-4 py-2 bg-navy-600 text-white text-sm font-medium rounded-lg hover:bg-navy-700 transition-colors shrink-0"
-      >
-        {copied ? (
-          <>
-            <Check className="w-4 h-4" />
-            Copied!
-          </>
-        ) : (
-          <>
-            <Copy className="w-4 h-4" />
-            Copy Link
-          </>
-        )}
-      </button>
+      <div className="flex gap-2 shrink-0">
+        <button
+          onClick={handleCopy}
+          className="flex items-center gap-2 px-4 py-2 bg-navy-600 text-white text-sm font-medium rounded-lg hover:bg-navy-700 transition-colors"
+        >
+          {copied ? (
+            <>
+              <Check className="w-4 h-4" />
+              Copied!
+            </>
+          ) : (
+            <>
+              <Copy className="w-4 h-4" />
+              Copy Link
+            </>
+          )}
+        </button>
+        <a
+          href={`/api/qr/${slug}`}
+          download={`prayer-train-${slug}-qr.svg`}
+          className="flex items-center gap-2 px-4 py-2 border border-navy-200 text-navy-700 text-sm font-medium rounded-lg hover:bg-cream-100 transition-colors"
+          title="Download QR code for bulletins or flyers"
+        >
+          <QrCode className="w-4 h-4" />
+          QR Code
+        </a>
+      </div>
     </div>
   );
 }

@@ -12,7 +12,7 @@ import {
 export const metadata: Metadata = {
   title: "Our Story",
   description:
-    "PrayerTrains was born from the Keough and Green families' experience with three children facing life-threatening medical crises — and the community of prayer that carried them through.",
+    "PrayerTrains was born from one family's experience with three children facing life-threatening medical crises — and the community of prayer that carried them through.",
 };
 
 export default function OurStoryPage() {
@@ -40,13 +40,13 @@ export default function OurStoryPage() {
       {/* The Story */}
       <article className="prose-custom space-y-6 text-foreground leading-relaxed">
         <p className="text-lg">
-          The Keough and Green families are a close-knit extended family in
-          Massachusetts &mdash; the kind where aunties and uncles show up
-          without being asked, where grandmas and papas drop everything, and
-          where the mothers and fathers lean on each other through whatever
-          comes. In late 2025 and early 2026, that bond was tested like never
-          before when three children across our family faced life-threatening
-          medical crises within months of each other.
+          We&apos;re a close-knit, faithful Catholic extended family from the
+          South Shore of Massachusetts &mdash; the kind where aunties and
+          uncles show up without being asked, where grandmas and papas drop
+          everything, and where the mothers and fathers lean on each other
+          through whatever comes. In late 2025 and early 2026, that bond was
+          tested like never before when three children across our family faced
+          life-threatening medical crises within months of each other.
         </p>
 
         <div className="prayer-card border-l-4 border-l-gold-400">
@@ -106,7 +106,7 @@ export default function OurStoryPage() {
         </p>
 
         <p>
-          But what carried our families through those months wasn&apos;t just
+          But what carried our family through those months wasn&apos;t just
           medicine. It was the village. The aunties who took shifts at the
           hospital. The uncles who handled everything at home. The grandmas and
           papas who never left our sides. And underneath all of it &mdash; the
@@ -124,7 +124,7 @@ export default function OurStoryPage() {
         </p>
 
         <p className="text-lg font-heading font-semibold text-navy-800">
-          That&apos;s why the Keough and Green families built PrayerTrains.
+          That&apos;s why our family built PrayerTrains.
         </p>
 
         <p>

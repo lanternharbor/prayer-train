@@ -214,9 +214,9 @@ export default function HomePage() {
                 Why We Built This
               </h2>
               <p className="text-navy-100 leading-relaxed mb-4">
-                The Keough and Green families are a close-knit extended family
-                in Massachusetts. In late 2025 and early 2026, three children
-                across our family faced life-threatening crises &mdash; a
+                We&apos;re a faithful Catholic extended family from the South
+                Shore of Massachusetts. In late 2025 and early 2026, three
+                children across our family faced life-threatening crises &mdash; a
                 premature baby who spent 73 days in the NICU, a newborn needing
                 open heart surgery at five days old, and a child with a severe
                 respiratory crisis requiring intubation.

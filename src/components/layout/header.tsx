@@ -15,7 +15,7 @@ export async function Header() {
           <Link href="/" className="flex items-center gap-2 group">
             <CrossIcon className="w-5 h-5 text-gold-500" />
             <span className="font-heading text-xl font-semibold text-navy-700 group-hover:text-navy-500 transition-colors">
-              PrayerTrains
+              PrayerTrain
             </span>
           </Link>
 

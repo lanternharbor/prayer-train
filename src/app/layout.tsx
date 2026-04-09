@@ -18,8 +18,8 @@ const body = DM_Sans({
 
 export const metadata: Metadata = {
   title: {
-    default: "PrayerTrains — Organized Prayer for Those in Need",
-    template: "%s | PrayerTrains",
+    default: "PrayerTrain — Organized Prayer for Those in Need",
+    template: "%s | PrayerTrain",
   },
   description:
     "Coordinate prayer coverage for loved ones. Create a prayer train, invite your community, and ensure continuous spiritual support through organized daily prayer commitments.",
@@ -32,7 +32,7 @@ export const metadata: Metadata = {
     apple: "/apple-touch-icon.png",
   },
   openGraph: {
-    title: "PrayerTrains — Organized Prayer for Those in Need",
+    title: "PrayerTrain — Organized Prayer for Those in Need",
     description:
       "Like a meal train, but for prayers. Create a prayer train for someone in need and invite your community to sign up for specific prayers on specific days.",
     type: "website",

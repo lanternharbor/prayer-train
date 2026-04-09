@@ -1,4 +1,4 @@
-// Elegant, subtle Catholic SVG icons for PrayerTrains
+// Elegant, subtle Catholic SVG icons for PrayerTrain
 // Each accepts className for sizing and color via Tailwind
 
 interface IconProps {

@@ -49,6 +49,7 @@ export function formatPrayerCategory(category: string): string {
     MASS_SACRAMENTAL: "Mass & Sacramental",
     SCRIPTURE: "Scripture-Based",
     DEVOTION: "Devotions",
+    ALL_CHRISTIANS: "Prayers for All Christians",
   };
   return map[category] || category;
 }

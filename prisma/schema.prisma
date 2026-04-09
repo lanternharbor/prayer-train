@@ -105,6 +105,7 @@ enum PrayerCategory {
   MASS_SACRAMENTAL
   SCRIPTURE
   DEVOTION
+  ALL_CHRISTIANS
 }
 
 enum DifficultyLevel {

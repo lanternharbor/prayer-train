@@ -40,7 +40,7 @@ export function ShareButton({
       <div className="flex-1">
         <h3 className="font-heading text-base font-semibold text-navy-800 mb-1 flex items-center gap-2">
           <Share2 className="w-4 h-4 text-gold-500" />
-          Share this FaithTrain
+          Share this PrayerTrain
         </h3>
         <p className="text-sm text-muted-foreground">
           Invite friends, family, and your parish to sign up for prayer slots.
@@ -65,7 +65,7 @@ export function ShareButton({
         </button>
         <a
           href={`/api/qr/${slug}`}
-          download={`faithtrain-${slug}-qr.svg`}
+          download={`prayertrain-${slug}-qr.svg`}
           className="flex items-center gap-2 px-4 py-2 border border-navy-200 text-navy-700 text-sm font-medium rounded-lg hover:bg-cream-100 transition-colors"
           title="Download QR code for bulletins or flyers"
         >

@@ -47,7 +47,7 @@ export default function HomePage() {
               <p className="text-lg sm:text-xl text-navy-100 leading-relaxed mb-10 max-w-xl">
                 When someone you love is struggling, rally your parish and
                 community to provide continuous prayer coverage. Create a
-                faith train, choose prayers, and invite others to sign up for
+                prayer train, choose prayers, and invite others to sign up for
                 specific days.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
@@ -55,7 +55,7 @@ export default function HomePage() {
                   href="/create"
                   className="inline-flex items-center justify-center gap-2 px-8 py-3.5 bg-gold-400 text-navy-900 font-semibold rounded-lg hover:bg-gold-300 transition-colors text-lg"
                 >
-                  Start a FaithTrain
+                  Start a PrayerTrain
                   <ArrowRight className="w-5 h-5" />
                 </Link>
                 <Link
@@ -63,7 +63,7 @@ export default function HomePage() {
                   className="inline-flex items-center justify-center gap-2 px-8 py-3.5 border-2 border-white/30 text-white font-semibold rounded-lg hover:bg-white/10 transition-colors text-lg"
                 >
                   <Search className="w-5 h-5" />
-                  Find a FaithTrain
+                  Find a PrayerTrain
                 </Link>
               </div>
             </div>
@@ -74,7 +74,7 @@ export default function HomePage() {
                 <div className="absolute inset-0 bg-gold-400/20 rounded-full blur-[80px] scale-75" />
                 <Image
                   src="/logo.png"
-                  alt="OurFaithTrain — a community united in prayer"
+                  alt="PrayerTrains — a community united in prayer"
                   width={480}
                   height={480}
                   className="relative w-64 sm:w-80 lg:w-[420px] h-auto drop-shadow-2xl"
@@ -94,7 +94,7 @@ export default function HomePage() {
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="font-heading text-3xl sm:text-4xl font-bold text-navy-800 mb-4">
-              How OurFaithTrain Works
+              How PrayerTrains Works
             </h2>
             <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
               Three simple steps to surround someone in organized, continuous
@@ -105,7 +105,7 @@ export default function HomePage() {
             <StepCard
               step={1}
               icon={<SacredHeartIcon className="w-7 h-7" />}
-              title="Create a FaithTrain"
+              title="Create a PrayerTrain"
               description="Tell us about the person and their situation. We'll suggest appropriate prayers and generate a calendar of prayer slots."
             />
             <StepCard
@@ -203,7 +203,7 @@ export default function HomePage() {
             <div className="flex justify-center md:justify-start">
               <Image
                 src="/logo.png"
-                alt="OurFaithTrain"
+                alt="PrayerTrains"
                 width={180}
                 height={180}
                 className="w-36 h-auto opacity-90"
@@ -226,7 +226,7 @@ export default function HomePage() {
                 Children&apos;s Hospital, and the village of aunties, uncles,
                 grandmas, and papas who never left our sides &mdash; all three
                 came through. What sustained us underneath it all was the
-                prayers. We built OurFaithTrain so the next family in crisis can
+                prayers. We built PrayerTrains so the next family in crisis can
                 have that same organized spiritual support.
               </p>
               <Link
@@ -250,7 +250,7 @@ export default function HomePage() {
             <div className="flex justify-center">
               <Image
                 src="/logo.png"
-                alt="OurFaithTrain"
+                alt="PrayerTrains"
                 width={320}
                 height={320}
                 className="w-56 sm:w-72 h-auto opacity-90"
@@ -270,7 +270,7 @@ export default function HomePage() {
                 href="/create"
                 className="inline-flex items-center gap-2 px-8 py-4 bg-primary text-primary-foreground font-semibold rounded-lg hover:bg-navy-700 transition-colors text-lg"
               >
-                Start a FaithTrain Today
+                Start a PrayerTrain Today
                 <ArrowRight className="w-5 h-5" />
               </Link>
             </div>

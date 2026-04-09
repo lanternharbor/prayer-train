@@ -15,7 +15,7 @@ export async function Header() {
           <Link href="/" className="flex items-center gap-2 group">
             <CrossIcon className="w-5 h-5 text-gold-500" />
             <span className="font-heading text-xl font-semibold text-navy-700 group-hover:text-navy-500 transition-colors">
-              OurFaithTrain
+              PrayerTrains
             </span>
           </Link>
 
@@ -25,7 +25,7 @@ export async function Header() {
               href="/browse"
               className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
             >
-              Find a FaithTrain
+              Find a PrayerTrain
             </Link>
             <Link
               href="/prayers"
@@ -45,7 +45,7 @@ export async function Header() {
                   href="/create"
                   className="inline-flex items-center px-4 py-2 text-sm font-medium text-primary-foreground bg-primary rounded-lg hover:bg-navy-700 transition-colors"
                 >
-                  Start a FaithTrain
+                  Start a PrayerTrain
                 </Link>
               </>
             ) : (
@@ -60,7 +60,7 @@ export async function Header() {
                   href="/create"
                   className="inline-flex items-center px-4 py-2 text-sm font-medium text-primary-foreground bg-primary rounded-lg hover:bg-navy-700 transition-colors"
                 >
-                  Start a FaithTrain
+                  Start a PrayerTrain
                 </Link>
               </>
             )}

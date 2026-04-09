@@ -8,7 +8,7 @@ export async function GET(
   { params }: { params: Promise<{ slug: string }> }
 ) {
   const { slug } = await params;
-  const baseUrl = process.env.NEXTAUTH_URL || "https://ourfaithtrain.com";
+  const baseUrl = process.env.NEXTAUTH_URL || "https://prayertrains.com";
   const url = `${baseUrl}/p/${slug}`;
 
   // Use a public QR code API to generate the QR code

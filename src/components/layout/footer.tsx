@@ -12,7 +12,7 @@ export function Footer() {
             <div className="flex items-center gap-2 mb-3">
               <CrossIcon className="w-4 h-4 text-gold-500" />
               <span className="font-heading text-lg font-semibold text-navy-700">
-                OurFaithTrain
+                PrayerTrains
               </span>
             </div>
             <p className="text-sm text-muted-foreground max-w-md leading-relaxed">
@@ -49,7 +49,7 @@ export function Footer() {
                   href="/create"
                   className="text-sm text-muted-foreground hover:text-foreground transition-colors"
                 >
-                  Start a FaithTrain
+                  Start a PrayerTrain
                 </Link>
               </li>
             </ul>
@@ -82,7 +82,7 @@ export function Footer() {
 
         <div className="mt-10 pt-6 border-t border-border flex flex-col sm:flex-row justify-between items-center gap-4">
           <p className="text-xs text-muted-foreground">
-            &copy; {new Date().getFullYear()} OurFaithTrain. Built with faith and
+            &copy; {new Date().getFullYear()} PrayerTrains. Built with faith and
             love.
           </p>
           <p className="text-xs text-muted-foreground flex items-center gap-1">

@@ -12,7 +12,7 @@ import {
 export const metadata: Metadata = {
   title: "Our Story",
   description:
-    "OurFaithTrain was born from one family's experience with three children facing life-threatening medical crises — and the community of prayer that carried them through.",
+    "PrayerTrains was born from one family's experience with three children facing life-threatening medical crises — and the community of prayer that carried them through.",
 };
 
 export default function OurStoryPage() {
@@ -22,13 +22,13 @@ export default function OurStoryPage() {
       <div className="text-center mb-12">
         <Image
           src="/logo.png"
-          alt="OurFaithTrain"
+          alt="PrayerTrains"
           width={200}
           height={200}
           className="w-32 h-auto mx-auto mb-8"
         />
         <h1 className="font-heading text-3xl sm:text-4xl font-bold text-navy-800 mb-4">
-          Why OurFaithTrain Exists
+          Why PrayerTrains Exists
         </h1>
         <p className="text-lg text-muted-foreground italic">
           Born from crisis. Built on faith. Sustained by community.
@@ -124,7 +124,7 @@ export default function OurStoryPage() {
         </p>
 
         <p className="text-lg font-heading font-semibold text-navy-800">
-          That&apos;s why our family built OurFaithTrain.
+          That&apos;s why our family built PrayerTrains.
         </p>
 
         <p>
@@ -157,7 +157,7 @@ export default function OurStoryPage() {
             href="/create"
             className="inline-flex items-center gap-2 px-8 py-4 bg-primary text-primary-foreground font-semibold rounded-lg hover:bg-navy-700 transition-colors text-lg"
           >
-            Start a FaithTrain
+            Start a PrayerTrain
             <ArrowRight className="w-5 h-5" />
           </Link>
         </div>

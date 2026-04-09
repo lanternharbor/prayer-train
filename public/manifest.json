@@ -1,6 +1,6 @@
 {
-  "name": "OurFaithTrain",
-  "short_name": "OurFaithTrain",
+  "name": "PrayerTrains",
+  "short_name": "PrayerTrains",
   "description": "Organized prayer for those in need. Like a meal train, but for prayers.",
   "start_url": "/",
   "display": "standalone",

@@ -15,6 +15,8 @@ import {
   Share2,
   Clock,
   Settings,
+  Church,
+  MapPin,
 } from "lucide-react";
 import Link from "next/link";
 import { PrayerCalendar } from "./prayer-calendar";
@@ -139,6 +141,18 @@ export default async function PrayerTrainPage({
               {train.organizer.name || "Anonymous"}
             </span>
           </span>
+          {train.parish && (
+            <span className="text-sm text-muted-foreground flex items-center gap-1">
+              <Church className="w-3.5 h-3.5 text-gold-500" />
+              {train.parish}
+            </span>
+          )}
+          {train.location && (
+            <span className="text-sm text-muted-foreground flex items-center gap-1">
+              <MapPin className="w-3.5 h-3.5 text-gold-500" />
+              {train.location}
+            </span>
+          )}
           <span className="text-sm text-muted-foreground flex items-center gap-1">
             <CalendarDays className="w-3.5 h-3.5" />
             {formatDate(train.startDate)} &mdash; {formatDate(train.endDate)}

@@ -19,6 +19,8 @@ export async function createPrayerTrain(formData: FormData) {
 
   const recipientName = formData.get("recipientName") as string;
   const recipientRelation = formData.get("recipientRelation") as string;
+  const parish = formData.get("parish") as string;
+  const location = formData.get("location") as string;
   const intention = formData.get("intention") as string;
   const situation = formData.get("situation") as SituationCategory;
   const situationDetail = formData.get("situationDetail") as string;
@@ -62,6 +64,8 @@ export async function createPrayerTrain(formData: FormData) {
       recipientName,
       recipientRelation: recipientRelation || null,
       recipientImageUrl,
+      parish: parish || null,
+      location: location || null,
       intention,
       situation,
       situationDetail: situationDetail || null,

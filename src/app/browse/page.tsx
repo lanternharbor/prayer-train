@@ -14,6 +14,8 @@ import {
   Clock,
   ArrowRight,
   HandHeart,
+  Church,
+  MapPin,
 } from "lucide-react";
 import { SituationCategory } from "@/generated/prisma/client";
 import { RecipientAvatar, PrayingHandsIcon, CrossIcon } from "@/components/ui/catholic-icons";
@@ -177,6 +179,22 @@ export default async function BrowsePage({
                     Prayers for {train.recipientName}
                   </h2>
                 </div>
+                {(train.parish || train.location) && (
+                  <p className="text-xs text-muted-foreground mb-2 flex items-center gap-3">
+                    {train.parish && (
+                      <span className="flex items-center gap-1">
+                        <Church className="w-3 h-3 text-gold-400" />
+                        {train.parish}
+                      </span>
+                    )}
+                    {train.location && (
+                      <span className="flex items-center gap-1">
+                        <MapPin className="w-3 h-3 text-gold-400" />
+                        {train.location}
+                      </span>
+                    )}
+                  </p>
+                )}
                 <p className="text-sm text-muted-foreground leading-relaxed mb-4 line-clamp-3 flex-1">
                   {train.intention}
                 </p>

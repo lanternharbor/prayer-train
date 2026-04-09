@@ -2,7 +2,7 @@ import { Resend } from "resend";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
-const FROM = process.env.EMAIL_FROM || "PrayerTrain <noreply@prayertrains.com>";
+const FROM = process.env.EMAIL_FROM || "PrayerTrain <noreply@ourfaithtrain.com>";
 
 export async function sendClaimConfirmation({
   to,

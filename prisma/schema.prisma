@@ -129,6 +129,8 @@ model PrayerTrain {
   recipientRelation String?
   recipientImageUrl String?
   parish            String?
+  parishId          String?
+  parishRef         Parish?  @relation(fields: [parishId], references: [id])
   location          String?
   intention         String   @db.Text
   situation         SituationCategory
@@ -239,4 +241,23 @@ model TrainUpdate {
   content   String   @db.Text
 
   @@index([trainId])
+}
+
+// ─── Parish Directory ───────────────────────────────────────
+
+model Parish {
+  id        String   @id @default(cuid())
+  name      String
+  city      String
+  state     String
+  diocese   String?
+  country   String   @default("US")
+  createdAt DateTime @default(now())
+
+  // Relations
+  trains    PrayerTrain[]
+
+  @@unique([name, city, state])
+  @@index([name])
+  @@index([city, state])
 }

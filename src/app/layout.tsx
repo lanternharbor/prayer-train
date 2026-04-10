@@ -36,7 +36,7 @@ export const metadata: Metadata = {
     description:
       "Like a meal train, but for prayers. Create a prayer train for someone in need and invite your community to sign up for specific prayers on specific days.",
     type: "website",
-    images: [{ url: "/logo.png", width: 512, height: 512 }],
+    images: [{ url: "/logo.png", width: 1024, height: 1024 }],
   },
 };
 

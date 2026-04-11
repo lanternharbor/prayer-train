@@ -52,4 +52,25 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       return session;
     },
   },
+  // Verbose logging to surface the underlying error from CallbackRouteError
+  // wrappers. Safe to leave on while we debug Apple sign-in; remove or set
+  // debug: false once Apple is confirmed working in production.
+  logger: {
+    error(error) {
+      console.error(
+        "[auth-debug][error]",
+        error?.name,
+        error?.message,
+        error?.cause ? `cause=${JSON.stringify(error.cause, Object.getOwnPropertyNames(error.cause))}` : "",
+        error?.stack?.split("\n").slice(0, 5).join(" | ") ?? ""
+      );
+    },
+    warn(code) {
+      console.warn("[auth-debug][warn]", code);
+    },
+    debug(code, metadata) {
+      console.log("[auth-debug][debug]", code, metadata ? JSON.stringify(metadata).slice(0, 500) : "");
+    },
+  },
+  debug: true,
 });

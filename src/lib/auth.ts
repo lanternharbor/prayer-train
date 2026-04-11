@@ -1,9 +1,41 @@
 import NextAuth from "next-auth";
 import { PrismaAdapter } from "@auth/prisma-adapter";
-import Apple from "next-auth/providers/apple";
 import Google from "next-auth/providers/google";
 import Resend from "next-auth/providers/resend";
 import { prisma } from "./db";
+
+// NOTE: Sign in with Apple is intentionally disabled.
+//
+// We had it wired end-to-end (Service ID configured in Apple Developer,
+// JWT client secret in APPLE_SECRET, return URLs registered for both
+// www and non-www prayertrains.com) and the OAuth round-trip with Apple
+// itself completed successfully — the user got to Apple's native sheet,
+// authenticated with Face ID, and Apple POSTed the auth code back to
+// /api/auth/callback/apple.
+//
+// But the Auth.js callback handler then errored in a way that bypassed
+// every observability hook we tried to add: a custom logger.error
+// implementation, a signIn callback, and even a try/catch wrapper
+// around the entire route handler all failed to surface the underlying
+// cause. The handler returned a 302 to /api/auth/error with no log
+// line at all from any of our hooks. We confirmed:
+//
+//   - APPLE_ID and APPLE_SECRET have no trailing whitespace
+//   - APPLE_SECRET is a valid ES256 JWT (decoded payload, exp 175 days
+//     out, issuer = team ID, subject = service ID, audience = apple)
+//   - Apple Developer console has both prayertrains.com and
+//     www.prayertrains.com registered as Domains and as Return URLs
+//   - allowDangerousEmailAccountLinking is set so a pre-existing user
+//     row from magic-link sign-in won't block the Account merge
+//
+// Because the failure is upstream of every Auth.js hook we have, the
+// next debugging step would be to clone @auth/core and instrument the
+// internal callback handler directly — out of scope for now. Magic-
+// link sign-in via Resend works fine, so we leave Apple disabled until
+// we have time to dig in fresh. To re-enable: import Apple from
+// "next-auth/providers/apple" and re-add the conditional block below.
+//
+// import Apple from "next-auth/providers/apple";
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
   adapter: PrismaAdapter(prisma),
@@ -26,46 +58,12 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           }),
         ]
       : []),
-    ...(process.env.APPLE_ID
-      ? [
-          Apple({
-            clientId: process.env.APPLE_ID,
-            clientSecret: process.env.APPLE_SECRET!,
-            // Same reasoning as Google — Apple verifies email ownership
-            // before issuing the JWT. Without this, signing in with Apple
-            // using an email that already exists from a magic-link sign-in
-            // throws CallbackRouteError on the callback handler.
-            allowDangerousEmailAccountLinking: true,
-          }),
-        ]
-      : []),
   ],
   pages: {
     signIn: "/signin",
     verifyRequest: "/signin/verify",
   },
   callbacks: {
-    // TEMP: log everything we see during sign-in to figure out where the
-    // Apple callback is failing. Returns true unconditionally — i.e., it
-    // does not block sign-in. Remove once Apple is confirmed working.
-    async signIn({ user, account, profile }) {
-      try {
-        console.error("[auth-debug][signIn-callback]", JSON.stringify({
-          provider: account?.provider,
-          providerType: account?.type,
-          providerAccountId: account?.providerAccountId,
-          userId: user?.id ?? null,
-          userEmail: user?.email ?? null,
-          userName: user?.name ?? null,
-          profileSub: (profile as { sub?: string } | null | undefined)?.sub ?? null,
-          profileEmail: (profile as { email?: string } | null | undefined)?.email ?? null,
-          accountFields: account ? Object.keys(account) : null,
-        }).slice(0, 1500));
-      } catch (e) {
-        console.error("[auth-debug][signIn-callback] (failed to serialize)", e);
-      }
-      return true;
-    },
     session({ session, user }) {
       if (session.user) {
         session.user.id = user.id;
@@ -73,84 +71,4 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       return session;
     },
   },
-  // Verbose logging to surface the underlying error from CallbackRouteError
-  // wrappers. The Auth.js convention is that the *real* error lives at
-  // error.cause.err — we follow the same pattern as Auth.js's default
-  // logger (see node_modules/@auth/core/src/lib/utils/logger.ts) but
-  // print the inner error name, message, AND the first chunk of stack
-  // so we can see where it actually originated.
-  // Each section is wrapped in try/catch so a single serialization failure
-  // can never silence the whole logger.
-  // Remove this once Apple sign-in is confirmed working.
-  logger: {
-    error(error) {
-      try {
-        const name = (error as { type?: string }).type ?? error?.name ?? "Error";
-        console.error(`[auth-debug][error] ${name}: ${error?.message ?? "(no message)"}`);
-      } catch {
-        console.error("[auth-debug][error] (failed to print error.name/message)");
-      }
-
-      // Auth.js wraps the underlying error as cause.err, with extra
-      // contextual fields alongside it.
-      const cause = (error as { cause?: { err?: unknown; [k: string]: unknown } })
-        ?.cause;
-      if (cause && typeof cause === "object" && "err" in cause) {
-        const inner = (cause as { err?: unknown }).err;
-        if (inner instanceof Error) {
-          try {
-            console.error(
-              `[auth-debug][cause] ${inner.name}: ${inner.message}`
-            );
-          } catch {
-            console.error("[auth-debug][cause] (failed to print inner)");
-          }
-          try {
-            const stackHead = inner.stack
-              ?.split("\n")
-              .slice(0, 8)
-              .join(" || ");
-            if (stackHead) console.error(`[auth-debug][stack] ${stackHead}`);
-          } catch {
-            console.error("[auth-debug][stack] (failed to print stack)");
-          }
-        } else {
-          try {
-            console.error("[auth-debug][cause-raw]", String(inner));
-          } catch {
-            console.error("[auth-debug][cause-raw] (unprintable)");
-          }
-        }
-        // Print any additional context fields on cause (providerId, etc.)
-        try {
-          const { err: _omit, ...extra } = cause as Record<string, unknown> & {
-            err?: unknown;
-          };
-          if (Object.keys(extra).length > 0) {
-            console.error(
-              "[auth-debug][details]",
-              JSON.stringify(extra).slice(0, 800)
-            );
-          }
-        } catch {
-          console.error("[auth-debug][details] (failed to print)");
-        }
-      }
-    },
-    warn(code) {
-      console.warn("[auth-debug][warn]", code);
-    },
-    debug(code, metadata) {
-      try {
-        console.log(
-          "[auth-debug][debug]",
-          code,
-          metadata ? JSON.stringify(metadata).slice(0, 500) : ""
-        );
-      } catch {
-        console.log("[auth-debug][debug]", code, "(metadata unprintable)");
-      }
-    },
-  },
-  debug: true,
 });

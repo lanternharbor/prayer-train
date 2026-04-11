@@ -42,7 +42,11 @@ export default async function SignInPage({
           <SignInForm
             callbackUrl={callbackUrl}
             googleEnabled={Boolean(process.env.GOOGLE_CLIENT_ID)}
-            appleEnabled={Boolean(process.env.APPLE_ID)}
+            // Apple sign-in is intentionally disabled even though APPLE_ID
+            // is configured in production — the Auth.js callback handler
+            // fails in a way we can't observe. See src/lib/auth.ts for
+            // the full notes.
+            appleEnabled={false}
           />
         </div>
 

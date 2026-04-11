@@ -153,6 +153,9 @@ model PrayerTrain {
 
   @@index([slug])
   @@index([organizerId])
+  // Composite index: speeds up the public browse/sitemap query that
+  // filters by isPublic and orders by updatedAt or status.
+  @@index([isPublic, status])
 }
 
 model PrayerType {
@@ -211,6 +214,13 @@ model PrayerSlot {
   @@index([trainId])
   @@index([claimedById])
   @@index([novenaGroupId])
+  // Composite index: speeds up the daily-reminders cron, which filters
+  // by today's date AND CLAIMED status in a single query.
+  @@index([date, status])
+  // Composite index: speeds up the novena-claim lookup that filters by
+  // trainId + prayerTypeId + slotIndex + status (next 9 open slots in
+  // the same series).
+  @@index([trainId, prayerTypeId, slotIndex, status])
 }
 
 model GuestbookEntry {

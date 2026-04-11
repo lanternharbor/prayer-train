@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/db";
+import { getBaseUrl } from "@/lib/url";
 import {
   formatPrayerCategory,
   formatDifficulty,
@@ -24,11 +25,34 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
   const { slug } = await params;
-  const prayer = await prisma.prayerType.findUnique({ where: { slug } });
+  const prayer = await prisma.prayerType.findUnique({
+    where: { slug },
+    select: { slug: true, name: true, description: true, imageUrl: true },
+  });
+
   if (!prayer) return { title: "Prayer Not Found" };
+
+  const url = `${getBaseUrl()}/prayers/${prayer.slug}`;
+  const image = prayer.imageUrl || `${getBaseUrl()}/logo.png`;
+
   return {
     title: prayer.name,
-    description: prayer.description,
+    description: prayer.description.slice(0, 200),
+    alternates: { canonical: url },
+    openGraph: {
+      title: prayer.name,
+      description: prayer.description.slice(0, 200),
+      url,
+      type: "article",
+      siteName: "PrayerTrain",
+      images: [{ url: image, width: 1024, height: 1024, alt: prayer.name }],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: prayer.name,
+      description: prayer.description.slice(0, 200),
+      images: [image],
+    },
   };
 }
 

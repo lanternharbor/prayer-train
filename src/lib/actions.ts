@@ -5,6 +5,8 @@ import { auth } from "@/lib/auth";
 import { generateSlug, formatDateLong } from "@/lib/utils";
 import { getBaseUrl } from "@/lib/url";
 import { sendClaimConfirmation } from "@/lib/email";
+import { enforceRateLimit } from "@/lib/rate-limit";
+import { getRateLimitId } from "@/lib/request";
 import {
   claimSlotSchema,
   createTrainSchema,
@@ -24,6 +26,8 @@ export async function createPrayerTrain(formData: FormData) {
   if (!session?.user?.id) {
     redirect("/signin");
   }
+
+  await enforceRateLimit("createTrain", await getRateLimitId(session.user.id));
 
   const input = parseFormData(createTrainSchema, formData);
   const {
@@ -139,6 +143,7 @@ export async function claimPrayerSlot(formData: FormData) {
   );
 
   const session = await auth();
+  await enforceRateLimit("claim", await getRateLimitId(session?.user?.id));
 
   const slot = await prisma.prayerSlot.findUnique({
     where: { id: slotId },
@@ -253,6 +258,7 @@ export async function postGuestbookEntry(formData: FormData) {
   );
 
   const session = await auth();
+  await enforceRateLimit("guestbook", await getRateLimitId(session?.user?.id));
 
   const train = await prisma.prayerTrain.findUnique({
     where: { id: trainId },

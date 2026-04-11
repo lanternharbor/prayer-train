@@ -53,23 +53,82 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     },
   },
   // Verbose logging to surface the underlying error from CallbackRouteError
-  // wrappers. Safe to leave on while we debug Apple sign-in; remove or set
-  // debug: false once Apple is confirmed working in production.
+  // wrappers. The Auth.js convention is that the *real* error lives at
+  // error.cause.err — we follow the same pattern as Auth.js's default
+  // logger (see node_modules/@auth/core/src/lib/utils/logger.ts) but
+  // print the inner error name, message, AND the first chunk of stack
+  // so we can see where it actually originated.
+  // Each section is wrapped in try/catch so a single serialization failure
+  // can never silence the whole logger.
+  // Remove this once Apple sign-in is confirmed working.
   logger: {
     error(error) {
-      console.error(
-        "[auth-debug][error]",
-        error?.name,
-        error?.message,
-        error?.cause ? `cause=${JSON.stringify(error.cause, Object.getOwnPropertyNames(error.cause))}` : "",
-        error?.stack?.split("\n").slice(0, 5).join(" | ") ?? ""
-      );
+      try {
+        const name = (error as { type?: string }).type ?? error?.name ?? "Error";
+        console.error(`[auth-debug][error] ${name}: ${error?.message ?? "(no message)"}`);
+      } catch {
+        console.error("[auth-debug][error] (failed to print error.name/message)");
+      }
+
+      // Auth.js wraps the underlying error as cause.err, with extra
+      // contextual fields alongside it.
+      const cause = (error as { cause?: { err?: unknown; [k: string]: unknown } })
+        ?.cause;
+      if (cause && typeof cause === "object" && "err" in cause) {
+        const inner = (cause as { err?: unknown }).err;
+        if (inner instanceof Error) {
+          try {
+            console.error(
+              `[auth-debug][cause] ${inner.name}: ${inner.message}`
+            );
+          } catch {
+            console.error("[auth-debug][cause] (failed to print inner)");
+          }
+          try {
+            const stackHead = inner.stack
+              ?.split("\n")
+              .slice(0, 8)
+              .join(" || ");
+            if (stackHead) console.error(`[auth-debug][stack] ${stackHead}`);
+          } catch {
+            console.error("[auth-debug][stack] (failed to print stack)");
+          }
+        } else {
+          try {
+            console.error("[auth-debug][cause-raw]", String(inner));
+          } catch {
+            console.error("[auth-debug][cause-raw] (unprintable)");
+          }
+        }
+        // Print any additional context fields on cause (providerId, etc.)
+        try {
+          const { err: _omit, ...extra } = cause as Record<string, unknown> & {
+            err?: unknown;
+          };
+          if (Object.keys(extra).length > 0) {
+            console.error(
+              "[auth-debug][details]",
+              JSON.stringify(extra).slice(0, 800)
+            );
+          }
+        } catch {
+          console.error("[auth-debug][details] (failed to print)");
+        }
+      }
     },
     warn(code) {
       console.warn("[auth-debug][warn]", code);
     },
     debug(code, metadata) {
-      console.log("[auth-debug][debug]", code, metadata ? JSON.stringify(metadata).slice(0, 500) : "");
+      try {
+        console.log(
+          "[auth-debug][debug]",
+          code,
+          metadata ? JSON.stringify(metadata).slice(0, 500) : ""
+        );
+      } catch {
+        console.log("[auth-debug][debug]", code, "(metadata unprintable)");
+      }
     },
   },
   debug: true,

@@ -3,6 +3,7 @@ import { EB_Garamond, DM_Sans } from "next/font/google";
 import "./globals.css";
 import { Header } from "@/components/layout/header";
 import { Footer } from "@/components/layout/footer";
+import { getBaseUrl } from "@/lib/url";
 
 const heading = EB_Garamond({
   variable: "--font-heading",
@@ -17,6 +18,9 @@ const body = DM_Sans({
 });
 
 export const metadata: Metadata = {
+  // Resolves all relative image URLs in OG/Twitter metadata against the
+  // real public origin instead of falling back to localhost:3000.
+  metadataBase: new URL(getBaseUrl()),
   title: {
     default: "PrayerTrain — Organized Prayer for Those in Need",
     template: "%s | PrayerTrain",

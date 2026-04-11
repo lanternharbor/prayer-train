@@ -39,7 +39,11 @@ export default async function SignInPage({
         )}
 
         <div className="prayer-card">
-          <SignInForm callbackUrl={callbackUrl} />
+          <SignInForm
+            callbackUrl={callbackUrl}
+            googleEnabled={Boolean(process.env.GOOGLE_CLIENT_ID)}
+            appleEnabled={Boolean(process.env.APPLE_ID)}
+          />
         </div>
 
         <p className="text-center text-xs text-muted-foreground mt-6">

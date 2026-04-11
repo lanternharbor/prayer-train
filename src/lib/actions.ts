@@ -2,11 +2,19 @@
 
 import { prisma } from "@/lib/db";
 import { auth } from "@/lib/auth";
-import { generateSlug } from "@/lib/utils";
+import { generateSlug, formatDateLong } from "@/lib/utils";
+import { getBaseUrl } from "@/lib/url";
+import { sendClaimConfirmation } from "@/lib/email";
+import {
+  claimSlotSchema,
+  createTrainSchema,
+  guestbookEntrySchema,
+  parseFormData,
+  trainUpdateSchema,
+} from "@/lib/validation";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { addDays, eachDayOfInterval } from "date-fns";
-import { SituationCategory, SlotStatus } from "@/generated/prisma/client";
 import { put } from "@vercel/blob";
 
 // ─── Create PrayerTrain ─────────────────────────────────────
@@ -17,20 +25,21 @@ export async function createPrayerTrain(formData: FormData) {
     redirect("/signin");
   }
 
-  const recipientName = formData.get("recipientName") as string;
-  const recipientRelation = formData.get("recipientRelation") as string;
-  const parish = formData.get("parish") as string;
-  const parishId = formData.get("parishId") as string;
-  const location = formData.get("location") as string;
-  const intention = formData.get("intention") as string;
-  const situation = formData.get("situation") as SituationCategory;
-  const situationDetail = formData.get("situationDetail") as string;
-  const durationDays = parseInt(formData.get("durationDays") as string) || 30;
-  const slotsPerDay = parseInt(formData.get("slotsPerDay") as string) || 3;
-  const isPublic = formData.get("isPublic") === "true";
-  const prayerTypeIds = (formData.get("prayerTypeIds") as string)
-    ?.split(",")
-    .filter(Boolean);
+  const input = parseFormData(createTrainSchema, formData);
+  const {
+    recipientName,
+    recipientRelation,
+    parish,
+    parishId,
+    location,
+    intention,
+    situation,
+    situationDetail,
+    durationDays,
+    slotsPerDay,
+    isPublic,
+    prayerTypeIds,
+  } = input;
 
   const slug = generateSlug(recipientName);
   const startDate = new Date();
@@ -124,9 +133,10 @@ export async function createPrayerTrain(formData: FormData) {
 // ─── Claim a Prayer Slot ────────────────────────────────────
 
 export async function claimPrayerSlot(formData: FormData) {
-  const slotId = formData.get("slotId") as string;
-  const claimerName = formData.get("claimerName") as string;
-  const claimerEmail = formData.get("claimerEmail") as string;
+  const { slotId, claimerName, claimerEmail } = parseFormData(
+    claimSlotSchema,
+    formData
+  );
 
   const session = await auth();
 
@@ -138,6 +148,10 @@ export async function claimPrayerSlot(formData: FormData) {
   if (!slot || slot.status !== "OPEN") {
     throw new Error("This slot is no longer available.");
   }
+
+  // Track the date(s) we end up claiming so we can format an accurate
+  // confirmation email below.
+  let claimedDateLabel: string;
 
   // If this is a novena, find/create a group and claim all 9 days
   if (slot.prayerType.daysRequired > 1) {
@@ -165,6 +179,10 @@ export async function claimPrayerSlot(formData: FormData) {
         novenaGroupId,
       },
     });
+
+    const first = futureDays[0]?.date ?? slot.date;
+    const last = futureDays[futureDays.length - 1]?.date ?? slot.date;
+    claimedDateLabel = `${formatDateLong(first)} – ${formatDateLong(last)} (${futureDays.length} days)`;
   } else {
     await prisma.prayerSlot.update({
       where: { id: slotId },
@@ -176,7 +194,21 @@ export async function claimPrayerSlot(formData: FormData) {
         claimedAt: new Date(),
       },
     });
+    claimedDateLabel = formatDateLong(slot.date);
   }
+
+  // Send a confirmation email so the volunteer knows their commitment stuck.
+  // sendClaimConfirmation already swallows + logs its own errors, so we
+  // intentionally do not let an email failure block the slot claim.
+  await sendClaimConfirmation({
+    to: claimerEmail,
+    claimerName,
+    recipientName: slot.train.recipientName,
+    prayerName: slot.prayerType.name,
+    date: claimedDateLabel,
+    prayerInstructions: slot.prayerType.instructions,
+    trainUrl: `${getBaseUrl()}/p/${slot.train.slug}`,
+  });
 
   revalidatePath(`/p/${slot.train.slug}`);
 }
@@ -215,9 +247,10 @@ export async function markSlotComplete(slotId: string) {
 // ─── Post Guestbook Entry ───────────────────────────────────
 
 export async function postGuestbookEntry(formData: FormData) {
-  const trainId = formData.get("trainId") as string;
-  const authorName = formData.get("authorName") as string;
-  const message = formData.get("message") as string;
+  const { trainId, authorName, message } = parseFormData(
+    guestbookEntrySchema,
+    formData
+  );
 
   const session = await auth();
 
@@ -245,9 +278,10 @@ export async function postTrainUpdate(formData: FormData) {
   const session = await auth();
   if (!session?.user?.id) redirect("/signin");
 
-  const trainId = formData.get("trainId") as string;
-  const title = formData.get("title") as string;
-  const content = formData.get("content") as string;
+  const { trainId, title, content } = parseFormData(
+    trainUpdateSchema,
+    formData
+  );
 
   const train = await prisma.prayerTrain.findUnique({
     where: { id: trainId },

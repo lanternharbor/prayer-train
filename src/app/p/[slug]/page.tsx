@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/db";
 import { auth } from "@/lib/auth";
+import { getBaseUrl } from "@/lib/url";
 import {
   formatSituation,
   formatDate,
@@ -32,11 +33,49 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
   const { slug } = await params;
-  const train = await prisma.prayerTrain.findUnique({ where: { slug } });
+  const train = await prisma.prayerTrain.findUnique({
+    where: { slug },
+    select: {
+      slug: true,
+      recipientName: true,
+      recipientImageUrl: true,
+      intention: true,
+      isPublic: true,
+    },
+  });
+
   if (!train) return { title: "Not Found" };
+
+  const title = `Prayers for ${train.recipientName}`;
+  const description = train.intention.slice(0, 200);
+  const url = `${getBaseUrl()}/p/${train.slug}`;
+  // Prefer the recipient photo for share previews; fall back to the
+  // PrayerTrain logo so unfurls always have something to render.
+  const ogImage = train.recipientImageUrl || `${getBaseUrl()}/logo.png`;
+
   return {
-    title: `Prayers for ${train.recipientName}`,
-    description: train.intention,
+    title,
+    description,
+    alternates: { canonical: url },
+    // Don't index private trains. Search engines and most social previews
+    // will respect this.
+    robots: train.isPublic
+      ? { index: true, follow: true }
+      : { index: false, follow: false },
+    openGraph: {
+      title,
+      description,
+      url,
+      type: "website",
+      siteName: "PrayerTrain",
+      images: [{ url: ogImage, width: 1024, height: 1024, alt: title }],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+      images: [ogImage],
+    },
   };
 }
 

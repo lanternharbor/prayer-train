@@ -8,21 +8,26 @@
  *   3. VERCEL_URL — Vercel sets this on every deploy (host only, no scheme)
  *   4. Hardcoded production fallback
  *
- * Always returned WITHOUT a trailing slash.
+ * Always returned WITHOUT a trailing slash, with all surrounding whitespace
+ * stripped (env vars copy-pasted from a dashboard often arrive with a
+ * trailing newline that breaks string interpolation into URLs).
  */
 export function getBaseUrl(): string {
-  const explicit = process.env.NEXTAUTH_URL;
-  if (explicit) return stripTrailingSlash(explicit);
+  const explicit = clean(process.env.NEXTAUTH_URL);
+  if (explicit) return explicit;
 
-  const prodHost = process.env.VERCEL_PROJECT_PRODUCTION_URL;
+  const prodHost = clean(process.env.VERCEL_PROJECT_PRODUCTION_URL);
   if (prodHost) return `https://${prodHost}`;
 
-  const anyHost = process.env.VERCEL_URL;
+  const anyHost = clean(process.env.VERCEL_URL);
   if (anyHost) return `https://${anyHost}`;
 
   return "https://www.ourfaithtrain.com";
 }
 
-function stripTrailingSlash(url: string): string {
-  return url.endsWith("/") ? url.slice(0, -1) : url;
+function clean(value: string | undefined): string | undefined {
+  if (!value) return undefined;
+  const trimmed = value.trim();
+  if (!trimmed) return undefined;
+  return trimmed.endsWith("/") ? trimmed.slice(0, -1) : trimmed;
 }

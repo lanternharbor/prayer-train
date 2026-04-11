@@ -45,6 +45,27 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     verifyRequest: "/signin/verify",
   },
   callbacks: {
+    // TEMP: log everything we see during sign-in to figure out where the
+    // Apple callback is failing. Returns true unconditionally — i.e., it
+    // does not block sign-in. Remove once Apple is confirmed working.
+    async signIn({ user, account, profile }) {
+      try {
+        console.error("[auth-debug][signIn-callback]", JSON.stringify({
+          provider: account?.provider,
+          providerType: account?.type,
+          providerAccountId: account?.providerAccountId,
+          userId: user?.id ?? null,
+          userEmail: user?.email ?? null,
+          userName: user?.name ?? null,
+          profileSub: (profile as { sub?: string } | null | undefined)?.sub ?? null,
+          profileEmail: (profile as { email?: string } | null | undefined)?.email ?? null,
+          accountFields: account ? Object.keys(account) : null,
+        }).slice(0, 1500));
+      } catch (e) {
+        console.error("[auth-debug][signIn-callback] (failed to serialize)", e);
+      }
+      return true;
+    },
     session({ session, user }) {
       if (session.user) {
         session.user.id = user.id;

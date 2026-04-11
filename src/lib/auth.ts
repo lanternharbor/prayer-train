@@ -17,6 +17,12 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           Google({
             clientId: process.env.GOOGLE_CLIENT_ID,
             clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+            // Google verifies email ownership before issuing the JWT, so it
+            // is safe to merge a Google sign-in into an existing User row
+            // that was previously created via magic-link sign-in with the
+            // same email address. Without this, Auth.js throws
+            // OAuthAccountNotLinked / CallbackRouteError.
+            allowDangerousEmailAccountLinking: true,
           }),
         ]
       : []),
@@ -25,6 +31,11 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           Apple({
             clientId: process.env.APPLE_ID,
             clientSecret: process.env.APPLE_SECRET!,
+            // Same reasoning as Google — Apple verifies email ownership
+            // before issuing the JWT. Without this, signing in with Apple
+            // using an email that already exists from a magic-link sign-in
+            // throws CallbackRouteError on the callback handler.
+            allowDangerousEmailAccountLinking: true,
           }),
         ]
       : []),

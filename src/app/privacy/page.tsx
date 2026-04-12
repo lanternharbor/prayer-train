@@ -40,8 +40,11 @@ export default function PrivacyPage() {
           </h2>
           <p>
             PrayerTrain is operated by an individual maintainer. Questions
-            about this policy or your data can be sent to the contact address
-            in the footer or by replying to any email the Service sends you.
+            about this policy or your data can be sent to{" "}
+            <a href="mailto:hello@prayertrains.com" className="text-gold-600 hover:text-gold-700 underline">
+              hello@prayertrains.com
+            </a>{" "}
+            or by replying to any email the Service sends you.
           </p>
         </section>
 
@@ -224,7 +227,11 @@ export default function PrivacyPage() {
           </h2>
           <p>
             If anything here is unclear or you would like us to do something
-            with your data, please reach out. We&apos;d rather hear from you.
+            with your data, please reach out at{" "}
+            <a href="mailto:hello@prayertrains.com" className="text-gold-600 hover:text-gold-700 underline">
+              hello@prayertrains.com
+            </a>
+            . We&apos;d rather hear from you.
           </p>
         </section>
 

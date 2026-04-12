@@ -92,6 +92,14 @@ export function Footer() {
                   Terms
                 </Link>
               </li>
+              <li>
+                <a
+                  href="mailto:hello@prayertrains.com"
+                  className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  Contact
+                </a>
+              </li>
             </ul>
           </div>
         </div>

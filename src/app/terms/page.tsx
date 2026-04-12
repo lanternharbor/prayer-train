@@ -202,8 +202,11 @@ export default function TermsPage() {
             Contact
           </h2>
           <p>
-            Questions about these Terms can be sent to the contact address
-            in the footer or by replying to any email the Service sends you.
+            Questions about these Terms can be sent to{" "}
+            <a href="mailto:hello@prayertrains.com" className="text-gold-600 hover:text-gold-700 underline">
+              hello@prayertrains.com
+            </a>{" "}
+            or by replying to any email the Service sends you.
           </p>
         </section>
 

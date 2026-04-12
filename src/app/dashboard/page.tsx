@@ -67,23 +67,27 @@ export default async function DashboardPage() {
 
   return (
     <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-      <div className="flex items-center justify-between mb-8">
-        <div>
-          <h1 className="font-heading text-3xl font-bold text-navy-800 mb-1">
-            Dashboard
-          </h1>
-          <p className="text-muted-foreground">
-            Welcome back, {session.user.name || session.user.email}
-          </p>
-        </div>
-        <div className="flex items-center gap-3">
+      <div className="mb-8">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div>
+            <h1 className="font-heading text-3xl font-bold text-navy-800 mb-1">
+              Dashboard
+            </h1>
+            <p className="text-muted-foreground">
+              {session.user.name
+                ? `Welcome back, ${session.user.name}`
+                : "Welcome back"}
+            </p>
+          </div>
           <Link
             href="/create"
-            className="inline-flex items-center gap-2 px-4 py-2 bg-gold-400 text-navy-900 font-medium rounded-lg hover:bg-gold-300 transition-colors text-sm"
+            className="inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-gold-400 text-navy-900 font-semibold rounded-lg hover:bg-gold-300 transition-colors text-sm self-start sm:self-auto"
           >
             <Plus className="w-4 h-4" />
-            New PrayerTrain
+            Start a PrayerTrain
           </Link>
+        </div>
+        <div className="mt-3">
           <SignOutButton />
         </div>
       </div>

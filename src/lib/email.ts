@@ -1,8 +1,85 @@
 import { Resend } from "resend";
+import { getBaseUrl } from "./url";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
 const FROM = process.env.EMAIL_FROM || "PrayerTrain <noreply@ourfaithtrain.com>";
+
+// ─── Branded Sign-In Email ──────────────────────────────────
+// Replaces Auth.js's bare default with the PrayerTrain look and feel.
+
+export async function sendSignInEmail({
+  to,
+  url,
+  from,
+}: {
+  to: string;
+  url: string;
+  from: string;
+}) {
+  const baseUrl = getBaseUrl();
+  const logoUrl = `${baseUrl}/logo.png`;
+
+  await resend.emails.send({
+    from,
+    to,
+    subject: "Your PrayerTrain sign-in link",
+    html: `
+      <div style="font-family: Georgia, 'Times New Roman', serif; max-width: 560px; margin: 0 auto; padding: 40px 24px; background: #faf8f5;">
+        <!-- Logo -->
+        <div style="text-align: center; margin-bottom: 28px;">
+          <img
+            src="${logoUrl}"
+            alt="PrayerTrain"
+            width="120"
+            height="120"
+            style="width: 120px; height: auto;"
+          />
+        </div>
+
+        <!-- Card -->
+        <div style="background: #ffffff; border: 1px solid #e8e0d5; border-radius: 16px; padding: 32px 28px; text-align: center;">
+          <h1 style="color: #11152c; font-size: 24px; font-weight: 700; margin: 0 0 8px;">
+            Sign in to PrayerTrain
+          </h1>
+          <p style="color: #6e6150; font-size: 15px; margin: 0 0 28px; line-height: 1.6;">
+            Click the button below to sign in. This link expires in 24 hours
+            and can only be used once.
+          </p>
+
+          <a
+            href="${url}"
+            style="display: inline-block; background: #242e58; color: #ffffff; padding: 14px 36px; border-radius: 10px; text-decoration: none; font-weight: 600; font-size: 16px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;"
+          >
+            Sign in to PrayerTrain
+          </a>
+
+          <div style="margin-top: 28px; padding-top: 20px; border-top: 1px solid #e8e0d5;">
+            <p style="color: #b8a994; font-size: 13px; font-style: italic; margin: 0; line-height: 1.6;">
+              &ldquo;For where two or three gather in my name,<br />
+              there am I with them.&rdquo;
+            </p>
+            <p style="color: #b8a994; font-size: 12px; margin: 6px 0 0;">
+              &mdash; Matthew 18:20
+            </p>
+          </div>
+        </div>
+
+        <!-- Footer -->
+        <div style="text-align: center; margin-top: 24px;">
+          <p style="color: #b8a994; font-size: 12px; margin: 0 0 4px; line-height: 1.5;">
+            You received this email because someone requested a sign-in link
+            for <strong>${to}</strong> on PrayerTrain.
+          </p>
+          <p style="color: #b8a994; font-size: 12px; margin: 0;">
+            If you didn&rsquo;t request this, you can safely ignore it.
+          </p>
+        </div>
+      </div>
+    `,
+    text: `Sign in to PrayerTrain\n\nClick this link to sign in:\n${url}\n\nThis link expires in 24 hours and can only be used once.\n\nIf you didn't request this, you can safely ignore it.`,
+  });
+}
 
 export async function sendClaimConfirmation({
   to,

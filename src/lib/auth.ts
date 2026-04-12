@@ -3,6 +3,7 @@ import { PrismaAdapter } from "@auth/prisma-adapter";
 import Google from "next-auth/providers/google";
 import Resend from "next-auth/providers/resend";
 import { prisma } from "./db";
+import { sendSignInEmail } from "./email";
 
 // NOTE: Sign in with Apple is intentionally disabled.
 //
@@ -43,6 +44,13 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     Resend({
       apiKey: process.env.RESEND_API_KEY,
       from: "PrayerTrain <noreply@ourfaithtrain.com>",
+      async sendVerificationRequest({ identifier: to, url, provider }) {
+        await sendSignInEmail({
+          to,
+          url,
+          from: provider.from ?? "PrayerTrain <noreply@ourfaithtrain.com>",
+        });
+      },
     }),
     ...(process.env.GOOGLE_CLIENT_ID
       ? [

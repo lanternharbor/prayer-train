@@ -1,7 +1,11 @@
 import { Resend } from "resend";
 import { getBaseUrl } from "./url";
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+// Lazily initialised so that importing this module during a build that lacks
+// RESEND_API_KEY (e.g. preview deployments) doesn't throw at module load time.
+function getResend() {
+  return new Resend(process.env.RESEND_API_KEY);
+}
 
 const FROM = process.env.EMAIL_FROM || "PrayerTrain <noreply@ourfaithtrain.com>";
 
@@ -20,7 +24,7 @@ export async function sendSignInEmail({
   const baseUrl = getBaseUrl();
   const logoUrl = `${baseUrl}/logo.png`;
 
-  await resend.emails.send({
+  await getResend().emails.send({
     from,
     to,
     subject: "Your PrayerTrain sign-in link",
@@ -99,7 +103,7 @@ export async function sendClaimConfirmation({
   trainUrl: string;
 }) {
   try {
-    await resend.emails.send({
+    await getResend().emails.send({
       from: FROM,
       to,
       subject: `You're praying for ${recipientName} — ${prayerName}`,
@@ -166,7 +170,7 @@ export async function sendDailyReminder({
   slotId: string;
 }) {
   try {
-    await resend.emails.send({
+    await getResend().emails.send({
       from: FROM,
       to,
       subject: `Prayer reminder: ${prayerName} for ${recipientName}`,

@@ -19,6 +19,9 @@ const nextConfig: NextConfig = {
       // Apply security headers to all routes.
       source: "/(.*)",
       headers: [
+        // Force HTTPS for 2 years and include in browser preload lists,
+        // eliminating the unprotected HTTP hop on first visit to any network.
+        { key: "Strict-Transport-Security", value: "max-age=63072000; includeSubDomains; preload" },
         // Prevent the site from being embedded in iframes on other domains
         // (protects against clickjacking).
         { key: "X-Frame-Options", value: "DENY" },

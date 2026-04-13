@@ -19,6 +19,13 @@ const nextConfig: NextConfig = {
       // Apply security headers to all routes.
       source: "/(.*)",
       headers: [
+        // Tell browsers to always use HTTPS for this domain (and all
+        // subdomains). The preload flag allows submission to browser HSTS
+        // preload lists so the very first visit skips the HTTP step entirely.
+        {
+          key: "Strict-Transport-Security",
+          value: "max-age=63072000; includeSubDomains; preload",
+        },
         // Prevent the site from being embedded in iframes on other domains
         // (protects against clickjacking).
         { key: "X-Frame-Options", value: "DENY" },

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { Church, Search, X } from "lucide-react";
+import { Church, X } from "lucide-react";
 
 type Parish = {
   id: string;
@@ -23,7 +23,7 @@ export function ParishAutocomplete({
   const [query, setQuery] = useState(value);
   const [results, setResults] = useState<Parish[]>([]);
   const [showDropdown, setShowDropdown] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const [, setLoading] = useState(false);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const wrapperRef = useRef<HTMLDivElement>(null);
   const debounceRef = useRef<NodeJS.Timeout | null>(null);
@@ -35,9 +35,15 @@ export function ParishAutocomplete({
     if (debounceRef.current) clearTimeout(debounceRef.current);
 
     if (!query || query.length < 2) {
-      setResults([]);
-      setShowDropdown(false);
-      return;
+      // Use a zero-delay timeout so setState is called in a callback,
+      // not synchronously in the effect body (satisfies react-hooks/set-state-in-effect).
+      debounceRef.current = setTimeout(() => {
+        setResults([]);
+        setShowDropdown(false);
+      }, 0);
+      return () => {
+        if (debounceRef.current) clearTimeout(debounceRef.current);
+      };
     }
 
     debounceRef.current = setTimeout(async () => {
@@ -102,6 +108,10 @@ export function ParishAutocomplete({
             if (results.length > 0 && !selectedId) setShowDropdown(true);
           }}
           placeholder="Start typing a parish name..."
+          aria-label="Search for a parish"
+          role="combobox"
+          aria-expanded={showDropdown}
+          aria-autocomplete="list"
           className="w-full pl-9 pr-8 py-2.5 border border-border rounded-lg bg-cream-50 focus:outline-none focus:ring-2 focus:ring-gold-400/50 focus:border-gold-400 transition text-sm"
         />
         {query && (
@@ -109,6 +119,7 @@ export function ParishAutocomplete({
             type="button"
             onClick={handleClear}
             className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+            aria-label="Clear parish selection"
           >
             <X className="w-3.5 h-3.5" />
           </button>

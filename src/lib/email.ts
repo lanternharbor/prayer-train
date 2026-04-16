@@ -154,6 +154,7 @@ export async function sendDailyReminder({
   prayerText,
   prayerInstructions,
   trainUrl,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   slotId,
 }: {
   to: string;
@@ -163,6 +164,7 @@ export async function sendDailyReminder({
   prayerText: string | null;
   prayerInstructions: string | null;
   trainUrl: string;
+  /** Reserved for future per-slot tracking links */
   slotId: string;
 }) {
   try {

@@ -2,7 +2,8 @@
 
 import { useState } from "react";
 import { createPrayerTrain } from "@/lib/actions";
-import { formatSituation, formatPrayerCategory, formatDifficulty } from "@/lib/utils";
+import { track } from "@/lib/analytics";
+import { formatSituation, formatPrayerCategory } from "@/lib/utils";
 import {
   ArrowRight,
   ArrowLeft,
@@ -11,12 +12,10 @@ import {
   BookOpen,
   CalendarDays,
   Clock,
-  Star,
   Check,
   Loader2,
   Camera,
 } from "lucide-react";
-import { CrossIcon } from "@/components/ui/catholic-icons";
 import { ParishAutocomplete } from "@/components/ui/parish-autocomplete";
 import type { PrayerCategory, SituationCategory, DifficultyLevel } from "@/generated/prisma/client";
 
@@ -130,6 +129,10 @@ export function CreateWizard({
     formData.set("slotsPerDay", slotsPerDay.toString());
     formData.set("isPublic", isPublic ? "true" : "false");
     formData.set("prayerTypeIds", selectedPrayerIds.join(","));
+    // Fire before the action because createPrayerTrain redirects on success,
+    // so code after the await may not execute. Umami's tracker uses
+    // sendBeacon and will still deliver the event across the navigation.
+    track("train_created", { situation: situation || "UNSPECIFIED" });
     await createPrayerTrain(formData);
   };
 
@@ -246,9 +249,10 @@ export function CreateWizard({
             <div className="flex items-center gap-4">
               <label className="photo-upload w-20 h-20 rounded-full bg-cream-100 border-2 border-dashed border-cream-400 flex items-center justify-center overflow-hidden hover:border-gold-400 transition-colors cursor-pointer">
                 {photoPreview ? (
+                  // eslint-disable-next-line @next/next/no-img-element -- local blob URL preview
                   <img
                     src={photoPreview}
-                    alt="Preview"
+                    alt="Photo preview of the prayer recipient"
                     className="w-full h-full object-cover"
                   />
                 ) : (
@@ -257,6 +261,8 @@ export function CreateWizard({
                 <input
                   type="file"
                   accept="image/jpeg,image/png,image/webp"
+                  className="sr-only"
+                  aria-label="Upload a photo of the prayer recipient"
                   onChange={(e) => {
                     const file = e.target.files?.[0];
                     if (file) {
@@ -397,6 +403,7 @@ export function CreateWizard({
               <input
                 type="number"
                 placeholder="Custom days"
+                aria-label="Custom duration in days"
                 value={customDuration}
                 onChange={(e) => setCustomDuration(e.target.value)}
                 min={1}
@@ -438,6 +445,7 @@ export function CreateWizard({
               type="button"
               role="switch"
               aria-checked={isPublic}
+              aria-label="List on public directory"
               onClick={() => setIsPublic(!isPublic)}
               className={`relative inline-flex h-7 w-12 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors ${
                 isPublic ? "bg-gold-400" : "bg-cream-400"

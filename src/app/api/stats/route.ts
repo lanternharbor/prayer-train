@@ -5,18 +5,12 @@ import { prisma } from "@/lib/db";
 // Used by the landing page and embeddable widget
 
 export async function GET() {
-  const [totalTrains, totalSlots, completedSlots, claimedSlots, totalPrayerWarriors] =
+  const [totalTrains, totalSlots, completedSlots, claimedSlots] =
     await Promise.all([
       prisma.prayerTrain.count({ where: { status: "ACTIVE" } }),
       prisma.prayerSlot.count(),
       prisma.prayerSlot.count({ where: { status: "COMPLETED" } }),
       prisma.prayerSlot.count({ where: { status: "CLAIMED" } }),
-      prisma.prayerSlot.count({
-        where: {
-          claimerEmail: { not: null },
-          status: { in: ["CLAIMED", "COMPLETED"] },
-        },
-      }),
     ]);
 
   return NextResponse.json(

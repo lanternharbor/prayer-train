@@ -63,7 +63,7 @@ export function SignInForm({
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             placeholder="you@example.com"
-            className="w-full px-4 py-2.5 border border-border rounded-lg bg-cream-50 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-gold-400/50 focus:border-gold-400 transition"
+            className="w-full px-4 py-2.5 border border-border rounded-lg bg-cream-50 text-foreground placeholder:text-muted-foreground focus:ring-2 focus:ring-gold-400/50 focus:border-gold-400 transition"
           />
         </div>
         <button

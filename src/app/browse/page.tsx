@@ -10,15 +10,12 @@ import {
   Search,
   Heart,
   CalendarDays,
-  Users,
-  Clock,
   ArrowRight,
-  HandHeart,
   Church,
   MapPin,
 } from "lucide-react";
 import { SituationCategory } from "@/generated/prisma/client";
-import { RecipientAvatar, PrayingHandsIcon, CrossIcon } from "@/components/ui/catholic-icons";
+import { RecipientAvatar, PrayingHandsIcon } from "@/components/ui/catholic-icons";
 
 export const metadata: Metadata = {
   title: "Find a PrayerTrain",
@@ -27,6 +24,15 @@ export const metadata: Metadata = {
 };
 
 const SITUATIONS = Object.values(SituationCategory);
+
+function computeDaysLeft(endDate: Date): number {
+  return Math.max(
+    0,
+    Math.ceil(
+      (new Date(endDate).getTime() - Date.now()) / (1000 * 60 * 60 * 24)
+    )
+  );
+}
 
 export default async function BrowsePage({
   searchParams,
@@ -75,15 +81,16 @@ export default async function BrowsePage({
       </div>
 
       {/* Search */}
-      <form action="/browse" method="GET" className="mb-6">
+      <form action="/browse" method="GET" className="mb-6" role="search">
         <div className="flex gap-3">
           <div className="relative flex-1">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" aria-hidden="true" />
             <input
               type="text"
               name="q"
               defaultValue={q || ""}
               placeholder="Search by name or intention..."
+              aria-label="Search prayer trains by name or intention"
               className="w-full pl-12 pr-4 py-3.5 border border-border rounded-xl bg-card text-foreground text-lg placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-gold-400/50 focus:border-gold-400 transition"
             />
           </div>
@@ -142,13 +149,7 @@ export default async function BrowsePage({
             const open = total - claimed - completed;
             const fill = calculateFillRate(total, claimed, completed);
 
-            const daysLeft = Math.max(
-              0,
-              Math.ceil(
-                (new Date(train.endDate).getTime() - Date.now()) /
-                  (1000 * 60 * 60 * 24)
-              )
-            );
+            const daysLeft = computeDaysLeft(train.endDate);
 
             return (
               <Link

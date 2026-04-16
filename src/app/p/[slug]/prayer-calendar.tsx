@@ -1,9 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { formatDate } from "@/lib/utils";
 import { markSlotComplete } from "@/lib/actions";
-import { Clock, User, Check, BookOpen, Loader2 } from "lucide-react";
+import { Clock, User, Check, Loader2 } from "lucide-react";
 import { ClaimModal } from "./claim-modal";
 
 type Slot = {

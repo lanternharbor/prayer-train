@@ -1,9 +1,11 @@
 import type { Metadata } from "next";
 import { EB_Garamond, DM_Sans } from "next/font/google";
+import Script from "next/script";
 import "./globals.css";
 import { Header } from "@/components/layout/header";
 import { Footer } from "@/components/layout/footer";
 import { getBaseUrl } from "@/lib/url";
+import { organizationSchema, websiteSchema } from "@/lib/schema";
 
 const heading = EB_Garamond({
   variable: "--font-heading",
@@ -49,14 +51,48 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const umamiSrc = process.env.NEXT_PUBLIC_UMAMI_SRC;
+  const umamiWebsiteId = process.env.NEXT_PUBLIC_UMAMI_WEBSITE_ID;
+  const umamiEnabled = Boolean(umamiSrc && umamiWebsiteId);
+
   return (
     <html
       lang="en"
       className={`${heading.variable} ${body.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col bg-background text-foreground font-body">
+        {/* Skip link — first focusable element, visible only on focus. */}
+        <a
+          href="#main"
+          className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-50 focus:bg-navy-700 focus:text-white focus:px-3 focus:py-2 focus:rounded"
+        >
+          Skip to main content
+        </a>
+        {/* JSON-LD structured data for search engines. Server-rendered. */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify(organizationSchema()),
+          }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify(websiteSchema()),
+          }}
+        />
+        {umamiEnabled && (
+          <Script
+            defer
+            strategy="afterInteractive"
+            src={umamiSrc}
+            data-website-id={umamiWebsiteId}
+          />
+        )}
         <Header />
-        <main className="flex-1">{children}</main>
+        <main id="main" className="flex-1">
+          {children}
+        </main>
         <Footer />
       </body>
     </html>

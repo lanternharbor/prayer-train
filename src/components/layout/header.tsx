@@ -1,6 +1,5 @@
 import Link from "next/link";
 import { auth } from "@/lib/auth";
-import { Cross, Menu } from "lucide-react";
 import { CrossIcon } from "@/components/ui/catholic-icons";
 import { MobileNav } from "./mobile-nav";
 

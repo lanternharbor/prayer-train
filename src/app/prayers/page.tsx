@@ -7,7 +7,6 @@ import {
   Clock,
   Star,
   CalendarDays,
-  Filter,
 } from "lucide-react";
 import { PrayerCategory } from "@/generated/prisma/client";
 

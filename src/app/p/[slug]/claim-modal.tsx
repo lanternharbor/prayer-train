@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { claimPrayerSlot } from "@/lib/actions";
+import { track } from "@/lib/analytics";
 import { X, Heart, Loader2, CalendarDays } from "lucide-react";
 
 type Slot = {
@@ -40,6 +41,7 @@ export function ClaimModal({
       formData.set("claimerName", name);
       formData.set("claimerEmail", email);
       await claimPrayerSlot(formData);
+      track("slot_committed", { prayer_type: slot.prayerType.name });
       setSuccess(true);
     } catch {
       alert("Something went wrong. The slot may have already been claimed.");
@@ -85,15 +87,16 @@ export function ClaimModal({
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-navy-900/40 backdrop-blur-sm px-4">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-navy-900/40 backdrop-blur-sm px-4" role="dialog" aria-modal="true" aria-labelledby="claim-dialog-title">
       <div className="bg-card rounded-2xl shadow-xl max-w-md w-full p-6">
         <div className="flex items-center justify-between mb-4">
-          <h2 className="font-heading text-xl font-semibold text-navy-800">
+          <h2 id="claim-dialog-title" className="font-heading text-xl font-semibold text-navy-800">
             Sign Up to Pray
           </h2>
           <button
             onClick={onClose}
             className="p-1 text-muted-foreground hover:text-foreground"
+            aria-label="Close sign-up dialog"
           >
             <X className="w-5 h-5" />
           </button>
@@ -122,10 +125,11 @@ export function ClaimModal({
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-navy-700 mb-1.5">
+            <label htmlFor="claim-name" className="block text-sm font-medium text-navy-700 mb-1.5">
               Your name
             </label>
             <input
+              id="claim-name"
               type="text"
               required
               value={name}
@@ -135,10 +139,11 @@ export function ClaimModal({
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-navy-700 mb-1.5">
+            <label htmlFor="claim-email" className="block text-sm font-medium text-navy-700 mb-1.5">
               Email (for reminders)
             </label>
             <input
+              id="claim-email"
               type="email"
               required
               value={email}

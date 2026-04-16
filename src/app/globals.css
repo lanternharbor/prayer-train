@@ -120,6 +120,13 @@
 
 /* ─── Base Styles ───────────────────────────────────────────── */
 
+/* Keyboard focus: visible navy outline on every interactive element. */
+:focus-visible {
+  outline: 2px solid var(--navy-700);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
 body {
   background: var(--background);
   color: var(--foreground);

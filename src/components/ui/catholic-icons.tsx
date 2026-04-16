@@ -225,6 +225,7 @@ export function RecipientAvatar({
 
   if (imageUrl) {
     return (
+      // eslint-disable-next-line @next/next/no-img-element -- dynamic user-uploaded URL
       <img
         src={imageUrl}
         alt={`Photo of ${name}`}

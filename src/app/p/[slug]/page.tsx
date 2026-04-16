@@ -6,26 +6,21 @@ import { getBaseUrl } from "@/lib/url";
 import {
   formatSituation,
   formatDate,
-  formatDateLong,
   calculateFillRate,
 } from "@/lib/utils";
 import {
-  Heart,
   CalendarDays,
   Users,
-  Share2,
-  Clock,
   Settings,
   Church,
   MapPin,
 } from "lucide-react";
 import Link from "next/link";
 import { PrayerCalendar } from "./prayer-calendar";
-import { ClaimModal } from "./claim-modal";
 import { Guestbook } from "./guestbook";
 import { UpdatesFeed } from "./updates-feed";
 import { ShareButton } from "./share-button";
-import { CrossIcon, CrossDivider, RecipientAvatar, CandleIcon } from "@/components/ui/catholic-icons";
+import { CrossIcon, CrossDivider, RecipientAvatar } from "@/components/ui/catholic-icons";
 
 export async function generateMetadata({
   params,

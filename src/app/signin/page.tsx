@@ -4,6 +4,8 @@ import { SignInForm } from "./signin-form";
 
 export const metadata: Metadata = {
   title: "Sign In",
+  description:
+    "Sign in to PrayerTrain to create prayer trains and manage your prayer commitments.",
 };
 
 export default async function SignInPage({

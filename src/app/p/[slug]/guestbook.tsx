@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { postGuestbookEntry } from "@/lib/actions";
+import { track } from "@/lib/analytics";
 import { MessageCircle, Send, Loader2 } from "lucide-react";
 
 type GuestbookEntry = {
@@ -31,6 +32,7 @@ export function Guestbook({
     formData.set("authorName", name);
     formData.set("message", message);
     await postGuestbookEntry(formData);
+    track("guestbook_posted");
     setMessage("");
     setLoading(false);
   };

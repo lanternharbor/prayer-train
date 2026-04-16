@@ -175,7 +175,7 @@ async function main() {
       });
       created++;
       console.log(`  + ${p.name} — ${p.city}, ${p.state}`);
-    } catch (e) {
+    } catch {
       skipped++;
       console.log(`  ~ Skipped ${p.name} — ${p.city}, ${p.state}`);
     }

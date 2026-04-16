@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Share2, Copy, Check, QrCode, X } from "lucide-react";
 
 export function ShareButton({
@@ -12,16 +12,13 @@ export function ShareButton({
   const [copied, setCopied] = useState(false);
   const [showQr, setShowQr] = useState(false);
   const [qrSvg, setQrSvg] = useState<string | null>(null);
-  const [canNativeShare, setCanNativeShare] = useState(false);
+  const canNativeShare =
+    typeof navigator !== "undefined" && !!navigator.share;
 
   const url =
     typeof window !== "undefined"
       ? `${window.location.origin}/p/${slug}`
       : `/p/${slug}`;
-
-  useEffect(() => {
-    setCanNativeShare(typeof navigator !== "undefined" && !!navigator.share);
-  }, []);
 
   const handleCopy = async () => {
     try {
@@ -117,6 +114,9 @@ export function ShareButton({
       {showQr && (
         <div
           className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4"
+          role="dialog"
+          aria-modal="true"
+          aria-label="QR code for sharing this prayer train"
           onClick={() => setShowQr(false)}
         >
           <div

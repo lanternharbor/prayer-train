@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/db";
 import { getBaseUrl } from "@/lib/url";
+import { breadcrumbSchema, prayerArticleSchema } from "@/lib/schema";
 import {
   formatPrayerCategory,
   formatDifficulty,
@@ -16,7 +17,6 @@ import {
   Tag,
   BookOpen,
   User,
-  ExternalLink,
 } from "lucide-react";
 
 export async function generateMetadata({
@@ -66,8 +66,30 @@ export default async function PrayerDetailPage({
 
   if (!prayer) notFound();
 
+  const baseUrl = getBaseUrl();
+  const crumbs = breadcrumbSchema([
+    { name: "Home", url: baseUrl },
+    { name: "Prayer Library", url: `${baseUrl}/prayers` },
+    { name: prayer.name, url: `${baseUrl}/prayers/${prayer.slug}` },
+  ]);
+  const article = prayerArticleSchema({
+    name: prayer.name,
+    description: prayer.description,
+    slug: prayer.slug,
+    createdAt: prayer.createdAt,
+    situationTags: prayer.situationTags,
+  });
+
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(crumbs) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(article) }}
+      />
       {/* Breadcrumb */}
       <Link
         href="/prayers"

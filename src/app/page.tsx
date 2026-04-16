@@ -1,15 +1,9 @@
 import Link from "next/link";
 import Image from "next/image";
 import {
-  Heart,
   CalendarDays,
-  Users,
-  Bell,
-  BookOpen,
   ArrowRight,
-  Sparkles,
   Search,
-  Quote,
 } from "lucide-react";
 import {
   CrossIcon,
@@ -90,7 +84,7 @@ export default function HomePage() {
       <PrayerCounter />
 
       {/* How It Works */}
-      <section className="py-20 sm:py-28">
+      <section id="how-it-works" className="py-20 sm:py-28">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="font-heading text-3xl sm:text-4xl font-bold text-navy-800 mb-4">
@@ -172,29 +166,6 @@ export default function HomePage() {
           </div>
         </div>
       </section>
-
-      {/* Testimonials / Community Voices — uncomment when we have real stories
-      <section className="py-20 sm:py-28">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="font-heading text-3xl sm:text-4xl font-bold text-navy-800 mb-4">
-              Stories from the Community
-            </h2>
-            <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-              Real families, real parishes, real prayers answered.
-            </p>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <TestimonialCard
-              quote=""
-              name=""
-              role=""
-              initials=""
-            />
-          </div>
-        </div>
-      </section>
-      */}
 
       {/* Our Story */}
       <section className="py-16 sm:py-20 bg-navy-700 text-white">
@@ -332,44 +303,3 @@ function FeatureCard({
   );
 }
 
-function TestimonialCard({
-  quote,
-  name,
-  role,
-  initials,
-  imageUrl,
-}: {
-  quote: string;
-  name: string;
-  role: string;
-  initials: string;
-  imageUrl?: string;
-}) {
-  return (
-    <div className="prayer-card flex flex-col">
-      <Quote className="w-8 h-8 text-gold-300 mb-3" />
-      <p className="text-sm text-foreground leading-relaxed mb-6 flex-1 italic">
-        &ldquo;{quote}&rdquo;
-      </p>
-      <div className="flex items-center gap-3 pt-4 border-t border-border">
-        {imageUrl ? (
-          <img
-            src={imageUrl}
-            alt={name}
-            className="w-10 h-10 rounded-full object-cover border border-gold-200"
-          />
-        ) : (
-          <div className="w-10 h-10 rounded-full bg-navy-100 flex items-center justify-center border border-gold-200">
-            <span className="text-sm font-heading font-semibold text-navy-600">
-              {initials}
-            </span>
-          </div>
-        )}
-        <div>
-          <p className="text-sm font-medium text-navy-800">{name}</p>
-          <p className="text-xs text-muted-foreground">{role}</p>
-        </div>
-      </div>
-    </div>
-  );
-}

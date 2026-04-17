@@ -1,10 +1,3 @@
-import { type ClassValue, clsx } from "clsx";
-
-// Simple class name merge utility (no tailwind-merge dependency)
-export function cn(...inputs: ClassValue[]) {
-  return clsx(inputs);
-}
-
 // Slug generation: "John Smith" -> "john-smith-a3b2"
 export function generateSlug(name: string): string {
   const base = name
@@ -62,27 +55,6 @@ export function formatDifficulty(difficulty: string): string {
     ADVANCED: "Advanced",
   };
   return map[difficulty] || difficulty;
-}
-
-// Situation icon mapping
-export function getSituationIcon(situation: string): string {
-  const map: Record<string, string> = {
-    ILLNESS: "heart-pulse",
-    SURGERY: "stethoscope",
-    MENTAL_HEALTH: "brain",
-    GRIEF: "heart-crack",
-    PREGNANCY: "baby",
-    FERTILITY: "sprout",
-    MARRIAGE: "heart-handshake",
-    FAMILY: "users",
-    FINANCIAL: "wallet",
-    CAREER: "briefcase",
-    CONVERSION: "flame",
-    DISCERNMENT: "compass",
-    GENERAL: "sparkles",
-    OTHER: "circle-dot",
-  };
-  return map[situation] || "circle-dot";
 }
 
 // Calculate percentage of slots filled

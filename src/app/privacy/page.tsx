@@ -5,6 +5,7 @@ export const metadata: Metadata = {
   title: "Privacy Policy",
   description:
     "How PrayerTrain collects, uses, and protects information about the people who use the site and the people they pray for.",
+  alternates: { canonical: "/privacy" },
 };
 
 const LAST_UPDATED = "April 11, 2026";

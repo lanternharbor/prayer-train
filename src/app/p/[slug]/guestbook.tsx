@@ -44,7 +44,11 @@ export function Guestbook({
 
       {/* Post Form */}
       <form onSubmit={handleSubmit} className="prayer-card mb-4 space-y-3">
+        <label htmlFor="guestbook-name" className="sr-only">
+          Your name
+        </label>
         <input
+          id="guestbook-name"
           type="text"
           value={name}
           onChange={(e) => setName(e.target.value)}
@@ -52,7 +56,11 @@ export function Guestbook({
           required
           className="w-full px-3 py-2 border border-border rounded-lg bg-cream-50 text-sm focus:outline-none focus:ring-2 focus:ring-gold-400/50 focus:border-gold-400 transition"
         />
+        <label htmlFor="guestbook-message" className="sr-only">
+          Message of encouragement
+        </label>
         <textarea
+          id="guestbook-message"
           value={message}
           onChange={(e) => setMessage(e.target.value)}
           placeholder="Leave a message of encouragement..."

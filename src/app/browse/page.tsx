@@ -21,6 +21,7 @@ export const metadata: Metadata = {
   title: "Find a PrayerTrain",
   description:
     "Browse active prayer trains and sign up to pray for someone in need. No account required.",
+  alternates: { canonical: "/browse" },
 };
 
 const SITUATIONS = Object.values(SituationCategory);

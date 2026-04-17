@@ -26,10 +26,14 @@ export function PostUpdateForm({ trainId }: { trainId: string }) {
   return (
     <form onSubmit={handleSubmit} className="prayer-card space-y-4">
       <div>
-        <label className="block text-sm font-medium text-navy-700 mb-1.5">
+        <label
+          htmlFor="update-title"
+          className="block text-sm font-medium text-navy-700 mb-1.5"
+        >
           Update title
         </label>
         <input
+          id="update-title"
           type="text"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
@@ -39,10 +43,14 @@ export function PostUpdateForm({ trainId }: { trainId: string }) {
         />
       </div>
       <div>
-        <label className="block text-sm font-medium text-navy-700 mb-1.5">
+        <label
+          htmlFor="update-content"
+          className="block text-sm font-medium text-navy-700 mb-1.5"
+        >
           Update details
         </label>
         <textarea
+          id="update-content"
           value={content}
           onChange={(e) => setContent(e.target.value)}
           required

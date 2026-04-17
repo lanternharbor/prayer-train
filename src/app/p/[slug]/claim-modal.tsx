@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { claimPrayerSlot } from "@/lib/actions";
 import { X, Heart, Loader2, CalendarDays } from "lucide-react";
 
@@ -28,6 +28,15 @@ export function ClaimModal({
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
+
+  // Close on Escape key — standard modal affordance for keyboard users.
+  useEffect(() => {
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose();
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [onClose]);
 
   const isNovena = slot.prayerType.daysRequired > 1;
 

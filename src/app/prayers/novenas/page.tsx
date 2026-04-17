@@ -8,6 +8,7 @@ export const metadata: Metadata = {
   title: "Novenas",
   description:
     "Browse our collection of Catholic novenas — nine-day prayer devotions for powerful intercession.",
+  alternates: { canonical: "/prayers/novenas" },
 };
 
 export default async function NovenasPage() {

@@ -6,6 +6,8 @@ export const metadata: Metadata = {
   title: "Sign In",
   description:
     "Sign in to PrayerTrain to create prayer trains and manage your prayer commitments.",
+  alternates: { canonical: "/signin" },
+  robots: { index: false, follow: false },
 };
 
 export default async function SignInPage({

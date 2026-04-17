@@ -5,6 +5,7 @@ export const metadata: Metadata = {
   title: "Terms of Service",
   description:
     "The terms you agree to when you use PrayerTrain.",
+  alternates: { canonical: "/terms" },
 };
 
 const LAST_UPDATED = "April 11, 2026";

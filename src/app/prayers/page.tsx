@@ -14,6 +14,7 @@ export const metadata: Metadata = {
   title: "Prayer Library",
   description:
     "Browse our curated library of Catholic prayers — novenas, rosaries, chaplets, litanies, and more.",
+  alternates: { canonical: "/prayers" },
 };
 
 export default async function PrayersPage({

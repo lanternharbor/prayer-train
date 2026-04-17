@@ -3,6 +3,8 @@ import type { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "Check Your Email",
+  alternates: { canonical: "/signin/verify" },
+  robots: { index: false, follow: false },
 };
 
 export default function VerifyPage() {

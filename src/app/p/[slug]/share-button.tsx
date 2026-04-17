@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Share2, Copy, Check, QrCode, X } from "lucide-react";
 
 export function ShareButton({
@@ -60,6 +60,17 @@ export function ShareButton({
       }
     }
   };
+
+  // Close the QR modal on Escape. Only attach the listener while it's open
+  // so we don't intercept Escape when the modal is hidden.
+  useEffect(() => {
+    if (!showQr) return;
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setShowQr(false);
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [showQr]);
 
   return (
     <>

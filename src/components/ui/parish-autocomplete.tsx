@@ -111,6 +111,7 @@ export function ParishAutocomplete({
           aria-label="Search for a parish"
           role="combobox"
           aria-expanded={showDropdown}
+          aria-controls="parish-dropdown"
           aria-autocomplete="list"
           className="w-full pl-9 pr-8 py-2.5 border border-border rounded-lg bg-cream-50 focus:outline-none focus:ring-2 focus:ring-gold-400/50 focus:border-gold-400 transition text-sm"
         />
@@ -127,11 +128,17 @@ export function ParishAutocomplete({
       </div>
 
       {showDropdown && (
-        <div className="absolute z-50 top-full mt-1 w-full bg-card border border-border rounded-lg shadow-lg overflow-hidden">
+        <div
+          id="parish-dropdown"
+          role="listbox"
+          className="absolute z-50 top-full mt-1 w-full bg-card border border-border rounded-lg shadow-lg overflow-hidden"
+        >
           {results.map((parish) => (
             <button
               key={parish.id}
               type="button"
+              role="option"
+              aria-selected="false"
               onClick={() => handleSelect(parish)}
               className="w-full text-left px-3 py-2.5 hover:bg-cream-100 transition-colors border-b border-border last:border-b-0"
             >

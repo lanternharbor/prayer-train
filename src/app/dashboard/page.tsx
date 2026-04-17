@@ -21,6 +21,8 @@ export const metadata: Metadata = {
   title: "Dashboard",
   description:
     "View your prayer trains, today's prayer commitments, and upcoming prayer slots.",
+  alternates: { canonical: "/dashboard" },
+  robots: { index: false, follow: false },
 };
 
 export default async function DashboardPage() {

@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
 import {
@@ -15,6 +16,15 @@ import {
   CrossDivider,
 } from "@/components/ui/catholic-icons";
 import { PrayerCounter } from "@/components/prayer-counter";
+
+// Use an absolute title so the homepage doesn't render as "Home | PrayerTrain"
+// via the root layout's "%s | PrayerTrain" template.
+export const metadata: Metadata = {
+  title: {
+    absolute: "PrayerTrain — Organized Prayer for Those in Need",
+  },
+  alternates: { canonical: "/" },
+};
 
 export default function HomePage() {
   return (

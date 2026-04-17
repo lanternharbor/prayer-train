@@ -8,6 +8,7 @@ export const metadata: Metadata = {
   title: "Start a PrayerTrain",
   description:
     "Create a prayer train for someone in need. Choose their situation, select prayers, and invite your community.",
+  alternates: { canonical: "/create" },
 };
 
 export default async function CreatePage() {

@@ -15,9 +15,23 @@ import { PostUpdateForm } from "./post-update-form";
 import { TrainStatusControls } from "./train-status-controls";
 import { VisibilityToggle } from "./visibility-toggle";
 
-export const metadata: Metadata = {
-  title: "Manage PrayerTrain",
-};
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}): Promise<Metadata> {
+  const { slug } = await params;
+  const train = await prisma.prayerTrain.findUnique({
+    where: { slug },
+    select: { recipientName: true },
+  });
+  return {
+    title: train ? `Manage: ${train.recipientName}` : "Manage PrayerTrain",
+    // Belt-and-suspenders: route is already disallowed in robots.ts, but a
+    // meta tag protects against bots that ignore robots.txt.
+    robots: { index: false, follow: false },
+  };
+}
 
 export default async function ManagePage({
   params,

@@ -93,9 +93,7 @@ export default function PrivacyPage() {
             </li>
           </ul>
           <p className="mt-4">
-            We do not run third-party advertising trackers. The only analytics
-            we collect comes from our own self-hosted Umami instance,
-            described below.
+            We do not run third-party analytics or advertising trackers.
           </p>
         </section>
 
@@ -145,16 +143,6 @@ export default function PrivacyPage() {
             <li>
               <strong>Vercel Blob</strong> &mdash; storage for recipient
               photos that you choose to upload.
-            </li>
-            <li>
-              <strong>Umami (self-hosted)</strong> &mdash; Privacy-friendly,
-              cookieless web analytics. We host our own instance on Vercel +
-              Neon. Umami collects anonymous pageview data (URL, referrer,
-              browser, country) and the four custom events listed below. No
-              personal data, no cookies, no cross-site tracking. Custom
-              events recorded: <code>train_created</code>,{" "}
-              <code>slot_committed</code>, <code>guestbook_posted</code>,{" "}
-              <code>signin_completed</code>.
             </li>
           </ul>
         </section>

@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import { EB_Garamond, DM_Sans } from "next/font/google";
-import Script from "next/script";
 import "./globals.css";
 import { Header } from "@/components/layout/header";
 import { Footer } from "@/components/layout/footer";
@@ -51,10 +50,6 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const umamiSrc = process.env.NEXT_PUBLIC_UMAMI_SRC;
-  const umamiWebsiteId = process.env.NEXT_PUBLIC_UMAMI_WEBSITE_ID;
-  const umamiEnabled = Boolean(umamiSrc && umamiWebsiteId);
-
   return (
     <html
       lang="en"
@@ -81,14 +76,6 @@ export default function RootLayout({
             __html: JSON.stringify(websiteSchema()),
           }}
         />
-        {umamiEnabled && (
-          <Script
-            defer
-            strategy="afterInteractive"
-            src={umamiSrc}
-            data-website-id={umamiWebsiteId}
-          />
-        )}
         <Header />
         <main id="main" className="flex-1">
           {children}

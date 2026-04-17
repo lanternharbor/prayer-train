@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { createPrayerTrain } from "@/lib/actions";
-import { track } from "@/lib/analytics";
 import { formatSituation, formatPrayerCategory } from "@/lib/utils";
 import {
   ArrowRight,
@@ -129,10 +128,6 @@ export function CreateWizard({
     formData.set("slotsPerDay", slotsPerDay.toString());
     formData.set("isPublic", isPublic ? "true" : "false");
     formData.set("prayerTypeIds", selectedPrayerIds.join(","));
-    // Fire before the action because createPrayerTrain redirects on success,
-    // so code after the await may not execute. Umami's tracker uses
-    // sendBeacon and will still deliver the event across the navigation.
-    track("train_created", { situation: situation || "UNSPECIFIED" });
     await createPrayerTrain(formData);
   };
 

@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { claimPrayerSlot } from "@/lib/actions";
-import { track } from "@/lib/analytics";
 import { X, Heart, Loader2, CalendarDays } from "lucide-react";
 
 type Slot = {
@@ -41,7 +40,6 @@ export function ClaimModal({
       formData.set("claimerName", name);
       formData.set("claimerEmail", email);
       await claimPrayerSlot(formData);
-      track("slot_committed", { prayer_type: slot.prayerType.name });
       setSuccess(true);
     } catch {
       alert("Something went wrong. The slot may have already been claimed.");

@@ -16,7 +16,6 @@ import {
 } from "lucide-react";
 import { MarkCompleteButton } from "./mark-complete-button";
 import { SignOutButton } from "./sign-out-button";
-import { SignInCompleteBeacon } from "./signin-complete-beacon";
 
 export const metadata: Metadata = {
   title: "Dashboard",
@@ -70,7 +69,6 @@ export default async function DashboardPage() {
 
   return (
     <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-      <SignInCompleteBeacon />
       <div className="mb-8">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>

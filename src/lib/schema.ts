@@ -25,6 +25,11 @@ export function organizationSchema(): Record<string, unknown> {
       email: "hello@prayertrains.com",
       contactType: "customer support",
     },
+    parentOrganization: {
+      "@type": "Organization",
+      name: "Lantern Harbor LLC",
+      url: "https://lanternharbor.co",
+    },
   };
 }
 

@@ -7,6 +7,8 @@ parish, friends, and family to commit to specific prayers on specific
 days. Volunteers receive a confirmation email when they sign up and a
 daily reminder on the day(s) of their commitment.
 
+PrayerTrain is a project of [Lantern Harbor LLC](https://lanternharbor.co).
+
 Live at:
 
 - https://prayertrains.com (canonical)

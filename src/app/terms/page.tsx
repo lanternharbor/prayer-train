@@ -8,7 +8,7 @@ export const metadata: Metadata = {
   alternates: { canonical: "/terms" },
 };
 
-const LAST_UPDATED = "April 11, 2026";
+const LAST_UPDATED = "April 21, 2026";
 
 export default function TermsPage() {
   return (
@@ -24,9 +24,12 @@ export default function TermsPage() {
         <section>
           <p>
             Welcome to PrayerTrain (the &ldquo;Service&rdquo;). These terms
-            (the &ldquo;Terms&rdquo;) are an agreement between you and the
-            person who operates the Service. By using the Service you agree
-            to them. If you do not agree, please do not use the Service.
+            (the &ldquo;Terms&rdquo;) are an agreement between you and{" "}
+            <strong>Lantern Harbor LLC</strong>, a Massachusetts limited
+            liability company (&ldquo;Lantern Harbor,&rdquo;
+            &ldquo;we,&rdquo; &ldquo;our&rdquo;), which operates the Service.
+            By using the Service you agree to these Terms. If you do not
+            agree, please do not use the Service.
           </p>
         </section>
 
@@ -92,7 +95,7 @@ export default function TermsPage() {
             </li>
             <li>
               Use the Service in a way that would violate the laws of the
-              jurisdiction you are in or that we operate from.
+              jurisdiction you are in or that Lantern Harbor operates from.
             </li>
           </ul>
           <p className="mt-4">
@@ -165,12 +168,12 @@ export default function TermsPage() {
             Limitation of liability
           </h2>
           <p>
-            To the maximum extent allowed by law, the Service&apos;s
-            operator is not liable for any indirect, incidental, special,
-            consequential, or punitive damages, or for any loss of data,
-            opportunity, or goodwill arising from your use of the Service.
-            If we are found liable for any direct damages, our total
-            liability will not exceed one hundred US dollars (USD $100).
+            To the maximum extent allowed by law, Lantern Harbor is not
+            liable for any indirect, incidental, special, consequential,
+            or punitive damages, or for any loss of data, opportunity, or
+            goodwill arising from your use of the Service. If we are found
+            liable for any direct damages, our total liability will not
+            exceed one hundred US dollars (USD $100).
           </p>
         </section>
 
@@ -200,14 +203,32 @@ export default function TermsPage() {
 
         <section>
           <h2 className="font-heading text-2xl font-semibold text-navy-800 mt-10 mb-4">
+            Governing law
+          </h2>
+          <p>
+            These Terms are governed by the laws of the Commonwealth of
+            Massachusetts, United States, without regard to its
+            conflict-of-laws principles. Any dispute arising out of or
+            relating to these Terms or the Service will be resolved in
+            the state or federal courts located in Massachusetts, and
+            you consent to the personal jurisdiction of those courts.
+          </p>
+        </section>
+
+        <section>
+          <h2 className="font-heading text-2xl font-semibold text-navy-800 mt-10 mb-4">
             Contact
           </h2>
           <p>
-            Questions about these Terms can be sent to{" "}
+            Legal questions about these Terms go to{" "}
+            <a href="mailto:william@lanternharbor.co" className="text-gold-600 hover:text-gold-700 underline">
+              william@lanternharbor.co
+            </a>
+            . General questions about the Service go to{" "}
             <a href="mailto:hello@prayertrains.com" className="text-gold-600 hover:text-gold-700 underline">
               hello@prayertrains.com
             </a>{" "}
-            or by replying to any email the Service sends you.
+            or a reply to any email the Service sends you.
           </p>
         </section>
 

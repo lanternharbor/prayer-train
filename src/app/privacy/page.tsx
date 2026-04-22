@@ -8,7 +8,7 @@ export const metadata: Metadata = {
   alternates: { canonical: "/privacy" },
 };
 
-const LAST_UPDATED = "April 11, 2026";
+const LAST_UPDATED = "April 21, 2026";
 
 export default function PrivacyPage() {
   return (
@@ -40,12 +40,17 @@ export default function PrivacyPage() {
             Who runs PrayerTrain
           </h2>
           <p>
-            PrayerTrain is operated by an individual maintainer. Questions
-            about this policy or your data can be sent to{" "}
+            PrayerTrain is operated by{" "}
+            <strong>Lantern Harbor LLC</strong>, a Massachusetts limited
+            liability company. Privacy and legal questions go to{" "}
+            <a href="mailto:william@lanternharbor.co" className="text-gold-600 hover:text-gold-700 underline">
+              william@lanternharbor.co
+            </a>
+            . For everything else about the Service, email{" "}
             <a href="mailto:hello@prayertrains.com" className="text-gold-600 hover:text-gold-700 underline">
               hello@prayertrains.com
             </a>{" "}
-            or by replying to any email the Service sends you.
+            or reply to any email the Service sends you.
           </p>
         </section>
 

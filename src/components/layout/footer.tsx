@@ -106,8 +106,16 @@ export function Footer() {
 
         <div className="mt-10 pt-6 border-t border-border flex flex-col sm:flex-row justify-between items-center gap-4">
           <p className="text-xs text-muted-foreground">
-            &copy; {new Date().getFullYear()} PrayerTrain. Built with faith and
-            love.
+            &copy; {new Date().getFullYear()} PrayerTrain, a{" "}
+            <a
+              href="https://lanternharbor.co"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:text-foreground transition-colors underline-offset-2 hover:underline"
+            >
+              Lantern Harbor
+            </a>{" "}
+            project. Built with faith and love.
           </p>
           <p className="text-xs text-muted-foreground flex items-center gap-1">
             Made with <Heart className="w-3 h-3 text-gold-400 fill-gold-400" />{" "}

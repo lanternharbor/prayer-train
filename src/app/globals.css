@@ -120,6 +120,21 @@
 
 /* ─── Base Styles ───────────────────────────────────────────── */
 
+/* Respect the user's OS-level "reduce motion" preference. Turns off
+   transitions, animations, and smooth-scroll for people with vestibular
+   disorders, migraine sensitivity, or a manual preference to see fewer
+   moving parts. Catholic audiences skew older — this is meaningful. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
 /* Keyboard focus: visible navy outline on every interactive element. */
 :focus-visible {
   outline: 2px solid var(--navy-700);

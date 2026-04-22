@@ -1,0 +1,30 @@
+/* TEAM */
+
+Operator: Lantern Harbor LLC
+Email: william@lanternharbor.co
+Website: https://lanternharbor.co
+Location: Massachusetts, United States
+
+/* THANKS */
+
+To every family that has trusted PrayerTrain to coordinate prayer
+coverage for the people they love. You are the reason this exists.
+
+To the South Shore community of aunties, uncles, grandmas, and papas
+who never left our sides during three medical crises in late 2025
+and early 2026. The prayers of your network are what PrayerTrain
+exists to make possible for the next family.
+
+To the Church, across every parish that has ever passed a prayer
+intention down the pew. This is that tradition, on the internet.
+
+/* SITE */
+
+Last updated: 2026-04-22
+Language: English
+Doctype: HTML5
+Stack: Next.js 16, React 19, Tailwind CSS 4, Prisma 7, Neon Postgres,
+       Resend, Vercel. Catholic prayers collected from tradition.
+IDE: Written mostly in Claude Code.
+Privacy: https://www.ourfaithtrain.com/privacy
+Source: https://github.com/lanternharbor/prayer-train

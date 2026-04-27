@@ -1,9 +1,37 @@
 import { Resend } from "resend";
 import { getBaseUrl } from "./url";
 
-const resend = new Resend(process.env.RESEND_API_KEY);
-
 const FROM = process.env.EMAIL_FROM || "PrayerTrain <noreply@ourfaithtrain.com>";
+
+// Lazy-initialize the Resend client so module evaluation never throws when
+// RESEND_API_KEY is missing (e.g., on Vercel preview deploys that aren't
+// scoped to the production env vars). Each `send*` helper below already
+// catches and logs its own errors, so a missing key just means delivery
+// is a no-op — never a hard crash that takes the rest of the app down.
+let _resend: Resend | null | undefined;
+function getResend(): Resend | null {
+  if (_resend !== undefined) return _resend;
+  const key = process.env.RESEND_API_KEY;
+  _resend = key ? new Resend(key) : null;
+  return _resend;
+}
+
+// Wrapper that no-ops gracefully when Resend isn't configured. All call
+// sites previously did `await resend.emails.send(...)` — replacing the
+// resend variable with this proxy keeps every existing send call working
+// without changes.
+const resend = {
+  emails: {
+    async send(opts: Parameters<Resend["emails"]["send"]>[0]) {
+      const client = getResend();
+      if (!client) {
+        console.warn("[email] RESEND_API_KEY not set — skipping send");
+        return { data: null, error: null };
+      }
+      return client.emails.send(opts);
+    },
+  },
+} as unknown as Resend;
 
 // ─── Branded Sign-In Email ──────────────────────────────────
 // Replaces Auth.js's bare default with the PrayerTrain look and feel.

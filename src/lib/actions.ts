@@ -413,6 +413,28 @@ export async function createPrayerChain(formData: FormData) {
   startDate.setHours(0, 0, 0, 0);
   const endDate = addDays(startDate, finalDurationDays - 1);
 
+  // Optional recipient photo upload — same Vercel Blob pattern as
+  // createPrayerTrain. Wrapped to fail gracefully so a Blob hiccup
+  // never blocks creation of the chain itself.
+  let recipientImageUrl: string | null = null;
+  const photoFile = formData.get("recipientPhoto") as File | null;
+  if (photoFile && photoFile.size > 0 && process.env.BLOB_READ_WRITE_TOKEN) {
+    try {
+      const uploadPromise = put(
+        `prayer-chain/${slug}-${Date.now()}.${photoFile.type.split("/")[1] || "jpg"}`,
+        photoFile,
+        { access: "public" },
+      );
+      const timeoutPromise = new Promise<never>((_, reject) =>
+        setTimeout(() => reject(new Error("Upload timeout")), 8000),
+      );
+      const blob = await Promise.race([uploadPromise, timeoutPromise]);
+      recipientImageUrl = blob.url;
+    } catch (e) {
+      console.error("Chain photo upload failed (continuing without photo):", e);
+    }
+  }
+
   // Get the organizer's name + email for the auto-membership row. Falls
   // back to "the organizer" if their User row has no name (unusual).
   const organizer = await prisma.user.findUnique({
@@ -426,6 +448,7 @@ export async function createPrayerChain(formData: FormData) {
       organizerId: session.user.id,
       prayerTypeId: prayerType.id,
       recipientName: recipientName ?? null,
+      recipientImageUrl,
       intention,
       startDate,
       durationDays: finalDurationDays,

@@ -5,6 +5,7 @@ import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import { getBaseUrl } from "@/lib/url";
 import { SaintPortrait } from "@/components/saint-portrait";
+import { RecipientAvatar } from "@/components/ui/catholic-icons";
 import { JoinChainButton } from "./join-button";
 import { ChainShareButton } from "./share-button";
 import { ArrowLeft, CalendarDays, Settings, Users } from "lucide-react";
@@ -51,7 +52,13 @@ export async function generateMetadata({
   const phrase = recipientPhrase(chain.recipientName, chain.intention);
   const day = dayNumberFor(chain.startDate);
   const url = `${getBaseUrl()}/chain/${chain.slug}`;
-  const image = chain.prayerType.imageUrl || `${getBaseUrl()}/logo.png`;
+  // Prefer the recipient's uploaded photo for the share preview — it
+  // makes iMessage / link-unfurl cards feel personal. Falls back to the
+  // prayer's own image, then the brand logo.
+  const image =
+    chain.recipientImageUrl ||
+    chain.prayerType.imageUrl ||
+    `${getBaseUrl()}/logo.png`;
 
   const title = `${orgFirst}'s ${chain.prayerType.name} ${phrase}`;
   const description = `Day ${day} of ${chain.durationDays}. Pray along.`;
@@ -152,14 +159,27 @@ export default async function ChainDetailPage({
               Day {day} of {chain.durationDays}
               {chain.status === "COMPLETED" ? " · Complete" : ""}
             </p>
-            <h1 className="font-heading text-3xl sm:text-4xl font-bold text-navy-800 mb-3 leading-tight">
-              {orgFirst}&apos;s {chain.prayerType.name}{" "}
-              {chain.recipientName ? (
-                <span className="text-navy-700">
-                  for {chain.recipientName}
-                </span>
-              ) : null}
-            </h1>
+            <div className="flex items-start gap-4 mb-3">
+              {/* Recipient photo (if uploaded). Sits next to the title to
+                  emotionally tie the prayer to a specific person. */}
+              {chain.recipientName && (
+                <div className="shrink-0">
+                  <RecipientAvatar
+                    imageUrl={chain.recipientImageUrl}
+                    name={chain.recipientName}
+                    size="md"
+                  />
+                </div>
+              )}
+              <h1 className="font-heading text-3xl sm:text-4xl font-bold text-navy-800 leading-tight">
+                {orgFirst}&apos;s {chain.prayerType.name}{" "}
+                {chain.recipientName ? (
+                  <span className="text-navy-700">
+                    for {chain.recipientName}
+                  </span>
+                ) : null}
+              </h1>
+            </div>
             <p className="text-lg text-muted-foreground leading-relaxed">
               {chain.intention}
             </p>

@@ -6,6 +6,7 @@ import { prisma } from "@/lib/db";
 import { createPrayerChain } from "@/lib/actions";
 import { Users, Heart } from "lucide-react";
 import { SaintPortrait } from "@/components/saint-portrait";
+import { PhotoUploadField } from "./photo-upload-field";
 
 export const metadata: Metadata = {
   title: "Start a PrayerChain",
@@ -139,6 +140,8 @@ export default async function NewChainPage({
               className="w-full px-4 py-2.5 border border-border rounded-lg bg-cream-50 focus:ring-2 focus:ring-gold-400/50 focus:border-gold-400 transition resize-none"
             />
           </div>
+
+          <PhotoUploadField name="recipientPhoto" />
 
           <label className="flex items-start gap-3 cursor-pointer p-3 rounded-lg bg-cream-50 border border-cream-300">
             <input

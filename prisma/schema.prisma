@@ -289,6 +289,7 @@ model PrayerChain {
   // Recipient + intention (one-line free text — no situation taxonomy needed
   // for chains; intention text carries the meaning)
   recipientName     String?
+  recipientImageUrl String?      // optional Vercel Blob URL — same shape as PrayerTrain
   intention         String       @db.Text
 
   // Schedule

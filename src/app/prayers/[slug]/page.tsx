@@ -18,6 +18,7 @@ import {
   Tag,
   BookOpen,
   User,
+  Users,
 } from "lucide-react";
 
 export async function generateMetadata({
@@ -209,10 +210,34 @@ export default async function PrayerDetailPage({
 
       {/* Feast Day */}
       {prayer.feastDay && (
-        <div className="text-sm text-muted-foreground">
+        <div className="text-sm text-muted-foreground mb-10">
           <span className="font-medium">Feast Day:</span> {prayer.feastDay}
         </div>
       )}
+
+      {/* "Pray with friends" — entry point to a PrayerChain. Single
+          additive CTA; doesn't change any existing behavior on this page. */}
+      <div className="prayer-card bg-cream-50 border-cream-300 mt-10 flex flex-col sm:flex-row sm:items-center gap-5">
+        <div className="flex-1">
+          <h2 className="font-heading text-xl font-semibold text-navy-800 mb-2 flex items-center gap-2">
+            <Users className="w-5 h-5 text-gold-500" />
+            Pray with friends
+          </h2>
+          <p className="text-sm text-muted-foreground leading-relaxed">
+            Start a {prayer.daysRequired === 1 ? "" : `${prayer.daysRequired}-day `}prayer chain
+            for someone you love. Invite a few people to pray
+            {prayer.daysRequired === 1 ? " " : " each day "}with you. Everyone gets the same
+            prayer text, the same rhythm, the same intention.
+          </p>
+        </div>
+        <Link
+          href={`/chain/new?prayerType=${prayer.slug}`}
+          className="inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-primary text-primary-foreground font-medium rounded-lg hover:bg-navy-700 transition-colors shrink-0"
+        >
+          <Users className="w-4 h-4" />
+          Start a Chain
+        </Link>
+      </div>
     </div>
   );
 }

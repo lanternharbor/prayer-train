@@ -13,6 +13,7 @@ import {
   ArrowRight,
   Church,
   MapPin,
+  Users,
 } from "lucide-react";
 import { SituationCategory } from "@/generated/prisma/client";
 import { RecipientAvatar, PrayingHandsIcon } from "@/components/ui/catholic-icons";
@@ -33,6 +34,22 @@ function computeDaysLeft(endDate: Date): number {
       (new Date(endDate).getTime() - Date.now()) / (1000 * 60 * 60 * 24)
     )
   );
+}
+
+// Module-level helper for chain card progress. Mirrors computeDaysLeft so
+// the react-hooks/purity rule stays happy with Date.now() at module scope
+// rather than inside the component body.
+function computeChainProgress(
+  startDate: Date,
+  durationDays: number,
+): { day: number; pct: number } {
+  const elapsed = Date.now() - startDate.getTime();
+  const day = Math.floor(elapsed / (1000 * 60 * 60 * 24)) + 1;
+  const dayInRange = Math.min(Math.max(1, day), durationDays);
+  return {
+    day: dayInRange,
+    pct: Math.round((dayInRange / durationDays) * 100),
+  };
 }
 
 export default async function BrowsePage({
@@ -67,6 +84,54 @@ export default async function BrowsePage({
     orderBy: { createdAt: "desc" },
     take: 50,
   });
+
+  // Public, active prayer chains. Loaded separately + rendered in a
+  // dedicated section below the trains grid so any chain query failure
+  // can never affect the train rendering. The Spina train (most-trafficked
+  // page) is downstream of `trains`, not `chains`.
+  const chainsWhere: Record<string, unknown> = {
+    isPublic: true,
+    status: "ACTIVE",
+  };
+  if (q && q.trim()) {
+    chainsWhere.OR = [
+      { recipientName: { contains: q.trim(), mode: "insensitive" } },
+      { intention: { contains: q.trim(), mode: "insensitive" } },
+    ];
+  }
+
+  let chains: Array<{
+    id: string;
+    slug: string;
+    recipientName: string | null;
+    intention: string;
+    durationDays: number;
+    startDate: Date;
+    endDate: Date;
+    organizer: { name: string | null } | null;
+    prayerType: { name: string };
+    members: { id: string }[];
+  }> = [];
+  try {
+    chains = await prisma.prayerChain.findMany({
+      where: chainsWhere,
+      include: {
+        organizer: { select: { name: true } },
+        prayerType: { select: { name: true } },
+        members: {
+          where: { unsubscribedAt: null },
+          select: { id: true },
+        },
+      },
+      orderBy: { createdAt: "desc" },
+      take: 50,
+    });
+  } catch (error) {
+    // The chains table may not exist yet in the database (Phase B is on a
+    // feature branch; the migration to prod runs later). Fall through with
+    // an empty array so the trains grid still renders correctly.
+    console.error("/browse: failed to fetch chains", error);
+  }
 
   return (
     <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
@@ -259,6 +324,75 @@ export default async function BrowsePage({
             Start a PrayerTrain
           </Link>
         </div>
+      )}
+
+      {/* Public Prayer Chains — separate section below trains. Renders only
+          when there's at least one to show. Failures fetching chains do not
+          affect the trains rendering above. */}
+      {chains.length > 0 && (
+        <section className="mt-16">
+          <div className="flex items-center gap-2 mb-6">
+            <Users className="w-5 h-5 text-gold-500" />
+            <h2 className="font-heading text-2xl font-semibold text-navy-800">
+              Prayer Chains
+            </h2>
+          </div>
+          <p className="text-muted-foreground mb-6 max-w-2xl">
+            Synchronized novenas and devotions you can pray alongside the
+            organizer.
+          </p>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {chains.map((chain) => {
+              const orgFirst =
+                chain.organizer?.name?.trim().split(/\s+/)[0] ?? "Someone";
+              const { day: dayInRange, pct } = computeChainProgress(
+                chain.startDate,
+                chain.durationDays,
+              );
+              return (
+                <Link
+                  key={chain.id}
+                  href={`/chain/${chain.slug}`}
+                  className="prayer-card group flex flex-col"
+                >
+                  <div className="flex items-center gap-2 mb-3">
+                    <span className="px-2.5 py-1 rounded-full text-xs font-medium bg-gold-100 text-gold-700">
+                      Prayer Chain
+                    </span>
+                    <span className="px-2.5 py-1 rounded-full text-xs font-medium bg-cream-200 text-cream-700">
+                      Day {dayInRange} of {chain.durationDays}
+                    </span>
+                  </div>
+                  <h3 className="font-heading text-xl font-semibold text-navy-800 group-hover:text-navy-600 transition-colors mb-2">
+                    {orgFirst}&apos;s {chain.prayerType.name}
+                    {chain.recipientName ? ` for ${chain.recipientName}` : ""}
+                  </h3>
+                  <p className="text-sm text-muted-foreground leading-relaxed mb-4 line-clamp-3 flex-1">
+                    {chain.intention}
+                  </p>
+                  <div className="w-full h-2 bg-cream-200 rounded-full overflow-hidden mb-2">
+                    <div
+                      className="h-full rounded-full bg-gold-400"
+                      style={{ width: `${pct}%` }}
+                    />
+                  </div>
+                  <div className="flex items-center justify-between text-xs text-muted-foreground">
+                    <span className="flex items-center gap-1">
+                      <Users className="w-3.5 h-3.5 text-gold-400" />
+                      {chain.members.length}{" "}
+                      {chain.members.length === 1 ? "person" : "people"}{" "}
+                      praying
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-1.5 mt-3 text-sm font-medium text-gold-600 group-hover:text-gold-700">
+                    Pray along
+                    <ArrowRight className="w-4 h-4" />
+                  </div>
+                </Link>
+              );
+            })}
+          </div>
+        </section>
       )}
     </div>
   );

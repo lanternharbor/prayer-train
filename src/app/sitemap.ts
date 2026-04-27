@@ -100,5 +100,25 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.5,
   }));
 
-  return [...staticEntries, ...dynamicEntries, ...prayerEntries];
+  // Public, active prayer chains. Same isPublic discipline as trains.
+  let publicChains: { slug: string; updatedAt: Date }[] = [];
+  try {
+    publicChains = await prisma.prayerChain.findMany({
+      where: { isPublic: true, status: "ACTIVE" },
+      select: { slug: true, updatedAt: true },
+      orderBy: { updatedAt: "desc" },
+      take: 5000,
+    });
+  } catch (error) {
+    console.error("sitemap: failed to fetch public chains", error);
+  }
+
+  const chainEntries: MetadataRoute.Sitemap = publicChains.map((c) => ({
+    url: `${base}/chain/${c.slug}`,
+    lastModified: c.updatedAt,
+    changeFrequency: "daily",
+    priority: 0.7,
+  }));
+
+  return [...staticEntries, ...dynamicEntries, ...prayerEntries, ...chainEntries];
 }

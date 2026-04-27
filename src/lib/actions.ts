@@ -9,11 +9,19 @@ import { enforceRateLimit } from "@/lib/rate-limit";
 import { getRateLimitId } from "@/lib/request";
 import {
   claimSlotSchema,
+  closeChainSchema,
+  createChainSchema,
   createTrainSchema,
   guestbookEntrySchema,
+  joinChainSchema,
+  markChainDayCompleteSchema,
   parseFormData,
   trainUpdateSchema,
 } from "@/lib/validation";
+import {
+  sendChainClosingDayEmail,
+  sendChainJoinConfirmation,
+} from "@/lib/email";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { addDays, eachDayOfInterval } from "date-fns";
@@ -358,4 +366,237 @@ export async function toggleTrainVisibility(trainId: string, isPublic: boolean) 
 
   revalidatePath(`/p/${train.slug}/manage`);
   revalidatePath("/browse");
+}
+
+// ─── PrayerChain — Synchronized solidarity (Phase B, feature/chains) ────────
+//
+// Chains are a separate prayer primitive from Trains. Same prayer + same
+// days + group of people praying together. The five actions below match the
+// pattern of the train actions above (Zod validation, rate limiting, friendly
+// errors) but never modify train tables. See docs/chains-spec.md for the
+// product rationale and docs/operational-safety.md for the isolation
+// guarantee that protects the live Spina train.
+
+// ─── Create PrayerChain ─────────────────────────────────────
+
+export async function createPrayerChain(formData: FormData) {
+  const session = await auth();
+  if (!session?.user?.id) {
+    redirect("/signin");
+  }
+
+  await enforceRateLimit(
+    "createChain",
+    await getRateLimitId(session.user.id),
+  );
+
+  const { prayerTypeId, recipientName, intention, durationDays, isPublic } =
+    parseFormData(createChainSchema, formData);
+
+  const prayerType = await prisma.prayerType.findUnique({
+    where: { id: prayerTypeId },
+    select: { id: true, slug: true, daysRequired: true, name: true },
+  });
+  if (!prayerType) throw new Error("That prayer doesn't exist.");
+
+  // Default duration to the prayer's natural length (9 for novenas, 1 for
+  // most others). Caller can override via durationDays.
+  const finalDurationDays = durationDays ?? prayerType.daysRequired;
+
+  // Slug uses the recipient name when present, otherwise the prayer slug.
+  const slugBase = recipientName?.trim()
+    ? recipientName
+    : prayerType.slug;
+  const slug = generateSlug(slugBase);
+
+  const startDate = new Date();
+  startDate.setHours(0, 0, 0, 0);
+  const endDate = addDays(startDate, finalDurationDays - 1);
+
+  // Get the organizer's name + email for the auto-membership row. Falls
+  // back to "the organizer" if their User row has no name (unusual).
+  const organizer = await prisma.user.findUnique({
+    where: { id: session.user.id },
+    select: { name: true, email: true },
+  });
+
+  const chain = await prisma.prayerChain.create({
+    data: {
+      slug,
+      organizerId: session.user.id,
+      prayerTypeId: prayerType.id,
+      recipientName: recipientName ?? null,
+      intention,
+      startDate,
+      durationDays: finalDurationDays,
+      endDate,
+      isPublic,
+      members: {
+        create: {
+          userId: session.user.id,
+          name: organizer?.name ?? "Organizer",
+          email: organizer?.email ?? session.user.email ?? "",
+        },
+      },
+    },
+  });
+
+  revalidatePath("/browse");
+  redirect(`/chain/${chain.slug}`);
+}
+
+// ─── Join PrayerChain ───────────────────────────────────────
+
+export async function joinPrayerChain(formData: FormData) {
+  const { chainId, name, email } = parseFormData(joinChainSchema, formData);
+
+  const session = await auth();
+  await enforceRateLimit(
+    "joinChain",
+    await getRateLimitId(session?.user?.id),
+  );
+
+  const chain = await prisma.prayerChain.findUnique({
+    where: { id: chainId },
+    include: {
+      organizer: { select: { name: true } },
+      prayerType: { select: { name: true } },
+    },
+  });
+  if (!chain) throw new Error("That prayer chain no longer exists.");
+  if (chain.status !== "ACTIVE") {
+    throw new Error("This prayer chain is no longer accepting new members.");
+  }
+
+  // Idempotent: if this email already joined, refresh their record (clear
+  // unsubscribedAt so they get reminders again, update name in case they
+  // re-typed it differently).
+  const member = await prisma.prayerChainMember.upsert({
+    where: { chainId_email: { chainId, email } },
+    create: {
+      chainId,
+      userId: session?.user?.id ?? null,
+      name,
+      email,
+    },
+    update: {
+      name,
+      unsubscribedAt: null,
+    },
+  });
+
+  // Confirmation email is best-effort — the email helper swallows errors,
+  // so a Resend hiccup never blocks the join itself.
+  await sendChainJoinConfirmation({
+    to: email,
+    memberName: name,
+    organizerName: chain.organizer?.name ?? "the organizer",
+    prayerName: chain.prayerType.name,
+    recipientName: chain.recipientName,
+    intention: chain.intention,
+    durationDays: chain.durationDays,
+    chainUrl: `${getBaseUrl()}/chain/${chain.slug}`,
+  });
+
+  revalidatePath(`/chain/${chain.slug}`);
+  return { ok: true, memberId: member.id };
+}
+
+// ─── Mark a Chain Day Complete ──────────────────────────────
+
+export async function markChainDayComplete(formData: FormData) {
+  const { chainId, email, day } = parseFormData(
+    markChainDayCompleteSchema,
+    formData,
+  );
+
+  const member = await prisma.prayerChainMember.findUnique({
+    where: { chainId_email: { chainId, email } },
+  });
+  if (!member) throw new Error("You're not a member of this prayer chain.");
+
+  // Idempotent: only advance, never go backward. A user clicking yesterday's
+  // "I prayed today" link after marking today shouldn't undo the later state.
+  const newDay = Math.max(member.lastDayCompleted ?? 0, day);
+  await prisma.prayerChainMember.update({
+    where: { id: member.id },
+    data: { lastDayCompleted: newDay },
+  });
+
+  const chain = await prisma.prayerChain.findUnique({
+    where: { id: chainId },
+    select: { slug: true },
+  });
+  if (chain) revalidatePath(`/chain/${chain.slug}`);
+}
+
+// ─── Close PrayerChain (Organizer) ──────────────────────────
+
+export async function closePrayerChain(formData: FormData) {
+  const session = await auth();
+  if (!session?.user?.id) redirect("/signin");
+
+  const { chainId, closingNote } = parseFormData(closeChainSchema, formData);
+
+  const chain = await prisma.prayerChain.findUnique({
+    where: { id: chainId },
+    include: {
+      organizer: { select: { name: true } },
+      prayerType: { select: { name: true } },
+      members: {
+        where: { unsubscribedAt: null },
+        select: { email: true, name: true },
+      },
+    },
+  });
+
+  if (!chain) throw new Error("Prayer chain not found.");
+  if (chain.organizerId !== session.user.id) {
+    throw new Error("Only the organizer can close this prayer chain.");
+  }
+
+  await prisma.prayerChain.update({
+    where: { id: chainId },
+    data: {
+      status: "COMPLETED",
+      closingNote: closingNote ?? null,
+    },
+  });
+
+  // Closing-day emails to all active members. Best-effort.
+  const chainUrl = `${getBaseUrl()}/chain/${chain.slug}`;
+  for (const member of chain.members) {
+    await sendChainClosingDayEmail({
+      to: member.email,
+      memberName: member.name,
+      organizerName: chain.organizer?.name ?? "the organizer",
+      prayerName: chain.prayerType.name,
+      recipientName: chain.recipientName,
+      closingNote: closingNote ?? null,
+      chainUrl,
+    });
+  }
+
+  revalidatePath(`/chain/${chain.slug}`);
+  revalidatePath(`/chain/${chain.slug}/manage`);
+}
+
+// ─── Unsubscribe from a PrayerChain (token-gated link in emails) ────────
+
+export async function unsubscribeFromChain(memberId: string) {
+  // No auth required — the unsubscribe URL is treated as the proof of
+  // identity. Membership IDs are cuids (effectively unguessable) so this
+  // is acceptable for a low-stakes "stop sending me reminders" action.
+  const member = await prisma.prayerChainMember.findUnique({
+    where: { id: memberId },
+    include: { chain: { select: { slug: true } } },
+  });
+  if (!member) return; // Treat as success — already gone.
+
+  await prisma.prayerChainMember.update({
+    where: { id: memberId },
+    data: { unsubscribedAt: new Date() },
+  });
+
+  if (member.chain) revalidatePath(`/chain/${member.chain.slug}`);
 }

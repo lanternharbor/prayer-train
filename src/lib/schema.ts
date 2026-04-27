@@ -86,3 +86,38 @@ export function prayerArticleSchema(prayer: {
     })),
   };
 }
+
+export function prayerChainSchema(chain: {
+  slug: string;
+  prayerName: string;
+  organizerName: string;
+  recipientName: string | null;
+  intention: string;
+  startDate: Date;
+  endDate: Date;
+}): Record<string, unknown> {
+  const baseUrl = getBaseUrl();
+  const url = `${baseUrl}/chain/${chain.slug}`;
+  const headline = chain.recipientName
+    ? `${chain.organizerName}'s ${chain.prayerName} for ${chain.recipientName}`
+    : `${chain.organizerName}'s ${chain.prayerName}`;
+  return {
+    "@context": SCHEMA_CONTEXT,
+    "@type": "Event",
+    name: headline,
+    description: chain.intention,
+    startDate: chain.startDate.toISOString(),
+    endDate: chain.endDate.toISOString(),
+    eventAttendanceMode: "https://schema.org/OnlineEventAttendanceMode",
+    eventStatus: "https://schema.org/EventScheduled",
+    location: {
+      "@type": "VirtualLocation",
+      url,
+    },
+    organizer: {
+      "@type": "Person",
+      name: chain.organizerName,
+    },
+    url,
+  };
+}

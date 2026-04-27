@@ -92,6 +92,50 @@ export const trainUpdateSchema = z.object({
 
 export type TrainUpdateInput = z.infer<typeof trainUpdateSchema>;
 
+// ─── Create PrayerChain ─────────────────────────────────────
+
+export const createChainSchema = z.object({
+  prayerTypeId: trimmedString(1, 60),
+  recipientName: optionalTrimmed(80),
+  intention: trimmedString(1, 2000),
+  // Optional override; if omitted, we use the prayer's default daysRequired.
+  durationDays: z.coerce.number().int().min(1).max(365).optional(),
+  isPublic: z.coerce.boolean().default(false),
+});
+
+export type CreateChainInput = z.infer<typeof createChainSchema>;
+
+// ─── Join PrayerChain ───────────────────────────────────────
+
+export const joinChainSchema = z.object({
+  chainId: trimmedString(1, 60),
+  name: trimmedString(1, 80),
+  email: z.string().trim().email().max(254),
+});
+
+export type JoinChainInput = z.infer<typeof joinChainSchema>;
+
+// ─── Chain Day Completion ──────────────────────────────────
+
+export const markChainDayCompleteSchema = z.object({
+  chainId: trimmedString(1, 60),
+  email: z.string().trim().email().max(254),
+  day: z.coerce.number().int().min(1).max(365),
+});
+
+export type MarkChainDayCompleteInput = z.infer<
+  typeof markChainDayCompleteSchema
+>;
+
+// ─── Close Chain ────────────────────────────────────────────
+
+export const closeChainSchema = z.object({
+  chainId: trimmedString(1, 60),
+  closingNote: optionalTrimmed(2000),
+});
+
+export type CloseChainInput = z.infer<typeof closeChainSchema>;
+
 /**
  * Helper that runs a Zod parse on a FormData object and throws a friendly
  * Error on failure. Server actions catch the throw and the error component

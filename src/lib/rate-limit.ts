@@ -56,6 +56,15 @@ export const limiters = {
   // Train creation. Reasonable cap for an authenticated user.
   createTrain: makeLimiter("create-train", 10, "1 h"),
 
+  // Chain creation (organizer starts a new prayer chain). Same cap as
+  // train creation — a single user shouldn't be spinning up dozens.
+  createChain: makeLimiter("create-chain", 10, "1 h"),
+
+  // Joining a chain — looser than train slot claims because joining is
+  // friction-free (name + email) and high-volume scenarios (a popular
+  // chain shared in a parish bulletin) are legitimate.
+  joinChain: makeLimiter("join-chain", 60, "1 h"),
+
   // Public read endpoints (e.g. /api/stats). Per-IP, fairly loose.
   publicApi: makeLimiter("public-api", 60, "1 m"),
 } as const;

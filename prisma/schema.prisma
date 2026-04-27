@@ -26,6 +26,10 @@ model User {
   claimedSlots    PrayerSlot[]    @relation("ClaimedBy")
   guestbookEntries GuestbookEntry[]
   trainUpdates    TrainUpdate[]
+
+  // PrayerChain relations
+  organizedChains   PrayerChain[]        @relation("ChainOrganizer")
+  chainMemberships  PrayerChainMember[]
 }
 
 model Account {
@@ -178,6 +182,7 @@ model PrayerType {
 
   // Relations
   slots       PrayerSlot[]
+  chains      PrayerChain[]
 
   @@index([category])
   @@index([slug])
@@ -251,6 +256,93 @@ model TrainUpdate {
   content   String   @db.Text
 
   @@index([trainId])
+}
+
+// ─── PrayerChain (synchronized solidarity) ──────────────────────
+// A second prayer primitive alongside PrayerTrain. Same prayer, same days,
+// group of people praying together — the "I'm doing this novena, want to
+// join me?" pattern. Fully isolated from PrayerTrain code paths: separate
+// tables, separate routes, separate cron handler. See docs/chains-spec.md
+// for the full design rationale.
+
+enum ChainStatus {
+  ACTIVE
+  COMPLETED
+  CANCELLED
+  PROMOTED   // converted into a Train via the future Promote-to-Train flow
+}
+
+model PrayerChain {
+  id                String       @id @default(cuid())
+  slug              String       @unique
+  createdAt         DateTime     @default(now())
+  updatedAt         DateTime     @updatedAt
+
+  // Organizer
+  organizerId       String
+  organizer         User         @relation("ChainOrganizer", fields: [organizerId], references: [id])
+
+  // Which prayer the chain prays
+  prayerTypeId      String
+  prayerType        PrayerType   @relation(fields: [prayerTypeId], references: [id])
+
+  // Recipient + intention (one-line free text — no situation taxonomy needed
+  // for chains; intention text carries the meaning)
+  recipientName     String?
+  intention         String       @db.Text
+
+  // Schedule
+  startDate         DateTime
+  durationDays      Int
+  endDate           DateTime
+
+  // Visibility
+  isPublic          Boolean      @default(false)
+
+  // State
+  status            ChainStatus  @default(ACTIVE)
+  closingNote       String?      @db.Text
+
+  // Future Phase D: link to a PrayerTrain that this chain was promoted into.
+  // Soft reference (no FK) so promote-to-train can ship later without a
+  // schema change.
+  promotedToTrainId String?
+
+  // Relations
+  members           PrayerChainMember[]
+
+  @@index([organizerId])
+  @@index([prayerTypeId])
+  // Composite index speeds up the public browse query (filter by isPublic
+  // + ACTIVE status) and the chain-reminders cron (filter by ACTIVE).
+  @@index([status, isPublic])
+}
+
+model PrayerChainMember {
+  id               String       @id @default(cuid())
+  chainId          String
+  chain            PrayerChain  @relation(fields: [chainId], references: [id], onDelete: Cascade)
+
+  // Joiner identity. Account is optional — name + email is the minimum,
+  // matching the PrayerSlot claim pattern.
+  userId           String?
+  user             User?        @relation(fields: [userId], references: [id])
+  name             String
+  email            String
+
+  // Optional daily-completion tracking. 1-indexed; null until the member
+  // marks anything. Idempotent updates via max(current, day).
+  lastDayCompleted Int?
+
+  joinedAt         DateTime     @default(now())
+  // Soft leave — they stop receiving reminders but stay in the roster
+  // and on the spiritual bouquet.
+  unsubscribedAt   DateTime?
+
+  // One membership per email per chain.
+  @@unique([chainId, email])
+  @@index([chainId])
+  @@index([email])
 }
 
 // ─── Parish Directory ───────────────────────────────────────

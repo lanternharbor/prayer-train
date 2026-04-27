@@ -463,9 +463,9 @@ export async function joinPrayerChain(formData: FormData) {
       prayerType: { select: { name: true } },
     },
   });
-  if (!chain) throw new Error("That prayer chain no longer exists.");
+  if (!chain) throw new Error("That PrayerChain no longer exists.");
   if (chain.status !== "ACTIVE") {
-    throw new Error("This prayer chain is no longer accepting new members.");
+    throw new Error("This PrayerChain is no longer accepting new members.");
   }
 
   // Idempotent: if this email already joined, refresh their record (clear
@@ -513,7 +513,7 @@ export async function markChainDayComplete(formData: FormData) {
   const member = await prisma.prayerChainMember.findUnique({
     where: { chainId_email: { chainId, email } },
   });
-  if (!member) throw new Error("You're not a member of this prayer chain.");
+  if (!member) throw new Error("You're not a member of this PrayerChain.");
 
   // Idempotent: only advance, never go backward. A user clicking yesterday's
   // "I prayed today" link after marking today shouldn't undo the later state.
@@ -550,9 +550,9 @@ export async function closePrayerChain(formData: FormData) {
     },
   });
 
-  if (!chain) throw new Error("Prayer chain not found.");
+  if (!chain) throw new Error("PrayerChain not found.");
   if (chain.organizerId !== session.user.id) {
-    throw new Error("Only the organizer can close this prayer chain.");
+    throw new Error("Only the organizer can close this PrayerChain.");
   }
 
   await prisma.prayerChain.update({

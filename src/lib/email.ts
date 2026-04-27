@@ -312,7 +312,7 @@ export async function sendChainJoinConfirmation({
             </p>
             <div style="text-align: center; margin: 24px 0 8px;">
               <a href="${chainUrl}" style="display: inline-block; background: #242e58; color: #ffffff; padding: 12px 28px; border-radius: 10px; text-decoration: none; font-weight: 600; font-size: 15px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;">
-                Open the prayer chain
+                Open the PrayerChain
               </a>
             </div>
           </div>
@@ -406,7 +406,7 @@ export async function sendChainDailyReminder({
               </a>
             </div>
             <p style="text-align: center; color: #b8a994; font-size: 12px; margin: 18px 0 0;">
-              <a href="${chainUrl}" style="color: #947324; text-decoration: none;">Visit the chain</a>
+              <a href="${chainUrl}" style="color: #947324; text-decoration: none;">Visit the PrayerChain</a>
               &nbsp;·&nbsp;
               <a href="${unsubscribeUrl}" style="color: #b8a994; text-decoration: none;">Unsubscribe</a>
             </p>

@@ -8,9 +8,9 @@ import { Users, Heart } from "lucide-react";
 import { SaintPortrait } from "@/components/saint-portrait";
 
 export const metadata: Metadata = {
-  title: "Start a Prayer Chain",
+  title: "Start a PrayerChain",
   description:
-    "Start a prayer chain — invite a small group of people to pray with you for someone you love.",
+    "Start a PrayerChain — invite a small group of people to pray with you for someone you love.",
   alternates: { canonical: "/chain/new" },
   robots: { index: false, follow: false },
 };
@@ -52,7 +52,7 @@ export default async function NewChainPage({
       <div className="text-center mb-8">
         <Users className="w-10 h-10 text-gold-500 mx-auto mb-3" />
         <h1 className="font-heading text-3xl font-bold text-navy-800 mb-2">
-          {prayerType ? `Start the ${prayerType.name}` : "Start a Prayer Chain"}
+          {prayerType ? `Start the ${prayerType.name}` : "Start a PrayerChain"}
         </h1>
         <p className="text-muted-foreground">
           {prayerType

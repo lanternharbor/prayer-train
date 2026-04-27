@@ -326,7 +326,7 @@ export default async function BrowsePage({
         </div>
       )}
 
-      {/* Public Prayer Chains — separate section below trains. Renders only
+      {/* Public PrayerChains — separate section below trains. Renders only
           when there's at least one to show. Failures fetching chains do not
           affect the trains rendering above. */}
       {chains.length > 0 && (
@@ -334,7 +334,7 @@ export default async function BrowsePage({
           <div className="flex items-center gap-2 mb-6">
             <Users className="w-5 h-5 text-gold-500" />
             <h2 className="font-heading text-2xl font-semibold text-navy-800">
-              Prayer Chains
+              PrayerChains
             </h2>
           </div>
           <p className="text-muted-foreground mb-6 max-w-2xl">
@@ -357,7 +357,7 @@ export default async function BrowsePage({
                 >
                   <div className="flex items-center gap-2 mb-3">
                     <span className="px-2.5 py-1 rounded-full text-xs font-medium bg-gold-100 text-gold-700">
-                      Prayer Chain
+                      PrayerChain
                     </span>
                     <span className="px-2.5 py-1 rounded-full text-xs font-medium bg-cream-200 text-cream-700">
                       Day {dayInRange} of {chain.durationDays}

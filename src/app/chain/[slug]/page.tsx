@@ -6,6 +6,7 @@ import { prisma } from "@/lib/db";
 import { getBaseUrl } from "@/lib/url";
 import { SaintPortrait } from "@/components/saint-portrait";
 import { JoinChainButton } from "./join-button";
+import { ChainShareButton } from "./share-button";
 import { ArrowLeft, CalendarDays, Settings, Users } from "lucide-react";
 
 function firstName(fullName: string | null | undefined): string {
@@ -44,7 +45,7 @@ export async function generateMetadata({
       prayerType: { select: { name: true, imageUrl: true } },
     },
   });
-  if (!chain) return { title: "Prayer Chain Not Found" };
+  if (!chain) return { title: "PrayerChain Not Found" };
 
   const orgFirst = firstName(chain.organizer?.name);
   const phrase = recipientPhrase(chain.recipientName, chain.intention);
@@ -236,6 +237,16 @@ export default async function ChainDetailPage({
             durationDays={chain.durationDays}
           />
         </div>
+      )}
+
+      {/* Share affordance — copy / native share / QR. Mirrors the train
+          share button so the sharing UX is identical across primitives. */}
+      {chain.status === "ACTIVE" && (
+        <ChainShareButton
+          slug={chain.slug}
+          organizerFirstName={orgFirst}
+          recipientPhrase={phrase}
+        />
       )}
 
       {/* Member roster */}

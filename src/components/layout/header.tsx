@@ -47,7 +47,7 @@ export async function Header() {
                   href="/create"
                   className="inline-flex items-center px-4 py-2 text-sm font-medium text-primary-foreground bg-primary rounded-lg hover:bg-navy-700 transition-colors"
                 >
-                  Start a PrayerTrain
+                  Get Started
                 </Link>
               </>
             ) : (
@@ -62,7 +62,7 @@ export async function Header() {
                   href="/create"
                   className="inline-flex items-center px-4 py-2 text-sm font-medium text-primary-foreground bg-primary rounded-lg hover:bg-navy-700 transition-colors"
                 >
-                  Start a PrayerTrain
+                  Get Started
                 </Link>
               </>
             )}

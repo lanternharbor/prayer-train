@@ -23,11 +23,11 @@ export async function generateMetadata({
     where: { slug },
     select: { recipientName: true, intention: true },
   });
-  if (!chain) return { title: "Manage Prayer Chain" };
+  if (!chain) return { title: "Manage PrayerChain" };
   return {
     title: chain.recipientName
       ? `Manage: ${chain.recipientName}`
-      : "Manage Prayer Chain",
+      : "Manage PrayerChain",
     robots: { index: false, follow: false },
   };
 }
@@ -75,7 +75,7 @@ export default async function ChainManagePage({
         className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground mb-6 transition-colors"
       >
         <ArrowLeft className="w-4 h-4" />
-        Back to Prayer Chain
+        Back to PrayerChain
       </Link>
 
       <div className="flex items-center gap-3 mb-8">
@@ -121,11 +121,11 @@ export default async function ChainManagePage({
           <input type="hidden" name="chainId" value={chain.id} />
           <div>
             <h2 className="font-heading text-lg font-semibold text-navy-800 mb-2">
-              Close this prayer chain
+              Close this PrayerChain
             </h2>
             <p className="text-sm text-muted-foreground">
-              Marks the chain complete, sends a closing-day email to every
-              active member, and unlocks the spiritual bouquet PDF.
+              Marks the PrayerChain complete, sends a closing-day email to
+              every active member, and unlocks the spiritual bouquet PDF.
             </p>
           </div>
           <div>
@@ -151,7 +151,7 @@ export default async function ChainManagePage({
             type="submit"
             className="inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-primary text-primary-foreground text-sm font-medium rounded-lg hover:bg-navy-700 transition-colors"
           >
-            Close the chain
+            Close the PrayerChain
           </button>
         </form>
       )}

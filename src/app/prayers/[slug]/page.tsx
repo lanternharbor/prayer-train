@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { prisma } from "@/lib/db";
 import { getBaseUrl } from "@/lib/url";
 import { breadcrumbSchema, prayerArticleSchema } from "@/lib/schema";
+import { SaintPortrait } from "@/components/saint-portrait";
 import {
   formatPrayerCategory,
   formatDifficulty,
@@ -101,20 +102,28 @@ export default async function PrayerDetailPage({
 
       {/* Header */}
       <div className="mb-8">
-        <div className="flex items-center gap-2 mb-3">
-          <span className="px-2.5 py-0.5 rounded-full text-xs font-medium bg-navy-100 text-navy-700">
-            {formatPrayerCategory(prayer.category)}
-          </span>
-          <span className="px-2.5 py-0.5 rounded-full text-xs font-medium bg-cream-200 text-cream-700">
-            {formatDifficulty(prayer.difficulty)}
-          </span>
+        <div className="flex flex-col sm:flex-row sm:items-start sm:gap-8">
+          <div className="flex-1 min-w-0">
+            <div className="flex items-center gap-2 mb-3">
+              <span className="px-2.5 py-0.5 rounded-full text-xs font-medium bg-navy-100 text-navy-700">
+                {formatPrayerCategory(prayer.category)}
+              </span>
+              <span className="px-2.5 py-0.5 rounded-full text-xs font-medium bg-cream-200 text-cream-700">
+                {formatDifficulty(prayer.difficulty)}
+              </span>
+            </div>
+            <h1 className="font-heading text-3xl sm:text-4xl font-bold text-navy-800 mb-4">
+              {prayer.name}
+            </h1>
+            <p className="text-lg text-muted-foreground leading-relaxed">
+              {prayer.description}
+            </p>
+          </div>
+          {/* Patron saint portrait (renders only when curated art exists). */}
+          <div className="mt-6 sm:mt-1 flex justify-center sm:justify-end shrink-0">
+            <SaintPortrait patronSaint={prayer.patronSaint} />
+          </div>
         </div>
-        <h1 className="font-heading text-3xl sm:text-4xl font-bold text-navy-800 mb-4">
-          {prayer.name}
-        </h1>
-        <p className="text-lg text-muted-foreground leading-relaxed">
-          {prayer.description}
-        </p>
       </div>
 
       {/* Meta Info */}

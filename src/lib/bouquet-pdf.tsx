@@ -1,0 +1,240 @@
+/**
+ * Spiritual Bouquet — printable PDF.
+ *
+ * Generated on demand for completed prayer trains. Designed to look like a
+ * Catholic prayer card, not a SaaS report: serif type, gold rule, restrained
+ * layout, calligraphic title. The eventual letterpress-and-mailed version
+ * inherits this design; for now the user prints at home or attaches to email.
+ *
+ * Vision pillar (4): physical artifact at completion. This is the software
+ * MVP.
+ *
+ * The closing-blessing line is intentionally generic until Fr. Palladino
+ * reviews it — see docs/theology-review.md item #9.
+ */
+
+import {
+  Document,
+  Page,
+  Text,
+  View,
+  StyleSheet,
+} from "@react-pdf/renderer";
+
+export type BouquetData = {
+  recipientName: string;
+  organizerName: string;
+  startDate: Date;
+  endDate: Date;
+  prayers: Array<{
+    name: string;
+    timesOffered: number;
+    uniquePrayers: number;
+  }>;
+  prayerWarriors: string[]; // deduped, alphabetized claimer names
+};
+
+const PALETTE = {
+  navy: "#1a2142",
+  navyDark: "#11152c",
+  gold: "#947324",
+  goldLight: "#d4a843",
+  cream: "#fefdfb",
+  text: "#1a2142",
+  muted: "#6e6150",
+  border: "#e8e0d5",
+};
+
+const styles = StyleSheet.create({
+  page: {
+    padding: 56,
+    backgroundColor: PALETTE.cream,
+    fontFamily: "Times-Roman",
+    color: PALETTE.text,
+  },
+  header: {
+    textAlign: "center",
+    marginBottom: 28,
+  },
+  eyebrow: {
+    fontSize: 9,
+    letterSpacing: 3,
+    textTransform: "uppercase",
+    color: PALETTE.gold,
+    marginBottom: 12,
+  },
+  title: {
+    fontFamily: "Times-Italic",
+    fontSize: 28,
+    color: PALETTE.navyDark,
+    marginBottom: 4,
+  },
+  recipientName: {
+    fontFamily: "Times-Bold",
+    fontSize: 32,
+    color: PALETTE.navyDark,
+    marginBottom: 12,
+  },
+  rule: {
+    width: 80,
+    height: 1.5,
+    backgroundColor: PALETTE.gold,
+    marginVertical: 14,
+    marginHorizontal: "auto",
+  },
+  organizerLine: {
+    fontSize: 11,
+    fontFamily: "Times-Italic",
+    color: PALETTE.muted,
+    marginBottom: 4,
+  },
+  dateLine: {
+    fontSize: 10,
+    color: PALETTE.muted,
+  },
+  section: {
+    marginTop: 28,
+  },
+  sectionLabel: {
+    fontSize: 9,
+    letterSpacing: 2,
+    textTransform: "uppercase",
+    color: PALETTE.gold,
+    marginBottom: 10,
+  },
+  prayerRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    paddingVertical: 4,
+    borderBottomWidth: 0.5,
+    borderBottomColor: PALETTE.border,
+  },
+  prayerName: {
+    fontSize: 11,
+    color: PALETTE.text,
+    flex: 1,
+    paddingRight: 12,
+  },
+  prayerCount: {
+    fontSize: 10,
+    color: PALETTE.muted,
+    fontFamily: "Times-Italic",
+  },
+  warriorsParagraph: {
+    fontSize: 10,
+    color: PALETTE.text,
+    lineHeight: 1.6,
+  },
+  total: {
+    fontSize: 12,
+    fontFamily: "Times-Italic",
+    color: PALETTE.navy,
+    marginTop: 14,
+    textAlign: "center",
+  },
+  blessing: {
+    marginTop: 32,
+    paddingTop: 18,
+    borderTopWidth: 0.5,
+    borderTopColor: PALETTE.border,
+    fontSize: 11,
+    fontFamily: "Times-Italic",
+    color: PALETTE.text,
+    textAlign: "center",
+    lineHeight: 1.5,
+  },
+  footer: {
+    position: "absolute",
+    bottom: 32,
+    left: 56,
+    right: 56,
+    textAlign: "center",
+    fontSize: 8,
+    color: PALETTE.muted,
+    letterSpacing: 1,
+  },
+});
+
+function formatDate(d: Date): string {
+  return d.toLocaleDateString("en-US", {
+    month: "long",
+    day: "numeric",
+    year: "numeric",
+  });
+}
+
+function totalPrayersOffered(prayers: BouquetData["prayers"]): number {
+  return prayers.reduce((sum, p) => sum + p.timesOffered, 0);
+}
+
+export function BouquetDocument({ data }: { data: BouquetData }) {
+  const total = totalPrayersOffered(data.prayers);
+  const warriorCount = data.prayerWarriors.length;
+
+  return (
+    <Document
+      title={`Spiritual Bouquet for ${data.recipientName}`}
+      author="PrayerTrain"
+      creator="PrayerTrain"
+    >
+      <Page size="LETTER" style={styles.page}>
+        {/* Header */}
+        <View style={styles.header}>
+          <Text style={styles.eyebrow}>A Spiritual Bouquet</Text>
+          <Text style={styles.title}>for</Text>
+          <Text style={styles.recipientName}>{data.recipientName}</Text>
+          <View style={styles.rule} />
+          <Text style={styles.organizerLine}>
+            Organized by {data.organizerName}
+          </Text>
+          <Text style={styles.dateLine}>
+            {formatDate(data.startDate)} — {formatDate(data.endDate)}
+          </Text>
+        </View>
+
+        {/* Prayers offered */}
+        <View style={styles.section}>
+          <Text style={styles.sectionLabel}>Prayers Offered</Text>
+          {data.prayers.map((p) => (
+            <View style={styles.prayerRow} key={p.name}>
+              <Text style={styles.prayerName}>{p.name}</Text>
+              <Text style={styles.prayerCount}>
+                {p.timesOffered === 1
+                  ? "1 time"
+                  : `${p.timesOffered} times`}
+                {p.uniquePrayers > 0 &&
+                  ` · by ${p.uniquePrayers} ${
+                    p.uniquePrayers === 1 ? "person" : "people"
+                  }`}
+              </Text>
+            </View>
+          ))}
+          <Text style={styles.total}>
+            {total} prayer{total === 1 ? "" : "s"} offered in total
+          </Text>
+        </View>
+
+        {/* Names of those who prayed */}
+        {warriorCount > 0 && (
+          <View style={styles.section}>
+            <Text style={styles.sectionLabel}>Lifted Up by</Text>
+            <Text style={styles.warriorsParagraph}>
+              {data.prayerWarriors.join(" · ")}
+            </Text>
+          </View>
+        )}
+
+        {/* Closing blessing — generic until theology-reviewed */}
+        <Text style={styles.blessing}>
+          May the prayers of this community walk with {data.recipientName}{" "}
+          and with all who carried them. May the Lord bless and keep them.
+        </Text>
+
+        {/* Footer */}
+        <Text style={styles.footer}>
+          PrayerTrain · A Lantern Harbor project · prayertrains.com
+        </Text>
+      </Page>
+    </Document>
+  );
+}

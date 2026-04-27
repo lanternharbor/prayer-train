@@ -14,6 +14,10 @@ const nextConfig: NextConfig = {
       bodySizeLimit: "10mb",
     },
   },
+  // @react-pdf/renderer ships native modules and prebuilt binaries that don't
+  // play well with the bundler — externalize so Vercel runs it from
+  // node_modules at runtime instead of trying to inline it into the lambda.
+  serverExternalPackages: ["@react-pdf/renderer"],
   redirects: async () => [
     // Common URLs that people type or link to. All 308 (permanent).
     { source: "/about", destination: "/our-story", permanent: true },

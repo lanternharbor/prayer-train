@@ -10,6 +10,7 @@ import {
   CalendarDays,
   BarChart3,
   Settings,
+  FileDown,
 } from "lucide-react";
 import { PostUpdateForm } from "./post-update-form";
 import { TrainStatusControls } from "./train-status-controls";
@@ -133,6 +134,31 @@ export default async function ManagePage({
           <p className="text-xs text-muted-foreground">Prayers Prayed</p>
         </div>
       </div>
+
+      {/* Spiritual Bouquet — only visible once the train is COMPLETED. The
+          PDF endpoint matches the same auth pattern as this page. */}
+      {train.status === "COMPLETED" && (
+        <div className="prayer-card mb-8 flex flex-col sm:flex-row items-start sm:items-center gap-4">
+          <div className="flex-1">
+            <h2 className="font-heading text-lg font-semibold text-navy-800 mb-1 flex items-center gap-2">
+              <FileDown className="w-5 h-5 text-gold-500" />
+              Spiritual Bouquet
+            </h2>
+            <p className="text-sm text-muted-foreground">
+              A printable record of every prayer offered for{" "}
+              {train.recipientName} — names, prayers, dates. Print at home or
+              share with the family.
+            </p>
+          </div>
+          <a
+            href={`/api/bouquet/${train.slug}`}
+            className="inline-flex items-center gap-2 px-4 py-2 bg-navy-600 text-white text-sm font-medium rounded-lg hover:bg-navy-700 transition-colors shrink-0"
+          >
+            <FileDown className="w-4 h-4" />
+            Download PDF
+          </a>
+        </div>
+      )}
 
       {/* Visibility */}
       <VisibilityToggle trainId={train.id} currentlyPublic={train.isPublic} />

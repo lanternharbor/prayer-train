@@ -98,6 +98,7 @@ export async function GET(request: Request) {
           prayerName: chain.prayerType.name,
           prayerText: chain.prayerType.prayerText,
           prayerInstructions: chain.prayerType.instructions,
+          customPrayerText: chain.customPrayerText,
           recipientName: chain.recipientName,
           intention: chain.intention,
           day: dayNum,

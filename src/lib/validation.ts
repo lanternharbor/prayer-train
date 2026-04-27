@@ -43,6 +43,9 @@ export const createTrainSchema = z.object({
   intention: trimmedString(1, 2000),
   situation: z.enum(situationValues),
   situationDetail: optionalTrimmed(2000),
+  // Optional free-form prayer the organizer wants every volunteer to also
+  // pray. Generous cap because some traditional prayers are long.
+  customPrayerText: optionalTrimmed(4000),
   durationDays: z.coerce.number().int().min(1).max(365).default(30),
   slotsPerDay: z.coerce.number().int().min(1).max(24).default(3),
   isPublic: z.coerce.boolean().default(false),
@@ -98,6 +101,9 @@ export const createChainSchema = z.object({
   prayerTypeId: trimmedString(1, 60),
   recipientName: optionalTrimmed(80),
   intention: trimmedString(1, 2000),
+  // Optional free-form prayer the organizer wants every member to also pray.
+  // Mirrors createTrainSchema.customPrayerText.
+  customPrayerText: optionalTrimmed(4000),
   // Optional override; if omitted, we use the prayer's default daysRequired.
   durationDays: z.coerce.number().int().min(1).max(365).optional(),
   isPublic: z.coerce.boolean().default(false),

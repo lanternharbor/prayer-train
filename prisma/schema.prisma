@@ -146,6 +146,13 @@ model PrayerTrain {
   slotsPerDay Int       @default(3)
   status      TrainStatus @default(ACTIVE)
 
+  // Optional personal prayer the organizer wants every volunteer to also
+  // pray, alongside the prayer-type text from the library. Renders as its
+  // own card on the detail page and gets appended to the daily reminder
+  // emails. Free-form text — frequently a prayer a friend wrote, a family
+  // tradition, or words from the organizer's heart.
+  customPrayerText String? @db.Text
+
   // Privacy
   isPublic    Boolean  @default(false)
   showNames   Boolean  @default(true)
@@ -291,6 +298,12 @@ model PrayerChain {
   recipientName     String?
   recipientImageUrl String?      // optional Vercel Blob URL — same shape as PrayerTrain
   intention         String       @db.Text
+
+  // Optional personal prayer the organizer wants every member to also pray,
+  // alongside the prayer-type text from the library. Renders as its own card
+  // on the chain detail page and gets appended to the daily reminder emails.
+  // Mirrors PrayerTrain.customPrayerText.
+  customPrayerText  String?      @db.Text
 
   // Schedule
   startDate         DateTime

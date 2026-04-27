@@ -78,6 +78,11 @@ export function CreateWizard({
   const [slotsPerDay, setSlotsPerDay] = useState(3);
   const [isPublic, setIsPublic] = useState(true);
   const [selectedPrayerIds, setSelectedPrayerIds] = useState<string[]>([]);
+  // Optional free-form prayer the organizer wants every volunteer to also
+  // pray. Renders as its own card on the detail page and gets appended to
+  // daily reminder emails. Lives outside the situationDetail field so the
+  // two are visually distinct on the train page.
+  const [customPrayerText, setCustomPrayerText] = useState("");
 
   // Smart prayer suggestions based on situation
   const suggestedPrayers = situation
@@ -121,6 +126,7 @@ export function CreateWizard({
     formData.set("intention", intention);
     formData.set("situation", situation);
     formData.set("situationDetail", situationDetail);
+    formData.set("customPrayerText", customPrayerText);
     formData.set(
       "durationDays",
       (customDuration ? parseInt(customDuration) : durationDays).toString()
@@ -545,6 +551,37 @@ export function CreateWizard({
               matching the situation.
             </p>
           )}
+
+          {/* Optional custom prayer — for the organizer who has a specific
+              prayer they want every volunteer to also pray (a family
+              tradition, a prayer a friend wrote, words from their own
+              heart). Sits separate from the situationDetail field so the
+              two stay visually distinct on the train detail page. */}
+          <div className="pt-2 border-t border-cream-200">
+            <label
+              htmlFor="customPrayerText"
+              className="block text-sm font-medium text-navy-700 mb-1.5"
+            >
+              A personal prayer to include{" "}
+              <span className="text-xs text-muted-foreground font-normal">
+                (optional)
+              </span>
+            </label>
+            <p className="text-xs text-muted-foreground mb-2">
+              Have a specific prayer you&apos;d like everyone to pray alongside
+              the prayers above? Paste it here. We&apos;ll show it on the train
+              page and include it in the daily reminder emails.
+            </p>
+            <textarea
+              id="customPrayerText"
+              value={customPrayerText}
+              onChange={(e) => setCustomPrayerText(e.target.value)}
+              placeholder="e.g., a family prayer, a prayer a friend wrote, words from your heart…"
+              rows={4}
+              maxLength={4000}
+              className="w-full px-4 py-2.5 border border-border rounded-lg bg-cream-50 focus:outline-none focus:ring-2 focus:ring-gold-400/50 focus:border-gold-400 transition resize-none"
+            />
+          </div>
         </div>
       )}
 

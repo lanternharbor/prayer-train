@@ -14,6 +14,7 @@ import {
   Settings,
   Church,
   MapPin,
+  HandHeart,
 } from "lucide-react";
 import Link from "next/link";
 import { PrayerCalendar } from "./prayer-calendar";
@@ -204,6 +205,28 @@ export default async function PrayerTrainPage({
           </div>{/* close flex-1 */}
         </div>{/* close flex avatar row */}
       </div>
+
+      {/* Custom prayer card — when the organizer has provided a personal
+          prayer (a family tradition, a prayer from a friend, or words of
+          their own). Sits in its own card so it stays visually distinct
+          from the situation detail and the prayer-type texts in the
+          calendar below. */}
+      {train.customPrayerText && (
+        <div className="prayer-card mb-8 bg-cream-50 border-cream-300">
+          <h2 className="font-heading text-xl font-semibold text-navy-800 mb-3 flex items-center gap-2">
+            <HandHeart className="w-5 h-5 text-gold-500" />
+            A prayer from {train.organizer.name?.split(/\s+/)[0] || "the organizer"}
+          </h2>
+          <p className="text-sm text-muted-foreground mb-3">
+            Pray this alongside the prayers below.
+          </p>
+          <div className="bg-white border border-cream-300 rounded-lg p-5">
+            <p className="font-heading text-base sm:text-lg leading-relaxed text-navy-700 italic whitespace-pre-line">
+              {train.customPrayerText}
+            </p>
+          </div>
+        </div>
+      )}
 
       {/* Progress Bar */}
       <div className="prayer-card mb-8">

@@ -47,7 +47,11 @@ export async function GET(request: Request) {
       train: { status: "ACTIVE" },
     },
     include: {
-      train: true,
+      train: {
+        include: {
+          organizer: { select: { name: true } },
+        },
+      },
       prayerType: true,
       claimedBy: { select: { email: true, name: true } },
     },
@@ -71,6 +75,9 @@ export async function GET(request: Request) {
         prayerName: slot.prayerType.name,
         prayerText: slot.prayerType.prayerText,
         prayerInstructions: slot.prayerType.instructions,
+        customPrayerText: slot.train.customPrayerText,
+        organizerFirstName:
+          slot.train.organizer?.name?.split(/\s+/)[0] ?? null,
         trainUrl: `${baseUrl}/p/${slot.train.slug}`,
         slotId: slot.id,
       });

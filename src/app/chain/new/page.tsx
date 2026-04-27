@@ -143,6 +143,35 @@ export default async function NewChainPage({
 
           <PhotoUploadField name="recipientPhoto" />
 
+          {/* Optional custom prayer — same shape as PrayerTrain's custom
+              prayer field. For organizers who have a specific prayer they
+              want every chain member to pray alongside the prayer-type
+              text from the library. */}
+          <div>
+            <label
+              htmlFor="customPrayerText"
+              className="block text-sm font-medium text-navy-700 mb-1.5"
+            >
+              A personal prayer to include{" "}
+              <span className="text-xs text-muted-foreground font-normal">
+                (optional)
+              </span>
+            </label>
+            <p className="text-xs text-muted-foreground mb-2">
+              Have a specific prayer you&apos;d like everyone to pray alongside
+              the {prayerType.name}? Paste it here. We&apos;ll show it on the
+              chain page and include it in the daily reminder emails.
+            </p>
+            <textarea
+              id="customPrayerText"
+              name="customPrayerText"
+              maxLength={4000}
+              rows={4}
+              placeholder="e.g., a family prayer, a prayer a friend wrote, words from your heart…"
+              className="w-full px-4 py-2.5 border border-border rounded-lg bg-cream-50 focus:ring-2 focus:ring-gold-400/50 focus:border-gold-400 transition resize-none"
+            />
+          </div>
+
           <label className="flex items-start gap-3 cursor-pointer p-3 rounded-lg bg-cream-50 border border-cream-300">
             <input
               name="isPublic"

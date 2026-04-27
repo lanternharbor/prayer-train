@@ -47,6 +47,7 @@ export async function createPrayerTrain(formData: FormData) {
     intention,
     situation,
     situationDetail,
+    customPrayerText,
     durationDays,
     slotsPerDay,
     isPublic,
@@ -92,6 +93,7 @@ export async function createPrayerTrain(formData: FormData) {
       intention,
       situation,
       situationDetail: situationDetail || null,
+      customPrayerText: customPrayerText || null,
       startDate,
       endDate,
       slotsPerDay,
@@ -390,8 +392,14 @@ export async function createPrayerChain(formData: FormData) {
     await getRateLimitId(session.user.id),
   );
 
-  const { prayerTypeId, recipientName, intention, durationDays, isPublic } =
-    parseFormData(createChainSchema, formData);
+  const {
+    prayerTypeId,
+    recipientName,
+    intention,
+    customPrayerText,
+    durationDays,
+    isPublic,
+  } = parseFormData(createChainSchema, formData);
 
   const prayerType = await prisma.prayerType.findUnique({
     where: { id: prayerTypeId },
@@ -450,6 +458,7 @@ export async function createPrayerChain(formData: FormData) {
       recipientName: recipientName ?? null,
       recipientImageUrl,
       intention,
+      customPrayerText: customPrayerText || null,
       startDate,
       durationDays: finalDurationDays,
       endDate,

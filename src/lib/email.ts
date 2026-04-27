@@ -181,6 +181,8 @@ export async function sendDailyReminder({
   prayerName,
   prayerText,
   prayerInstructions,
+  customPrayerText,
+  organizerFirstName,
   trainUrl,
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   slotId,
@@ -191,6 +193,10 @@ export async function sendDailyReminder({
   prayerName: string;
   prayerText: string | null;
   prayerInstructions: string | null;
+  /** Optional personal prayer the organizer added when creating the train. */
+  customPrayerText?: string | null;
+  /** Used to attribute the custom prayer ("A prayer from {name}"). */
+  organizerFirstName?: string | null;
   trainUrl: string;
   /** Reserved for future per-slot tracking links */
   slotId: string;
@@ -224,12 +230,22 @@ export async function sendDailyReminder({
             ` : ""}
             ${prayerText ? `
               <div style="background: white; border: 1px solid #e8e0d5; border-radius: 8px; padding: 16px;">
-                <p style="margin: 0; color: #242e58; font-style: italic; line-height: 1.8; font-size: 15px;">
+                <p style="margin: 0; color: #242e58; font-style: italic; line-height: 1.8; font-size: 15px; white-space: pre-line;">
                   ${prayerText}
                 </p>
               </div>
             ` : ""}
           </div>
+          ${customPrayerText ? `
+            <div style="background: #fdf8ef; border: 1px solid #e8d5a8; border-radius: 12px; padding: 20px; margin-bottom: 16px;">
+              <p style="margin: 0 0 10px 0; color: #947324; font-size: 11px; letter-spacing: 2px; text-transform: uppercase;">
+                A prayer from ${organizerFirstName || "the organizer"}
+              </p>
+              <p style="margin: 0; color: #242e58; font-style: italic; line-height: 1.8; font-size: 15px; white-space: pre-line;">
+                ${customPrayerText}
+              </p>
+            </div>
+          ` : ""}
           <div style="text-align: center; margin-top: 24px;">
             <a href="${trainUrl}" style="display: inline-block; background: #d4a843; color: #0a0c1a; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: bold; font-size: 14px;">
               Mark as Prayed
@@ -335,6 +351,7 @@ export async function sendChainDailyReminder({
   prayerName,
   prayerText,
   prayerInstructions,
+  customPrayerText,
   recipientName,
   intention,
   day,
@@ -350,6 +367,8 @@ export async function sendChainDailyReminder({
   prayerName: string;
   prayerText: string | null;
   prayerInstructions: string | null;
+  /** Optional personal prayer the organizer added on chain creation. */
+  customPrayerText?: string | null;
   recipientName: string | null;
   intention: string;
   day: number;
@@ -394,6 +413,14 @@ export async function sendChainDailyReminder({
                 : ""
             }
             ${
+              customPrayerText
+                ? `<div style="background: #fdf8ef; border: 1px solid #e8d5a8; border-radius: 12px; padding: 20px; margin: 0 0 22px;">
+                    <p style="color: #947324; font-size: 11px; letter-spacing: 2px; text-transform: uppercase; margin: 0 0 10px;">A prayer from ${orgFirst}</p>
+                    <p style="font-family: 'EB Garamond', Georgia, serif; color: #11152c; font-size: 16px; font-style: italic; line-height: 1.7; white-space: pre-line; margin: 0;">${customPrayerText}</p>
+                  </div>`
+                : ""
+            }
+            ${
               otherMembersCount > 0
                 ? `<p style="color: #6e6150; font-size: 13px; line-height: 1.6; margin: 0 0 18px; font-style: italic; text-align: center;">
                     ${otherMembersCount} ${otherMembersCount === 1 ? "other person is" : "other people are"} praying with ${orgFirst} today.
@@ -416,7 +443,7 @@ export async function sendChainDailyReminder({
           </p>
         </div>
       `,
-      text: `Day ${day} of ${durationDays} — ${orgFirst}'s ${prayerName} ${phrase}\n\n${prayerInstructions ? prayerInstructions + "\n\n" : ""}${prayerText ?? ""}\n\nI prayed today: ${markCompleteUrl}\nVisit the chain: ${chainUrl}\nUnsubscribe: ${unsubscribeUrl}`,
+      text: `Day ${day} of ${durationDays} — ${orgFirst}'s ${prayerName} ${phrase}\n\n${prayerInstructions ? prayerInstructions + "\n\n" : ""}${prayerText ?? ""}${customPrayerText ? `\n\nA prayer from ${orgFirst}:\n${customPrayerText}` : ""}\n\nI prayed today: ${markCompleteUrl}\nVisit the chain: ${chainUrl}\nUnsubscribe: ${unsubscribeUrl}`,
     });
   } catch (error) {
     console.error("Failed to send chain daily reminder:", error);

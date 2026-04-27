@@ -8,7 +8,7 @@ import { SaintPortrait } from "@/components/saint-portrait";
 import { RecipientAvatar } from "@/components/ui/catholic-icons";
 import { JoinChainButton } from "./join-button";
 import { ChainShareButton } from "./share-button";
-import { ArrowLeft, CalendarDays, Settings, Users } from "lucide-react";
+import { ArrowLeft, CalendarDays, HandHeart, Settings, Users } from "lucide-react";
 
 function firstName(fullName: string | null | undefined): string {
   if (!fullName) return "the organizer";
@@ -201,6 +201,27 @@ export default async function ChainDetailPage({
           </div>
         )}
       </div>
+
+      {/* Custom prayer card — when the organizer has provided a personal
+          prayer (a family tradition, a prayer from a friend, or words of
+          their own). Renders above today's prayer-type text so the
+          organizer's heart leads. */}
+      {chain.customPrayerText && (
+        <div className="prayer-card mb-8 bg-cream-50 border-cream-300">
+          <h2 className="font-heading text-xl font-semibold text-navy-800 mb-3 flex items-center gap-2">
+            <HandHeart className="w-5 h-5 text-gold-500" />
+            A prayer from {orgFirst}
+          </h2>
+          <p className="text-sm text-muted-foreground mb-3">
+            Pray this alongside today&apos;s prayer below.
+          </p>
+          <div className="bg-white border border-cream-300 rounded-lg p-5">
+            <p className="font-heading text-base sm:text-lg leading-relaxed text-navy-700 italic whitespace-pre-line">
+              {chain.customPrayerText}
+            </p>
+          </div>
+        </div>
+      )}
 
       {/* Today's prayer */}
       {chain.status === "ACTIVE" && (

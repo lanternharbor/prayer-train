@@ -9,7 +9,7 @@ import {
 } from "lucide-react";
 
 export const metadata: Metadata = {
-  title: "Start a PrayerTrain or PrayerChain",
+  title: "Start a PrayerTrain",
   description:
     "Two ways to organize prayer for someone you love — pick the one that fits.",
   alternates: { canonical: "/create" },
@@ -24,21 +24,23 @@ export default function CreateChooserPage() {
           How can we help you organize prayer?
         </h1>
         <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-          Two patterns, both Catholic, both supported here. Pick the one
-          that fits how your community wants to pray together.
+          Two ways to organize prayer. Both are PrayerTrain — pick what fits
+          how your community wants to pray.
         </p>
       </div>
 
-      {/* Two cards */}
+      {/* Two cards — both formats are PrayerTrain. The first card describes
+          the calendar/coverage pattern; the second describes the synchronized
+          "everyone prays the same prayer together" pattern. */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
-        {/* PrayerTrain card */}
+        {/* Calendar format — current Train primitive */}
         <div className="prayer-card flex flex-col">
           <div className="flex items-center gap-3 mb-4">
             <div className="w-12 h-12 rounded-xl bg-navy-100 flex items-center justify-center">
               <CalendarDays className="w-6 h-6 text-navy-700" />
             </div>
             <h2 className="font-heading text-2xl font-bold text-navy-800">
-              PrayerTrain
+              Fill a prayer calendar
             </h2>
           </div>
 
@@ -84,19 +86,19 @@ export default function CreateChooserPage() {
             className="mt-auto inline-flex items-center justify-center gap-2 px-5 py-3 bg-primary text-primary-foreground font-semibold rounded-lg hover:bg-navy-700 transition-colors"
           >
             <Heart className="w-4 h-4" />
-            Start a PrayerTrain
+            Start a calendar
             <ArrowRight className="w-4 h-4" />
           </Link>
         </div>
 
-        {/* PrayerChain card */}
+        {/* Pray-together format — current Chain primitive */}
         <div className="prayer-card flex flex-col">
           <div className="flex items-center gap-3 mb-4">
             <div className="w-12 h-12 rounded-xl bg-gold-100 flex items-center justify-center">
               <Users className="w-6 h-6 text-gold-700" />
             </div>
             <h2 className="font-heading text-2xl font-bold text-navy-800">
-              PrayerChain
+              Pray together
             </h2>
           </div>
 

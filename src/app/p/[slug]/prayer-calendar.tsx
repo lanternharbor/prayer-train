@@ -2,7 +2,14 @@
 
 import { useState } from "react";
 import { markSlotComplete } from "@/lib/actions";
-import { Clock, User, Check, Loader2 } from "lucide-react";
+import {
+  Clock,
+  User,
+  Check,
+  Loader2,
+  ChevronDown,
+  ChevronUp,
+} from "lucide-react";
 import { ClaimModal } from "./claim-modal";
 
 type Slot = {
@@ -42,71 +49,113 @@ export function PrayerCalendar({
   currentUserId: string | null;
 }) {
   const [claimingSlot, setClaimingSlot] = useState<Slot | null>(null);
+  // Past days are collapsed by default so an organizer or volunteer
+  // lands on today + upcoming dates without scrolling. Toggle expands
+  // the past section in place above today.
+  const [pastExpanded, setPastExpanded] = useState(false);
 
   const dates = Object.keys(slotsByDate).sort();
   const today = new Date().toISOString().split("T")[0];
+  const pastDates = dates.filter((d) => d < today);
+  const upcomingDates = dates.filter((d) => d >= today);
+
+  /**
+   * Inner renderer for a single day's card. Extracted so the past
+   * section and the upcoming section render the exact same shape
+   * without duplicated markup.
+   */
+  const renderDateCard = (dateKey: string) => {
+    const slots = slotsByDate[dateKey];
+    const date = new Date(dateKey + "T12:00:00");
+    const isPast = dateKey < today;
+    const isToday = dateKey === today;
+
+    return (
+      <div
+        key={dateKey}
+        className={`prayer-card ${
+          isToday ? "ring-2 ring-gold-400 ring-offset-2" : ""
+        } ${isPast ? "opacity-60" : ""}`}
+      >
+        <div className="flex items-center gap-3 mb-3">
+          <div
+            className={`text-center min-w-[3.5rem] px-2 py-1 rounded-lg ${
+              isToday
+                ? "bg-gold-400 text-navy-900"
+                : "bg-cream-200 text-navy-700"
+            }`}
+          >
+            <div className="text-xs font-medium uppercase">
+              {date.toLocaleDateString("en-US", { weekday: "short" })}
+            </div>
+            <div className="text-lg font-bold leading-tight">
+              {date.getDate()}
+            </div>
+          </div>
+          <div>
+            <p className="text-sm font-medium text-navy-700">
+              {date.toLocaleDateString("en-US", {
+                month: "long",
+                day: "numeric",
+              })}
+            </p>
+            {isToday && (
+              <span className="text-xs text-gold-600 font-medium">Today</span>
+            )}
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
+          {slots.map((slot) => (
+            <SlotCard
+              key={slot.id}
+              slot={slot}
+              isPast={isPast}
+              trainActive={trainStatus === "ACTIVE"}
+              currentUserId={currentUserId}
+              onClaim={() => setClaimingSlot(slot)}
+            />
+          ))}
+        </div>
+      </div>
+    );
+  };
 
   return (
     <>
       <div className="space-y-3">
-        {dates.map((dateKey) => {
-          const slots = slotsByDate[dateKey];
-          const date = new Date(dateKey + "T12:00:00");
-          const isPast = dateKey < today;
-          const isToday = dateKey === today;
-
-          return (
-            <div
-              key={dateKey}
-              className={`prayer-card ${
-                isToday ? "ring-2 ring-gold-400 ring-offset-2" : ""
-              } ${isPast ? "opacity-60" : ""}`}
+        {/* Past days — collapsed by default. Renders only when there
+            actually are past dates so a brand-new train doesn't show
+            an empty toggle. */}
+        {pastDates.length > 0 && (
+          <div>
+            <button
+              type="button"
+              onClick={() => setPastExpanded((v) => !v)}
+              aria-expanded={pastExpanded}
+              className="w-full flex items-center justify-between gap-2 px-4 py-3 rounded-lg border border-cream-300 bg-cream-50 text-sm text-muted-foreground hover:bg-cream-100 transition-colors"
             >
-              <div className="flex items-center gap-3 mb-3">
-                <div
-                  className={`text-center min-w-[3.5rem] px-2 py-1 rounded-lg ${
-                    isToday
-                      ? "bg-gold-400 text-navy-900"
-                      : "bg-cream-200 text-navy-700"
-                  }`}
-                >
-                  <div className="text-xs font-medium uppercase">
-                    {date.toLocaleDateString("en-US", { weekday: "short" })}
-                  </div>
-                  <div className="text-lg font-bold leading-tight">
-                    {date.getDate()}
-                  </div>
-                </div>
-                <div>
-                  <p className="text-sm font-medium text-navy-700">
-                    {date.toLocaleDateString("en-US", {
-                      month: "long",
-                      day: "numeric",
-                    })}
-                  </p>
-                  {isToday && (
-                    <span className="text-xs text-gold-600 font-medium">
-                      Today
-                    </span>
-                  )}
-                </div>
+              <span>
+                {pastExpanded ? "Hide" : "View"} {pastDates.length} past
+                {" "}
+                {pastDates.length === 1 ? "day" : "days"}
+              </span>
+              {pastExpanded ? (
+                <ChevronUp className="w-4 h-4" />
+              ) : (
+                <ChevronDown className="w-4 h-4" />
+              )}
+            </button>
+            {pastExpanded && (
+              <div className="space-y-3 mt-3">
+                {pastDates.map(renderDateCard)}
               </div>
+            )}
+          </div>
+        )}
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
-                {slots.map((slot) => (
-                  <SlotCard
-                    key={slot.id}
-                    slot={slot}
-                    isPast={isPast}
-                    trainActive={trainStatus === "ACTIVE"}
-                    currentUserId={currentUserId}
-                    onClaim={() => setClaimingSlot(slot)}
-                  />
-                ))}
-              </div>
-            </div>
-          );
-        })}
+        {/* Today + upcoming — always expanded. */}
+        {upcomingDates.map(renderDateCard)}
       </div>
 
       {claimingSlot && (

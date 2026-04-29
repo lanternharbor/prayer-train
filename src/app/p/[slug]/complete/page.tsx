@@ -89,9 +89,9 @@ export default async function CompleteSlotPage({
               Welcome.
             </h1>
             <p className="text-muted-foreground">
-              This page lives behind the "I prayed" button in our daily
-              reminder emails. Open the prayer train to see who&apos;s being
-              lifted up today.
+              This page lives behind the &ldquo;I prayed&rdquo; button in our
+              daily reminder emails. Open the prayer train to see who&apos;s
+              being lifted up today.
             </p>
           </>
         ) : (

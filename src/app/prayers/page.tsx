@@ -7,8 +7,9 @@ import {
   Clock,
   Star,
   CalendarDays,
+  Search,
 } from "lucide-react";
-import { PrayerCategory } from "@/generated/prisma/client";
+import { PrayerCategory, type Prisma } from "@/generated/prisma/client";
 
 export const metadata: Metadata = {
   title: "Prayer Library",
@@ -20,13 +21,29 @@ export const metadata: Metadata = {
 export default async function PrayersPage({
   searchParams,
 }: {
-  searchParams: Promise<{ category?: string }>;
+  searchParams: Promise<{ category?: string; q?: string }>;
 }) {
-  const { category } = await searchParams;
+  const { category, q: rawQuery } = await searchParams;
+  // Trim and cap the query string to defend against absurd inputs and
+  // strip the surrounding whitespace users sometimes paste in.
+  const query = (rawQuery ?? "").trim().slice(0, 100);
 
-  const where = category
-    ? { category: category as PrayerCategory }
-    : {};
+  // Compose the Prisma where: category filter (if present) AND an OR
+  // across the human-facing fields when a query is given. Case-
+  // insensitive `contains` on Postgres maps to ILIKE, which is fine
+  // for a library of ~50 entries with no per-search index.
+  const where: Prisma.PrayerTypeWhereInput = {
+    ...(category ? { category: category as PrayerCategory } : {}),
+    ...(query
+      ? {
+          OR: [
+            { name: { contains: query, mode: "insensitive" } },
+            { description: { contains: query, mode: "insensitive" } },
+            { patronSaint: { contains: query, mode: "insensitive" } },
+          ],
+        }
+      : {}),
+  };
 
   const prayers = await prisma.prayerType.findMany({
     where,
@@ -49,7 +66,7 @@ export default async function PrayersPage({
   return (
     <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
       {/* Header */}
-      <div className="mb-10">
+      <div className="mb-8">
         <h1 className="font-heading text-3xl sm:text-4xl font-bold text-navy-800 mb-3 gold-accent">
           Prayer Library
         </h1>
@@ -59,10 +76,40 @@ export default async function PrayersPage({
         </p>
       </div>
 
-      {/* Category Filters */}
+      {/* Search — plain GET form so the URL stays canonical and shareable.
+          Preserves the active category filter across searches via a hidden
+          field. Submits to /prayers?q=...&category=... */}
+      <form
+        action="/prayers"
+        method="get"
+        role="search"
+        aria-label="Search the prayer library"
+        className="mb-6 max-w-xl"
+      >
+        {category && (
+          <input type="hidden" name="category" value={category} />
+        )}
+        <div className="relative">
+          <Search
+            className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground"
+            aria-hidden="true"
+          />
+          <input
+            type="search"
+            name="q"
+            defaultValue={query}
+            placeholder="Search prayers — e.g. St. Blaise, grief, surgery, rosary"
+            maxLength={100}
+            className="w-full pl-9 pr-4 py-2.5 border border-border rounded-lg bg-cream-50 focus:outline-none focus:ring-2 focus:ring-gold-400/50 focus:border-gold-400 transition"
+          />
+        </div>
+      </form>
+
+      {/* Category Filters — preserve any active query so a category click
+          narrows the search results instead of resetting the search. */}
       <div className="flex flex-wrap gap-2 mb-10">
         <Link
-          href="/prayers"
+          href={query ? `/prayers?q=${encodeURIComponent(query)}` : "/prayers"}
           className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${
             !category
               ? "bg-navy-600 text-white"
@@ -71,20 +118,45 @@ export default async function PrayersPage({
         >
           All
         </Link>
-        {categories.map((cat) => (
-          <Link
-            key={cat}
-            href={`/prayers?category=${cat}`}
-            className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${
-              category === cat
-                ? "bg-navy-600 text-white"
-                : "bg-cream-200 text-muted-foreground hover:bg-cream-300"
-            }`}
-          >
-            {formatPrayerCategory(cat)}
-          </Link>
-        ))}
+        {categories.map((cat) => {
+          const params = new URLSearchParams();
+          params.set("category", cat);
+          if (query) params.set("q", query);
+          return (
+            <Link
+              key={cat}
+              href={`/prayers?${params.toString()}`}
+              className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${
+                category === cat
+                  ? "bg-navy-600 text-white"
+                  : "bg-cream-200 text-muted-foreground hover:bg-cream-300"
+              }`}
+            >
+              {formatPrayerCategory(cat)}
+            </Link>
+          );
+        })}
       </div>
+
+      {/* Search summary — shown only when a query is active, helps the
+          visitor confirm what they searched for and see how many hits. */}
+      {query && (
+        <p className="text-sm text-muted-foreground mb-6">
+          {prayers.length === 0 ? (
+            <>
+              No prayers match <strong>&ldquo;{query}&rdquo;</strong>
+              {category && <> in {formatPrayerCategory(category)}</>}.
+            </>
+          ) : (
+            <>
+              Found <strong>{prayers.length}</strong>{" "}
+              prayer{prayers.length === 1 ? "" : "s"} matching{" "}
+              <strong>&ldquo;{query}&rdquo;</strong>
+              {category && <> in {formatPrayerCategory(category)}</>}.
+            </>
+          )}
+        </p>
+      )}
 
       {/* Prayer Grid */}
       {Object.entries(grouped).map(([cat, catPrayers]) => (
@@ -141,11 +213,21 @@ export default async function PrayersPage({
           <h2 className="font-heading text-xl font-semibold text-navy-700 mb-2">
             No prayers found
           </h2>
-          <p className="text-muted-foreground">
-            {category
-              ? "No prayers in this category yet."
-              : "The prayer library hasn't been seeded yet."}
+          <p className="text-muted-foreground mb-4">
+            {query
+              ? "Try a different search term, or clear filters to see the whole library."
+              : category
+                ? "No prayers in this category yet."
+                : "The prayer library hasn't been seeded yet."}
           </p>
+          {(query || category) && (
+            <Link
+              href="/prayers"
+              className="inline-flex items-center gap-2 text-sm font-medium text-gold-700 hover:text-gold-800"
+            >
+              Clear filters
+            </Link>
+          )}
         </div>
       )}
     </div>

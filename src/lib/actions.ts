@@ -642,15 +642,21 @@ export async function joinPrayerChain(formData: FormData) {
 }
 
 // ─── Mark a Chain Day Complete ──────────────────────────────
+//
+// Identifies the member by memberId (cuid) instead of raw email. The
+// memberId is delivered via the daily reminder email's "I prayed
+// today" link and isn't easily guessable. (Codex audit flagged the
+// previous email-based scheme.)
 
 export async function markChainDayComplete(formData: FormData) {
-  const { chainId, email, day } = parseFormData(
+  const { memberId, day } = parseFormData(
     markChainDayCompleteSchema,
     formData,
   );
 
   const member = await prisma.prayerChainMember.findUnique({
-    where: { chainId_email: { chainId, email } },
+    where: { id: memberId },
+    include: { chain: { select: { slug: true } } },
   });
   if (!member) throw new Error("You're not a member of this PrayerChain.");
 
@@ -662,11 +668,7 @@ export async function markChainDayComplete(formData: FormData) {
     data: { lastDayCompleted: newDay },
   });
 
-  const chain = await prisma.prayerChain.findUnique({
-    where: { id: chainId },
-    select: { slug: true },
-  });
-  if (chain) revalidatePath(`/chain/${chain.slug}`);
+  revalidatePath(`/chain/${member.chain.slug}`);
 }
 
 // ─── Close PrayerChain (Organizer) ──────────────────────────

@@ -122,10 +122,15 @@ export const joinChainSchema = z.object({
 export type JoinChainInput = z.infer<typeof joinChainSchema>;
 
 // ─── Chain Day Completion ──────────────────────────────────
+//
+// Identifies the member by their PrayerChainMember.id (a cuid). Earlier
+// drafts used raw email as authority — switched to memberId because
+// (a) emails are easier to guess/observe and (b) the cuid is the same
+// shape we use for unsubscribe tokens, so there's only one identifier
+// pattern across the chain code paths.
 
 export const markChainDayCompleteSchema = z.object({
-  chainId: trimmedString(1, 60),
-  email: z.string().trim().email().max(254),
+  memberId: trimmedString(1, 60),
   day: z.coerce.number().int().min(1).max(365),
 });
 

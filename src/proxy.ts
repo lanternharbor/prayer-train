@@ -66,10 +66,15 @@ export async function proxy(request: NextRequest) {
     }
   }
 
-  // ── Auth gate: protect /dashboard and /create ──
-  const protectedPaths = ["/dashboard", "/create"];
+  // ── Auth gate ──
+  // /create itself is a public Train-or-Chain chooser (the highest-
+  // intent moment for a new organizer; we don't want to wall it off
+  // before they understand the difference). Only the actual creation
+  // flows are protected. /chain/new self-gates inside the page since
+  // it accepts ?prayerType= and needs to round-trip the callback.
+  const protectedPaths = ["/dashboard", "/create/train"];
   const isProtected = protectedPaths.some((path) =>
-    pathname.startsWith(path)
+    pathname === path || pathname.startsWith(`${path}/`)
   );
 
   const hasSession =

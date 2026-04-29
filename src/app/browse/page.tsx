@@ -280,9 +280,15 @@ export default async function BrowsePage({
                     <Heart className="w-3.5 h-3.5 text-gold-400" />
                     {fill}% covered
                   </span>
-                  <span className="flex items-center gap-1 font-medium text-green-600">
-                    {open} slots open
-                  </span>
+                  {open > 0 ? (
+                    <span className="flex items-center gap-1 font-medium text-green-600">
+                      {open} slots open
+                    </span>
+                  ) : (
+                    <span className="flex items-center gap-1 font-medium text-gold-700">
+                      Fully covered
+                    </span>
+                  )}
                 </div>
 
                 {/* Dates */}
@@ -294,9 +300,12 @@ export default async function BrowsePage({
                   </span>
                 </div>
 
-                {/* CTA hint */}
+                {/* CTA hint — copy adapts to coverage state. When every
+                    slot is claimed, the warmer "Pray alongside" pulls
+                    visitors toward the train page's overflow CTA
+                    instead of the dead-ended "Sign up to pray". */}
                 <div className="flex items-center gap-1.5 mt-3 text-sm font-medium text-gold-600 group-hover:text-gold-700">
-                  Sign up to pray
+                  {open > 0 ? "Sign up to pray" : "Pray alongside"}
                   <ArrowRight className="w-4 h-4" />
                 </div>
               </Link>

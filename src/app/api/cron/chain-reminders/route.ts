@@ -3,6 +3,7 @@ import { timingSafeEqual } from "node:crypto";
 import { prisma } from "@/lib/db";
 import { sendChainDailyReminder } from "@/lib/email";
 import { getBaseUrl } from "@/lib/url";
+import { signCompletionToken } from "@/lib/completion-tokens";
 
 /**
  * Vercel Cron hits this endpoint daily at 11:05 UTC — five minutes after the
@@ -81,16 +82,17 @@ export async function GET(request: Request) {
     for (const member of chain.members) {
       const otherCount = chain.members.length - 1;
 
-      // markCompleteUrl carries memberId (cuid) + day so the receiver
-      // can check off the day with one click. The link calls a server
-      // action via a small handler page; for now we point at the chain
-      // detail with a query param (the page will read it client-side
-      // in a follow-up commit). Switched away from raw email per Codex
-      // audit — memberId is the same identifier shape we use for
-      // unsubscribe tokens and isn't trivially guessable.
-      const markCompleteUrl = `${chainUrl}?markDay=${dayNum}&memberId=${encodeURIComponent(
+      // Tokenized one-click completion URL. Points at the
+      // /chain/[slug]/complete handler which verifies the HMAC before
+      // calling markChainDayCompleteByToken. Default 14-day TTL — a
+      // member who reads the reminder a few days late can still mark
+      // complete; ancient archived reminders can't be replayed.
+      const completionToken = signCompletionToken("chain-day", member.id);
+      const markCompleteUrl = `${baseUrl}/chain/${
+        chain.slug
+      }/complete?day=${dayNum}&memberId=${encodeURIComponent(
         member.id,
-      )}`;
+      )}&token=${encodeURIComponent(completionToken)}`;
       const unsubscribeUrl = `${baseUrl}/api/chain/unsubscribe?id=${member.id}`;
 
       try {

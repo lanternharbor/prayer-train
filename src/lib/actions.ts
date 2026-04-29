@@ -717,6 +717,46 @@ export async function markChainDayComplete(formData: FormData) {
   revalidatePath(`/chain/${member.chain.slug}`);
 }
 
+/**
+ * Token-gated variant for chain-day completion via the daily reminder
+ * email. Mirrors markSlotCompleteByToken — the token covers memberId
+ * (the member identifier in the reminder URL) and is verified before
+ * the lastDayCompleted update fires. Idempotent on already-completed
+ * days. The handler page at /chain/[slug]/complete catches errors and
+ * renders a calm friendly message.
+ */
+export async function markChainDayCompleteByToken(
+  memberId: string,
+  day: number,
+  token: string,
+) {
+  if (!verifyCompletionToken("chain-day", memberId, token)) {
+    throw new Error("This completion link is invalid or has expired.");
+  }
+  if (!Number.isInteger(day) || day < 1 || day > 365) {
+    throw new Error("That day number doesn't look right.");
+  }
+
+  const member = await prisma.prayerChainMember.findUnique({
+    where: { id: memberId },
+    include: { chain: { select: { slug: true } } },
+  });
+  if (!member) {
+    throw new Error("This completion link no longer matches a chain member.");
+  }
+
+  const newDay = Math.max(member.lastDayCompleted ?? 0, day);
+  if (newDay !== member.lastDayCompleted) {
+    await prisma.prayerChainMember.update({
+      where: { id: member.id },
+      data: { lastDayCompleted: newDay },
+    });
+  }
+
+  revalidatePath(`/chain/${member.chain.slug}`);
+  return { ok: true as const, slug: member.chain.slug, day: newDay };
+}
+
 // ─── Close PrayerChain (Organizer) ──────────────────────────
 
 export async function closePrayerChain(formData: FormData) {

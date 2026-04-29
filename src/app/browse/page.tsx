@@ -335,20 +335,21 @@ export default async function BrowsePage({
         </div>
       )}
 
-      {/* Public PrayerChains — separate section below trains. Renders only
-          when there's at least one to show. Failures fetching chains do not
-          affect the trains rendering above. */}
+      {/* Public "pray together" PrayerTrains — separate section below the
+          calendar trains. Renders only when there's at least one to show.
+          Failures fetching these do not affect the calendar trains
+          rendering above. */}
       {chains.length > 0 && (
         <section className="mt-16">
           <div className="flex items-center gap-2 mb-6">
             <Users className="w-5 h-5 text-gold-500" />
             <h2 className="font-heading text-2xl font-semibold text-navy-800">
-              PrayerChains
+              Praying together
             </h2>
           </div>
           <p className="text-muted-foreground mb-6 max-w-2xl">
-            Synchronized novenas and devotions you can pray alongside the
-            organizer.
+            Novenas and devotions a small group is praying together —
+            join them and pray every day.
           </p>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {chains.map((chain) => {
@@ -366,7 +367,7 @@ export default async function BrowsePage({
                 >
                   <div className="flex items-center gap-2 mb-3">
                     <span className="px-2.5 py-1 rounded-full text-xs font-medium bg-gold-100 text-gold-700">
-                      PrayerChain
+                      Pray together
                     </span>
                     <span className="px-2.5 py-1 rounded-full text-xs font-medium bg-cream-200 text-cream-700">
                       Day {dayInRange} of {chain.durationDays}

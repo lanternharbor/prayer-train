@@ -11,6 +11,12 @@ type Slot = {
   slotIndex: number;
   status: string;
   claimerName: string | null;
+  /**
+   * The User.id of the authenticated claimer, if any. Null for guest
+   * claims. Used by SlotCard to gate the "I prayed" button so a viewer
+   * can't accidentally complete someone else's prayer.
+   */
+  claimedById: string | null;
   completedAt: Date | null;
   prayerType: {
     id: string;
@@ -24,9 +30,16 @@ type Slot = {
 export function PrayerCalendar({
   slotsByDate,
   trainStatus,
+  currentUserId,
 }: {
   slotsByDate: Record<string, Slot[]>;
   trainStatus: string;
+  /**
+   * The current viewer's User.id, or null if anonymous. Threaded down
+   * to SlotCard so it can decide whether to render the "I prayed"
+   * button for slots claimed by an authenticated user.
+   */
+  currentUserId: string | null;
 }) {
   const [claimingSlot, setClaimingSlot] = useState<Slot | null>(null);
 
@@ -86,6 +99,7 @@ export function PrayerCalendar({
                     slot={slot}
                     isPast={isPast}
                     trainActive={trainStatus === "ACTIVE"}
+                    currentUserId={currentUserId}
                     onClaim={() => setClaimingSlot(slot)}
                   />
                 ))}
@@ -109,17 +123,26 @@ function SlotCard({
   slot,
   isPast,
   trainActive,
+  currentUserId,
   onClaim,
 }: {
   slot: Slot;
   isPast: boolean;
   trainActive: boolean;
+  currentUserId: string | null;
   onClaim: () => void;
 }) {
   const [marking, setMarking] = useState(false);
   const [completed, setCompleted] = useState(slot.status === "COMPLETED");
   const isOpen = slot.status === "OPEN" && !completed;
   const isClaimed = slot.status === "CLAIMED" && !completed;
+  // Whether the current viewer can mark this slot complete from the
+  // calendar. Mirrors the server-side check in markSlotComplete:
+  //  - Authenticated owner: yes
+  //  - Anyone, when slot is guest-claimed (claimedById null): yes
+  //  - Otherwise (someone else's authenticated claim): no
+  const canMarkComplete =
+    !slot.claimedById || slot.claimedById === currentUserId;
 
   const handleMarkPrayed = async () => {
     setMarking(true);
@@ -166,20 +189,22 @@ function SlotCard({
             <User className="w-3 h-3" />
             {slot.claimerName}
           </div>
-          <button
-            onClick={handleMarkPrayed}
-            disabled={marking}
-            className="w-full py-1.5 text-xs font-medium bg-white/80 hover:bg-white border border-gold-300 rounded text-gold-700 hover:text-gold-800 transition-colors flex items-center justify-center gap-1"
-          >
-            {marking ? (
-              <Loader2 className="w-3 h-3 animate-spin" />
-            ) : (
-              <>
-                <Check className="w-3 h-3" />
-                I prayed
-              </>
-            )}
-          </button>
+          {canMarkComplete && (
+            <button
+              onClick={handleMarkPrayed}
+              disabled={marking}
+              className="w-full py-1.5 text-xs font-medium bg-white/80 hover:bg-white border border-gold-300 rounded text-gold-700 hover:text-gold-800 transition-colors flex items-center justify-center gap-1"
+            >
+              {marking ? (
+                <Loader2 className="w-3 h-3 animate-spin" />
+              ) : (
+                <>
+                  <Check className="w-3 h-3" />
+                  I prayed
+                </>
+              )}
+            </button>
+          )}
         </div>
       ) : completed && slot.claimerName ? (
         <div className="mt-2 flex items-center gap-1 text-xs text-blue-600">

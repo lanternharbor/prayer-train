@@ -323,7 +323,11 @@ export default async function PrayerTrainPage({
           <CrossIcon className="w-5 h-5 text-gold-400" />
           Prayer Calendar
         </h2>
-        <PrayerCalendar slotsByDate={slotsByDate} trainStatus={train.status} />
+        <PrayerCalendar
+          slotsByDate={slotsByDate}
+          trainStatus={train.status}
+          currentUserId={session?.user?.id ?? null}
+        />
       </div>
 
       {/* Prayer-warrior roster — shown whenever any pledges exist,

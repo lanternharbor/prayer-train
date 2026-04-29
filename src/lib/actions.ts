@@ -245,8 +245,20 @@ export async function markSlotComplete(slotId: string) {
     throw new Error("Cannot mark this slot as complete.");
   }
 
-  // Verify ownership
-  if (session?.user?.id && slot.claimedById !== session.user.id) {
+  // Ownership check.
+  //
+  // Threat model: this is a friendly Catholic prayer site for older users
+  // in parish ministries; the realistic risk is "Aunt Susan accidentally
+  // taps a button that wasn't hers," not adversarial tampering. So:
+  //
+  // - If the slot was claimed by an authenticated user (claimedById set),
+  //   only that user can mark it complete. Prevents a logged-in viewer
+  //   AND any anonymous viewer from completing someone else's prayer.
+  // - If the slot was claimed by a guest (claimedById null, claimerEmail
+  //   set), keep the existing "anyone can mark complete" behavior, since
+  //   guest claimers have no other way to complete from the page (no
+  //   tokenized email link yet — that's a separate morning task).
+  if (slot.claimedById && slot.claimedById !== session?.user?.id) {
     throw new Error("You can only mark your own commitments as complete.");
   }
 

@@ -22,6 +22,7 @@ import { Guestbook } from "./guestbook";
 import { UpdatesFeed } from "./updates-feed";
 import { ShareButton } from "./share-button";
 import { AddWarriorButton } from "./add-warrior-button";
+import { ExpandableText } from "./expandable-text";
 import { CrossIcon, CrossDivider, RecipientAvatar } from "@/components/ui/catholic-icons";
 
 export async function generateMetadata({
@@ -182,16 +183,21 @@ export default async function PrayerTrainPage({
         <h1 className="font-heading text-3xl sm:text-4xl font-bold text-navy-800 mb-2">
           Prayers for {train.recipientName}
         </h1>
-        <p className="text-lg text-muted-foreground leading-relaxed mb-4">
-          {train.intention}
-        </p>
+        <ExpandableText
+          text={train.intention}
+          className="text-lg text-muted-foreground leading-relaxed mb-4"
+        />
         {train.situationDetail && (
-          <p className="text-sm text-muted-foreground bg-cream-50 rounded-lg p-3 border border-cream-300">
-            {train.situationDetail}
-          </p>
+          <ExpandableText
+            text={train.situationDetail}
+            className="text-sm text-muted-foreground bg-cream-50 rounded-lg p-3 border border-cream-300"
+          />
         )}
 
-        <div className="flex items-center gap-4 mt-4 flex-wrap">
+        {/* Metadata strip — flex-col on mobile so each item gets its
+            own row (avoids ragged-wrap of the parish + location + date
+            chips). At sm+ we keep the original wrapping inline row. */}
+        <div className="flex flex-col sm:flex-row sm:flex-wrap sm:items-center gap-2 sm:gap-4 mt-4">
           <span className="text-sm text-muted-foreground">
             Organized by{" "}
             <span className="font-medium text-navy-700">
@@ -243,9 +249,10 @@ export default async function PrayerTrainPage({
             Pray this alongside the prayers below.
           </p>
           <div className="bg-white border border-cream-300 rounded-lg p-5">
-            <p className="font-heading text-base sm:text-lg leading-relaxed text-navy-700 italic whitespace-pre-line">
-              {train.customPrayerText}
-            </p>
+            <ExpandableText
+              text={train.customPrayerText}
+              className="font-heading text-base sm:text-lg leading-relaxed text-navy-700 italic"
+            />
           </div>
         </div>
       )}
@@ -270,7 +277,12 @@ export default async function PrayerTrainPage({
             }}
           />
         </div>
-        <div className="flex items-center gap-6 mt-3 text-sm text-muted-foreground">
+        {/* Stats row — wraps naturally onto multiple lines on narrow
+            screens. Removed `ml-auto` from the warrior count because
+            that combined with the wrap pushed the count past the
+            card's right padding on mobile. Now everything flows in a
+            single wrapping flex strip with a 2x2-ish layout. */}
+        <div className="flex flex-wrap items-center gap-x-4 gap-y-2 mt-3 text-sm text-muted-foreground">
           <span className="flex items-center gap-1.5">
             <div className="w-2.5 h-2.5 rounded-full bg-slot-open-border" />
             {totalSlots - claimedSlots - completedSlots} open
@@ -283,7 +295,7 @@ export default async function PrayerTrainPage({
             <div className="w-2.5 h-2.5 rounded-full bg-slot-completed-border" />
             {completedSlots} completed
           </span>
-          <span className="flex items-center gap-1.5 ml-auto">
+          <span className="flex items-center gap-1.5">
             <Users className="w-3.5 h-3.5" />
             {warriors.size} prayer warriors
           </span>

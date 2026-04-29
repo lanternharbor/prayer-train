@@ -157,13 +157,17 @@ export default async function PrayerTrainPage({
     <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
       {/* Header */}
       <div className="mb-8">
-        <div className="flex items-start gap-5 mb-4">
+        {/* Mobile: avatar stacks above content so the title, intention,
+            and metadata strip use the full screen width (no squeeze
+            into a 3/4-width right column). Desktop (sm+): avatar sits
+            to the left of the content as before. */}
+        <div className="flex flex-col sm:flex-row sm:items-start gap-4 sm:gap-5 mb-4">
           <RecipientAvatar
             imageUrl={train.recipientImageUrl}
             name={train.recipientName}
             size="lg"
           />
-          <div className="flex-1">
+          <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2 mb-3 flex-wrap">
           <span className="px-2.5 py-0.5 rounded-full text-xs font-medium bg-navy-100 text-navy-700">
             {formatSituation(train.situation)}

@@ -21,6 +21,7 @@ import { PrayerCalendar } from "./prayer-calendar";
 import { Guestbook } from "./guestbook";
 import { UpdatesFeed } from "./updates-feed";
 import { ShareButton } from "./share-button";
+import { AddWarriorButton } from "./add-warrior-button";
 import { CrossIcon, CrossDivider, RecipientAvatar } from "@/components/ui/catholic-icons";
 
 export async function generateMetadata({
@@ -99,6 +100,19 @@ export default async function PrayerTrainPage({
         orderBy: { createdAt: "desc" },
         include: { author: { select: { name: true } } },
       },
+      // PrayerWarrior pledges — additional people praying for this
+      // recipient who didn't claim a calendar slot. Surfaced as a
+      // primary CTA when slots are full and as an "also praying
+      // alongside" roster whenever any pledges exist.
+      warriors: {
+        orderBy: { createdAt: "asc" },
+        select: {
+          id: true,
+          name: true,
+          message: true,
+          createdAt: true,
+        },
+      },
     },
   });
 
@@ -109,9 +123,17 @@ export default async function PrayerTrainPage({
   const completedSlots = train.slots.filter(
     (s) => s.status === "COMPLETED"
   ).length;
+  const openSlots = train.slots.filter((s) => s.status === "OPEN").length;
   const fillRate = calculateFillRate(totalSlots, claimedSlots, completedSlots);
 
   const isOrganizer = session?.user?.id === train.organizerId;
+
+  // Coverage state: when every slot is claimed AND the train is still
+  // accepting prayer (status === ACTIVE), surface the "Add yourself as
+  // a prayer warrior" CTA. The slot-based train remains the organizing
+  // mechanism, but no one is ever turned away from praying.
+  const isFullyCovered = openSlots === 0 && totalSlots > 0;
+  const showWarriorCTA = isFullyCovered && train.status === "ACTIVE";
 
   // Group slots by date
   const slotsByDate = train.slots.reduce(
@@ -271,6 +293,28 @@ export default async function PrayerTrainPage({
       {/* Share */}
       <ShareButton slug={slug} recipientName={train.recipientName} />
 
+      {/* Pray-anyway CTA — surfaced only when every calendar slot is
+          claimed and the train is still accepting prayer. The train
+          stays the organizing mechanism; this affordance honors the
+          spiritual truth that no one is ever turned away from praying. */}
+      {showWarriorCTA && (
+        <div className="prayer-card mt-6 mb-2 bg-gold-50 border-gold-300 text-center">
+          <HandHeart className="w-8 h-8 text-gold-600 mx-auto mb-2" />
+          <h2 className="font-heading text-xl font-semibold text-navy-800 mb-1">
+            Every slot is filled — and you can still join.
+          </h2>
+          <p className="text-sm text-muted-foreground mb-4 max-w-md mx-auto">
+            The calendar is fully covered, but {train.recipientName} can never
+            have too many people praying. Add yourself as a prayer warrior —
+            pledge to pray, no specific slot.
+          </p>
+          <AddWarriorButton
+            trainId={train.id}
+            recipientName={train.recipientName}
+          />
+        </div>
+      )}
+
       <CrossDivider />
 
       {/* Calendar */}
@@ -281,6 +325,31 @@ export default async function PrayerTrainPage({
         </h2>
         <PrayerCalendar slotsByDate={slotsByDate} trainStatus={train.status} />
       </div>
+
+      {/* Prayer-warrior roster — shown whenever any pledges exist,
+          regardless of coverage state. Once a warrior pledges, their
+          name belongs on the page from then on. */}
+      {train.warriors.length > 0 && (
+        <div className="mb-10">
+          <h2 className="font-heading text-2xl font-semibold text-navy-800 mb-4 flex items-center gap-2">
+            <HandHeart className="w-5 h-5 text-gold-500" />
+            Also praying alongside ({train.warriors.length})
+          </h2>
+          <div className="prayer-card">
+            <div className="flex flex-wrap gap-2">
+              {train.warriors.map((w) => (
+                <span
+                  key={w.id}
+                  title={w.message ?? undefined}
+                  className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-cream-100 text-navy-700 text-sm border border-cream-300"
+                >
+                  {w.name}
+                </span>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Two-column: Updates + Guestbook */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">

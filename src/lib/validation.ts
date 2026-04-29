@@ -142,6 +142,20 @@ export const closeChainSchema = z.object({
 
 export type CloseChainInput = z.infer<typeof closeChainSchema>;
 
+// ─── Add PrayerWarrior pledge ───────────────────────────────
+// Soft-pledge to pray for a fully-covered train without claiming a
+// calendar slot. Idempotent on (trainId, email) — same shape as joining
+// a chain, since both are friction-free name+email participations.
+
+export const addPrayerWarriorSchema = z.object({
+  trainId: trimmedString(1, 60),
+  name: trimmedString(1, 80),
+  email: z.string().trim().email().max(254),
+  message: optionalTrimmed(500),
+});
+
+export type AddPrayerWarriorInput = z.infer<typeof addPrayerWarriorSchema>;
+
 /**
  * Helper that runs a Zod parse on a FormData object and throws a friendly
  * Error on failure. Server actions catch the throw and the error component

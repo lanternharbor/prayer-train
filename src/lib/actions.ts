@@ -8,6 +8,7 @@ import { sendClaimConfirmation } from "@/lib/email";
 import { enforceRateLimit } from "@/lib/rate-limit";
 import { getRateLimitId } from "@/lib/request";
 import {
+  addPrayerWarriorSchema,
   claimSlotSchema,
   closeChainSchema,
   createChainSchema,
@@ -21,6 +22,8 @@ import {
 import {
   sendChainClosingDayEmail,
   sendChainJoinConfirmation,
+  sendPrayerWarriorClosing,
+  sendPrayerWarriorWelcome,
 } from "@/lib/email";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
@@ -331,16 +334,51 @@ export async function updateTrainStatus(
 
   const train = await prisma.prayerTrain.findUnique({
     where: { id: trainId },
+    include: {
+      organizer: { select: { name: true } },
+      // Pull warriors here so we can email them on transition to
+      // COMPLETED without a second roundtrip. Empty roster is fine.
+      warriors: {
+        select: { id: true, name: true, email: true },
+      },
+    },
   });
 
   if (!train || train.organizerId !== session.user.id) {
     throw new Error("Only the organizer can update the train status.");
   }
 
+  // State-change check: only fire warrior closing emails when this
+  // call is actually transitioning the train to COMPLETED. Prevents
+  // duplicate sends if the organizer toggles the status repeatedly.
+  const isTransitioningToCompleted =
+    status === "COMPLETED" && train.status !== "COMPLETED";
+
   await prisma.prayerTrain.update({
     where: { id: trainId },
     data: { status },
   });
+
+  if (isTransitioningToCompleted && train.warriors.length > 0) {
+    const baseUrl = getBaseUrl();
+    const trainUrl = `${baseUrl}/p/${train.slug}`;
+    const bouquetUrl = `${baseUrl}/api/bouquet/${train.slug}`;
+    const orgFirst = train.organizer?.name?.split(/\s+/)[0] ?? null;
+
+    // Fire emails sequentially, never blocking the status update.
+    // Each send is wrapped in the email function's try/catch so a
+    // single failure doesn't stop the rest from going out.
+    for (const warrior of train.warriors) {
+      await sendPrayerWarriorClosing({
+        to: warrior.email,
+        warriorName: warrior.name,
+        recipientName: train.recipientName,
+        organizerFirstName: orgFirst,
+        trainUrl,
+        bouquetUrl,
+      });
+    }
+  }
 
   revalidatePath(`/p/${train.slug}`);
   revalidatePath(`/p/${train.slug}/manage`);
@@ -368,6 +406,63 @@ export async function toggleTrainVisibility(trainId: string, isPublic: boolean) 
 
   revalidatePath(`/p/${train.slug}/manage`);
   revalidatePath("/browse");
+}
+
+// ─── Add PrayerWarrior pledge ───────────────────────────────
+//
+// Soft-pledge to pray for a train without claiming a calendar slot.
+// Surfaced as the primary CTA on the train detail page when every
+// slot is already claimed — "no one is ever turned away from praying."
+// Auth is optional (matches the slot-claim and chain-join patterns):
+// name + email is all we require. Idempotent on (trainId, email).
+
+export async function addPrayerWarrior(formData: FormData) {
+  const session = await auth();
+  await enforceRateLimit("addWarrior", await getRateLimitId(session?.user?.id));
+
+  const { trainId, name, email, message } = parseFormData(
+    addPrayerWarriorSchema,
+    formData,
+  );
+
+  const train = await prisma.prayerTrain.findUnique({
+    where: { id: trainId },
+    select: {
+      id: true,
+      slug: true,
+      recipientName: true,
+      status: true,
+      organizer: { select: { name: true } },
+    },
+  });
+  if (!train) throw new Error("That train doesn't exist.");
+  if (train.status !== "ACTIVE") {
+    throw new Error("This train is no longer accepting new prayer warriors.");
+  }
+
+  // Idempotent on (trainId, email). Re-submitting with the same email
+  // updates name + message rather than creating a duplicate row.
+  await prisma.prayerWarrior.upsert({
+    where: { trainId_email: { trainId: train.id, email } },
+    update: { name, message: message || null },
+    create: {
+      trainId: train.id,
+      name,
+      email,
+      message: message || null,
+      userId: session?.user?.id ?? null,
+    },
+  });
+
+  await sendPrayerWarriorWelcome({
+    to: email,
+    warriorName: name,
+    recipientName: train.recipientName,
+    organizerFirstName: train.organizer?.name?.split(/\s+/)[0] ?? null,
+    trainUrl: `${getBaseUrl()}/p/${train.slug}`,
+  });
+
+  revalidatePath(`/p/${train.slug}`);
 }
 
 // ─── PrayerChain — Synchronized solidarity (Phase B, feature/chains) ────────

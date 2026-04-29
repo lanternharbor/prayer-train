@@ -30,6 +30,10 @@ model User {
   // PrayerChain relations
   organizedChains   PrayerChain[]        @relation("ChainOrganizer")
   chainMemberships  PrayerChainMember[]
+
+  // PrayerWarrior pledges — soft-pledge to pray for a train without
+  // taking a calendar slot. See PrayerWarrior model below.
+  warriorPledges    PrayerWarrior[]      @relation("WarriorPledges")
 }
 
 model Account {
@@ -161,6 +165,7 @@ model PrayerTrain {
   slots       PrayerSlot[]
   guestbook   GuestbookEntry[]
   updates     TrainUpdate[]
+  warriors    PrayerWarrior[]
 
   @@index([slug])
   @@index([organizerId])
@@ -262,6 +267,39 @@ model TrainUpdate {
   title     String
   content   String   @db.Text
 
+  @@index([trainId])
+}
+
+// ─── PrayerWarrior — overflow primitive ─────────────────────────
+// A lightweight pledge for someone who wants to pray for the recipient
+// but isn't claiming a specific calendar slot — surfaced as the primary
+// CTA on the train detail page when every slot is already claimed
+// ("Every slot is filled — and you can still join"). The slot-based
+// train remains the organizing mechanism; warriors are the "no one is
+// turned away from praying" affordance. Mirrors PrayerChainMember's
+// shape (name + email minimum, optional User link, idempotent on
+// (trainId, email)).
+
+model PrayerWarrior {
+  id        String      @id @default(cuid())
+  createdAt DateTime    @default(now())
+
+  trainId   String
+  train     PrayerTrain @relation(fields: [trainId], references: [id], onDelete: Cascade)
+
+  // Joiner identity. Account is optional — name + email is the minimum,
+  // matching PrayerSlot.claimerName/claimerEmail and PrayerChainMember.
+  userId    String?
+  user      User?       @relation("WarriorPledges", fields: [userId], references: [id])
+  name      String
+  email     String
+
+  // Optional brief intention shown alongside their name on the roster.
+  message   String?     @db.Text
+
+  // One pledge per email per train. Re-submitting with the same email
+  // updates name/message rather than creating duplicates.
+  @@unique([trainId, email])
   @@index([trainId])
 }
 

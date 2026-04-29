@@ -65,6 +65,11 @@ export const limiters = {
   // chain shared in a parish bulletin) are legitimate.
   joinChain: makeLimiter("join-chain", 60, "1 h"),
 
+  // Adding a prayer warrior pledge to a fully-covered train. Same
+  // friction-free profile as joining a chain — high volume from a
+  // popular train (Spina at 100% capacity) is legitimate.
+  addWarrior: makeLimiter("add-warrior", 60, "1 h"),
+
   // Public read endpoints (e.g. /api/stats). Per-IP, fairly loose.
   publicApi: makeLimiter("public-api", 60, "1 m"),
 } as const;

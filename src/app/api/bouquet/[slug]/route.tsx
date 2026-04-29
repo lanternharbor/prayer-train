@@ -38,6 +38,13 @@ export async function GET(
           prayerType: { select: { name: true } },
         },
       },
+      // PrayerWarrior pledges — additional people who prayed for this
+      // recipient without claiming a calendar slot. Rendered as a
+      // separate "Also Praying Alongside" section in the bouquet PDF
+      // so attribution stays accurate.
+      warriors: {
+        select: { name: true, email: true },
+      },
     },
   });
 
@@ -107,13 +114,40 @@ export async function GET(
   }
   warriors.sort((a, b) => a.localeCompare(b));
 
+  // Build the additional-warriors list from PrayerWarrior pledges.
+  // Dedupe on email vs. the slot-holder list so a person who claimed a
+  // slot AND added themselves as a warrior is only attributed once
+  // (under the slot-holder section, which represents the heavier
+  // commitment). Sort alphabetically for the bouquet's calm aesthetic.
+  const slotHolderEmails = new Set(
+    completedSlots
+      .map((s) => s.claimerEmail?.toLowerCase())
+      .filter((e): e is string => Boolean(e)),
+  );
+  const additionalWarriorEmails = new Set<string>();
+  const additionalWarriors: string[] = [];
+  for (const w of train.warriors) {
+    const emailKey = w.email.toLowerCase();
+    if (slotHolderEmails.has(emailKey)) continue;
+    if (additionalWarriorEmails.has(emailKey)) continue;
+    additionalWarriorEmails.add(emailKey);
+    additionalWarriors.push(w.name);
+  }
+  additionalWarriors.sort((a, b) => a.localeCompare(b));
+
   const data: BouquetData = {
     recipientName: train.recipientName,
-    organizerName: train.organizer?.name ?? "the organizer",
+    // Pass null (not "the organizer") when the User row has no name —
+    // the BouquetDocument omits the line entirely rather than printing
+    // the placeholder string. Prevents the bouquet header from reading
+    // "Organized by the organizer" on trains where the auth flow left
+    // User.name unpopulated.
+    organizerName: train.organizer?.name ?? null,
     startDate: train.startDate,
     endDate: train.endDate,
     prayers,
     prayerWarriors: warriors,
+    additionalWarriors,
   };
 
   const pdfBuffer = await renderToBuffer(

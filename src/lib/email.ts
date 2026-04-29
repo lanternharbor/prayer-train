@@ -512,3 +512,125 @@ export async function sendChainClosingDayEmail({
     console.error("Failed to send chain closing-day email:", error);
   }
 }
+
+// ─── PrayerWarrior Emails ───────────────────────────────────
+//
+// Templates for the overflow-pledge primitive — visitors who pledge to
+// pray for a fully-covered train without claiming a specific calendar
+// slot. Two messages: a welcome confirmation right after they sign up,
+// and a closing thank-you when the train transitions to COMPLETED.
+// No daily reminders by design — warriors made an open-ended pledge,
+// not a per-day commitment.
+
+export async function sendPrayerWarriorWelcome({
+  to,
+  warriorName,
+  recipientName,
+  organizerFirstName,
+  trainUrl,
+}: {
+  to: string;
+  warriorName: string;
+  recipientName: string;
+  organizerFirstName: string | null;
+  trainUrl: string;
+}) {
+  const orgFirst = organizerFirstName ?? "the organizer";
+  const subject = `Thank you for praying for ${recipientName}`;
+  try {
+    await resend.emails.send({
+      from: FROM,
+      to,
+      subject,
+      html: `
+        <div style="font-family: Georgia, 'Times New Roman', serif; max-width: 560px; margin: 0 auto; padding: 32px 24px; background: #faf8f5;">
+          <div style="background: #ffffff; border: 1px solid #e8e0d5; border-radius: 16px; padding: 28px 26px;">
+            <h1 style="color: #11152c; font-size: 22px; font-weight: 700; margin: 0 0 12px;">
+              Thank you, ${warriorName}.
+            </h1>
+            <p style="color: #11152c; font-size: 15px; line-height: 1.7; margin: 0 0 14px;">
+              You've joined ${orgFirst}'s prayer for <strong>${recipientName}</strong>.
+              Every slot on the calendar is filled — and your prayer adds to the
+              cloud of intercession surrounding ${recipientName}.
+            </p>
+            <p style="color: #11152c; font-size: 15px; line-height: 1.7; margin: 0 0 14px;">
+              Pray however and whenever you can. There's no specific time,
+              no slot, no obligation — just the grace of joining your prayer
+              to ours. When the prayer train ends, we'll send you a closing
+              note with the full spiritual bouquet.
+            </p>
+            <div style="text-align: center; margin: 24px 0 8px;">
+              <a href="${trainUrl}" style="display: inline-block; background: #242e58; color: #ffffff; padding: 12px 28px; border-radius: 10px; text-decoration: none; font-weight: 600; font-size: 15px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;">
+                Visit the prayer train
+              </a>
+            </div>
+          </div>
+          <p style="text-align: center; color: #b8a994; font-size: 12px; margin: 18px 0 0;">
+            PrayerTrain · A Lantern Harbor project
+          </p>
+        </div>
+      `,
+      text: `Thank you for praying for ${recipientName}, ${warriorName}.\n\nYou've joined ${orgFirst}'s prayer. Every calendar slot is filled — and your prayer adds to the cloud of intercession.\n\nPray however and whenever you can. When the prayer train ends, we'll send you a closing note.\n\nVisit: ${trainUrl}`,
+    });
+  } catch (error) {
+    console.error("Failed to send prayer-warrior welcome email:", error);
+  }
+}
+
+export async function sendPrayerWarriorClosing({
+  to,
+  warriorName,
+  recipientName,
+  organizerFirstName,
+  trainUrl,
+  bouquetUrl,
+}: {
+  to: string;
+  warriorName: string;
+  recipientName: string;
+  organizerFirstName: string | null;
+  trainUrl: string;
+  bouquetUrl: string;
+}) {
+  const orgFirst = organizerFirstName ?? "the organizer";
+  const subject = `The prayer train for ${recipientName} is complete`;
+  try {
+    await resend.emails.send({
+      from: FROM,
+      to,
+      subject,
+      html: `
+        <div style="font-family: Georgia, 'Times New Roman', serif; max-width: 560px; margin: 0 auto; padding: 32px 24px; background: #faf8f5;">
+          <div style="background: #ffffff; border: 1px solid #e8e0d5; border-radius: 16px; padding: 32px 28px; text-align: center;">
+            <h1 style="color: #11152c; font-family: 'EB Garamond', Georgia, serif; font-size: 26px; font-weight: 700; margin: 0 0 12px; line-height: 1.3;">
+              The prayer train is complete.
+            </h1>
+            <p style="color: #11152c; font-size: 15px; line-height: 1.7; margin: 0 0 18px;">
+              Thank you for praying for ${recipientName}, ${warriorName}.
+              Every prayer offered — every slot, every pledge — is held in the
+              spiritual bouquet linked below. May the Lord reward your
+              faithfulness.
+            </p>
+            <div style="text-align: center; margin: 24px 0 8px;">
+              <a href="${bouquetUrl}" style="display: inline-block; background: #d4a843; color: #0a0c1a; padding: 12px 28px; border-radius: 10px; text-decoration: none; font-weight: 600; font-size: 15px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;">
+                View the spiritual bouquet
+              </a>
+            </div>
+            <p style="color: #6e6150; font-size: 14px; font-style: italic; line-height: 1.7; margin: 18px 0 0;">
+              May the Lord bless and keep all who carried this prayer.
+            </p>
+          </div>
+          <p style="text-align: center; color: #b8a994; font-size: 12px; margin: 18px 0 0;">
+            <a href="${trainUrl}" style="color: #947324; text-decoration: none;">Visit the prayer train</a>
+          </p>
+          <p style="text-align: center; color: #b8a994; font-size: 12px; margin: 8px 0 0;">
+            PrayerTrain · A Lantern Harbor project
+          </p>
+        </div>
+      `,
+      text: `The prayer train for ${recipientName} is complete.\n\nThank you for praying, ${warriorName}. Every prayer offered is held in the spiritual bouquet.\n\nView the bouquet: ${bouquetUrl}\nVisit the train: ${trainUrl}\n\nMay the Lord bless and keep all who carried this prayer.`,
+    });
+  } catch (error) {
+    console.error("Failed to send prayer-warrior closing email:", error);
+  }
+}

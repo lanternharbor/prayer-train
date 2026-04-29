@@ -23,7 +23,13 @@ import {
 
 export type BouquetData = {
   recipientName: string;
-  organizerName: string;
+  /**
+   * Organizer's display name. Optional — if the User row has no name
+   * populated (some auth flows leave it null), pass `null`/`undefined`
+   * here and the bouquet omits the "Organized by ..." line entirely
+   * rather than rendering the literal placeholder "the organizer".
+   */
+  organizerName: string | null;
   startDate: Date;
   endDate: Date;
   prayers: Array<{
@@ -32,6 +38,15 @@ export type BouquetData = {
     uniquePrayers: number;
   }>;
   prayerWarriors: string[]; // deduped, alphabetized claimer names
+  /**
+   * Names of additional prayer warriors who pledged via the
+   * "Add yourself as a prayer warrior" overflow primitive — they
+   * didn't claim a slot, but they prayed alongside. Optional;
+   * empty/undefined when no additional warriors exist (e.g., for
+   * chain bouquets, which use the chain-member roster instead).
+   * Rendered in its own section below the slot-holders.
+   */
+  additionalWarriors?: string[];
 };
 
 const PALETTE = {
@@ -184,9 +199,11 @@ export function BouquetDocument({ data }: { data: BouquetData }) {
           <Text style={styles.title}>for</Text>
           <Text style={styles.recipientName}>{data.recipientName}</Text>
           <View style={styles.rule} />
-          <Text style={styles.organizerLine}>
-            Organized by {data.organizerName}
-          </Text>
+          {data.organizerName && (
+            <Text style={styles.organizerLine}>
+              Organized by {data.organizerName}
+            </Text>
+          )}
           <Text style={styles.dateLine}>
             {formatDate(data.startDate)} — {formatDate(data.endDate)}
           </Text>
@@ -220,6 +237,19 @@ export function BouquetDocument({ data }: { data: BouquetData }) {
             <Text style={styles.sectionLabel}>Lifted Up by</Text>
             <Text style={styles.warriorsParagraph}>
               {data.prayerWarriors.join(" · ")}
+            </Text>
+          </View>
+        )}
+
+        {/* Additional prayer warriors — people who pledged via the
+            "no one is turned away" overflow primitive. Rendered as a
+            separate section so the bouquet stays accurate about who
+            took a slot vs. who simply pledged to pray. */}
+        {data.additionalWarriors && data.additionalWarriors.length > 0 && (
+          <View style={styles.section}>
+            <Text style={styles.sectionLabel}>Also Praying Alongside</Text>
+            <Text style={styles.warriorsParagraph}>
+              {data.additionalWarriors.join(" · ")}
             </Text>
           </View>
         )}

@@ -4,11 +4,13 @@ import { useEffect, useState } from "react";
 import { Share2, Copy, Check, QrCode, X } from "lucide-react";
 
 /**
- * Share affordance for a PrayerChain detail page.
+ * Share affordance for the "pray together" PrayerTrain detail page.
  *
- * Mirrors src/app/p/[slug]/share-button.tsx (the train share button) so the
- * sharing UX is identical across primitives — copy link, native share on
- * mobile, scannable QR code modal. Copy and URL paths are chain-specific.
+ * Mirrors src/app/p/[slug]/share-button.tsx (the calendar share button) so
+ * the sharing UX is identical across formats — copy link, native share on
+ * mobile, scannable QR code modal. Copy and URL paths are specific to the
+ * /chain/[slug] route group, even though both formats are PrayerTrain
+ * under the umbrella branding.
  */
 export function ChainShareButton({
   slug,
@@ -50,7 +52,7 @@ export function ChainShareButton({
   const handleNativeShare = async () => {
     try {
       await navigator.share({
-        title: "PrayerChain",
+        title: "PrayerTrain",
         text: shareText,
         url,
       });
@@ -87,7 +89,7 @@ export function ChainShareButton({
         <div className="flex-1">
           <h3 className="font-heading text-base font-semibold text-navy-800 mb-1 flex items-center gap-2">
             <Share2 className="w-4 h-4 text-gold-500" />
-            Share this PrayerChain
+            Share this prayer
           </h3>
           <p className="text-sm text-muted-foreground">
             Invite friends, family, and your parish to pray along with you.
@@ -132,7 +134,7 @@ export function ChainShareButton({
           className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4"
           role="dialog"
           aria-modal="true"
-          aria-label="QR code for sharing this PrayerChain"
+          aria-label="QR code for sharing this prayer"
           onClick={() => setShowQr(false)}
         >
           <div
@@ -151,7 +153,7 @@ export function ChainShareButton({
               Scan to pray along
             </h3>
             <p className="text-sm text-muted-foreground text-center mb-5">
-              Point a phone camera at this code to open the PrayerChain.
+              Point a phone camera at this code to join this prayer.
             </p>
 
             <div className="flex justify-center mb-5">

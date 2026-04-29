@@ -9,9 +9,9 @@ import { SaintPortrait } from "@/components/saint-portrait";
 import { PhotoUploadField } from "./photo-upload-field";
 
 export const metadata: Metadata = {
-  title: "Start a PrayerChain",
+  title: "Pray Together",
   description:
-    "Start a PrayerChain — invite a small group of people to pray with you for someone you love.",
+    "Invite a small group of people to pray the same prayer together — every day, in solidarity, for someone you love.",
   alternates: { canonical: "/chain/new" },
   robots: { index: false, follow: false },
 };
@@ -53,12 +53,14 @@ export default async function NewChainPage({
       <div className="text-center mb-8">
         <Users className="w-10 h-10 text-gold-500 mx-auto mb-3" />
         <h1 className="font-heading text-3xl font-bold text-navy-800 mb-2">
-          {prayerType ? `Start the ${prayerType.name}` : "Start a PrayerChain"}
+          {prayerType
+            ? `Pray the ${prayerType.name} together`
+            : "Pray together"}
         </h1>
         <p className="text-muted-foreground">
           {prayerType
             ? `Invite friends to pray with you for ${prayerType.daysRequired} day${prayerType.daysRequired === 1 ? "" : "s"}.`
-            : "Invite friends to pray together for someone you love."}
+            : "Invite friends to pray the same prayer together for someone you love."}
         </p>
       </div>
 

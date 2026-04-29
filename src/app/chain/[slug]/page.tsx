@@ -46,7 +46,7 @@ export async function generateMetadata({
       prayerType: { select: { name: true, imageUrl: true } },
     },
   });
-  if (!chain) return { title: "PrayerChain Not Found" };
+  if (!chain) return { title: "Not Found" };
 
   const orgFirst = firstName(chain.organizer?.name);
   const phrase = recipientPhrase(chain.recipientName, chain.intention);

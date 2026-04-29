@@ -7,12 +7,12 @@ import { markChainDayCompleteByToken } from "@/lib/actions";
 import { CrossDivider } from "@/components/ui/catholic-icons";
 
 /**
- * Tokenized one-click completion handler for PrayerChain daily
- * reminders. Mirrors the slot completion handler at
- * /p/[slug]/complete — same trust boundary (HMAC-signed token covers
- * memberId), same calm error states, same threat model (parish
- * ministries; "Aunt Susan tapped a forwarded link" not "attacker
- * spoofs completion stats").
+ * Tokenized one-click completion handler for the "pray together"
+ * PrayerTrain format daily reminders. Mirrors the slot completion
+ * handler at /p/[slug]/complete — same trust boundary (HMAC-signed
+ * token covers memberId), same calm error states, same threat model
+ * (parish ministries; "Aunt Susan tapped a forwarded link" not
+ * "attacker spoofs completion stats").
  */
 
 export const metadata: Metadata = {
@@ -138,7 +138,7 @@ export default async function CompleteChainDayPage({
           href={`/chain/${chain.slug}`}
           className="inline-flex items-center gap-2 px-6 py-2.5 bg-primary text-primary-foreground font-medium rounded-lg hover:bg-navy-700 transition-colors"
         >
-          Open the PrayerChain
+          Open the prayer
         </Link>
       </div>
     </div>

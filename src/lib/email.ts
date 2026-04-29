@@ -403,7 +403,7 @@ export async function sendChainJoinConfirmation({
           </p>
         </div>
       `,
-      text: `You've joined ${orgFirst}'s ${prayerName} ${phrase}.\n\nFor the next ${durationDays} days, you'll receive a daily email with the prayer text.\n\nOpen the chain: ${chainUrl}`,
+      text: `You've joined ${orgFirst}'s ${prayerName} ${phrase}.\n\nFor the next ${durationDays} days, you'll receive a daily email with the prayer text.\n\nOpen the prayer page: ${chainUrl}`,
     });
   } catch (error) {
     console.error("Failed to send chain join confirmation:", error);
@@ -521,7 +521,7 @@ export async function sendChainDailyReminder({
           </p>
         </div>
       `,
-      text: `Day ${day} of ${durationDays} — ${orgFirst}'s ${prayerName} ${phrase}\n\n${prayerInstructions ? prayerInstructions + "\n\n" : ""}${prayerText ?? ""}${customPrayerText ? `\n\nA prayer from ${orgFirst}:\n${customPrayerText}` : ""}\n\nI prayed today: ${markCompleteUrl}\nVisit the chain: ${chainUrl}\nUnsubscribe: ${unsubscribeUrl}`,
+      text: `Day ${day} of ${durationDays} — ${orgFirst}'s ${prayerName} ${phrase}\n\n${prayerInstructions ? prayerInstructions + "\n\n" : ""}${prayerText ?? ""}${customPrayerText ? `\n\nA prayer from ${orgFirst}:\n${customPrayerText}` : ""}\n\nI prayed today: ${markCompleteUrl}\nVisit the prayer page: ${chainUrl}\nUnsubscribe: ${unsubscribeUrl}`,
     });
   } catch (error) {
     console.error("Failed to send chain daily reminder:", error);
@@ -583,7 +583,7 @@ export async function sendChainClosingDayEmail({
             </p>
           </div>
           <p style="text-align: center; color: #b8a994; font-size: 12px; margin: 18px 0 0;">
-            <a href="${chainUrl}" style="color: #947324; text-decoration: none;">Visit the chain</a>
+            <a href="${chainUrl}" style="color: #947324; text-decoration: none;">Visit the prayer page</a>
           </p>
           <p style="text-align: center; color: #b8a994; font-size: 12px; margin: 8px 0 0;">
             PrayerTrain · A Lantern Harbor project

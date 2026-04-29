@@ -111,8 +111,8 @@ export default async function CompleteChainDayPage({
             </h1>
             <p className="text-muted-foreground">
               This page lives behind the &ldquo;I prayed today&rdquo; button
-              in our daily reminder emails. Open the chain to see who&apos;s
-              praying alongside you.
+              in our daily reminder emails. Open the prayer page to see
+              who&apos;s praying alongside you.
             </p>
           </>
         ) : (
@@ -127,7 +127,7 @@ export default async function CompleteChainDayPage({
               {errorMessage ?? "The completion link is invalid or expired."}
             </p>
             <p className="text-sm text-muted-foreground">
-              You can still pray. Visit the chain below.
+              You can still pray. Visit the prayer page below.
             </p>
           </>
         )}

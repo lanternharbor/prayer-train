@@ -24,8 +24,7 @@ export default function CreateChooserPage() {
           How can we help you organize prayer?
         </h1>
         <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-          Two ways to organize prayer. Both are PrayerTrain — pick what fits
-          how your community wants to pray.
+          Choose the format that fits how your community wants to pray.
         </p>
       </div>
 

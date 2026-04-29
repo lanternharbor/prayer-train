@@ -53,8 +53,8 @@ export async function GET(request: Request) {
   <body>
     <div class="card">
       <h1>You're unsubscribed.</h1>
-      <p>You won't receive any more reminders for this PrayerChain.</p>
-      <p>You're still listed as a prayer warrior on the chain itself — your name will appear on the spiritual bouquet when it closes. If you want to leave entirely, please reply to any prior email and ask us to remove you.</p>
+      <p>You won't receive any more reminders for this prayer.</p>
+      <p>You're still listed as a prayer warrior — your name will appear on the spiritual bouquet when the prayer closes. If you want to leave entirely, please reply to any prior email and ask us to remove you.</p>
       <p style="margin-top: 18px;">Thank you for praying with us.</p>
     </div>
     <p class="footer">PrayerTrain · A Lantern Harbor project</p>

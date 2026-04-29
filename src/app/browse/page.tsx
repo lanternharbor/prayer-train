@@ -262,7 +262,7 @@ export default async function BrowsePage({
                     )}
                   </p>
                 )}
-                <p className="text-sm text-muted-foreground leading-relaxed mb-4 line-clamp-3 flex-1">
+                <p className="text-sm text-muted-foreground leading-relaxed mb-4 line-clamp-2 flex-1">
                   {train.intention}
                 </p>
 
@@ -377,7 +377,7 @@ export default async function BrowsePage({
                     {orgFirst}&apos;s {chain.prayerType.name}
                     {chain.recipientName ? ` for ${chain.recipientName}` : ""}
                   </h3>
-                  <p className="text-sm text-muted-foreground leading-relaxed mb-4 line-clamp-3 flex-1">
+                  <p className="text-sm text-muted-foreground leading-relaxed mb-4 line-clamp-2 flex-1">
                     {chain.intention}
                   </p>
                   <div className="w-full h-2 bg-cream-200 rounded-full overflow-hidden mb-2">

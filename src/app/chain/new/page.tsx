@@ -90,7 +90,7 @@ export default async function NewChainPage({
             >
               Browse the prayer library
             </Link>{" "}
-            and click <strong>Start a Chain</strong> on a prayer&apos;s page to
+            and click <strong>Pray with friends</strong> on a prayer&apos;s page to
             come back here with it pre-filled.
           </p>
         </div>
@@ -197,7 +197,7 @@ export default async function NewChainPage({
             className="w-full flex items-center justify-center gap-2 px-6 py-3 bg-primary text-primary-foreground font-semibold rounded-lg hover:bg-navy-700 transition-colors"
           >
             <Heart className="w-4 h-4" />
-            Start the chain
+            Start praying together
           </button>
         </form>
       )}

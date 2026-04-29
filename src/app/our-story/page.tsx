@@ -117,9 +117,9 @@ export default function OurStoryPage() {
         <CrossDivider />
 
         <p className="text-lg">
-          <strong>Through the grace of God</strong> and the extraordinary care
-          of Boston Children&apos;s Hospital, all three children came out on
-          top. Every single one.
+          <strong>Through the grace of God</strong>
+          {" "}and the extraordinary care of Boston Children&apos;s Hospital,
+          all three children came out on top. Every single one.
         </p>
 
         <p>

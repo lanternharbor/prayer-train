@@ -3,6 +3,7 @@ import { timingSafeEqual } from "node:crypto";
 import { prisma } from "@/lib/db";
 import { sendDailyReminder } from "@/lib/email";
 import { getBaseUrl } from "@/lib/url";
+import { signCompletionToken } from "@/lib/completion-tokens";
 
 // Vercel Cron hits this endpoint daily at 11:00 UTC.
 // Schedule is in vercel.json. Authorization is the standard Vercel
@@ -68,6 +69,15 @@ export async function GET(request: Request) {
     if (!email) continue;
 
     try {
+      // Sign a 14-day completion token so the email's "I prayed"
+      // button hits a verifiable URL. The handler page at
+      // /p/[slug]/complete validates this server-side before mutating
+      // the slot. Stateless — no DB column needed.
+      const completionToken = signCompletionToken("slot", slot.id);
+      const completeUrl = `${baseUrl}/p/${slot.train.slug}/complete?slot=${
+        slot.id
+      }&token=${encodeURIComponent(completionToken)}`;
+
       await sendDailyReminder({
         to: email,
         claimerName: name,
@@ -79,6 +89,7 @@ export async function GET(request: Request) {
         organizerFirstName:
           slot.train.organizer?.name?.split(/\s+/)[0] ?? null,
         trainUrl: `${baseUrl}/p/${slot.train.slug}`,
+        completeUrl,
         slotId: slot.id,
       });
       sent++;

@@ -28,6 +28,7 @@ import {
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { addDays, eachDayOfInterval } from "date-fns";
+import { verifyCompletionToken } from "@/lib/completion-tokens";
 import { put } from "@vercel/blob";
 
 // ─── Create PrayerTrain ─────────────────────────────────────
@@ -272,6 +273,51 @@ export async function markSlotComplete(slotId: string) {
 
   revalidatePath(`/p/${slot.train.slug}`);
   revalidatePath("/dashboard");
+}
+
+/**
+ * Mark a slot complete via a tokenized email link. The daily-reminder
+ * cron mints an HMAC-signed token that covers slotId + expiry, and the
+ * email's "Mark as Prayed" CTA points at /p/[slug]/complete?slot=X&token=Y.
+ * That handler page calls this function, which verifies the token before
+ * mutating the slot.
+ *
+ * This is the proper way for guest claimers (no account) to mark prayers
+ * complete from a daily reminder. The session-gated `markSlotComplete`
+ * above is for the page-button path used by signed-in claimers.
+ *
+ * Returns `{ ok: true, slug }` on success or throws on any verification
+ * failure — the handler page catches and renders a friendly error.
+ */
+export async function markSlotCompleteByToken(slotId: string, token: string) {
+  if (!verifyCompletionToken("slot", slotId, token)) {
+    throw new Error("This completion link is invalid or has expired.");
+  }
+
+  const slot = await prisma.prayerSlot.findUnique({
+    where: { id: slotId },
+    include: { train: { select: { slug: true } } },
+  });
+  if (!slot) throw new Error("That prayer slot no longer exists.");
+
+  // Idempotent: if already completed (the recipient clicked the link
+  // twice, or completed via the page button first), just return success
+  // rather than throwing. Coverage stats are the same either way.
+  if (slot.status === "COMPLETED") {
+    return { ok: true as const, slug: slot.train.slug };
+  }
+
+  if (slot.status !== "CLAIMED") {
+    throw new Error("This prayer slot isn't currently claimed.");
+  }
+
+  await prisma.prayerSlot.update({
+    where: { id: slotId },
+    data: { status: "COMPLETED", completedAt: new Date() },
+  });
+
+  revalidatePath(`/p/${slot.train.slug}`);
+  return { ok: true as const, slug: slot.train.slug };
 }
 
 // ─── Post Guestbook Entry ───────────────────────────────────

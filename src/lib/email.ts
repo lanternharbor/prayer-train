@@ -220,6 +220,7 @@ export async function sendDailyReminder({
   customPrayerText,
   organizerFirstName,
   trainUrl,
+  completeUrl,
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   slotId,
 }: {
@@ -234,6 +235,13 @@ export async function sendDailyReminder({
   /** Used to attribute the custom prayer ("A prayer from {name}"). */
   organizerFirstName?: string | null;
   trainUrl: string;
+  /**
+   * Tokenized one-click completion URL. When the recipient clicks
+   * "Mark as Prayed" they hit this URL, which verifies an HMAC token
+   * and marks the slot complete server-side. The cron (caller) builds
+   * and signs this; the template just renders it.
+   */
+  completeUrl: string;
   /** Reserved for future per-slot tracking links */
   slotId: string;
 }) {
@@ -295,11 +303,14 @@ export async function sendDailyReminder({
             </div>
           ` : ""}
           <div style="text-align: center; margin-top: 24px;">
-            <a href="${trainUrl}" style="display: inline-block; background: #d4a843; color: #0a0c1a; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: bold; font-size: 14px;">
-              Mark as Prayed
+            <a href="${completeUrl}" style="display: inline-block; background: #d4a843; color: #0a0c1a; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: bold; font-size: 14px;">
+              I prayed
             </a>
           </div>
-          <p style="text-align: center; color: #b8a994; font-size: 12px; margin-top: 32px;">
+          <p style="text-align: center; color: #b8a994; font-size: 12px; margin-top: 8px;">
+            <a href="${trainUrl}" style="color: #b8a994; text-decoration: none;">View the prayer train</a>
+          </p>
+          <p style="text-align: center; color: #b8a994; font-size: 12px; margin-top: 24px;">
             PrayerTrain — Organized prayer for those in need
           </p>
         </div>

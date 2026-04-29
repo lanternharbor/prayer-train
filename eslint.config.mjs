@@ -12,6 +12,10 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Tooling working trees and generated Prisma client — these are
+    // not part of the source tree and should never be linted.
+    ".claude/worktrees/**",
+    "src/generated/**",
   ]),
 ]);
 

@@ -233,6 +233,7 @@ export function BouquetDocument({ data }: { data: BouquetData }) {
               lilies. Skipped silently if the asset is missing so the
               bouquet still renders in dev environments without the
               file. */}
+          {/* eslint-disable-next-line jsx-a11y/alt-text -- @react-pdf/renderer's Image is a PDF primitive, not an HTML img; alt isn't a supported prop. */}
           {emblem && <Image src={emblem} style={styles.emblem} />}
           <Text style={styles.eyebrow}>A Spiritual Bouquet</Text>
           <Text style={styles.title}>for</Text>

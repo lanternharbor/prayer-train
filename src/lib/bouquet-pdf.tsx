@@ -18,8 +18,35 @@ import {
   Page,
   Text,
   View,
+  Image,
   StyleSheet,
 } from "@react-pdf/renderer";
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
+
+/**
+ * Lazy-load the bouquet emblem from /public/bouquet-emblem.png. Cached
+ * after first read so a busy completion run doesn't re-read the file
+ * for every PDF rendered. Returns null if the file is missing — the
+ * template renders cleanly without the emblem in that case (graceful
+ * fallback for dev environments where the asset hasn't been added).
+ *
+ * The emblem is a hand-illustrated bouquet of white roses and lilies
+ * with a gold halo and ribbon — designed to match the prayer-card
+ * aesthetic of the bouquet itself. See public/bouquet-emblem.png.
+ */
+let _emblemBuffer: Buffer | null | undefined;
+function getEmblemBuffer(): Buffer | null {
+  if (_emblemBuffer !== undefined) return _emblemBuffer;
+  try {
+    _emblemBuffer = readFileSync(
+      join(process.cwd(), "public", "bouquet-emblem.png"),
+    );
+  } catch {
+    _emblemBuffer = null;
+  }
+  return _emblemBuffer;
+}
 
 export type BouquetData = {
   recipientName: string;
@@ -70,6 +97,12 @@ const styles = StyleSheet.create({
   header: {
     textAlign: "center",
     marginBottom: 28,
+  },
+  emblem: {
+    width: 130,
+    height: 130,
+    marginHorizontal: "auto",
+    marginBottom: 12,
   },
   eyebrow: {
     fontSize: 9,
@@ -185,6 +218,7 @@ function totalPrayersOffered(prayers: BouquetData["prayers"]): number {
 export function BouquetDocument({ data }: { data: BouquetData }) {
   const total = totalPrayersOffered(data.prayers);
   const warriorCount = data.prayerWarriors.length;
+  const emblem = getEmblemBuffer();
 
   return (
     <Document
@@ -195,6 +229,11 @@ export function BouquetDocument({ data }: { data: BouquetData }) {
       <Page size="LETTER" style={styles.page}>
         {/* Header */}
         <View style={styles.header}>
+          {/* Devotional emblem — hand-illustrated bouquet of roses and
+              lilies. Skipped silently if the asset is missing so the
+              bouquet still renders in dev environments without the
+              file. */}
+          {emblem && <Image src={emblem} style={styles.emblem} />}
           <Text style={styles.eyebrow}>A Spiritual Bouquet</Text>
           <Text style={styles.title}>for</Text>
           <Text style={styles.recipientName}>{data.recipientName}</Text>

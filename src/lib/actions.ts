@@ -316,7 +316,12 @@ export async function markSlotCompleteByToken(slotId: string, token: string) {
     data: { status: "COMPLETED", completedAt: new Date() },
   });
 
-  revalidatePath(`/p/${slot.train.slug}`);
+  // No revalidatePath here. This action is invoked synchronously
+  // during the /p/[slug]/complete page's render, and Next.js
+  // (correctly) refuses to revalidate during render. The train
+  // detail page is dynamic anyway (root layout calls auth() so
+  // every public route is server-rendered per request), so the
+  // next page load reads fresh data without any cache help.
   return { ok: true as const, slug: slot.train.slug };
 }
 
@@ -753,7 +758,9 @@ export async function markChainDayCompleteByToken(
     });
   }
 
-  revalidatePath(`/chain/${member.chain.slug}`);
+  // No revalidatePath here — this runs during the /chain/[slug]/complete
+  // page render. Same reasoning as markSlotCompleteByToken above. The
+  // chain detail page is dynamic, so the next visit reads fresh data.
   return { ok: true as const, slug: member.chain.slug, day: newDay };
 }
 

@@ -21,11 +21,20 @@
  *    (onDelete: Cascade) declared in prisma/schema.prisma — we don't
  *    issue a separate raw DELETE for members.
  *
- * Run with: npx tsx scripts/retire-benji-chain.ts
+ * Run with one of:
+ *   npx tsx scripts/retire-benji-chain.ts                       (interactive)
+ *   npx tsx scripts/retire-benji-chain.ts "yes delete benji"    (CLI arg)
  *
  * The user must explicitly authorize the run. The script does not
- * proceed unless STDIN is connected to a TTY *and* the user types
- * "yes delete benji" exactly.
+ * proceed unless either:
+ *   (a) STDIN is connected to a TTY *and* the user types
+ *       "yes delete benji" exactly at the prompt, OR
+ *   (b) the user passes "yes delete benji" exactly as the first
+ *       command-line argument.
+ *
+ * The CLI-arg form lets an automated agent run the script after
+ * receiving explicit authorization in chat (the user types
+ * "yes delete benji" verbatim, the agent passes it through).
  */
 
 import "dotenv/config";
@@ -74,25 +83,37 @@ async function main() {
   console.log(`  and is separate from PrayerChain at the schema level.`);
   console.log("");
 
-  if (!process.stdin.isTTY) {
+  // Accept the auth phrase from either:
+  //   - argv[2] for non-interactive use (agent passing through user's
+  //     literal authorization), OR
+  //   - an interactive TTY prompt when running from a human shell.
+  // Anything else aborts before any DELETE.
+  const cliArg = process.argv[2]?.trim();
+  let answer: string;
+  if (cliArg) {
+    answer = cliArg;
+    console.log(`  Auth phrase received via CLI arg.`);
+  } else if (process.stdin.isTTY) {
+    const rl = createInterface({
+      input: process.stdin,
+      output: process.stdout,
+    });
+    answer = (
+      await rl.question(
+        `  Type "${EXPECTED_AUTH_PHRASE}" to delete, anything else to abort: `,
+      )
+    ).trim();
+    rl.close();
+  } else {
     console.error(
-      `  STDIN is not a TTY. This script requires interactive confirmation.`,
+      `  STDIN is not a TTY and no CLI arg provided. Aborted.\n`,
     );
-    console.error(`  Aborted without deleting anything.\n`);
     await prisma.$disconnect();
     process.exit(1);
   }
 
-  const rl = createInterface({ input: process.stdin, output: process.stdout });
-  const answer = (
-    await rl.question(
-      `  Type "${EXPECTED_AUTH_PHRASE}" to delete, anything else to abort: `,
-    )
-  ).trim();
-  rl.close();
-
   if (answer !== EXPECTED_AUTH_PHRASE) {
-    console.log(`\n  Aborted. Nothing deleted.\n`);
+    console.log(`\n  Auth phrase did not match. Nothing deleted.\n`);
     await prisma.$disconnect();
     return;
   }

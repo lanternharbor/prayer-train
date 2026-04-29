@@ -3,6 +3,34 @@ import { getBaseUrl } from "./url";
 
 const FROM = process.env.EMAIL_FROM || "PrayerTrain <noreply@ourfaithtrain.com>";
 
+/**
+ * Escape user-controlled content before injecting it into HTML email
+ * templates. Email templates here are hand-built HTML strings (not React),
+ * so React's automatic escaping doesn't apply. Without this helper, an
+ * organizer typing `<` or `&` into an intention or custom prayer would
+ * break email rendering — and a malicious actor (unlikely under our
+ * threat model but defensive coding still matters) could inject markup.
+ *
+ * Apply this to: recipientName, claimerName, memberName, warriorName,
+ * organizerName/orgFirst, intention, customPrayerText, prayerName,
+ * prayerInstructions, prayerText, closingNote — anywhere user-provided
+ * text gets interpolated into the HTML body.
+ *
+ * Do NOT apply to:
+ * - subject lines (plain text already, no HTML)
+ * - text/plain fallback bodies (plain text already)
+ * - hardcoded template strings (no user content)
+ * - URLs (use encodeURIComponent for those instead)
+ */
+export function escapeHtml(s: string): string {
+  return s
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
 // Lazy-initialize the Resend client so module evaluation never throws when
 // RESEND_API_KEY is missing (e.g., on Vercel preview deploys that aren't
 // scoped to the production env vars). Each `send*` helper below already
@@ -126,6 +154,14 @@ export async function sendClaimConfirmation({
   prayerInstructions: string | null;
   trainUrl: string;
 }) {
+  // Pre-escape user-controlled fields for safe injection into HTML body.
+  // Subject line and `date` (server-generated) don't need escaping.
+  const eClaimerName = escapeHtml(claimerName);
+  const eRecipientName = escapeHtml(recipientName);
+  const ePrayerName = escapeHtml(prayerName);
+  const ePrayerInstructions = prayerInstructions
+    ? escapeHtml(prayerInstructions)
+    : null;
   try {
     await resend.emails.send({
       from: FROM,
@@ -139,22 +175,22 @@ export async function sendClaimConfirmation({
             </div>
           </div>
           <h1 style="color: #11152c; font-size: 24px; text-align: center; margin-bottom: 8px;">
-            Thank you, ${claimerName}!
+            Thank you, ${eClaimerName}!
           </h1>
           <p style="color: #6e6150; text-align: center; margin-bottom: 24px;">
-            You've committed to pray for <strong>${recipientName}</strong>.
+            You've committed to pray for <strong>${eRecipientName}</strong>.
           </p>
           <div style="background: #faf8f5; border: 1px solid #e8e0d5; border-radius: 12px; padding: 20px; margin-bottom: 24px;">
             <p style="margin: 0 0 4px 0; font-weight: bold; color: #11152c;">
-              ${prayerName}
+              ${ePrayerName}
             </p>
             <p style="margin: 0; color: #6e6150; font-size: 14px;">
               ${date}
             </p>
-            ${prayerInstructions ? `
+            ${ePrayerInstructions ? `
               <hr style="border: none; border-top: 1px solid #e8e0d5; margin: 16px 0;" />
               <p style="margin: 0; color: #453d32; font-size: 14px; line-height: 1.6;">
-                ${prayerInstructions}
+                ${ePrayerInstructions}
               </p>
             ` : ""}
           </div>
@@ -201,6 +237,18 @@ export async function sendDailyReminder({
   /** Reserved for future per-slot tracking links */
   slotId: string;
 }) {
+  // Pre-escape user-controlled fields for safe HTML injection.
+  const eClaimerName = escapeHtml(claimerName);
+  const eRecipientName = escapeHtml(recipientName);
+  const ePrayerName = escapeHtml(prayerName);
+  const ePrayerText = prayerText ? escapeHtml(prayerText) : null;
+  const ePrayerInstructions = prayerInstructions
+    ? escapeHtml(prayerInstructions)
+    : null;
+  const eCustomPrayerText = customPrayerText
+    ? escapeHtml(customPrayerText)
+    : null;
+  const eOrgFirst = escapeHtml(organizerFirstName || "the organizer");
   try {
     await resend.emails.send({
       from: FROM,
@@ -214,35 +262,35 @@ export async function sendDailyReminder({
             </div>
           </div>
           <h1 style="color: #11152c; font-size: 22px; text-align: center; margin-bottom: 8px;">
-            Today's Prayer for ${recipientName}
+            Today's Prayer for ${eRecipientName}
           </h1>
           <p style="color: #6e6150; text-align: center; margin-bottom: 24px;">
-            Hi ${claimerName}, here's your prayer commitment for today.
+            Hi ${eClaimerName}, here's your prayer commitment for today.
           </p>
           <div style="background: #faf8f5; border: 1px solid #e8e0d5; border-radius: 12px; padding: 20px; margin-bottom: 16px;">
             <h2 style="margin: 0 0 12px 0; color: #11152c; font-size: 18px;">
-              ${prayerName}
+              ${ePrayerName}
             </h2>
-            ${prayerInstructions ? `
+            ${ePrayerInstructions ? `
               <p style="margin: 0 0 16px 0; color: #6e6150; font-size: 14px; line-height: 1.6;">
-                <strong>How to pray:</strong> ${prayerInstructions}
+                <strong>How to pray:</strong> ${ePrayerInstructions}
               </p>
             ` : ""}
-            ${prayerText ? `
+            ${ePrayerText ? `
               <div style="background: white; border: 1px solid #e8e0d5; border-radius: 8px; padding: 16px;">
                 <p style="margin: 0; color: #242e58; font-style: italic; line-height: 1.8; font-size: 15px; white-space: pre-line;">
-                  ${prayerText}
+                  ${ePrayerText}
                 </p>
               </div>
             ` : ""}
           </div>
-          ${customPrayerText ? `
+          ${eCustomPrayerText ? `
             <div style="background: #fdf8ef; border: 1px solid #e8d5a8; border-radius: 12px; padding: 20px; margin-bottom: 16px;">
               <p style="margin: 0 0 10px 0; color: #947324; font-size: 11px; letter-spacing: 2px; text-transform: uppercase;">
-                A prayer from ${organizerFirstName || "the organizer"}
+                A prayer from ${eOrgFirst}
               </p>
               <p style="margin: 0; color: #242e58; font-style: italic; line-height: 1.8; font-size: 15px; white-space: pre-line;">
-                ${customPrayerText}
+                ${eCustomPrayerText}
               </p>
             </div>
           ` : ""}
@@ -306,6 +354,13 @@ export async function sendChainJoinConfirmation({
   const phrase = recipientPhrase(recipientName, intention);
   const orgFirst = firstName(organizerName);
   const subject = `You're praying with ${orgFirst} ${phrase}`;
+  // Pre-escape user-controlled fields for safe HTML injection. `phrase`
+  // is derived from user-provided recipientName/intention so it gets
+  // escaped too.
+  const eMemberName = escapeHtml(memberName);
+  const eOrgFirst = escapeHtml(orgFirst);
+  const ePrayerName = escapeHtml(prayerName);
+  const ePhrase = escapeHtml(phrase);
   try {
     await resend.emails.send({
       from: FROM,
@@ -315,10 +370,10 @@ export async function sendChainJoinConfirmation({
         <div style="font-family: Georgia, 'Times New Roman', serif; max-width: 560px; margin: 0 auto; padding: 32px 24px; background: #faf8f5;">
           <div style="background: #ffffff; border: 1px solid #e8e0d5; border-radius: 16px; padding: 28px 26px;">
             <h1 style="color: #11152c; font-size: 22px; font-weight: 700; margin: 0 0 12px;">
-              Welcome, ${memberName}.
+              Welcome, ${eMemberName}.
             </h1>
             <p style="color: #11152c; font-size: 15px; line-height: 1.6; margin: 0 0 14px;">
-              You've joined ${orgFirst}'s <strong>${prayerName}</strong> ${phrase}.
+              You've joined ${eOrgFirst}'s <strong>${ePrayerName}</strong> ${ePhrase}.
             </p>
             <p style="color: #11152c; font-size: 15px; line-height: 1.6; margin: 0 0 14px;">
               For the next ${durationDays} days, you'll receive an email each
@@ -381,6 +436,18 @@ export async function sendChainDailyReminder({
   const phrase = recipientPhrase(recipientName, intention);
   const orgFirst = firstName(organizerName);
   const subject = `Day ${day} of ${orgFirst}'s ${prayerName} ${phrase}`;
+  // Pre-escape user-controlled fields for safe HTML injection.
+  const eMemberName = escapeHtml(memberName);
+  const eOrgFirst = escapeHtml(orgFirst);
+  const ePrayerName = escapeHtml(prayerName);
+  const ePhrase = escapeHtml(phrase);
+  const ePrayerText = prayerText ? escapeHtml(prayerText) : null;
+  const ePrayerInstructions = prayerInstructions
+    ? escapeHtml(prayerInstructions)
+    : null;
+  const eCustomPrayerText = customPrayerText
+    ? escapeHtml(customPrayerText)
+    : null;
   try {
     await resend.emails.send({
       from: FROM,
@@ -393,37 +460,37 @@ export async function sendChainDailyReminder({
               Day ${day} of ${durationDays}
             </p>
             <h1 style="color: #11152c; font-size: 22px; font-weight: 700; margin: 0 0 16px; line-height: 1.3;">
-              ${orgFirst}'s ${prayerName} ${phrase}
+              ${eOrgFirst}'s ${ePrayerName} ${ePhrase}
             </h1>
             <p style="color: #6e6150; font-size: 14px; line-height: 1.6; margin: 0 0 20px;">
-              Take a moment, ${memberName}. The prayer for today is below.
+              Take a moment, ${eMemberName}. The prayer for today is below.
             </p>
             ${
-              prayerInstructions
+              ePrayerInstructions
                 ? `<div style="border-left: 3px solid #d4a843; background: #fdf8ef; padding: 14px 18px; margin: 0 0 18px;">
-                    <p style="color: #11152c; font-size: 14px; line-height: 1.6; margin: 0; white-space: pre-line;">${prayerInstructions}</p>
+                    <p style="color: #11152c; font-size: 14px; line-height: 1.6; margin: 0; white-space: pre-line;">${ePrayerInstructions}</p>
                   </div>`
                 : ""
             }
             ${
-              prayerText
+              ePrayerText
                 ? `<div style="background: #fefdfb; border: 1px solid #f5f0ea; border-radius: 12px; padding: 22px; margin: 0 0 22px;">
-                    <p style="font-family: 'EB Garamond', Georgia, serif; color: #11152c; font-size: 17px; font-style: italic; line-height: 1.7; white-space: pre-line; margin: 0;">${prayerText}</p>
+                    <p style="font-family: 'EB Garamond', Georgia, serif; color: #11152c; font-size: 17px; font-style: italic; line-height: 1.7; white-space: pre-line; margin: 0;">${ePrayerText}</p>
                   </div>`
                 : ""
             }
             ${
-              customPrayerText
+              eCustomPrayerText
                 ? `<div style="background: #fdf8ef; border: 1px solid #e8d5a8; border-radius: 12px; padding: 20px; margin: 0 0 22px;">
-                    <p style="color: #947324; font-size: 11px; letter-spacing: 2px; text-transform: uppercase; margin: 0 0 10px;">A prayer from ${orgFirst}</p>
-                    <p style="font-family: 'EB Garamond', Georgia, serif; color: #11152c; font-size: 16px; font-style: italic; line-height: 1.7; white-space: pre-line; margin: 0;">${customPrayerText}</p>
+                    <p style="color: #947324; font-size: 11px; letter-spacing: 2px; text-transform: uppercase; margin: 0 0 10px;">A prayer from ${eOrgFirst}</p>
+                    <p style="font-family: 'EB Garamond', Georgia, serif; color: #11152c; font-size: 16px; font-style: italic; line-height: 1.7; white-space: pre-line; margin: 0;">${eCustomPrayerText}</p>
                   </div>`
                 : ""
             }
             ${
               otherMembersCount > 0
                 ? `<p style="color: #6e6150; font-size: 13px; line-height: 1.6; margin: 0 0 18px; font-style: italic; text-align: center;">
-                    ${otherMembersCount} ${otherMembersCount === 1 ? "other person is" : "other people are"} praying with ${orgFirst} today.
+                    ${otherMembersCount} ${otherMembersCount === 1 ? "other person is" : "other people are"} praying with ${eOrgFirst} today.
                   </p>`
                 : ""
             }
@@ -472,6 +539,12 @@ export async function sendChainClosingDayEmail({
     ? `for ${recipientName.trim()}`
     : "";
   const subject = `The ${prayerName} is complete — thank you for praying with ${orgFirst}`;
+  // Pre-escape user-controlled fields for safe HTML injection.
+  const eMemberName = escapeHtml(memberName);
+  const eOrgFirst = escapeHtml(orgFirst);
+  const ePrayerName = escapeHtml(prayerName);
+  const eRecipientPhraseShort = escapeHtml(recipientPhraseShort);
+  const eClosingNote = closingNote ? escapeHtml(closingNote) : null;
   try {
     await resend.emails.send({
       from: FROM,
@@ -481,16 +554,16 @@ export async function sendChainClosingDayEmail({
         <div style="font-family: Georgia, 'Times New Roman', serif; max-width: 560px; margin: 0 auto; padding: 32px 24px; background: #faf8f5;">
           <div style="background: #ffffff; border: 1px solid #e8e0d5; border-radius: 16px; padding: 32px 28px; text-align: center;">
             <h1 style="color: #11152c; font-family: 'EB Garamond', Georgia, serif; font-size: 26px; font-weight: 700; margin: 0 0 12px; line-height: 1.3;">
-              The ${prayerName} is complete.
+              The ${ePrayerName} is complete.
             </h1>
             <p style="color: #11152c; font-size: 15px; line-height: 1.7; margin: 0 0 18px;">
-              Thank you for praying with ${orgFirst} ${recipientPhraseShort}, ${memberName}.
+              Thank you for praying with ${eOrgFirst} ${eRecipientPhraseShort}, ${eMemberName}.
             </p>
             ${
-              closingNote
+              eClosingNote
                 ? `<div style="background: #fdf8ef; border-radius: 12px; padding: 20px; margin: 0 0 18px; text-align: left;">
-                    <p style="color: #947324; font-size: 11px; letter-spacing: 2px; text-transform: uppercase; margin: 0 0 8px;">A note from ${orgFirst}</p>
-                    <p style="color: #11152c; font-style: italic; font-size: 15px; line-height: 1.7; margin: 0; white-space: pre-line;">${closingNote}</p>
+                    <p style="color: #947324; font-size: 11px; letter-spacing: 2px; text-transform: uppercase; margin: 0 0 8px;">A note from ${eOrgFirst}</p>
+                    <p style="color: #11152c; font-style: italic; font-size: 15px; line-height: 1.7; margin: 0; white-space: pre-line;">${eClosingNote}</p>
                   </div>`
                 : ""
             }
@@ -537,6 +610,10 @@ export async function sendPrayerWarriorWelcome({
 }) {
   const orgFirst = organizerFirstName ?? "the organizer";
   const subject = `Thank you for praying for ${recipientName}`;
+  // Pre-escape user-controlled fields for safe HTML injection.
+  const eWarriorName = escapeHtml(warriorName);
+  const eRecipientName = escapeHtml(recipientName);
+  const eOrgFirst = escapeHtml(orgFirst);
   try {
     await resend.emails.send({
       from: FROM,
@@ -546,12 +623,12 @@ export async function sendPrayerWarriorWelcome({
         <div style="font-family: Georgia, 'Times New Roman', serif; max-width: 560px; margin: 0 auto; padding: 32px 24px; background: #faf8f5;">
           <div style="background: #ffffff; border: 1px solid #e8e0d5; border-radius: 16px; padding: 28px 26px;">
             <h1 style="color: #11152c; font-size: 22px; font-weight: 700; margin: 0 0 12px;">
-              Thank you, ${warriorName}.
+              Thank you, ${eWarriorName}.
             </h1>
             <p style="color: #11152c; font-size: 15px; line-height: 1.7; margin: 0 0 14px;">
-              You've joined ${orgFirst}'s prayer for <strong>${recipientName}</strong>.
+              You've joined ${eOrgFirst}'s prayer for <strong>${eRecipientName}</strong>.
               Every slot on the calendar is filled — and your prayer adds to the
-              cloud of intercession surrounding ${recipientName}.
+              cloud of intercession surrounding ${eRecipientName}.
             </p>
             <p style="color: #11152c; font-size: 15px; line-height: 1.7; margin: 0 0 14px;">
               Pray however and whenever you can. There's no specific time,
@@ -592,8 +669,14 @@ export async function sendPrayerWarriorClosing({
   trainUrl: string;
   bouquetUrl: string;
 }) {
-  const orgFirst = organizerFirstName ?? "the organizer";
+  // organizerFirstName is part of the signature for symmetry with the
+  // welcome template and future use; the closing copy doesn't currently
+  // reference it.
+  void organizerFirstName;
   const subject = `The prayer train for ${recipientName} is complete`;
+  // Pre-escape user-controlled fields for safe HTML injection.
+  const eWarriorName = escapeHtml(warriorName);
+  const eRecipientName = escapeHtml(recipientName);
   try {
     await resend.emails.send({
       from: FROM,
@@ -606,7 +689,7 @@ export async function sendPrayerWarriorClosing({
               The prayer train is complete.
             </h1>
             <p style="color: #11152c; font-size: 15px; line-height: 1.7; margin: 0 0 18px;">
-              Thank you for praying for ${recipientName}, ${warriorName}.
+              Thank you for praying for ${eRecipientName}, ${eWarriorName}.
               Every prayer offered — every slot, every pledge — is held in the
               spiritual bouquet linked below. May the Lord reward your
               faithfulness.

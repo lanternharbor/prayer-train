@@ -231,28 +231,3 @@ h1, h2, h3, h4, h5, h6 {
   pointer-events: none;
   z-index: 0;
 }
-
-/*
- * Soft radial fade for the holy-card-style logo illustration. The
- * source asset has a cream parchment background that creates a hard
- * rectangular edge against navy hero / sections. This mask fades the
- * outer 25% of the image to transparent so the parchment blends into
- * whatever background it sits on. Center stays sharp.
- *
- * Used only on standalone illustrative placements (homepage hero,
- * mid-page image-text rows). Not applied to OG image references,
- * email header logos, or schema.org logo URLs — those are external
- * uses where the parchment-on-cream renders fine.
- */
-.logo-vignette {
-  -webkit-mask-image: radial-gradient(
-    ellipse at center,
-    black 75%,
-    transparent 100%
-  );
-  mask-image: radial-gradient(
-    ellipse at center,
-    black 75%,
-    transparent 100%
-  );
-}

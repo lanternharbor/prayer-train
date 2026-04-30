@@ -81,7 +81,7 @@ export default function HomePage() {
                   alt="PrayerTrain — a community united in prayer"
                   width={480}
                   height={480}
-                  className="logo-vignette relative w-64 sm:w-80 lg:w-[420px] h-auto drop-shadow-2xl"
+                  className="relative w-64 sm:w-80 lg:w-[420px] h-auto drop-shadow-2xl"
                   priority
                 />
               </div>
@@ -187,7 +187,7 @@ export default function HomePage() {
                 alt="PrayerTrain"
                 width={180}
                 height={180}
-                className="logo-vignette w-36 h-auto opacity-90"
+                className="w-36 h-auto opacity-90"
               />
             </div>
             <div>
@@ -234,7 +234,7 @@ export default function HomePage() {
                 alt="PrayerTrain"
                 width={320}
                 height={320}
-                className="logo-vignette w-56 sm:w-72 h-auto opacity-90"
+                className="w-56 sm:w-72 h-auto opacity-90"
               />
             </div>
             <div className="text-center md:text-left">

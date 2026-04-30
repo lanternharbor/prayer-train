@@ -249,7 +249,7 @@ export function ParishHandoutDocument({
         {/* Lead paragraph */}
         <Text style={handoutStyles.body}>
           When someone you love is walking through a serious diagnosis,
-          surgery, grief, or any heavy season — friends and family often
+          surgery, grief, or any heavy season, friends and family often
           want to help but don&apos;t know how.{" "}
           <Text style={handoutStyles.bodyBold}>
             PrayerTrain organizes prayer the way a meal train organizes
@@ -263,7 +263,7 @@ export function ParishHandoutDocument({
 
         <Text style={handoutStyles.body}>
           Someone organizes a PrayerTrain for a person in need. Friends
-          and family sign up for individual prayer slots — a Rosary on
+          and family sign up for individual prayer slots: a Rosary on
           Tuesday, a Divine Mercy Chaplet on Thursday, a Mass intention
           for Saturday. Each volunteer receives a daily reminder with the
           prayer they committed to and a one-click way to mark it
@@ -292,14 +292,14 @@ export function ParishHandoutDocument({
         <View style={handoutStyles.thankYouBlock}>
           <Text style={handoutStyles.thankYouLabel}>Thank you, St Paul.</Text>
           <Text style={handoutStyles.thankYouBody}>
-            Wherever this Mass finds you — in waiting, in grief, in hope,
-            or just in faithful presence — PrayerTrain is one small way
+            Wherever this Mass finds you, in waiting, in grief, in hope,
+            or just in faithful presence, PrayerTrain is one small way
             to gather prayer around someone walking through something
             hard. Use it for someone you love. Use it for yourself.
             Pass it along where it helps.
           </Text>
           <Text style={handoutStyles.signoff}>
-            — With prayers, William and his family
+            With prayers, William and his family
           </Text>
         </View>
 

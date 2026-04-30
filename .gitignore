@@ -42,3 +42,8 @@ yarn-error.log*
 next-env.d.ts
 
 /src/generated/prisma
+
+# Generated parish-handout PDFs — regenerated on demand from
+# scripts/generate-parish-handout.tsx; the generators are committed,
+# the output is not.
+/printables

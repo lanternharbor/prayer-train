@@ -1,24 +1,26 @@
 /**
- * Generate the parish promotion artifacts as PDFs in /tmp.
+ * Generate the parish promotion artifacts as PDFs in ./printables/.
  *
- *   /tmp/parish-handout.pdf      — single-page 8.5x11 handout
- *   /tmp/parish-cards.pdf        — 10-up sheet of pocket cards
+ *   printables/parish-handout.pdf      single-page 8.5x11 handout
+ *   printables/parish-cards.pdf        10-up sheet of pocket cards
  *
  * Run with: npx tsx scripts/generate-parish-handout.tsx
  *
  * Both PDFs share the cross-bouquet emblem from public/bouquet-emblem.png
  * and a generated QR code targeting prayertrains.com. The QR is rendered
- * locally with the existing `qrcode` dependency — no external API.
+ * locally with the existing `qrcode` dependency, no external API.
  *
- * The script writes to /tmp because the artifacts aren't committed —
- * they're regenerated on demand from the React-PDF templates so any
- * copy change in src/lib/parish-handout.tsx flows through to the
- * printed output without anyone hand-editing a static file.
+ * Output lives in ./printables/ rather than /tmp so the files persist
+ * between reboots and have a memorable location. The folder is in
+ * .gitignore: the generators are committed; the generated PDFs
+ * themselves regenerate from the React-PDF templates whenever the
+ * script runs.
  */
 
 import "dotenv/config";
 import { renderToBuffer } from "@react-pdf/renderer";
-import { writeFileSync } from "node:fs";
+import { mkdirSync, writeFileSync } from "node:fs";
+import { join } from "node:path";
 import QRCode from "qrcode";
 import {
   ParishCardSheetDocument,
@@ -26,8 +28,10 @@ import {
 } from "../src/lib/parish-handout";
 
 const QR_TARGET = "https://prayertrains.com";
+const OUTPUT_DIR = join(process.cwd(), "printables");
 
 async function main() {
+  mkdirSync(OUTPUT_DIR, { recursive: true });
   // High error correction (H = 30%) so the QR survives a parish
   // photocopier's compression and small-printout pixel loss. Square
   // PNG; @react-pdf's Image accepts the buffer directly.
@@ -43,20 +47,23 @@ async function main() {
 
   console.log("\n  Rendering PDFs (using bouquet emblem + brand palette)…\n");
 
+  const handoutPath = join(OUTPUT_DIR, "parish-handout.pdf");
+  const cardsPath = join(OUTPUT_DIR, "parish-cards.pdf");
+
   const handoutBuf = await renderToBuffer(
     <ParishHandoutDocument qrPngBuffer={qrBuffer} />,
   );
-  writeFileSync("/tmp/parish-handout.pdf", handoutBuf);
+  writeFileSync(handoutPath, handoutBuf);
   console.log(
-    `  /tmp/parish-handout.pdf      ${(handoutBuf.length / 1024).toFixed(0)} KB`,
+    `  ${handoutPath}    ${(handoutBuf.length / 1024).toFixed(0)} KB`,
   );
 
   const cardsBuf = await renderToBuffer(
     <ParishCardSheetDocument qrPngBuffer={qrBuffer} />,
   );
-  writeFileSync("/tmp/parish-cards.pdf", cardsBuf);
+  writeFileSync(cardsPath, cardsBuf);
   console.log(
-    `  /tmp/parish-cards.pdf        ${(cardsBuf.length / 1024).toFixed(0)} KB  (10 cards on one letter sheet)`,
+    `  ${cardsPath}      ${(cardsBuf.length / 1024).toFixed(0)} KB  (10 cards on one letter sheet)`,
   );
   console.log("");
 }

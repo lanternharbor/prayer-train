@@ -65,6 +65,29 @@ export const createTrainSchema = z.object({
 
 export type CreateTrainInput = z.infer<typeof createTrainSchema>;
 
+// ─── Update PrayerTrain Details ─────────────────────────────
+//
+// Editable fields only. Excluded: durationDays, slotsPerDay,
+// prayerTypeIds (slots are already generated and assigned to specific
+// prayer types — changing these retroactively would invalidate the
+// schedule). isPublic also excluded because it has its own dedicated
+// toggle on the manage page.
+
+export const updateTrainSchema = z.object({
+  trainId: trimmedString(1, 60),
+  recipientName: trimmedString(1, 80),
+  recipientRelation: optionalTrimmed(60),
+  parish: optionalTrimmed(120),
+  parishId: optionalTrimmed(60),
+  location: optionalTrimmed(120),
+  intention: trimmedString(1, 2000),
+  situation: z.enum(situationValues),
+  situationDetail: optionalTrimmed(2000),
+  customPrayerText: optionalTrimmed(4000),
+});
+
+export type UpdateTrainInput = z.infer<typeof updateTrainSchema>;
+
 // ─── Claim a Prayer Slot ────────────────────────────────────
 
 export const claimSlotSchema = z.object({
@@ -110,6 +133,22 @@ export const createChainSchema = z.object({
 });
 
 export type CreateChainInput = z.infer<typeof createChainSchema>;
+
+// ─── Update PrayerChain Details ─────────────────────────────
+//
+// Editable fields only. Excluded: prayerTypeId (members joined for
+// THIS prayer; changing it retroactively breaks the contract),
+// durationDays/startDate/endDate (already-sent reminders are pinned
+// to those values), isPublic (V1 keeps that off the form).
+
+export const updateChainSchema = z.object({
+  chainId: trimmedString(1, 60),
+  recipientName: optionalTrimmed(80),
+  intention: trimmedString(1, 2000),
+  customPrayerText: optionalTrimmed(4000),
+});
+
+export type UpdateChainInput = z.infer<typeof updateChainSchema>;
 
 // ─── Join PrayerChain ───────────────────────────────────────
 

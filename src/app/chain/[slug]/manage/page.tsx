@@ -4,7 +4,7 @@ import Link from "next/link";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import { closePrayerChain } from "@/lib/actions";
-import { ArrowLeft, Settings, Users, FileDown } from "lucide-react";
+import { ArrowLeft, Settings, Users, FileDown, Pencil } from "lucide-react";
 
 // Module-level helper. Defined outside the component to satisfy the
 // react-hooks/purity rule, which rejects Date.now() inside render.
@@ -78,19 +78,28 @@ export default async function ChainManagePage({
         Back to the prayer
       </Link>
 
-      <div className="flex items-center gap-3 mb-8">
-        <Settings className="w-6 h-6 text-gold-500" />
-        <div>
-          <h1 className="font-heading text-2xl font-bold text-navy-800">
-            Manage:{" "}
-            {chain.recipientName ?? chain.prayerType.name}
-          </h1>
-          <p className="text-sm text-muted-foreground">
-            {chain.prayerType.name} &bull; Day {dayNum} of{" "}
-            {chain.durationDays} &bull; {activeCount} active{" "}
-            {activeCount === 1 ? "member" : "members"}
-          </p>
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-8">
+        <div className="flex items-center gap-3">
+          <Settings className="w-6 h-6 text-gold-500" />
+          <div>
+            <h1 className="font-heading text-2xl font-bold text-navy-800">
+              Manage:{" "}
+              {chain.recipientName ?? chain.prayerType.name}
+            </h1>
+            <p className="text-sm text-muted-foreground">
+              {chain.prayerType.name} &bull; Day {dayNum} of{" "}
+              {chain.durationDays} &bull; {activeCount} active{" "}
+              {activeCount === 1 ? "member" : "members"}
+            </p>
+          </div>
         </div>
+        <Link
+          href={`/chain/${slug}/manage/edit`}
+          className="inline-flex items-center justify-center gap-1.5 px-4 py-2 text-sm font-medium text-gold-700 hover:text-gold-800 border border-gold-300 hover:border-gold-400 rounded-lg transition-colors self-start sm:self-auto shrink-0"
+        >
+          <Pencil className="w-4 h-4" />
+          Edit details
+        </Link>
       </div>
 
       {/* Bouquet PDF — only when COMPLETED */}

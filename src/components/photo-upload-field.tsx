@@ -4,18 +4,38 @@ import { useState } from "react";
 import { Camera } from "lucide-react";
 
 /**
- * Photo-upload field with a circular preview thumbnail. Mirrors the photo
- * upload in src/app/create/train/create-wizard.tsx so PrayerTrains and
- * PrayerChains feel consistent.
+ * Photo-upload field with a circular preview thumbnail. Used by both
+ * the create wizard / new-chain form (no existing photo) and the edit
+ * forms (existing photo to start from). Pattern mirrors the photo
+ * upload in src/app/create/train/create-wizard.tsx so PrayerTrains
+ * and PrayerChains feel consistent.
  *
- * Renders a hidden <input type="file"> behind a clickable circle. The file
- * is included in the parent form's FormData on submit — the parent is a
- * server-action form, so no extra wiring needed.
+ * Renders a hidden <input type="file"> behind a clickable circle. The
+ * file is included in the parent form's FormData on submit — the
+ * parent is a server-action form, so no extra wiring needed.
+ *
+ * Optional `existingImageUrl` shows the current photo as the starting
+ * thumbnail. If the user picks a new file, the preview switches to
+ * the local blob URL. If they don't, no file is sent and the server
+ * action keeps the existing image.
  */
-export function PhotoUploadField({ name }: { name: string }) {
-  const [preview, setPreview] = useState<string | null>(null);
-  const [hasFile, setHasFile] = useState(false);
+export function PhotoUploadField({
+  name,
+  existingImageUrl,
+  helpText,
+}: {
+  name: string;
+  existingImageUrl?: string | null;
+  /** Override the default help copy if a surface needs different wording. */
+  helpText?: string;
+}) {
+  const [preview, setPreview] = useState<string | null>(
+    existingImageUrl ?? null,
+  );
+  const [hasNewFile, setHasNewFile] = useState(false);
   const [inputKey, setInputKey] = useState(0); // bumped to clear the input
+
+  const showingExisting = !hasNewFile && !!existingImageUrl;
 
   return (
     <div>
@@ -26,8 +46,8 @@ export function PhotoUploadField({ name }: { name: string }) {
         </span>
       </label>
       <p className="text-xs text-muted-foreground mb-3">
-        A photo helps everyone praying feel connected to the person they&apos;re
-        praying for.
+        {helpText ??
+          "A photo helps everyone praying feel connected to the person they're praying for."}
       </p>
       <div className="flex items-center gap-4">
         <label
@@ -35,7 +55,7 @@ export function PhotoUploadField({ name }: { name: string }) {
           aria-label="Upload a photo of the person you're praying for"
         >
           {preview ? (
-            // eslint-disable-next-line @next/next/no-img-element -- local blob URL
+            // eslint-disable-next-line @next/next/no-img-element -- local blob URL or existing remote URL; sized below sm screens
             <img
               src={preview}
               alt="Selected recipient photo preview"
@@ -59,23 +79,25 @@ export function PhotoUploadField({ name }: { name: string }) {
                 return;
               }
               setPreview(URL.createObjectURL(file));
-              setHasFile(true);
+              setHasNewFile(true);
             }}
           />
         </label>
         <div className="text-xs text-muted-foreground">
-          {hasFile ? (
+          {hasNewFile ? (
             <button
               type="button"
               onClick={() => {
-                setPreview(null);
-                setHasFile(false);
+                setPreview(existingImageUrl ?? null);
+                setHasNewFile(false);
                 setInputKey((k) => k + 1);
               }}
               className="text-red-500 hover:text-red-600 font-medium"
             >
-              Remove photo
+              {existingImageUrl ? "Cancel — keep existing photo" : "Remove photo"}
             </button>
+          ) : showingExisting ? (
+            <span>Tap the circle to replace this photo.</span>
           ) : (
             <span>JPG, PNG, or WebP. Max 5MB.</span>
           )}

@@ -6,7 +6,7 @@ import { prisma } from "@/lib/db";
 import { createPrayerChain } from "@/lib/actions";
 import { Users, Heart } from "lucide-react";
 import { SaintPortrait } from "@/components/saint-portrait";
-import { PhotoUploadField } from "./photo-upload-field";
+import { PhotoUploadField } from "@/components/photo-upload-field";
 
 export const metadata: Metadata = {
   title: "Pray Together",

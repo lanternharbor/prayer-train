@@ -18,6 +18,8 @@ import {
   markChainDayCompleteSchema,
   parseFormData,
   trainUpdateSchema,
+  updateChainSchema,
+  updateTrainSchema,
 } from "@/lib/validation";
 import {
   sendChainClosingDayEmail,
@@ -471,6 +473,82 @@ export async function toggleTrainVisibility(trainId: string, isPublic: boolean) 
   revalidatePath("/browse");
 }
 
+// ─── Edit PrayerTrain Details (Organizer) ───────────────────
+//
+// Lets the organizer fix typos and update copy on a live train.
+// Editable fields are scoped tightly: anything that would invalidate
+// already-generated slots or already-sent emails (durationDays,
+// slotsPerDay, prayer-type assignments, dates) is intentionally
+// excluded. isPublic stays on its own toggle.
+//
+// Photo replacement is opt-in: if the form omits a new photo (the
+// usual case), the existing recipientImageUrl is preserved.
+
+export async function updateTrainDetails(formData: FormData) {
+  const session = await auth();
+  if (!session?.user?.id) redirect("/signin");
+
+  const input = parseFormData(updateTrainSchema, formData);
+
+  const train = await prisma.prayerTrain.findUnique({
+    where: { id: input.trainId },
+    select: {
+      id: true,
+      slug: true,
+      organizerId: true,
+      recipientImageUrl: true,
+    },
+  });
+  if (!train) throw new Error("That prayer train no longer exists.");
+  if (train.organizerId !== session.user.id) {
+    throw new Error("Only the organizer can edit this prayer train.");
+  }
+
+  // Optional photo replacement. Same shape as createPrayerTrain's
+  // upload, but if the upload fails we keep the existing photo URL
+  // rather than nulling it out — a flaky upload shouldn't lose the
+  // family photo that's already there.
+  let recipientImageUrl: string | null = train.recipientImageUrl;
+  const photoFile = formData.get("recipientPhoto") as File | null;
+  if (photoFile && photoFile.size > 0 && process.env.BLOB_READ_WRITE_TOKEN) {
+    try {
+      const uploadPromise = put(
+        `prayer-train/${train.slug}-${Date.now()}.${photoFile.type.split("/")[1] || "jpg"}`,
+        photoFile,
+        { access: "public" },
+      );
+      const timeoutPromise = new Promise<never>((_, reject) =>
+        setTimeout(() => reject(new Error("Upload timeout")), 8000),
+      );
+      const blob = await Promise.race([uploadPromise, timeoutPromise]);
+      recipientImageUrl = blob.url;
+    } catch (e) {
+      console.error("Photo upload failed (keeping existing photo):", e);
+    }
+  }
+
+  await prisma.prayerTrain.update({
+    where: { id: train.id },
+    data: {
+      recipientName: input.recipientName,
+      recipientRelation: input.recipientRelation || null,
+      parish: input.parish || null,
+      parishId: input.parishId || null,
+      location: input.location || null,
+      intention: input.intention,
+      situation: input.situation,
+      situationDetail: input.situationDetail || null,
+      customPrayerText: input.customPrayerText || null,
+      recipientImageUrl,
+    },
+  });
+
+  revalidatePath(`/p/${train.slug}`);
+  revalidatePath(`/p/${train.slug}/manage`);
+  revalidatePath("/browse");
+  redirect(`/p/${train.slug}/manage`);
+}
+
 // ─── Add PrayerWarrior pledge ───────────────────────────────
 //
 // Soft-pledge to pray for a train without claiming a calendar slot.
@@ -762,6 +840,70 @@ export async function markChainDayCompleteByToken(
   // page render. Same reasoning as markSlotCompleteByToken above. The
   // chain detail page is dynamic, so the next visit reads fresh data.
   return { ok: true as const, slug: member.chain.slug, day: newDay };
+}
+
+// ─── Edit PrayerChain Details (Organizer) ──────────────────
+//
+// Same shape as updateTrainDetails but for the pray-together format.
+// prayerTypeId is intentionally not editable — members joined for
+// THIS prayer; swapping it after the fact breaks the contract.
+// Schedule fields are also not editable for the same reason.
+
+export async function updateChainDetails(formData: FormData) {
+  const session = await auth();
+  if (!session?.user?.id) redirect("/signin");
+
+  const input = parseFormData(updateChainSchema, formData);
+
+  const chain = await prisma.prayerChain.findUnique({
+    where: { id: input.chainId },
+    select: {
+      id: true,
+      slug: true,
+      organizerId: true,
+      recipientImageUrl: true,
+    },
+  });
+  if (!chain) throw new Error("That prayer no longer exists.");
+  if (chain.organizerId !== session.user.id) {
+    throw new Error("Only the organizer can edit this prayer.");
+  }
+
+  // Optional photo replacement. Keeps the existing image if upload
+  // fails or no new file is sent.
+  let recipientImageUrl: string | null = chain.recipientImageUrl;
+  const photoFile = formData.get("recipientPhoto") as File | null;
+  if (photoFile && photoFile.size > 0 && process.env.BLOB_READ_WRITE_TOKEN) {
+    try {
+      const uploadPromise = put(
+        `prayer-chain/${chain.slug}-${Date.now()}.${photoFile.type.split("/")[1] || "jpg"}`,
+        photoFile,
+        { access: "public" },
+      );
+      const timeoutPromise = new Promise<never>((_, reject) =>
+        setTimeout(() => reject(new Error("Upload timeout")), 8000),
+      );
+      const blob = await Promise.race([uploadPromise, timeoutPromise]);
+      recipientImageUrl = blob.url;
+    } catch (e) {
+      console.error("Chain photo upload failed (keeping existing photo):", e);
+    }
+  }
+
+  await prisma.prayerChain.update({
+    where: { id: chain.id },
+    data: {
+      recipientName: input.recipientName ?? null,
+      intention: input.intention,
+      customPrayerText: input.customPrayerText || null,
+      recipientImageUrl,
+    },
+  });
+
+  revalidatePath(`/chain/${chain.slug}`);
+  revalidatePath(`/chain/${chain.slug}/manage`);
+  revalidatePath("/browse");
+  redirect(`/chain/${chain.slug}/manage`);
 }
 
 // ─── Close PrayerChain (Organizer) ──────────────────────────

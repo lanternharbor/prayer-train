@@ -336,6 +336,63 @@ export async function sendDailyReminder({
   }
 }
 
+// ─── Cancellation Notice (PrayerTrain) ─────────────────────
+//
+// Sent to every claimer + warrior when an organizer cancels a train.
+// Pastoral framing: cancellation is the organizer's choice (sometimes
+// because the recipient's situation changed, sometimes because the
+// train was duplicated by mistake) rather than a failure. The
+// recipient does NOT need to do anything; the email is a courtesy
+// notice so people who committed to pray know the train is closed.
+//
+// Caller is responsible for deduplicating recipients (one email per
+// unique address) and for handling the "no recipients" empty case.
+
+export async function sendTrainCancellationNotice({
+  to,
+  recipientName,
+  organizerFirstName,
+}: {
+  to: string;
+  recipientName: string;
+  organizerFirstName: string | null;
+}) {
+  const eRecipientName = escapeHtml(recipientName);
+  const eOrgFirst = escapeHtml(organizerFirstName ?? "the organizer");
+  try {
+    await resend.emails.send({
+      from: FROM,
+      to,
+      subject: `The prayer train for ${recipientName} has been cancelled`,
+      html: `
+        <div style="font-family: Georgia, 'Times New Roman', serif; max-width: 560px; margin: 0 auto; padding: 32px 24px; background: #faf8f5;">
+          <div style="background: #ffffff; border: 1px solid #e8e0d5; border-radius: 16px; padding: 28px 26px;">
+            <h1 style="color: #11152c; font-size: 22px; font-weight: 700; margin: 0 0 14px;">
+              The prayer train for ${eRecipientName} has been cancelled.
+            </h1>
+            <p style="color: #11152c; font-size: 15px; line-height: 1.7; margin: 0 0 14px;">
+              ${eOrgFirst} has closed this prayer train, so you won&rsquo;t
+              receive any more daily reminders for it. Thank you for the
+              prayers you offered while it was active. Whatever was prayed
+              has been prayed; the Lord receives every offering whether or
+              not the calendar around it continues.
+            </p>
+            <p style="color: #11152c; font-size: 15px; line-height: 1.7; margin: 0;">
+              No action is needed from you.
+            </p>
+          </div>
+          <p style="text-align: center; color: #b8a994; font-size: 12px; margin: 18px 0 0;">
+            PrayerTrain &middot; A Lantern Harbor project
+          </p>
+        </div>
+      `,
+      text: `The prayer train for ${recipientName} has been cancelled.\n\n${organizerFirstName ?? "The organizer"} has closed this prayer train, so you won't receive any more daily reminders for it. Thank you for the prayers you offered while it was active.\n\nNo action is needed from you.`,
+    });
+  } catch (error) {
+    console.error("Failed to send train cancellation notice:", error);
+  }
+}
+
 // ─── Pray-Together Emails (chain primitive) ────────────────
 //
 // Templates for the synchronized-solidarity primitive. Each one mentions
@@ -609,6 +666,67 @@ export async function sendChainClosingDayEmail({
     });
   } catch (error) {
     console.error("Failed to send chain closing-day email:", error);
+  }
+}
+
+// Cancellation notice (chain) — same shape and pastoral framing as the
+// train version. Sent to every active member (unsubscribedAt is null)
+// when an organizer cancels the chain. Caller dedupes by email and
+// handles the empty-recipients case.
+
+export async function sendChainCancellationNotice({
+  to,
+  memberName,
+  organizerName,
+  prayerName,
+  recipientName,
+  intention,
+}: {
+  to: string;
+  memberName: string;
+  organizerName: string;
+  prayerName: string;
+  recipientName: string | null;
+  intention: string;
+}) {
+  const phrase = recipientPhrase(recipientName, intention);
+  const orgFirst = firstName(organizerName);
+  const eMemberName = escapeHtml(memberName);
+  const eOrgFirst = escapeHtml(orgFirst);
+  const ePrayerName = escapeHtml(prayerName);
+  const ePhrase = escapeHtml(phrase);
+  const subject = `${orgFirst}'s ${prayerName} ${phrase} has been cancelled`;
+  try {
+    await resend.emails.send({
+      from: FROM,
+      to,
+      subject,
+      html: `
+        <div style="font-family: Georgia, 'Times New Roman', serif; max-width: 560px; margin: 0 auto; padding: 32px 24px; background: #faf8f5;">
+          <div style="background: #ffffff; border: 1px solid #e8e0d5; border-radius: 16px; padding: 28px 26px;">
+            <h1 style="color: #11152c; font-size: 22px; font-weight: 700; margin: 0 0 14px;">
+              ${eOrgFirst}&rsquo;s ${ePrayerName} ${ePhrase} has been cancelled.
+            </h1>
+            <p style="color: #11152c; font-size: 15px; line-height: 1.7; margin: 0 0 14px;">
+              ${eOrgFirst} has closed this shared prayer, so you won&rsquo;t
+              receive any more daily reminders for it. Thank you for the
+              prayers you offered while it was running, ${eMemberName}.
+              Whatever was prayed has been prayed; the Lord receives every
+              offering whether or not the calendar around it continues.
+            </p>
+            <p style="color: #11152c; font-size: 15px; line-height: 1.7; margin: 0;">
+              No action is needed from you.
+            </p>
+          </div>
+          <p style="text-align: center; color: #b8a994; font-size: 12px; margin: 18px 0 0;">
+            PrayerTrain &middot; A Lantern Harbor project
+          </p>
+        </div>
+      `,
+      text: `${orgFirst}'s ${prayerName} ${phrase} has been cancelled.\n\n${orgFirst} has closed this shared prayer, so you won't receive any more daily reminders for it. Thank you for the prayers you offered while it was running, ${memberName}.\n\nNo action is needed from you.`,
+    });
+  } catch (error) {
+    console.error("Failed to send chain cancellation notice:", error);
   }
 }
 

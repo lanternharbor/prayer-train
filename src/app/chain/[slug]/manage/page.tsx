@@ -5,6 +5,8 @@ import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import { closePrayerChain } from "@/lib/actions";
 import { ArrowLeft, Settings, Users, FileDown, Pencil } from "lucide-react";
+import { ChainDangerZone } from "./chain-danger-zone";
+import { isProtectedChain } from "@/lib/train-protection";
 
 // Module-level helper. Defined outside the component to satisfy the
 // react-hooks/purity rule, which rejects Date.now() inside render.
@@ -204,6 +206,24 @@ export default async function ChainManagePage({
           </div>
         </div>
       </div>
+
+      {/* Danger zone — three modes by state. ACTIVE/PAUSED show
+          delete (when no members) or cancel (when members exist) with
+          a confirm-by-typing gate. CANCELLED shows a Reactivate
+          button. COMPLETED and PROMOTED hide the section entirely.
+          The label the organizer types is the recipient name when
+          present, or the first ~80 chars of the intention otherwise. */}
+      {chain.status !== "COMPLETED" && chain.status !== "PROMOTED" && (
+        <ChainDangerZone
+          chainId={chain.id}
+          confirmationLabel={
+            chain.recipientName?.trim() || chain.intention.trim().slice(0, 80)
+          }
+          status={chain.status}
+          hasMembers={chain.members.length > 0}
+          isProtected={isProtectedChain(chain.slug)}
+        />
+      )}
     </div>
   );
 }

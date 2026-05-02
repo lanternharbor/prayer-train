@@ -1,7 +1,9 @@
 import { describe, expect, it } from "vitest";
 import {
   confirmationMatches,
+  isProtectedChain,
   isProtectedTrain,
+  PROTECTED_CHAIN_SLUGS,
   PROTECTED_SLUGS,
 } from "./train-protection";
 
@@ -29,6 +31,18 @@ describe("isProtectedTrain", () => {
 
   it("PROTECTED_SLUGS contains the Spina slug", () => {
     expect(PROTECTED_SLUGS.has("the-spina-family-dlmm")).toBe(true);
+  });
+});
+
+describe("isProtectedChain", () => {
+  it("returns false for any chain slug (none are currently protected)", () => {
+    expect(isProtectedChain("any-chain-slug")).toBe(false);
+    expect(isProtectedChain("the-spina-family-dlmm")).toBe(false); // train slug, not chain
+    expect(isProtectedChain("")).toBe(false);
+  });
+
+  it("PROTECTED_CHAIN_SLUGS exists and is empty by default", () => {
+    expect(PROTECTED_CHAIN_SLUGS.size).toBe(0);
   });
 });
 

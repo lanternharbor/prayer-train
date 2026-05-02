@@ -23,7 +23,7 @@
  */
 
 /**
- * Slugs that can NEVER be deleted or cancelled by any code path.
+ * Train slugs that can NEVER be deleted or cancelled by any code path.
  * Add to this set sparingly. Each entry should have a one-line comment
  * explaining why it's protected.
  */
@@ -36,7 +36,14 @@ export const PROTECTED_SLUGS: ReadonlySet<string> = new Set([
 ]);
 
 /**
- * Returns true if the given slug is in the protected list.
+ * Chain slugs that can NEVER be deleted or cancelled. Currently empty;
+ * the function and Set exist for symmetry with the train side and to
+ * keep adding a protected chain in the future a one-line change.
+ */
+export const PROTECTED_CHAIN_SLUGS: ReadonlySet<string> = new Set([]);
+
+/**
+ * Returns true if the given slug is in the protected train list.
  *
  * Case-sensitive and exact: PROTECTED_SLUGS holds the canonical lowercase
  * slug as stored in the database. The slug column has no case-fold
@@ -44,6 +51,16 @@ export const PROTECTED_SLUGS: ReadonlySet<string> = new Set([
  */
 export function isProtectedTrain(slug: string): boolean {
   return PROTECTED_SLUGS.has(slug);
+}
+
+/**
+ * Returns true if the given slug is in the protected chain list.
+ * Mirrors isProtectedTrain. Currently always returns false because
+ * no chains are protected, but server actions should still call it
+ * so adding a protected chain later is just a Set addition.
+ */
+export function isProtectedChain(slug: string): boolean {
+  return PROTECTED_CHAIN_SLUGS.has(slug);
 }
 
 /**

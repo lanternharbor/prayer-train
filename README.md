@@ -12,7 +12,6 @@ PrayerTrain is a project of [Lantern Harbor LLC](https://lanternharbor.co).
 Live at:
 
 - https://prayertrains.com (canonical)
-- https://www.ourfaithtrain.com
 
 ## Stack
 
@@ -49,7 +48,7 @@ You'll need free-tier accounts for:
 - **Neon** (https://neon.tech) — Postgres database. Create one project
   named `prayer-train`. Copy the pooled connection string.
 - **Resend** (https://resend.com) — transactional email. Verify the
-  sending domain you plan to use (e.g. `ourfaithtrain.com`). Generate
+  sending domain you plan to use (ideally `prayertrains.com`). Generate
   an API key.
 - **Vercel Blob** (https://vercel.com/dashboard) — Storage → Create
   Blob store. Generate a read/write token.

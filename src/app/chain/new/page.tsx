@@ -119,7 +119,7 @@ export default async function NewChainPage({
               className="w-full px-4 py-2.5 border border-border rounded-lg bg-cream-50 focus:ring-2 focus:ring-gold-400/50 focus:border-gold-400 transition"
             />
             <p className="text-xs text-muted-foreground mt-1.5">
-              Skip if the chain is for an intention rather than a person
+              Skip if this is for an intention rather than a person
               (discernment, the Church, etc.).
             </p>
           </div>
@@ -147,8 +147,8 @@ export default async function NewChainPage({
 
           {/* Optional custom prayer — same shape as PrayerTrain's custom
               prayer field. For organizers who have a specific prayer they
-              want every chain member to pray alongside the prayer-type
-              text from the library. */}
+              want everyone to pray alongside the prayer-type text from
+              the library. */}
           <div>
             <label
               htmlFor="customPrayerText"
@@ -162,7 +162,7 @@ export default async function NewChainPage({
             <p className="text-xs text-muted-foreground mb-2">
               Have a specific prayer you&apos;d like everyone to pray alongside
               the {prayerType.name}? Paste it here. We&apos;ll show it on the
-              chain page and include it in the daily reminder emails.
+              prayer page and include it in the daily reminder emails.
             </p>
             <textarea
               id="customPrayerText"
@@ -186,8 +186,8 @@ export default async function NewChainPage({
                 List on the public Find page
               </p>
               <p className="text-xs text-muted-foreground mt-0.5">
-                Most chains are intimate — leave this off unless you want
-                anyone in the parish to be able to discover and join.
+                Most shared prayers are intimate — leave this off unless you
+                want anyone in the parish to be able to discover and join.
               </p>
             </div>
           </label>

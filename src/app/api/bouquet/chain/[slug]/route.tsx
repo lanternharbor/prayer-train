@@ -44,7 +44,7 @@ export async function GET(
 
   if (chain.organizerId !== session.user.id) {
     return NextResponse.json(
-      { error: "Only the PrayerChain organizer can download the bouquet." },
+      { error: "Only the organizer can download the bouquet." },
       { status: 403 },
     );
   }
@@ -52,8 +52,7 @@ export async function GET(
   if (chain.status !== "COMPLETED") {
     return NextResponse.json(
       {
-        error:
-          "The spiritual bouquet is available once the PrayerChain is closed.",
+        error: "The spiritual bouquet is available once the prayer is closed.",
       },
       { status: 403 },
     );

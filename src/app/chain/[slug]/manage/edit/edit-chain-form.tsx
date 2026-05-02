@@ -30,18 +30,20 @@ export function EditChainForm({
   };
 }) {
   const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const handleSubmit = async (formData: FormData) => {
+    setError(null);
     setSubmitting(true);
     formData.set("chainId", chainId);
     try {
       await updateChainDetails(formData);
     } catch (err) {
       const msg =
-        err instanceof Error
+        err instanceof Error && err.message
           ? err.message
           : "Something went wrong saving your changes.";
-      alert(msg);
+      setError(msg);
       setSubmitting(false);
     }
   };
@@ -57,6 +59,15 @@ export function EditChainForm({
           aren&apos;t editable.
         </p>
       </div>
+
+      {error && (
+        <p
+          role="alert"
+          className="text-sm text-red-700 bg-red-50 border border-red-200 rounded-lg px-3 py-2"
+        >
+          {error}
+        </p>
+      )}
 
       {/* Recipient name */}
       <div>

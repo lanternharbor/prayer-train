@@ -21,6 +21,7 @@ export function JoinChainModal({
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   // Close on Escape — matches the claim-modal pattern
   useEffect(() => {
@@ -33,6 +34,7 @@ export function JoinChainModal({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError(null);
     setLoading(true);
     try {
       const formData = new FormData();
@@ -41,8 +43,16 @@ export function JoinChainModal({
       formData.set("email", email);
       await joinPrayerChain(formData);
       setSuccess(true);
-    } catch {
-      alert("Something went wrong. Please try again.");
+    } catch (err) {
+      // Surface the server-side error message. joinPrayerChain throws
+      // "This prayer is no longer accepting new members." for cancelled
+      // or completed chains; surface that verbatim instead of a generic
+      // browser alert.
+      const msg =
+        err instanceof Error && err.message
+          ? err.message
+          : "Something went wrong. Please try again.";
+      setError(msg);
     } finally {
       setLoading(false);
     }
@@ -150,6 +160,14 @@ export function JoinChainModal({
               className="w-full px-4 py-2.5 border border-border rounded-lg bg-cream-50 focus:ring-2 focus:ring-gold-400/50 focus:border-gold-400 transition"
             />
           </div>
+          {error && (
+            <p
+              role="alert"
+              className="text-sm text-red-700 bg-red-50 border border-red-200 rounded-lg px-3 py-2"
+            >
+              {error}
+            </p>
+          )}
           <button
             type="submit"
             disabled={loading}

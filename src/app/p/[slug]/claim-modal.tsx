@@ -28,6 +28,7 @@ export function ClaimModal({
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   // Close on Escape key — standard modal affordance for keyboard users.
   useEffect(() => {
@@ -42,6 +43,7 @@ export function ClaimModal({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError(null);
     setLoading(true);
     try {
       const formData = new FormData();
@@ -50,8 +52,17 @@ export function ClaimModal({
       formData.set("claimerEmail", email);
       await claimPrayerSlot(formData);
       setSuccess(true);
-    } catch {
-      alert("Something went wrong. The slot may have already been claimed.");
+    } catch (err) {
+      // Surface the server-side error message inline. claimPrayerSlot
+      // can throw "This slot is no longer available." (race) or "This
+      // prayer train has been cancelled by the organizer." among others.
+      // Falls back to a generic message if the thrown value isn't an
+      // Error or has no message.
+      const msg =
+        err instanceof Error && err.message
+          ? err.message
+          : "Something went wrong. The slot may have already been claimed.";
+      setError(msg);
     } finally {
       setLoading(false);
     }
@@ -159,6 +170,14 @@ export function ClaimModal({
               className="w-full px-4 py-2.5 border border-border rounded-lg bg-cream-50 focus:outline-none focus:ring-2 focus:ring-gold-400/50 focus:border-gold-400 transition"
             />
           </div>
+          {error && (
+            <p
+              role="alert"
+              className="text-sm text-red-700 bg-red-50 border border-red-200 rounded-lg px-3 py-2"
+            >
+              {error}
+            </p>
+          )}
           <button
             type="submit"
             disabled={loading}

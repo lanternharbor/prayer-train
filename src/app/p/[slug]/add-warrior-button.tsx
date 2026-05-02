@@ -58,6 +58,7 @@ function AddWarriorModal({
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   // Close on Escape — same affordance as the claim modal.
   useEffect(() => {
@@ -70,6 +71,7 @@ function AddWarriorModal({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError(null);
     setLoading(true);
     try {
       const formData = new FormData();
@@ -81,10 +83,10 @@ function AddWarriorModal({
       setSuccess(true);
     } catch (err) {
       const msg =
-        err instanceof Error
+        err instanceof Error && err.message
           ? err.message
           : "Something went wrong. Please try again.";
-      alert(msg);
+      setError(msg);
     } finally {
       setLoading(false);
     }
@@ -210,6 +212,14 @@ function AddWarriorModal({
               className="w-full px-4 py-2.5 border border-border rounded-lg bg-cream-50 focus:outline-none focus:ring-2 focus:ring-gold-400/50 focus:border-gold-400 transition resize-none"
             />
           </div>
+          {error && (
+            <p
+              role="alert"
+              className="text-sm text-red-700 bg-red-50 border border-red-200 rounded-lg px-3 py-2"
+            >
+              {error}
+            </p>
+          )}
           <button
             type="submit"
             disabled={loading || !name.trim() || !email.trim()}

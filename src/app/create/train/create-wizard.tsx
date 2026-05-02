@@ -76,7 +76,7 @@ export function CreateWizard({
   const [durationDays, setDurationDays] = useState(30);
   const [customDuration, setCustomDuration] = useState("");
   const [slotsPerDay, setSlotsPerDay] = useState(3);
-  const [isPublic, setIsPublic] = useState(true);
+  const [isPublic, setIsPublic] = useState(false);
   const [selectedPrayerIds, setSelectedPrayerIds] = useState<string[]>([]);
   // Optional free-form prayer the organizer wants every volunteer to also
   // pray. Renders as its own card on the detail page and gets appended to
@@ -193,6 +193,9 @@ export function CreateWizard({
               placeholder="e.g., John Smith"
               className="w-full px-4 py-2.5 border border-border rounded-lg bg-cream-50 focus:outline-none focus:ring-2 focus:ring-gold-400/50 focus:border-gold-400 transition"
             />
+            <p className="text-xs text-muted-foreground mt-1.5">
+              First name is plenty if the recipient prefers privacy.
+            </p>
           </div>
 
           <div>
@@ -236,6 +239,10 @@ export function CreateWizard({
                 placeholder="e.g., South Shore, MA"
                 className="w-full px-4 py-2.5 border border-border rounded-lg bg-cream-50 focus:outline-none focus:ring-2 focus:ring-gold-400/50 focus:border-gold-400 transition"
               />
+              <p className="text-xs text-muted-foreground mt-1.5">
+                Less specific is usually fine. &ldquo;Massachusetts&rdquo; or
+                &ldquo;New England&rdquo; works just as well.
+              </p>
             </div>
           </div>
 
@@ -356,6 +363,12 @@ export function CreateWizard({
               rows={2}
               className="w-full px-4 py-2.5 border border-border rounded-lg bg-cream-50 focus:outline-none focus:ring-2 focus:ring-gold-400/50 focus:border-gold-400 transition resize-none"
             />
+            <p className="text-xs text-muted-foreground mt-1.5">
+              Share only what the recipient is comfortable having public.
+              General framing like &ldquo;heart surgery&rdquo; or &ldquo;recovery
+              from a fall&rdquo; is usually plenty; specific diagnoses or
+              hospital names are not needed.
+            </p>
           </div>
         </div>
       )}
@@ -446,7 +459,7 @@ export function CreateWizard({
               type="button"
               role="switch"
               aria-checked={isPublic}
-              aria-label="List on public directory"
+              aria-label="List publicly on Find a PrayerTrain"
               onClick={() => setIsPublic(!isPublic)}
               className={`relative inline-flex h-7 w-12 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors ${
                 isPublic ? "bg-gold-400" : "bg-cream-400"
@@ -460,12 +473,21 @@ export function CreateWizard({
             </button>
             <div>
               <p className="text-sm font-medium text-navy-700">
-                List on public directory
+                {isPublic ? "Listed on public directory" : "Private link only"}
               </p>
               <p className="text-xs text-muted-foreground mt-0.5">
-                Allow anyone to find this prayer train on the{" "}
-                <span className="font-medium">Find a PrayerTrain</span> page.
-                Turn off to keep it private (link-only).
+                {isPublic ? (
+                  <>
+                    Anyone can find this prayer train on the{" "}
+                    <span className="font-medium">Find a PrayerTrain</span>{" "}
+                    page.
+                  </>
+                ) : (
+                  <>
+                    Only people with the link can view it. Turn this on only if
+                    the recipient is comfortable being publicly listed.
+                  </>
+                )}
               </p>
             </div>
           </div>

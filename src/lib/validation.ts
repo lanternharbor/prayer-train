@@ -88,6 +88,29 @@ export const updateTrainSchema = z.object({
 
 export type UpdateTrainInput = z.infer<typeof updateTrainSchema>;
 
+// ─── Delete / Cancel PrayerTrain ────────────────────────────
+//
+// Both destructive actions (hard delete + soft cancel) require the
+// organizer to type the recipient name as a literal-phrase confirmation.
+// See src/lib/train-protection.ts for the matcher; the Zod schema's job
+// here is just shape validation. Server-side guards enforce auth,
+// protected-slug rejection, state preconditions, and the
+// confirmation match.
+
+export const deletePrayerTrainSchema = z.object({
+  trainId: trimmedString(1, 60),
+  recipientNameConfirmation: trimmedString(1, 80),
+});
+
+export type DeletePrayerTrainInput = z.infer<typeof deletePrayerTrainSchema>;
+
+export const cancelPrayerTrainSchema = z.object({
+  trainId: trimmedString(1, 60),
+  recipientNameConfirmation: trimmedString(1, 80),
+});
+
+export type CancelPrayerTrainInput = z.infer<typeof cancelPrayerTrainSchema>;
+
 // ─── Claim a Prayer Slot ────────────────────────────────────
 
 export const claimSlotSchema = z.object({

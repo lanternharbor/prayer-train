@@ -9,10 +9,12 @@ import { enforceRateLimit } from "@/lib/rate-limit";
 import { getRateLimitId } from "@/lib/request";
 import {
   addPrayerWarriorSchema,
+  cancelPrayerTrainSchema,
   claimSlotSchema,
   closeChainSchema,
   createChainSchema,
   createTrainSchema,
+  deletePrayerTrainSchema,
   guestbookEntrySchema,
   joinChainSchema,
   markChainDayCompleteSchema,
@@ -21,6 +23,7 @@ import {
   updateChainSchema,
   updateTrainSchema,
 } from "@/lib/validation";
+import { confirmationMatches, isProtectedTrain } from "@/lib/train-protection";
 import {
   sendChainClosingDayEmail,
   sendChainJoinConfirmation,
@@ -71,6 +74,11 @@ export async function createPrayerTrain(formData: FormData) {
   // Handle photo upload (with timeout to prevent hanging)
   let recipientImageUrl: string | null = null;
   const photoFile = formData.get("recipientPhoto") as File | null;
+  if (photoFile && photoFile.size > 0) {
+    if (photoFile.size > 5 * 1024 * 1024) throw new Error("Photo must be under 5 MB.");
+    if (!["image/jpeg", "image/png", "image/webp"].includes(photoFile.type))
+      throw new Error("Photo must be JPEG, PNG, or WebP.");
+  }
   if (photoFile && photoFile.size > 0 && process.env.BLOB_READ_WRITE_TOKEN) {
     try {
       const uploadPromise = put(
@@ -172,6 +180,15 @@ export async function claimPrayerSlot(formData: FormData) {
 
     if (!slot || slot.status !== "OPEN") {
       throw new Error("This slot is no longer available.");
+    }
+
+    // Reject claims on cancelled trains. The cron-driven daily-reminder
+    // pipeline already filters by train.status === ACTIVE, so a claim
+    // on a cancelled train would silently never receive reminders.
+    // Defense-in-depth at the claim path itself means a stale page-load
+    // can't sneak a commitment onto a train the organizer abandoned.
+    if (slot.train.status === "CANCELLED") {
+      throw new Error("This prayer train has been cancelled by the organizer.");
     }
 
     const claimedAt = new Date();
@@ -547,6 +564,11 @@ export async function updateTrainDetails(formData: FormData) {
   // family photo that's already there.
   let recipientImageUrl: string | null = train.recipientImageUrl;
   const photoFile = formData.get("recipientPhoto") as File | null;
+  if (photoFile && photoFile.size > 0) {
+    if (photoFile.size > 5 * 1024 * 1024) throw new Error("Photo must be under 5 MB.");
+    if (!["image/jpeg", "image/png", "image/webp"].includes(photoFile.type))
+      throw new Error("Photo must be JPEG, PNG, or WebP.");
+  }
   if (photoFile && photoFile.size > 0 && process.env.BLOB_READ_WRITE_TOKEN) {
     try {
       const uploadPromise = put(
@@ -578,6 +600,130 @@ export async function updateTrainDetails(formData: FormData) {
       customPrayerText: input.customPrayerText || null,
       recipientImageUrl,
     },
+  });
+
+  revalidatePath(`/p/${train.slug}`);
+  revalidatePath(`/p/${train.slug}/manage`);
+  revalidatePath("/browse");
+  redirect(`/p/${train.slug}/manage`);
+}
+
+// ─── Delete / Cancel PrayerTrain ────────────────────────────
+//
+// Two destructive actions for organizers who made a mistake:
+//
+//   deletePrayerTrain — hard delete + cascade. Only allowed when no
+//   slots are claimed (i.e., a true mistake the organizer wants to
+//   undo before any volunteers committed). Removes the train and all
+//   its dependent rows (slots, warriors, guestbook, updates) atomically.
+//
+//   cancelPrayerTrain — soft cancel via TrainStatus.CANCELLED. Allowed
+//   when slots are claimed; preserves the prayer history but stops
+//   reminders (cron filters on status: ACTIVE) and prevents bouquet
+//   generation (bouquet route requires status: COMPLETED).
+//
+// Both actions enforce a four-layer guard: organizer-auth, protected-
+// slug rejection (the Spina train is hard-coded in train-protection.ts
+// and cannot be deleted/cancelled by any code path), recipient-name
+// literal-phrase confirmation (parallel to "yes delete benji"), and
+// state preconditions (delete needs all-OPEN; cancel needs not-already-
+// terminal).
+
+export async function deletePrayerTrain(formData: FormData) {
+  const session = await auth();
+  if (!session?.user?.id) redirect("/signin");
+
+  const input = parseFormData(deletePrayerTrainSchema, formData);
+
+  const train = await prisma.prayerTrain.findUnique({
+    where: { id: input.trainId },
+    select: {
+      id: true,
+      slug: true,
+      organizerId: true,
+      recipientName: true,
+      slots: { select: { status: true } },
+    },
+  });
+
+  if (!train) throw new Error("That prayer train no longer exists.");
+  if (train.organizerId !== session.user.id) {
+    throw new Error("Only the organizer can delete this prayer train.");
+  }
+  if (isProtectedTrain(train.slug)) {
+    throw new Error(
+      "This prayer train is protected and cannot be deleted.",
+    );
+  }
+  if (!confirmationMatches(input.recipientNameConfirmation, train.recipientName)) {
+    throw new Error(
+      "Confirmation did not match. Please type the recipient's name exactly as shown.",
+    );
+  }
+  const hasNonOpenSlot = train.slots.some((s) => s.status !== "OPEN");
+  if (hasNonOpenSlot) {
+    throw new Error(
+      "This prayer train has claimed or completed slots and cannot be deleted. Cancel it instead to preserve the prayer history.",
+    );
+  }
+
+  // Atomic cascade. Order doesn't matter for correctness because the
+  // train row is what holds the foreign-key references, but we delete
+  // dependents first to be explicit. Wrapped in a transaction so a
+  // partial deletion is impossible if any single delete fails.
+  await prisma.$transaction([
+    prisma.prayerSlot.deleteMany({ where: { trainId: train.id } }),
+    prisma.prayerWarrior.deleteMany({ where: { trainId: train.id } }),
+    prisma.guestbookEntry.deleteMany({ where: { trainId: train.id } }),
+    prisma.trainUpdate.deleteMany({ where: { trainId: train.id } }),
+    prisma.prayerTrain.delete({ where: { id: train.id } }),
+  ]);
+
+  revalidatePath("/browse");
+  redirect("/");
+}
+
+export async function cancelPrayerTrain(formData: FormData) {
+  const session = await auth();
+  if (!session?.user?.id) redirect("/signin");
+
+  const input = parseFormData(cancelPrayerTrainSchema, formData);
+
+  const train = await prisma.prayerTrain.findUnique({
+    where: { id: input.trainId },
+    select: {
+      id: true,
+      slug: true,
+      organizerId: true,
+      recipientName: true,
+      status: true,
+    },
+  });
+
+  if (!train) throw new Error("That prayer train no longer exists.");
+  if (train.organizerId !== session.user.id) {
+    throw new Error("Only the organizer can cancel this prayer train.");
+  }
+  if (isProtectedTrain(train.slug)) {
+    throw new Error(
+      "This prayer train is protected and cannot be cancelled.",
+    );
+  }
+  if (!confirmationMatches(input.recipientNameConfirmation, train.recipientName)) {
+    throw new Error(
+      "Confirmation did not match. Please type the recipient's name exactly as shown.",
+    );
+  }
+  if (train.status === "CANCELLED") {
+    throw new Error("This prayer train is already cancelled.");
+  }
+  if (train.status === "COMPLETED") {
+    throw new Error("Completed prayer trains cannot be cancelled.");
+  }
+
+  await prisma.prayerTrain.update({
+    where: { id: train.id },
+    data: { status: "CANCELLED" },
   });
 
   revalidatePath(`/p/${train.slug}`);
@@ -699,6 +845,11 @@ export async function createPrayerChain(formData: FormData) {
   // never blocks creation of the chain itself.
   let recipientImageUrl: string | null = null;
   const photoFile = formData.get("recipientPhoto") as File | null;
+  if (photoFile && photoFile.size > 0) {
+    if (photoFile.size > 5 * 1024 * 1024) throw new Error("Photo must be under 5 MB.");
+    if (!["image/jpeg", "image/png", "image/webp"].includes(photoFile.type))
+      throw new Error("Photo must be JPEG, PNG, or WebP.");
+  }
   if (photoFile && photoFile.size > 0 && process.env.BLOB_READ_WRITE_TOKEN) {
     try {
       const uploadPromise = put(
@@ -910,6 +1061,11 @@ export async function updateChainDetails(formData: FormData) {
   // fails or no new file is sent.
   let recipientImageUrl: string | null = chain.recipientImageUrl;
   const photoFile = formData.get("recipientPhoto") as File | null;
+  if (photoFile && photoFile.size > 0) {
+    if (photoFile.size > 5 * 1024 * 1024) throw new Error("Photo must be under 5 MB.");
+    if (!["image/jpeg", "image/png", "image/webp"].includes(photoFile.type))
+      throw new Error("Photo must be JPEG, PNG, or WebP.");
+  }
   if (photoFile && photoFile.size > 0 && process.env.BLOB_READ_WRITE_TOKEN) {
     try {
       const uploadPromise = put(

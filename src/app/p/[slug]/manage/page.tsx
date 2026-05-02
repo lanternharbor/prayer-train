@@ -16,6 +16,8 @@ import {
 import { PostUpdateForm } from "./post-update-form";
 import { TrainStatusControls } from "./train-status-controls";
 import { VisibilityToggle } from "./visibility-toggle";
+import { DangerZone } from "./danger-zone";
+import { isProtectedTrain } from "@/lib/train-protection";
 
 export async function generateMetadata({
   params,
@@ -217,6 +219,22 @@ export default async function ManagePage({
           </p>
         )}
       </div>
+
+      {/* Danger zone — delete (when no claims) or cancel (when claims
+          exist). Server-side guards in src/lib/actions.ts enforce
+          organizer-auth, protected-slug rejection (Spina), and
+          recipient-name confirmation. The client component handles
+          the confirm-by-typing UX. Hidden once a train is in a
+          terminal state (CANCELLED or COMPLETED) to avoid offering
+          actions that would no-op or be confusing. */}
+      {train.status !== "CANCELLED" && train.status !== "COMPLETED" && (
+        <DangerZone
+          trainId={train.id}
+          recipientName={train.recipientName}
+          hasClaimedSlots={claimedSlots > 0 || completedSlots > 0}
+          isProtected={isProtectedTrain(train.slug)}
+        />
+      )}
 
       {/* Past Updates */}
       {train.updates.length > 0 && (

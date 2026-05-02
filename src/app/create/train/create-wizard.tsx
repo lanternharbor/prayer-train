@@ -76,7 +76,10 @@ export function CreateWizard({
   const [durationDays, setDurationDays] = useState(30);
   const [customDuration, setCustomDuration] = useState("");
   const [slotsPerDay, setSlotsPerDay] = useState(3);
-  const [isPublic, setIsPublic] = useState(false);
+  // Default to public. The toggle below lets organizers flip to
+  // link-only if they want privacy. Most train organizers want their
+  // train discoverable on /browse so the parish network can find it.
+  const [isPublic, setIsPublic] = useState(true);
   const [selectedPrayerIds, setSelectedPrayerIds] = useState<string[]>([]);
   // Optional free-form prayer the organizer wants every volunteer to also
   // pray. Renders as its own card on the detail page and gets appended to

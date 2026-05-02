@@ -64,8 +64,10 @@ export function EditTrainForm({
     initial.situation,
   );
   const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const handleSubmit = async (formData: FormData) => {
+    setError(null);
     setSubmitting(true);
     // Layer the controlled-state values onto the FormData so the
     // server action receives them. Uncontrolled fields are already
@@ -79,12 +81,12 @@ export function EditTrainForm({
       await updateTrainDetails(formData);
     } catch (err) {
       // Server action redirects on success, so reaching here means
-      // an error was thrown. Surface it to the user.
+      // an error was thrown. Surface it inline.
       const msg =
-        err instanceof Error
+        err instanceof Error && err.message
           ? err.message
           : "Something went wrong saving your changes.";
-      alert(msg);
+      setError(msg);
       setSubmitting(false);
     }
   };
@@ -99,6 +101,15 @@ export function EditTrainForm({
           announce changes to the people praying with you.
         </p>
       </div>
+
+      {error && (
+        <p
+          role="alert"
+          className="text-sm text-red-700 bg-red-50 border border-red-200 rounded-lg px-3 py-2"
+        >
+          {error}
+        </p>
+      )}
 
       {/* Recipient name */}
       <div>

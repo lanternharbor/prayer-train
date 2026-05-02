@@ -97,7 +97,7 @@ export default function CreateChooserPage() {
               <Users className="w-6 h-6 text-gold-700" />
             </div>
             <h2 className="font-heading text-2xl font-bold text-navy-800">
-              Pray together
+              Pray a novena together
             </h2>
           </div>
 
@@ -143,7 +143,7 @@ export default function CreateChooserPage() {
             className="mt-auto inline-flex items-center justify-center gap-2 px-5 py-3 bg-gold-400 text-navy-900 font-semibold rounded-lg hover:bg-gold-300 transition-colors"
           >
             <Users className="w-4 h-4" />
-            Pick a novena
+            Choose a novena
             <ArrowRight className="w-4 h-4" />
           </Link>
         </div>

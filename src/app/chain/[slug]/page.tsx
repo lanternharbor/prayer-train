@@ -119,6 +119,9 @@ export default async function ChainDetailPage({
 
   const orgFirst = firstName(chain.organizer?.name);
   const phrase = recipientPhrase(chain.recipientName, chain.intention);
+  const displayTitle = chain.recipientName
+    ? `${orgFirst}'s ${chain.prayerType.name} for ${chain.recipientName}`
+    : `${orgFirst}'s ${chain.prayerType.name}`;
   const day = dayNumberFor(chain.startDate);
   const isOrganizer = session?.user?.id === chain.organizerId;
   const isMember = !!chain.members.find(
@@ -128,6 +131,9 @@ export default async function ChainDetailPage({
     100,
     Math.round((day / chain.durationDays) * 100),
   );
+  const prayingWithLabel = `${chain.members.length} ${
+    chain.members.length === 1 ? "person" : "people"
+  } praying with ${orgFirst}`;
 
   return (
     <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
@@ -172,12 +178,7 @@ export default async function ChainDetailPage({
                 </div>
               )}
               <h1 className="font-heading text-3xl sm:text-4xl font-bold text-navy-800 leading-tight">
-                {orgFirst}&apos;s {chain.prayerType.name}{" "}
-                {chain.recipientName ? (
-                  <span className="text-navy-700">
-                    for {chain.recipientName}
-                  </span>
-                ) : null}
+                {displayTitle}
               </h1>
             </div>
             <p className="text-lg text-muted-foreground leading-relaxed">
@@ -294,7 +295,7 @@ export default async function ChainDetailPage({
       <div className="mb-8">
         <h2 className="font-heading text-xl font-semibold text-navy-800 mb-4 flex items-center gap-2">
           <Users className="w-5 h-5 text-gold-500" />
-          Praying with {orgFirst} ({chain.members.length})
+          {prayingWithLabel}
         </h2>
         <div className="prayer-card">
           <div className="flex flex-wrap gap-2">
@@ -304,9 +305,6 @@ export default async function ChainDetailPage({
                 className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-cream-100 text-navy-700 text-sm border border-cream-300"
               >
                 {member.name}
-                {member.id ===
-                  chain.members.find((m) => m.email)?.id /* placeholder */ &&
-                  ""}
               </span>
             ))}
           </div>

@@ -190,7 +190,7 @@ export function ChainShareButton({
               </button>
               <a
                 href={`/api/qr/chain/${slug}`}
-                download={`prayerchain-${slug}-qr.svg`}
+                download={`prayertrain-prayer-${slug}-qr.svg`}
                 className="flex items-center justify-center gap-2 px-4 py-2.5 border border-border text-navy-700 text-sm font-medium rounded-lg hover:bg-cream-100 transition-colors"
               >
                 Save QR

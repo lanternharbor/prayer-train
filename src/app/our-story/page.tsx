@@ -125,10 +125,10 @@ export default function OurStoryPage() {
         <p>
           We also know that&apos;s not how every story ends. Loss touches the
           same families that healing does. PrayerTrain is for both: for the
-          road that turns toward life and for the road that doesn&apos;t. The
-          point of organized prayer isn&apos;t to summon a particular outcome.
-          It&apos;s to be the community that keeps showing up when someone is
-          walking through something hard.
+          road that turns toward life on earth, and the road that turns toward
+          life eternal. The point of organized prayer isn&apos;t to summon a
+          particular outcome. It&apos;s to be the community that keeps showing
+          up when someone is walking through something hard.
         </p>
 
         <p>

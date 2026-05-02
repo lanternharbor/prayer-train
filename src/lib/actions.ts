@@ -33,6 +33,12 @@ import {
   isProtectedTrain,
 } from "@/lib/train-protection";
 import {
+  checkNovenaFullyAvailable,
+  checkSlotClaimable,
+  checkTrainAcceptingClaims,
+  checkUpdateCountMatches,
+} from "@/lib/claim-guard";
+import {
   sendChainCancellationNotice,
   sendChainClosingDayEmail,
   sendChainJoinConfirmation,
@@ -188,18 +194,12 @@ export async function claimPrayerSlot(formData: FormData) {
       include: { train: true, prayerType: true },
     });
 
-    if (!slot || slot.status !== "OPEN") {
-      throw new Error("This slot is no longer available.");
-    }
-
-    // Reject claims on cancelled trains. The cron-driven daily-reminder
-    // pipeline already filters by train.status === ACTIVE, so a claim
-    // on a cancelled train would silently never receive reminders.
-    // Defense-in-depth at the claim path itself means a stale page-load
-    // can't sneak a commitment onto a train the organizer abandoned.
-    if (slot.train.status === "CANCELLED") {
-      throw new Error("This prayer train has been cancelled by the organizer.");
-    }
+    // Pure-function preconditions extracted to src/lib/claim-guard.ts
+    // so the boundary is unit-testable without spinning up Postgres.
+    // Race-correctness (the SQL CAS on status: OPEN) stays in this
+    // transaction; the helpers cover the read-time preconditions.
+    checkSlotClaimable(slot);
+    checkTrainAcceptingClaims(slot.train);
 
     const claimedAt = new Date();
     const claimData = {
@@ -227,9 +227,7 @@ export async function claimPrayerSlot(formData: FormData) {
         take: slot.prayerType.daysRequired,
       });
 
-      if (futureDays.length < slot.prayerType.daysRequired) {
-        throw new Error("This novena is no longer fully available.");
-      }
+      checkNovenaFullyAvailable(futureDays.length, slot.prayerType.daysRequired);
 
       const novenaGroupId = `novena-${slotId}-${claimedAt.getTime()}`;
       const updated = await tx.prayerSlot.updateMany({
@@ -243,9 +241,7 @@ export async function claimPrayerSlot(formData: FormData) {
         },
       });
 
-      if (updated.count !== futureDays.length) {
-        throw new Error("This slot is no longer available.");
-      }
+      checkUpdateCountMatches(updated.count, futureDays.length);
 
       const first = futureDays[0].date;
       const last = futureDays[futureDays.length - 1].date;
@@ -263,9 +259,7 @@ export async function claimPrayerSlot(formData: FormData) {
       data: claimData,
     });
 
-    if (updated.count !== 1) {
-      throw new Error("This slot is no longer available.");
-    }
+    checkUpdateCountMatches(updated.count, 1);
 
     return {
       train: slot.train,

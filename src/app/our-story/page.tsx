@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/catholic-icons";
 
 const OUR_STORY_DESCRIPTION =
-  "PrayerTrain was born from one family's experience with three children facing life-threatening medical crises — and the community of prayer that carried them through.";
+  "PrayerTrain was born from one family's experience with three children facing life-threatening medical crises, and the community of prayer that surrounded them.";
 
 export const metadata: Metadata = {
   title: "Our Story",
@@ -119,7 +119,16 @@ export default function OurStoryPage() {
         <p className="text-lg">
           <strong>Through the grace of God</strong>
           {" "}and the extraordinary care of Boston Children&apos;s Hospital,
-          all three children came out on top. Every single one.
+          our children came through. All three.
+        </p>
+
+        <p>
+          We also know that&apos;s not how every story ends. Loss touches the
+          same families that healing does. PrayerTrain is for both: for the
+          road that turns toward life and for the road that doesn&apos;t. The
+          point of organized prayer isn&apos;t to summon a particular outcome.
+          It&apos;s to be the community that keeps showing up when someone is
+          walking through something hard.
         </p>
 
         <p>

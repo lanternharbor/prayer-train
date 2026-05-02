@@ -57,11 +57,11 @@ export default function OurStoryPage() {
       {/* The Story */}
       <article className="prose-custom space-y-6 text-foreground leading-relaxed">
         <p className="text-lg">
-          We&apos;re a close-knit, faithful Catholic extended family from the
-          South Shore of Massachusetts &mdash; the kind where aunties and
-          uncles show up without being asked, where grandmas and papas drop
-          everything, and where the mothers and fathers lean on each other
-          through whatever comes. In late 2025 and early 2026, that bond was
+          We&apos;re a close-knit, faithful Catholic extended family in
+          Massachusetts &mdash; the kind where aunties and uncles show up
+          without being asked, where grandmas and papas drop everything, and
+          where the mothers and fathers lean on each other through whatever
+          comes. In late 2025 and early 2026, that bond was
           tested like never before when three children across our family faced
           life-threatening medical crises within months of each other.
         </p>
@@ -87,12 +87,12 @@ export default function OurStoryPage() {
             <SacredHeartIcon className="w-5 h-5 text-gold-500 shrink-0 mt-1" />
             <div>
               <p className="font-heading font-semibold text-navy-800 mb-1">
-                Open heart surgery at five days old
+                Open heart surgery in her first week
               </p>
               <p className="text-muted-foreground text-sm">
-                A baby born in January needed open heart surgery when she was just
-                five days old. There is no preparing yourself for handing your
-                newborn to a surgical team and waiting.
+                Another newborn needed open heart surgery when she was less
+                than a week old. There is no preparing yourself for handing
+                your newborn to a surgical team and waiting.
               </p>
             </div>
           </div>

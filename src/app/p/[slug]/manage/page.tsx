@@ -147,8 +147,9 @@ export default async function ManagePage({
         </div>
       </div>
 
-      {/* Spiritual Bouquet — only visible once the train is COMPLETED. The
-          PDF endpoint matches the same auth pattern as this page. */}
+      {/* Spiritual Bouquet — final downloadable artifact when the train
+          is COMPLETED. The PDF endpoint matches the same organizer-only
+          auth pattern as this page. */}
       {train.status === "COMPLETED" && (
         <div className="prayer-card mb-8 flex flex-col sm:flex-row items-start sm:items-center gap-4">
           <div className="flex-1">
@@ -168,6 +169,39 @@ export default async function ManagePage({
           >
             <FileDown className="w-4 h-4" />
             Download PDF
+          </a>
+        </div>
+      )}
+
+      {/* Preview bouquet — surfaced for ACTIVE/PAUSED trains so the
+          organizer can see what the final artifact will look like
+          before delivery day. The route honors ?preview=1 only for
+          authenticated organizers; the auth gate is the same. The
+          rendered PDF will keep updating as more slots get claimed
+          and completed. Cancelled trains intentionally hide this
+          (no bouquet generated for cancelled trains). */}
+      {(train.status === "ACTIVE" || train.status === "PAUSED") && (
+        <div className="prayer-card mb-8 flex flex-col sm:flex-row items-start sm:items-center gap-4 bg-cream-50 border-cream-300">
+          <div className="flex-1">
+            <h2 className="font-heading text-lg font-semibold text-navy-800 mb-1 flex items-center gap-2">
+              <FileDown className="w-5 h-5 text-gold-500" />
+              Preview the spiritual bouquet
+            </h2>
+            <p className="text-sm text-muted-foreground">
+              See what {train.recipientName}&apos;s spiritual bouquet will
+              look like with the prayers offered so far. Updates as more
+              slots are completed; the final downloadable version unlocks
+              when the train ends.
+            </p>
+          </div>
+          <a
+            href={`/api/bouquet/${train.slug}?preview=1`}
+            target="_blank"
+            rel="noopener"
+            className="inline-flex items-center gap-2 px-4 py-2 bg-cream-100 text-navy-800 text-sm font-medium rounded-lg hover:bg-cream-200 border border-cream-300 transition-colors shrink-0"
+          >
+            <FileDown className="w-4 h-4" />
+            Preview PDF
           </a>
         </div>
       )}

@@ -126,6 +126,37 @@ export default async function ChainManagePage({
         </div>
       )}
 
+      {/* Preview bouquet — surfaced for ACTIVE chains so the organizer
+          can see what the final artifact will look like before closing
+          the prayer. Same organizer-only auth as the final endpoint;
+          the route honors ?preview=1 only when the caller IS the
+          organizer. */}
+      {chain.status === "ACTIVE" && (
+        <div className="prayer-card mb-8 flex flex-col sm:flex-row items-start sm:items-center gap-4 bg-cream-50 border-cream-300">
+          <div className="flex-1">
+            <h2 className="font-heading text-lg font-semibold text-navy-800 mb-1 flex items-center gap-2">
+              <FileDown className="w-5 h-5 text-gold-500" />
+              Preview the spiritual bouquet
+            </h2>
+            <p className="text-sm text-muted-foreground">
+              See what the spiritual bouquet will look like with the
+              members who&apos;ve joined so far. Updates as more members
+              join and complete days; the final downloadable version
+              unlocks when you close the prayer.
+            </p>
+          </div>
+          <a
+            href={`/api/bouquet/chain/${chain.slug}?preview=1`}
+            target="_blank"
+            rel="noopener"
+            className="inline-flex items-center gap-2 px-4 py-2 bg-cream-100 text-navy-800 text-sm font-medium rounded-lg hover:bg-cream-200 border border-cream-300 transition-colors shrink-0"
+          >
+            <FileDown className="w-4 h-4" />
+            Preview PDF
+          </a>
+        </div>
+      )}
+
       {/* Close chain form */}
       {chain.status === "ACTIVE" && (
         <form action={closePrayerChain} className="prayer-card mb-8 space-y-4">

@@ -11,16 +11,24 @@ import { BouquetDocument, type BouquetData } from "@/lib/bouquet-pdf";
  * Auth pattern matches /p/[slug]/manage (organizer-only). The train must
  * be in COMPLETED status — otherwise we 403 with a small JSON message.
  *
+ * Organizer preview: passing ?preview=1 lets the organizer (and ONLY the
+ * organizer; auth check still runs first) generate the PDF from the
+ * train's current state regardless of status. Useful before the train
+ * ends so the organizer can see what the artifact will look like for
+ * the recipient family on delivery day. Non-organizers always need
+ * COMPLETED.
+ *
  * Precedent: /api/qr/[slug]/route.ts (SVG response) and
  * /api/ics/[slotId]/route.ts (text/calendar response). This is the
  * application/pdf sibling.
  */
 export async function GET(
-  _req: Request,
+  req: Request,
   { params }: { params: Promise<{ slug: string }> },
 ) {
   const { slug } = await params;
   const session = await auth();
+  const isPreview = new URL(req.url).searchParams.get("preview") === "1";
 
   if (!session?.user?.id) {
     return NextResponse.json(
@@ -60,7 +68,11 @@ export async function GET(
     );
   }
 
-  if (train.status !== "COMPLETED") {
+  // Organizer preview bypass: ?preview=1 lets the organizer see the
+  // current artifact before COMPLETED. Auth has already gated this to
+  // organizer-only above, so the bypass cannot leak the bouquet to
+  // anyone else. Non-preview requests still need COMPLETED.
+  if (!isPreview && train.status !== "COMPLETED") {
     return NextResponse.json(
       {
         error:
@@ -160,11 +172,22 @@ export async function GET(
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/^-|-$/g, "");
 
+  // Inline disposition for previews so the organizer can view the PDF
+  // in the browser instead of triggering a download. Final (COMPLETED)
+  // download keeps attachment semantics. Cache shorter for previews
+  // since the underlying data changes as more slots get claimed and
+  // completed.
   return new NextResponse(new Uint8Array(pdfBuffer), {
     headers: {
       "Content-Type": "application/pdf",
-      "Content-Disposition": `attachment; filename="spiritual-bouquet-${filenameSlug}.pdf"`,
-      "Cache-Control": "private, max-age=300",
+      "Content-Disposition": `${
+        isPreview ? "inline" : "attachment"
+      }; filename="spiritual-bouquet-${filenameSlug}${
+        isPreview ? "-preview" : ""
+      }.pdf"`,
+      "Cache-Control": isPreview
+        ? "private, no-store"
+        : "private, max-age=300",
     },
   });
 }

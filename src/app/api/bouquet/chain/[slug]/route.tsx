@@ -13,11 +13,12 @@ import { BouquetDocument, type BouquetData } from "@/lib/bouquet-pdf";
  * BouquetData type so both primitives produce visually-identical artifacts.
  */
 export async function GET(
-  _req: Request,
+  req: Request,
   { params }: { params: Promise<{ slug: string }> },
 ) {
   const { slug } = await params;
   const session = await auth();
+  const isPreview = new URL(req.url).searchParams.get("preview") === "1";
 
   if (!session?.user?.id) {
     return NextResponse.json(
@@ -49,7 +50,10 @@ export async function GET(
     );
   }
 
-  if (chain.status !== "COMPLETED") {
+  // Organizer preview bypass: ?preview=1 lets the organizer see the
+  // current artifact before COMPLETED. Auth has already gated this to
+  // organizer-only above. Non-preview requests still need COMPLETED.
+  if (!isPreview && chain.status !== "COMPLETED") {
     return NextResponse.json(
       {
         error: "The spiritual bouquet is available once the prayer is closed.",
@@ -95,11 +99,21 @@ export async function GET(
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/^-|-$/g, "");
 
+  // Inline disposition for previews so the organizer can view the PDF
+  // in the browser instead of downloading. Final (COMPLETED) download
+  // keeps attachment semantics. Cache shorter for previews since the
+  // underlying data changes as more members join and complete days.
   return new NextResponse(new Uint8Array(pdfBuffer), {
     headers: {
       "Content-Type": "application/pdf",
-      "Content-Disposition": `attachment; filename="spiritual-bouquet-${filenameSlug}.pdf"`,
-      "Cache-Control": "private, max-age=300",
+      "Content-Disposition": `${
+        isPreview ? "inline" : "attachment"
+      }; filename="spiritual-bouquet-${filenameSlug}${
+        isPreview ? "-preview" : ""
+      }.pdf"`,
+      "Cache-Control": isPreview
+        ? "private, no-store"
+        : "private, max-age=300",
     },
   });
 }

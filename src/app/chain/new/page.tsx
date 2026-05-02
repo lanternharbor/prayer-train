@@ -179,6 +179,7 @@ export default async function NewChainPage({
               name="isPublic"
               type="checkbox"
               value="true"
+              defaultChecked
               className="mt-0.5"
             />
             <div>
@@ -186,8 +187,8 @@ export default async function NewChainPage({
                 List on the public Find page
               </p>
               <p className="text-xs text-muted-foreground mt-0.5">
-                Most shared prayers are intimate — leave this off unless you
-                want anyone in the parish to be able to discover and join.
+                Listed by default so anyone in the parish can discover and
+                join. Uncheck to keep this private (link-only).
               </p>
             </div>
           </label>

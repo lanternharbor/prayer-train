@@ -157,8 +157,11 @@ model PrayerTrain {
   // tradition, or words from the organizer's heart.
   customPrayerText String? @db.Text
 
-  // Privacy
-  isPublic    Boolean  @default(false)
+  // Privacy. Default-public matches the create-wizard's useState(true)
+  // and the product call to make trains discoverable on /browse so the
+  // parish network can find them. Privacy is still one click away on
+  // the wizard's "List on public directory" toggle.
+  isPublic    Boolean  @default(true)
   showNames   Boolean  @default(true)
 
   // Relations
@@ -348,8 +351,10 @@ model PrayerChain {
   durationDays      Int
   endDate           DateTime
 
-  // Visibility
-  isPublic          Boolean      @default(false)
+  // Visibility. Default-public matches /chain/new's defaultChecked
+  // toggle and the product call to make shared prayers discoverable
+  // on /browse. Privacy is still one click away.
+  isPublic          Boolean      @default(true)
 
   // State
   status            ChainStatus  @default(ACTIVE)

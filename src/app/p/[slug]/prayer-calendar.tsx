@@ -185,13 +185,10 @@ function SlotCard({
   const [completed, setCompleted] = useState(slot.status === "COMPLETED");
   const isOpen = slot.status === "OPEN" && !completed;
   const isClaimed = slot.status === "CLAIMED" && !completed;
-  // Whether the current viewer can mark this slot complete from the
-  // calendar. Mirrors the server-side check in markSlotComplete:
-  //  - Authenticated owner: yes
-  //  - Anyone, when slot is guest-claimed (claimedById null): yes
-  //  - Otherwise (someone else's authenticated claim): no
+  // Page-button completion is only for authenticated owners. Guest
+  // claimers complete from the signed link in their reminder email.
   const canMarkComplete =
-    !slot.claimedById || slot.claimedById === currentUserId;
+    !!currentUserId && slot.claimedById === currentUserId;
 
   const handleMarkPrayed = async () => {
     setMarking(true);

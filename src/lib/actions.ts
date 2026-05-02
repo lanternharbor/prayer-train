@@ -30,7 +30,10 @@ import {
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { addDays, eachDayOfInterval } from "date-fns";
-import { verifyCompletionToken } from "@/lib/completion-tokens";
+import {
+  signCompletionToken,
+  verifyCompletionToken,
+} from "@/lib/completion-tokens";
 import { put } from "@vercel/blob";
 
 // ─── Create PrayerTrain ─────────────────────────────────────
@@ -161,62 +164,104 @@ export async function claimPrayerSlot(formData: FormData) {
   const session = await auth();
   await enforceRateLimit("claim", await getRateLimitId(session?.user?.id));
 
-  const slot = await prisma.prayerSlot.findUnique({
-    where: { id: slotId },
-    include: { train: true, prayerType: true },
+  const claim = await prisma.$transaction(async (tx) => {
+    const slot = await tx.prayerSlot.findUnique({
+      where: { id: slotId },
+      include: { train: true, prayerType: true },
+    });
+
+    if (!slot || slot.status !== "OPEN") {
+      throw new Error("This slot is no longer available.");
+    }
+
+    const claimedAt = new Date();
+    const claimData = {
+      status: "CLAIMED" as const,
+      claimedById: session?.user?.id || null,
+      claimerName,
+      claimerEmail,
+      claimedAt,
+    };
+
+    // If this is a novena, claim the full connected run atomically. A
+    // second volunteer racing for any overlapping days will see a short
+    // update count and the transaction will roll back rather than leaving
+    // a partial novena claim behind.
+    if (slot.prayerType.daysRequired > 1) {
+      const futureDays = await tx.prayerSlot.findMany({
+        where: {
+          trainId: slot.trainId,
+          prayerTypeId: slot.prayerTypeId,
+          slotIndex: slot.slotIndex,
+          status: "OPEN",
+          date: { gte: slot.date },
+        },
+        orderBy: { date: "asc" },
+        take: slot.prayerType.daysRequired,
+      });
+
+      if (futureDays.length < slot.prayerType.daysRequired) {
+        throw new Error("This novena is no longer fully available.");
+      }
+
+      const novenaGroupId = `novena-${slotId}-${claimedAt.getTime()}`;
+      const updated = await tx.prayerSlot.updateMany({
+        where: {
+          id: { in: futureDays.map((s) => s.id) },
+          status: "OPEN",
+        },
+        data: {
+          ...claimData,
+          novenaGroupId,
+        },
+      });
+
+      if (updated.count !== futureDays.length) {
+        throw new Error("This slot is no longer available.");
+      }
+
+      const first = futureDays[0].date;
+      const last = futureDays[futureDays.length - 1].date;
+      return {
+        train: slot.train,
+        prayerType: slot.prayerType,
+        claimedDateLabel: `${formatDateLong(first)} – ${formatDateLong(last)} (${futureDays.length} days)`,
+        completionSlotId: futureDays[0].id,
+        completionDate: first,
+      };
+    }
+
+    const updated = await tx.prayerSlot.updateMany({
+      where: { id: slotId, status: "OPEN" },
+      data: claimData,
+    });
+
+    if (updated.count !== 1) {
+      throw new Error("This slot is no longer available.");
+    }
+
+    return {
+      train: slot.train,
+      prayerType: slot.prayerType,
+      claimedDateLabel: formatDateLong(slot.date),
+      completionSlotId: slot.id,
+      completionDate: slot.date,
+    };
   });
 
-  if (!slot || slot.status !== "OPEN") {
-    throw new Error("This slot is no longer available.");
-  }
-
-  // Track the date(s) we end up claiming so we can format an accurate
-  // confirmation email below.
-  let claimedDateLabel: string;
-
-  // If this is a novena, find/create a group and claim all 9 days
-  if (slot.prayerType.daysRequired > 1) {
-    const novenaGroupId = `novena-${slotId}-${Date.now()}`;
-    const futureDays = await prisma.prayerSlot.findMany({
-      where: {
-        trainId: slot.trainId,
-        prayerTypeId: slot.prayerTypeId,
-        slotIndex: slot.slotIndex,
-        status: "OPEN",
-        date: { gte: slot.date },
-      },
-      orderBy: { date: "asc" },
-      take: slot.prayerType.daysRequired,
-    });
-
-    await prisma.prayerSlot.updateMany({
-      where: { id: { in: futureDays.map((s) => s.id) } },
-      data: {
-        status: "CLAIMED",
-        claimedById: session?.user?.id || null,
-        claimerName,
-        claimerEmail,
-        claimedAt: new Date(),
-        novenaGroupId,
-      },
-    });
-
-    const first = futureDays[0]?.date ?? slot.date;
-    const last = futureDays[futureDays.length - 1]?.date ?? slot.date;
-    claimedDateLabel = `${formatDateLong(first)} – ${formatDateLong(last)} (${futureDays.length} days)`;
-  } else {
-    await prisma.prayerSlot.update({
-      where: { id: slotId },
-      data: {
-        status: "CLAIMED",
-        claimedById: session?.user?.id || null,
-        claimerName,
-        claimerEmail,
-        claimedAt: new Date(),
-      },
-    });
-    claimedDateLabel = formatDateLong(slot.date);
-  }
+  const baseUrl = getBaseUrl();
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const tomorrow = addDays(today, 1);
+  const canCompleteToday =
+    claim.completionDate >= today && claim.completionDate < tomorrow;
+  const completeUrl = canCompleteToday
+    ? `${baseUrl}/p/${claim.train.slug}/complete?slot=${
+        claim.completionSlotId
+      }&token=${encodeURIComponent(
+        signCompletionToken("slot", claim.completionSlotId),
+      )}`
+    : undefined;
 
   // Send a confirmation email so the volunteer knows their commitment stuck.
   // sendClaimConfirmation already swallows + logs its own errors, so we
@@ -224,14 +269,15 @@ export async function claimPrayerSlot(formData: FormData) {
   await sendClaimConfirmation({
     to: claimerEmail,
     claimerName,
-    recipientName: slot.train.recipientName,
-    prayerName: slot.prayerType.name,
-    date: claimedDateLabel,
-    prayerInstructions: slot.prayerType.instructions,
-    trainUrl: `${getBaseUrl()}/p/${slot.train.slug}`,
+    recipientName: claim.train.recipientName,
+    prayerName: claim.prayerType.name,
+    date: claim.claimedDateLabel,
+    prayerInstructions: claim.prayerType.instructions,
+    trainUrl: `${baseUrl}/p/${claim.train.slug}`,
+    completeUrl,
   });
 
-  revalidatePath(`/p/${slot.train.slug}`);
+  revalidatePath(`/p/${claim.train.slug}`);
 }
 
 // ─── Mark Slot Complete ─────────────────────────────────────
@@ -248,20 +294,11 @@ export async function markSlotComplete(slotId: string) {
     throw new Error("Cannot mark this slot as complete.");
   }
 
-  // Ownership check.
-  //
-  // Threat model: this is a friendly Catholic prayer site for older users
-  // in parish ministries; the realistic risk is "Aunt Susan accidentally
-  // taps a button that wasn't hers," not adversarial tampering. So:
-  //
-  // - If the slot was claimed by an authenticated user (claimedById set),
-  //   only that user can mark it complete. Prevents a logged-in viewer
-  //   AND any anonymous viewer from completing someone else's prayer.
-  // - If the slot was claimed by a guest (claimedById null, claimerEmail
-  //   set), keep the existing "anyone can mark complete" behavior, since
-  //   guest claimers have no other way to complete from the page (no
-  //   tokenized email link yet — that's a separate morning task).
-  if (slot.claimedById && slot.claimedById !== session?.user?.id) {
+  // Page-button completion is only for authenticated owners. Guest
+  // claimers complete from their signed reminder-email link instead,
+  // which prevents anonymous public visitors from accidentally marking
+  // someone else's commitment complete.
+  if (!session?.user?.id || slot.claimedById !== session.user.id) {
     throw new Error("You can only mark your own commitments as complete.");
   }
 

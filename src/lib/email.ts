@@ -145,6 +145,7 @@ export async function sendClaimConfirmation({
   date,
   prayerInstructions,
   trainUrl,
+  completeUrl,
 }: {
   to: string;
   claimerName: string;
@@ -153,6 +154,7 @@ export async function sendClaimConfirmation({
   date: string;
   prayerInstructions: string | null;
   trainUrl: string;
+  completeUrl?: string;
 }) {
   // Pre-escape user-controlled fields for safe injection into HTML body.
   // Subject line and `date` (server-generated) don't need escaping.
@@ -199,11 +201,24 @@ export async function sendClaimConfirmation({
               View Prayer Train
             </a>
           </div>
+          ${
+            completeUrl
+              ? `<div style="text-align: center; margin-top: 12px;">
+                  <a href="${completeUrl}" style="display: inline-block; background: #242e58; color: #ffffff; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: bold; font-size: 14px;">
+                    I prayed today
+                  </a>
+                </div>
+                <p style="text-align: center; color: #6e6150; font-size: 12px; margin-top: 10px;">
+                  Use this after you have prayed today&apos;s commitment.
+                </p>`
+              : ""
+          }
           <p style="text-align: center; color: #b8a994; font-size: 12px; margin-top: 32px;">
             PrayerTrain — Organized prayer for those in need
           </p>
         </div>
       `,
+      text: `Thank you, ${claimerName}!\n\nYou've committed to pray for ${recipientName}.\n\nPrayer: ${prayerName}\nDate: ${date}\n\n${prayerInstructions ? prayerInstructions + "\n\n" : ""}View PrayerTrain: ${trainUrl}${completeUrl ? `\n\nI prayed today: ${completeUrl}` : ""}`,
     });
   } catch (error) {
     console.error("Failed to send claim confirmation email:", error);

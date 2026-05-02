@@ -281,6 +281,21 @@ export function ParishHandoutDocument({
           to start one for someone you love.
         </Text>
 
+        {/* Names men's-org and women's-ministry leadership in parallel
+            so the handout doesn't accidentally read as a women's-
+            ministry-only product. Catholic parish ministry skews ~2:1
+            female by volunteer rate; PrayerTrain inherits that
+            baseline through distribution unless we explicitly invite
+            the men's side. No em dashes per stated preference. */}
+        <Text style={handoutStyles.body}>
+          Most PrayerTrains start with someone close to the person in
+          need: a friend, a family member, or a parish leader. That
+          includes a Knights of Columbus officer, a women&apos;s-ministry
+          lead, an ACTS or men&apos;s-group member. If you carry that
+          kind of leadership in your parish, you&apos;re in the right
+          position to start one.
+        </Text>
+
         {/* Thank-you to the parish — written for an audience that
             includes terminal diagnoses, grief, and active suffering.
             Avoids any "we got through" / "came out on top" framing

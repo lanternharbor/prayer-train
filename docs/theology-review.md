@@ -53,6 +53,8 @@ If Fr. Palladino is ever unavailable for a particular question, fallback options
 | 9 | Spiritual bouquet PDF closing blessing | Devotional copy | **Queued** | `src/lib/bouquet-pdf.tsx` (added in vision pass 1). Single blessing line at the bottom of the printable certificate. |
 | 10 | Circles email reminder template (when it lands) | Email copy | **Future** | Per `docs/circles-spec.md` — draft text included there. Needs review before Circles ships. |
 | 11 | "Pray along" CTA wording on Circles (when it lands) | UI copy | **Future** | Per `docs/circles-spec.md`. |
+| 12 | "Offer up suffering" sidecar primitive | New primitive + devotional copy | **Future** | Pattern raised by James Green (operator's brother in law) in late-April-2026 text thread. A Catholic publicly offers up their own suffering for a named intention, either standalone or attached to an existing train ("Theresa in MA offers up suffering from lung cancer for X"). Real Catholic devotion (redemptive suffering / Col 1:24). Needs Fr. Palladino review on framing AND a UX design pass (verification, spam-resistance, theological tone) before it's a build. Likely Q3+ 2026. |
+| 13 | Defensive copy sweep across all public surfaces | Landing copy / cross-cutting | **Queued** | ~30-minute focused read of homepage, /create chooser, parish handout, bouquet PDF, completion emails, /our-story, /chain landing. Look for instrumentalist or presumptuous framing ("we got through," "prayer works," outcome-promising language) that an unsympathetic reader could call therapeutic-deism or works-based. Triggered by parish distribution starting late April 2026 (RCA families via Krysta + James Green). Output: punch list of softer alternatives. |
 
 ## Log (chronological)
 

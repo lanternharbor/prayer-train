@@ -111,6 +111,52 @@ export const cancelPrayerTrainSchema = z.object({
 
 export type CancelPrayerTrainInput = z.infer<typeof cancelPrayerTrainSchema>;
 
+// Reactivate is the inverse of cancel. No recipient-name confirmation
+// because flipping CANCELLED back to ACTIVE is non-destructive (and
+// can itself be undone by re-cancelling). Auth + ownership + state
+// preconditions are still enforced server-side.
+export const reactivatePrayerTrainSchema = z.object({
+  trainId: trimmedString(1, 60),
+});
+
+export type ReactivatePrayerTrainInput = z.infer<
+  typeof reactivatePrayerTrainSchema
+>;
+
+// ─── Delete / Cancel / Reactivate PrayerChain ───────────────
+//
+// Same shape and guard model as the PrayerTrain destructive actions:
+// delete needs zero members joined; cancel allowed when members exist;
+// reactivate flips CANCELLED back to ACTIVE.
+//
+// Confirmation field is named recipientOrIntentionConfirmation because
+// chains have an optional recipientName — when null, the organizer
+// types the first ~80 chars of the intention instead. The matcher in
+// src/lib/train-protection.ts handles the comparison; the schema's
+// only job here is shape.
+
+export const deletePrayerChainSchema = z.object({
+  chainId: trimmedString(1, 60),
+  confirmation: trimmedString(1, 200),
+});
+
+export type DeletePrayerChainInput = z.infer<typeof deletePrayerChainSchema>;
+
+export const cancelPrayerChainSchema = z.object({
+  chainId: trimmedString(1, 60),
+  confirmation: trimmedString(1, 200),
+});
+
+export type CancelPrayerChainInput = z.infer<typeof cancelPrayerChainSchema>;
+
+export const reactivatePrayerChainSchema = z.object({
+  chainId: trimmedString(1, 60),
+});
+
+export type ReactivatePrayerChainInput = z.infer<
+  typeof reactivatePrayerChainSchema
+>;
+
 // ─── Claim a Prayer Slot ────────────────────────────────────
 
 export const claimSlotSchema = z.object({

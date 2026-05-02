@@ -10,40 +10,31 @@ import {
   XCircle,
 } from "lucide-react";
 import {
-  cancelPrayerTrain,
-  deletePrayerTrain,
-  reactivatePrayerTrain,
+  cancelPrayerChain,
+  deletePrayerChain,
+  reactivatePrayerChain,
 } from "@/lib/actions";
 
 /**
- * Danger zone with three modes based on train state:
- *
- *   1. Protected (Spina): one-line note, no actions. Server-side will
- *      also reject any attempt; this is just the UX signal.
- *
- *   2. CANCELLED: a single "Reactivate train" button (non-destructive
- *      inverse of cancel — no recipient-name confirmation required
- *      because reactivation is itself reversible by re-cancelling).
- *
- *   3. Active / Paused: hard-delete (when no slots are claimed) or
- *      soft-cancel (otherwise). Both require typing the recipient's
- *      name as a literal-phrase confirmation, mirroring the
- *      "yes delete benji" pattern from one-off destructive scripts.
- *
- * Server-side guards (in src/lib/actions.ts + src/lib/train-protection.ts)
- * are the actual safety boundary; this component is just the UX gate.
+ * Chain-side parallel of /p/[slug]/manage/danger-zone. Same three
+ * modes (Protected, CANCELLED, ACTIVE/PAUSED), same confirm-by-typing
+ * UX, but the confirmation label can be EITHER the recipient name
+ * (when present) OR the first ~80 chars of the intention (when the
+ * chain has no recipientName because it's for a generic intention
+ * like "discernment"). Server actions in src/lib/actions.ts apply the
+ * same matcher.
  */
-export function DangerZone({
-  trainId,
-  recipientName,
+export function ChainDangerZone({
+  chainId,
+  confirmationLabel,
   status,
-  hasClaimedSlots,
+  hasMembers,
   isProtected,
 }: {
-  trainId: string;
-  recipientName: string;
+  chainId: string;
+  confirmationLabel: string;
   status: string;
-  hasClaimedSlots: boolean;
+  hasMembers: boolean;
   isProtected: boolean;
 }) {
   const router = useRouter();
@@ -52,7 +43,9 @@ export function DangerZone({
   const [error, setError] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
 
-  // 1. Protected trains (Spina) — no actions available at all.
+  // 1. Protected chains — no actions. Currently no chains are
+  // protected; isProtectedChain() always returns false. The branch
+  // exists for symmetry with the train side.
   if (isProtected) {
     return (
       <div className="prayer-card mt-12 border-cream-300 bg-cream-50">
@@ -63,7 +56,7 @@ export function DangerZone({
               Protected
             </h2>
             <p className="text-sm text-muted-foreground">
-              This prayer train is protected and cannot be deleted or
+              This shared prayer is protected and cannot be deleted or
               cancelled.
             </p>
           </div>
@@ -72,8 +65,7 @@ export function DangerZone({
     );
   }
 
-  // 2. CANCELLED — only path back is reactivation. No confirmation
-  // gate; this is the inverse of a destructive action.
+  // 2. CANCELLED — only path back is reactivation.
   if (status === "CANCELLED") {
     return (
       <div className="prayer-card mt-12 border-cream-300 bg-cream-50">
@@ -81,11 +73,12 @@ export function DangerZone({
           <AlertTriangle className="w-5 h-5 text-muted-foreground shrink-0 mt-0.5" />
           <div>
             <h2 className="font-heading text-lg font-semibold text-navy-700 mb-1">
-              This prayer train is cancelled
+              This shared prayer is cancelled
             </h2>
             <p className="text-sm text-muted-foreground">
               You can bring it back to active. Reminders will resume the
-              next morning the cron runs; existing claims are unchanged.
+              next morning the cron runs; existing memberships are
+              unchanged.
             </p>
           </div>
         </div>
@@ -96,8 +89,8 @@ export function DangerZone({
             setPending(true);
             try {
               const fd = new FormData();
-              fd.set("trainId", trainId);
-              await reactivatePrayerTrain(fd);
+              fd.set("chainId", chainId);
+              await reactivatePrayerChain(fd);
               router.refresh();
             } catch (err) {
               const message =
@@ -115,7 +108,7 @@ export function DangerZone({
           ) : (
             <Play className="w-4 h-4" />
           )}
-          Reactivate train
+          Reactivate prayer
         </button>
         {error && (
           <p className="text-sm text-red-600 bg-red-100 border border-red-200 rounded-lg px-3 py-2 mt-3">
@@ -126,30 +119,22 @@ export function DangerZone({
     );
   }
 
-  // 3. Active / Paused — destructive actions available with the
-  // confirm-by-typing gate.
-  const action = hasClaimedSlots ? "cancel" : "delete";
-  const ServerAction = hasClaimedSlots
-    ? cancelPrayerTrain
-    : deletePrayerTrain;
+  // 3. Active / Paused — destructive actions with confirm-by-typing.
+  const action = hasMembers ? "cancel" : "delete";
+  const ServerAction = hasMembers ? cancelPrayerChain : deletePrayerChain;
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setError(null);
     setPending(true);
     const formData = new FormData();
-    formData.set("trainId", trainId);
-    formData.set("recipientNameConfirmation", confirmation);
+    formData.set("chainId", chainId);
+    formData.set("confirmation", confirmation);
     try {
       await ServerAction(formData);
-      // The server action redirects on success, so we won't reach
-      // here under normal flow. router.refresh() is a safety net for
-      // any non-redirect path the action might take in the future.
       router.refresh();
     } catch (err) {
       const message = err instanceof Error ? err.message : "Something went wrong.";
-      // Next's redirect() throws a NEXT_REDIRECT-tagged error on
-      // success. Surface only real errors to the user.
       if (message.includes("NEXT_REDIRECT")) return;
       setError(message);
       setPending(false);
@@ -165,17 +150,17 @@ export function DangerZone({
             Danger zone
           </h2>
           <p className="text-sm text-muted-foreground">
-            {hasClaimedSlots ? (
+            {hasMembers ? (
               <>
-                Volunteers have already claimed prayer slots on this
-                train. You can still cancel it (preserving the prayer
-                history and notifying everyone who committed) but it
-                can no longer be hard-deleted.
+                People have already joined this shared prayer. You can
+                still cancel it (preserving the prayer history and
+                notifying every active member) but it can no longer be
+                hard-deleted.
               </>
             ) : (
               <>
-                No one has claimed a prayer slot yet, so this train can
-                be deleted permanently. This action cannot be undone.
+                No one has joined this shared prayer yet, so it can be
+                deleted permanently. This action cannot be undone.
               </>
             )}
           </p>
@@ -187,17 +172,17 @@ export function DangerZone({
           type="button"
           onClick={() => setOpen(true)}
           className={`flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-lg transition-colors ${
-            hasClaimedSlots
+            hasMembers
               ? "bg-yellow-100 text-yellow-800 hover:bg-yellow-200"
               : "bg-red-100 text-red-700 hover:bg-red-200"
           }`}
         >
-          {hasClaimedSlots ? (
+          {hasMembers ? (
             <XCircle className="w-4 h-4" />
           ) : (
             <Trash2 className="w-4 h-4" />
           )}
-          {hasClaimedSlots ? "Cancel train" : "Delete train"}
+          {hasMembers ? "Cancel prayer" : "Delete prayer"}
         </button>
       ) : (
         <form onSubmit={handleSubmit} className="space-y-3">
@@ -208,7 +193,7 @@ export function DangerZone({
             >
               Type{" "}
               <span className="font-mono bg-cream-100 px-1.5 py-0.5 rounded text-navy-800 border border-cream-300">
-                {recipientName}
+                {confirmationLabel}
               </span>{" "}
               to confirm
             </label>
@@ -217,7 +202,7 @@ export function DangerZone({
               type="text"
               value={confirmation}
               onChange={(e) => setConfirmation(e.target.value)}
-              placeholder="Recipient name"
+              placeholder="Type to confirm"
               className="w-full px-4 py-2.5 border border-border rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-red-400/50 focus:border-red-400 transition text-sm"
               autoFocus
             />
@@ -232,14 +217,14 @@ export function DangerZone({
               type="submit"
               disabled={pending || !confirmation.trim()}
               className={`flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${
-                hasClaimedSlots
+                hasMembers
                   ? "bg-yellow-600 text-white hover:bg-yellow-700"
                   : "bg-red-600 text-white hover:bg-red-700"
               }`}
             >
               {pending ? (
                 <Loader2 className="w-4 h-4 animate-spin" />
-              ) : hasClaimedSlots ? (
+              ) : hasMembers ? (
                 <XCircle className="w-4 h-4" />
               ) : (
                 <Trash2 className="w-4 h-4" />
@@ -250,7 +235,7 @@ export function DangerZone({
                   : "Cancelling..."
                 : action === "delete"
                   ? "Delete forever"
-                  : "Cancel train"}
+                  : "Cancel prayer"}
             </button>
             <button
               type="button"

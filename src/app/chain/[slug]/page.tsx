@@ -163,7 +163,11 @@ export default async function ChainDetailPage({
           <div className="flex-1 min-w-0">
             <p className="text-xs uppercase tracking-widest text-gold-700 mb-2">
               Day {day} of {chain.durationDays}
-              {chain.status === "COMPLETED" ? " · Complete" : ""}
+              {chain.status === "COMPLETED"
+                ? " · Complete"
+                : chain.status === "CANCELLED"
+                ? " · Cancelled"
+                : ""}
             </p>
             <div className="flex items-start gap-4 mb-3">
               {/* Recipient photo (if uploaded). Sits next to the title to
@@ -184,6 +188,20 @@ export default async function ChainDetailPage({
             <p className="text-lg text-muted-foreground leading-relaxed">
               {chain.intention}
             </p>
+            {/* Cancelled-state pastoral note. Soft cream styling, not
+                error-red, since cancellation is the organizer's choice
+                rather than a failure. The existing chain.status === ACTIVE
+                gates throughout the page already auto-hide the join
+                button, the progress bar, and the daily call-to-action,
+                so this note is the explicit framing for anyone arriving
+                from a shared link. */}
+            {chain.status === "CANCELLED" && (
+              <p className="mt-4 text-sm text-muted-foreground bg-cream-50 rounded-lg p-3 border border-cream-300">
+                This shared prayer has been cancelled by the organizer.
+                The prayer history below is preserved as a record of
+                what was offered before it ended.
+              </p>
+            )}
           </div>
           <div className="mt-6 sm:mt-1 flex justify-center sm:justify-end shrink-0">
             <SaintPortrait patronSaint={chain.prayerType.patronSaint} />

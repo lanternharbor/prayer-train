@@ -9,26 +9,36 @@ import { enforceRateLimit } from "@/lib/rate-limit";
 import { getRateLimitId } from "@/lib/request";
 import {
   addPrayerWarriorSchema,
+  cancelPrayerChainSchema,
   cancelPrayerTrainSchema,
   claimSlotSchema,
   closeChainSchema,
   createChainSchema,
   createTrainSchema,
+  deletePrayerChainSchema,
   deletePrayerTrainSchema,
   guestbookEntrySchema,
   joinChainSchema,
   markChainDayCompleteSchema,
   parseFormData,
+  reactivatePrayerChainSchema,
+  reactivatePrayerTrainSchema,
   trainUpdateSchema,
   updateChainSchema,
   updateTrainSchema,
 } from "@/lib/validation";
-import { confirmationMatches, isProtectedTrain } from "@/lib/train-protection";
 import {
+  confirmationMatches,
+  isProtectedChain,
+  isProtectedTrain,
+} from "@/lib/train-protection";
+import {
+  sendChainCancellationNotice,
   sendChainClosingDayEmail,
   sendChainJoinConfirmation,
   sendPrayerWarriorClosing,
   sendPrayerWarriorWelcome,
+  sendTrainCancellationNotice,
 } from "@/lib/email";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
@@ -689,6 +699,10 @@ export async function cancelPrayerTrain(formData: FormData) {
 
   const input = parseFormData(cancelPrayerTrainSchema, formData);
 
+  // Pull claimers + warriors in the same query so we can email them
+  // after the status flip without a second roundtrip. Slots are
+  // filtered to only CLAIMED + COMPLETED (status != OPEN) since OPEN
+  // slots have no claimer.
   const train = await prisma.prayerTrain.findUnique({
     where: { id: input.trainId },
     select: {
@@ -697,6 +711,12 @@ export async function cancelPrayerTrain(formData: FormData) {
       organizerId: true,
       recipientName: true,
       status: true,
+      organizer: { select: { name: true } },
+      slots: {
+        where: { status: { not: "OPEN" } },
+        select: { claimerEmail: true },
+      },
+      warriors: { select: { email: true } },
     },
   });
 
@@ -726,10 +746,278 @@ export async function cancelPrayerTrain(formData: FormData) {
     data: { status: "CANCELLED" },
   });
 
+  // Notify everyone who committed to pray. Dedupe by email so a
+  // claimer who also pledged as a warrior gets one email, not two.
+  // Email helpers already swallow + log their own errors, so an
+  // outbound delivery hiccup can't fail the cancellation itself.
+  const emails = new Set<string>();
+  for (const slot of train.slots) {
+    if (slot.claimerEmail) emails.add(slot.claimerEmail);
+  }
+  for (const warrior of train.warriors) {
+    if (warrior.email) emails.add(warrior.email);
+  }
+  const orgFirst = train.organizer?.name?.trim().split(/\s+/)[0] ?? null;
+  for (const email of emails) {
+    await sendTrainCancellationNotice({
+      to: email,
+      recipientName: train.recipientName,
+      organizerFirstName: orgFirst,
+    });
+  }
+
   revalidatePath(`/p/${train.slug}`);
   revalidatePath(`/p/${train.slug}/manage`);
   revalidatePath("/browse");
   redirect(`/p/${train.slug}/manage`);
+}
+
+export async function reactivatePrayerTrain(formData: FormData) {
+  const session = await auth();
+  if (!session?.user?.id) redirect("/signin");
+
+  const input = parseFormData(reactivatePrayerTrainSchema, formData);
+
+  const train = await prisma.prayerTrain.findUnique({
+    where: { id: input.trainId },
+    select: {
+      id: true,
+      slug: true,
+      organizerId: true,
+      status: true,
+    },
+  });
+
+  if (!train) throw new Error("That prayer train no longer exists.");
+  if (train.organizerId !== session.user.id) {
+    throw new Error("Only the organizer can reactivate this prayer train.");
+  }
+  if (train.status !== "CANCELLED") {
+    throw new Error(
+      "Only cancelled prayer trains can be reactivated.",
+    );
+  }
+
+  // No protected-slug check or recipient-name confirmation: reactivation
+  // is non-destructive (the inverse of cancel) and itself reversible.
+  // Auth + ownership + state precondition is the full guard.
+  await prisma.prayerTrain.update({
+    where: { id: train.id },
+    data: { status: "ACTIVE" },
+  });
+
+  revalidatePath(`/p/${train.slug}`);
+  revalidatePath(`/p/${train.slug}/manage`);
+  revalidatePath("/browse");
+  redirect(`/p/${train.slug}/manage`);
+}
+
+// ─── Delete / Cancel / Reactivate PrayerChain ───────────────
+//
+// Same shape and guard model as the train versions. Chain has its
+// own enum value (ChainStatus.CANCELLED) and PrayerChainMember has
+// onDelete: Cascade in the schema, so deleting a chain auto-removes
+// all members in a single statement. No protected chains currently
+// exist; isProtectedChain() always returns false but the call sites
+// follow the train pattern so adding one later is a Set addition.
+//
+// Chain confirmation field accepts EITHER the recipient name OR the
+// first ~80 chars of the intention (chains have an optional
+// recipientName). The schema field is named `confirmation` for that
+// reason; the matcher tries the recipient name first, then falls
+// back to the intention prefix.
+
+function chainConfirmationLabel(
+  recipientName: string | null,
+  intention: string,
+): string {
+  if (recipientName?.trim()) return recipientName.trim();
+  // Intention can be long; we ask for the first ~80 chars only.
+  // 80 matches the validation cap on recipientName.
+  return intention.trim().slice(0, 80);
+}
+
+function chainConfirmationMatches(
+  typed: string,
+  recipientName: string | null,
+  intention: string,
+): boolean {
+  return confirmationMatches(
+    typed,
+    chainConfirmationLabel(recipientName, intention),
+  );
+}
+
+export async function deletePrayerChain(formData: FormData) {
+  const session = await auth();
+  if (!session?.user?.id) redirect("/signin");
+
+  const input = parseFormData(deletePrayerChainSchema, formData);
+
+  const chain = await prisma.prayerChain.findUnique({
+    where: { id: input.chainId },
+    select: {
+      id: true,
+      slug: true,
+      organizerId: true,
+      recipientName: true,
+      intention: true,
+      members: { select: { id: true } },
+    },
+  });
+
+  if (!chain) throw new Error("That shared prayer no longer exists.");
+  if (chain.organizerId !== session.user.id) {
+    throw new Error("Only the organizer can delete this shared prayer.");
+  }
+  if (isProtectedChain(chain.slug)) {
+    throw new Error(
+      "This shared prayer is protected and cannot be deleted.",
+    );
+  }
+  if (
+    !chainConfirmationMatches(
+      input.confirmation,
+      chain.recipientName,
+      chain.intention,
+    )
+  ) {
+    throw new Error(
+      "Confirmation did not match. Please type the recipient or intention exactly as shown.",
+    );
+  }
+  if (chain.members.length > 0) {
+    throw new Error(
+      "This shared prayer has members and cannot be deleted. Cancel it instead to preserve the prayer history.",
+    );
+  }
+
+  // PrayerChainMember has onDelete: Cascade, so deleting the chain
+  // automatically removes any member rows in a single statement.
+  await prisma.prayerChain.delete({ where: { id: chain.id } });
+
+  revalidatePath("/browse");
+  redirect("/");
+}
+
+export async function cancelPrayerChain(formData: FormData) {
+  const session = await auth();
+  if (!session?.user?.id) redirect("/signin");
+
+  const input = parseFormData(cancelPrayerChainSchema, formData);
+
+  const chain = await prisma.prayerChain.findUnique({
+    where: { id: input.chainId },
+    select: {
+      id: true,
+      slug: true,
+      organizerId: true,
+      recipientName: true,
+      intention: true,
+      status: true,
+      organizer: { select: { name: true } },
+      prayerType: { select: { name: true } },
+      members: {
+        where: { unsubscribedAt: null },
+        select: { name: true, email: true },
+      },
+    },
+  });
+
+  if (!chain) throw new Error("That shared prayer no longer exists.");
+  if (chain.organizerId !== session.user.id) {
+    throw new Error("Only the organizer can cancel this shared prayer.");
+  }
+  if (isProtectedChain(chain.slug)) {
+    throw new Error(
+      "This shared prayer is protected and cannot be cancelled.",
+    );
+  }
+  if (
+    !chainConfirmationMatches(
+      input.confirmation,
+      chain.recipientName,
+      chain.intention,
+    )
+  ) {
+    throw new Error(
+      "Confirmation did not match. Please type the recipient or intention exactly as shown.",
+    );
+  }
+  if (chain.status === "CANCELLED") {
+    throw new Error("This shared prayer is already cancelled.");
+  }
+  if (chain.status === "COMPLETED") {
+    throw new Error("Completed shared prayers cannot be cancelled.");
+  }
+  if (chain.status === "PROMOTED") {
+    throw new Error(
+      "This shared prayer was promoted to a PrayerTrain and cannot be cancelled directly.",
+    );
+  }
+
+  await prisma.prayerChain.update({
+    where: { id: chain.id },
+    data: { status: "CANCELLED" },
+  });
+
+  // Notify every active member. Dedupe by email defensively; the
+  // (chainId, email) pair is unique in the schema but the dedupe
+  // adds zero cost and protects future-edits.
+  const seen = new Set<string>();
+  const orgName = chain.organizer?.name ?? "the organizer";
+  for (const member of chain.members) {
+    if (!member.email || seen.has(member.email)) continue;
+    seen.add(member.email);
+    await sendChainCancellationNotice({
+      to: member.email,
+      memberName: member.name,
+      organizerName: orgName,
+      prayerName: chain.prayerType.name,
+      recipientName: chain.recipientName,
+      intention: chain.intention,
+    });
+  }
+
+  revalidatePath(`/chain/${chain.slug}`);
+  revalidatePath(`/chain/${chain.slug}/manage`);
+  revalidatePath("/browse");
+  redirect(`/chain/${chain.slug}/manage`);
+}
+
+export async function reactivatePrayerChain(formData: FormData) {
+  const session = await auth();
+  if (!session?.user?.id) redirect("/signin");
+
+  const input = parseFormData(reactivatePrayerChainSchema, formData);
+
+  const chain = await prisma.prayerChain.findUnique({
+    where: { id: input.chainId },
+    select: {
+      id: true,
+      slug: true,
+      organizerId: true,
+      status: true,
+    },
+  });
+
+  if (!chain) throw new Error("That shared prayer no longer exists.");
+  if (chain.organizerId !== session.user.id) {
+    throw new Error("Only the organizer can reactivate this shared prayer.");
+  }
+  if (chain.status !== "CANCELLED") {
+    throw new Error("Only cancelled shared prayers can be reactivated.");
+  }
+
+  await prisma.prayerChain.update({
+    where: { id: chain.id },
+    data: { status: "ACTIVE" },
+  });
+
+  revalidatePath(`/chain/${chain.slug}`);
+  revalidatePath(`/chain/${chain.slug}/manage`);
+  revalidatePath("/browse");
+  redirect(`/chain/${chain.slug}/manage`);
 }
 
 // ─── Add PrayerWarrior pledge ───────────────────────────────

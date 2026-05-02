@@ -220,17 +220,17 @@ export default async function ManagePage({
         )}
       </div>
 
-      {/* Danger zone — delete (when no claims) or cancel (when claims
-          exist). Server-side guards in src/lib/actions.ts enforce
-          organizer-auth, protected-slug rejection (Spina), and
-          recipient-name confirmation. The client component handles
-          the confirm-by-typing UX. Hidden once a train is in a
-          terminal state (CANCELLED or COMPLETED) to avoid offering
-          actions that would no-op or be confusing. */}
-      {train.status !== "CANCELLED" && train.status !== "COMPLETED" && (
+      {/* Danger zone — three modes by state: ACTIVE/PAUSED show
+          delete or cancel (with confirm-by-typing); CANCELLED shows
+          a Reactivate button; COMPLETED hides the section entirely.
+          Server-side guards in src/lib/actions.ts enforce organizer-
+          auth, protected-slug rejection (Spina), and the recipient-
+          name confirmation match. */}
+      {train.status !== "COMPLETED" && (
         <DangerZone
           trainId={train.id}
           recipientName={train.recipientName}
+          status={train.status}
           hasClaimedSlots={claimedSlots > 0 || completedSlots > 0}
           isProtected={isProtectedTrain(train.slug)}
         />

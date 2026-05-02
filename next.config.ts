@@ -19,6 +19,12 @@ const nextConfig: NextConfig = {
   // node_modules at runtime instead of trying to inline it into the lambda.
   serverExternalPackages: ["@react-pdf/renderer"],
   redirects: async () => [
+    {
+      source: "/:path*",
+      has: [{ type: "host", value: "www.prayertrains.com" }],
+      destination: "https://prayertrains.com/:path*",
+      permanent: true,
+    },
     // Common URLs that people type or link to. All 308 (permanent).
     { source: "/about", destination: "/our-story", permanent: true },
     { source: "/start", destination: "/create", permanent: true },

@@ -178,10 +178,12 @@ export default async function PrayerTrainPage({
                 ? "bg-green-100 text-green-700"
                 : train.status === "PAUSED"
                 ? "bg-yellow-100 text-yellow-700"
+                : train.status === "CANCELLED"
+                ? "bg-cream-200 text-muted-foreground"
                 : "bg-gray-100 text-gray-700"
             }`}
           >
-            {train.status}
+            {train.status === "CANCELLED" ? "Cancelled" : train.status}
           </span>
         </div>
         <h1 className="font-heading text-3xl sm:text-4xl font-bold text-navy-800 mb-2">
@@ -196,6 +198,19 @@ export default async function PrayerTrainPage({
             text={train.situationDetail}
             className="text-sm text-muted-foreground bg-cream-50 rounded-lg p-3 border border-cream-300"
           />
+        )}
+        {/* Cancelled-state explanatory note. The badge already signals
+            the state visually; this gives a one-sentence pastoral
+            framing so anyone arriving from a shared link understands
+            why the calendar is no longer accepting sign-ups. Soft
+            cream styling, not error-red, since cancellation is the
+            organizer's choice rather than a failure. */}
+        {train.status === "CANCELLED" && (
+          <p className="mt-4 text-sm text-muted-foreground bg-cream-50 rounded-lg p-3 border border-cream-300">
+            This prayer train has been cancelled by the organizer. The
+            prayer history below is preserved as a record of what was
+            offered before it ended.
+          </p>
         )}
 
         {/* Metadata strip — flex-col on mobile so each item gets its

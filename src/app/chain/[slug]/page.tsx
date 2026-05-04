@@ -6,6 +6,7 @@ import { prisma } from "@/lib/db";
 import { getBaseUrl } from "@/lib/url";
 import { SaintPortrait } from "@/components/saint-portrait";
 import { RecipientAvatar } from "@/components/ui/catholic-icons";
+import { dayNumberInTimezone, DEFAULT_DISPLAY_TZ } from "@/lib/dates";
 import { JoinChainButton } from "./join-button";
 import { ChainShareButton } from "./share-button";
 import { ArrowLeft, CalendarDays, HandHeart, Settings, Users } from "lucide-react";
@@ -24,13 +25,15 @@ function recipientPhrase(
   return `for ${words}${intention.trim().split(/\s+/).length > 8 ? "…" : ""}`;
 }
 
+// Server-side: setHours(0,0,0,0) zeroes to LOCAL midnight, which on
+// Vercel is UTC midnight. At 8:12 PM EDT May 3, that "now" lands on
+// May 4 and the chain reads "Day 4" when the viewer's local clock
+// thinks it should be Day 3. The shared dayNumberInTimezone helper
+// extracts startDate's UTC-encoded canonical day and observes "now"
+// in the canonical East Coast TZ (DEFAULT_DISPLAY_TZ from
+// src/lib/dates.ts) — see that module for the West Coast caveat.
 function dayNumberFor(startDate: Date): number {
-  const now = new Date();
-  now.setHours(0, 0, 0, 0);
-  const start = new Date(startDate);
-  start.setHours(0, 0, 0, 0);
-  const ms = now.getTime() - start.getTime();
-  return Math.max(1, Math.floor(ms / (1000 * 60 * 60 * 24)) + 1);
+  return dayNumberInTimezone(new Date(), startDate, DEFAULT_DISPLAY_TZ);
 }
 
 export async function generateMetadata({

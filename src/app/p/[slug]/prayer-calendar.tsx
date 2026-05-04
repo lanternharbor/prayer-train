@@ -11,6 +11,7 @@ import {
   ChevronUp,
 } from "lucide-react";
 import { ClaimModal } from "./claim-modal";
+import { dateKeyInTimezone } from "@/lib/dates";
 
 type Slot = {
   id: string;
@@ -55,7 +56,19 @@ export function PrayerCalendar({
   const [pastExpanded, setPastExpanded] = useState(false);
 
   const dates = Object.keys(slotsByDate).sort();
-  const today = new Date().toISOString().split("T")[0];
+  // "Today" must reflect the viewer's calendar day, not the runtime's
+  // UTC clock. toISOString() converts to UTC, so at 8:12 PM EDT May 3
+  // it would land on May 4 and mark the wrong day as today. Using the
+  // browser's resolved TZ keeps the highlight on the user's actual
+  // calendar day. Slot dateKeys come from slot.date.toISOString() (UTC),
+  // which matches because slot dates are stored as midnight UTC of the
+  // intended calendar day.
+  const today = dateKeyInTimezone(
+    new Date(),
+    typeof Intl !== "undefined"
+      ? Intl.DateTimeFormat().resolvedOptions().timeZone
+      : "UTC",
+  );
   const pastDates = dates.filter((d) => d < today);
   const upcomingDates = dates.filter((d) => d >= today);
 

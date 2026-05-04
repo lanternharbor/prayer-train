@@ -67,9 +67,16 @@ export function calculateFillRate(
   return Math.round(((claimedSlots + completedSlots) / totalSlots) * 100);
 }
 
-// Format a date for display
+// Format a date for display. Slot dates and train start/end dates are
+// stored as midnight UTC of the intended calendar day (see
+// createPrayerTrain), so we explicitly format in UTC to recover the
+// original calendar day regardless of where the runtime lives. Without
+// timeZone: "UTC" the runtime's local TZ leaks in — fine on Vercel
+// (also UTC) but fragile under any other runtime, and incorrect when
+// these helpers run on the client side.
 export function formatDate(date: Date): string {
   return new Intl.DateTimeFormat("en-US", {
+    timeZone: "UTC",
     weekday: "short",
     month: "short",
     day: "numeric",
@@ -78,6 +85,7 @@ export function formatDate(date: Date): string {
 
 export function formatDateLong(date: Date): string {
   return new Intl.DateTimeFormat("en-US", {
+    timeZone: "UTC",
     weekday: "long",
     month: "long",
     day: "numeric",

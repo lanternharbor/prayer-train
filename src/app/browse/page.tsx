@@ -17,6 +17,11 @@ import {
 } from "lucide-react";
 import { SituationCategory } from "@/generated/prisma/client";
 import { RecipientAvatar, PrayingHandsIcon } from "@/components/ui/catholic-icons";
+import {
+  dayNumberInTimezone,
+  daysLeftInTimezone,
+  DEFAULT_DISPLAY_TZ,
+} from "@/lib/dates";
 
 export const metadata: Metadata = {
   title: "Find a PrayerTrain",
@@ -27,25 +32,24 @@ export const metadata: Metadata = {
 
 const SITUATIONS = Object.values(SituationCategory);
 
+// TZ-aware via the shared helpers in src/lib/dates.ts. Anchoring on
+// DEFAULT_DISPLAY_TZ (America/New_York) means the day-count math
+// matches what an East Coast viewer's wall clock says, not the
+// Vercel runtime's UTC clock. See src/lib/dates.ts for the West
+// Coast caveat.
 function computeDaysLeft(endDate: Date): number {
-  return Math.max(
-    0,
-    Math.ceil(
-      (new Date(endDate).getTime() - Date.now()) / (1000 * 60 * 60 * 24)
-    )
-  );
+  return daysLeftInTimezone(new Date(), endDate, DEFAULT_DISPLAY_TZ);
 }
 
-// Module-level helper for chain card progress. Mirrors computeDaysLeft so
-// the react-hooks/purity rule stays happy with Date.now() at module scope
-// rather than inside the component body.
+// Module-level helper for chain card progress. Lives at module scope
+// (not inside the component body) so the react-hooks/purity rule
+// stays happy with the implicit `new Date()` call.
 function computeChainProgress(
   startDate: Date,
   durationDays: number,
 ): { day: number; pct: number } {
-  const elapsed = Date.now() - startDate.getTime();
-  const day = Math.floor(elapsed / (1000 * 60 * 60 * 24)) + 1;
-  const dayInRange = Math.min(Math.max(1, day), durationDays);
+  const day = dayNumberInTimezone(new Date(), startDate, DEFAULT_DISPLAY_TZ);
+  const dayInRange = Math.min(day, durationDays);
   return {
     day: dayInRange,
     pct: Math.round((dayInRange / durationDays) * 100),

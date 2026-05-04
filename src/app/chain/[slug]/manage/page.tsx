@@ -7,12 +7,14 @@ import { closePrayerChain } from "@/lib/actions";
 import { ArrowLeft, Settings, Users, FileDown, Pencil } from "lucide-react";
 import { ChainDangerZone } from "./chain-danger-zone";
 import { isProtectedChain } from "@/lib/train-protection";
+import { dayNumberInTimezone, DEFAULT_DISPLAY_TZ } from "@/lib/dates";
 
 // Module-level helper. Defined outside the component to satisfy the
 // react-hooks/purity rule, which rejects Date.now() inside render.
+// TZ-aware via the shared helper so we don't anchor "today" to UTC
+// (Vercel runtime) when the operator's calendar is on the East Coast.
 function currentDayNumber(startDate: Date): number {
-  const ms = Date.now() - startDate.getTime();
-  return Math.floor(ms / (1000 * 60 * 60 * 24)) + 1;
+  return dayNumberInTimezone(new Date(), startDate, DEFAULT_DISPLAY_TZ);
 }
 
 export async function generateMetadata({

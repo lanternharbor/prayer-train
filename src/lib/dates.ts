@@ -109,3 +109,75 @@ export function daysLeftInTimezone(
   const endMs = Date.parse(endKey + "T00:00:00Z");
   return Math.max(0, Math.ceil((endMs - nowMs) / (1000 * 60 * 60 * 24)));
 }
+
+/**
+ * Group an ascending list of YYYY-MM-DD date keys into Monday-start
+ * calendar weeks. Used by the train-detail calendar to fold a long
+ * upcoming-days list into collapsible week blocks (so a 90-day train
+ * doesn't render a wall of date cards).
+ *
+ * Returns an array of { weekStart, weekEnd, dates } objects in the
+ * same ascending order as the input. weekStart and weekEnd are
+ * inclusive YYYY-MM-DD bounds for the Monday-Sunday week each date
+ * falls into. A week object only appears if at least one input date
+ * falls inside it (no empty filler weeks for sparse inputs).
+ *
+ * Implementation: parse each date key as midnight UTC (matches how
+ * slot dates are stored), shift back to the prior Monday, and use
+ * that Monday's key as the group key. Deliberately TZ-agnostic since
+ * the input is already calendar-day keys; the function does no
+ * runtime-now comparisons.
+ *
+ * Examples:
+ *   groupByWeek(["2026-05-04"])
+ *     -> [{ weekStart: "2026-05-04", weekEnd: "2026-05-10",
+ *           dates: ["2026-05-04"] }]   // May 4 is a Monday
+ *
+ *   groupByWeek(["2026-05-06", "2026-05-07", "2026-05-12"])
+ *     -> two weeks: May 4-10 (with Wed + Thu) and May 11-17 (with Tue)
+ */
+export function groupByWeek(
+  dates: string[],
+): Array<{ weekStart: string; weekEnd: string; dates: string[] }> {
+  const groups = new Map<string, string[]>();
+  for (const dateKey of dates) {
+    const monday = mondayOfWeek(dateKey);
+    const existing = groups.get(monday);
+    if (existing) {
+      existing.push(dateKey);
+    } else {
+      groups.set(monday, [dateKey]);
+    }
+  }
+  return Array.from(groups.entries())
+    .sort(([a], [b]) => a.localeCompare(b))
+    .map(([weekStart, weekDates]) => ({
+      weekStart,
+      weekEnd: addDaysIso(weekStart, 6),
+      dates: weekDates,
+    }));
+}
+
+/**
+ * Return the YYYY-MM-DD key of the Monday of the week containing the
+ * given YYYY-MM-DD date. JavaScript's Date.getUTCDay() returns 0=Sun,
+ * 1=Mon ... 6=Sat. We shift to a Monday-based week (1=Mon ... 7=Sun)
+ * so a Sunday rolls back six days, a Monday rolls back zero.
+ */
+function mondayOfWeek(dateKey: string): string {
+  const ms = Date.parse(dateKey + "T00:00:00Z");
+  const dow = new Date(ms).getUTCDay(); // 0=Sun..6=Sat
+  const daysFromMonday = (dow + 6) % 7; // Sun -> 6, Mon -> 0, ..., Sat -> 5
+  return addDaysIso(dateKey, -daysFromMonday);
+}
+
+/**
+ * Return YYYY-MM-DD that is `delta` calendar days from the given
+ * YYYY-MM-DD date key. Negative deltas go backwards. Operates in UTC
+ * so DST is never a factor.
+ */
+function addDaysIso(dateKey: string, delta: number): string {
+  const ms = Date.parse(dateKey + "T00:00:00Z");
+  const next = new Date(ms + delta * 24 * 60 * 60 * 1000);
+  return dateKeyInTimezone(next, "UTC");
+}

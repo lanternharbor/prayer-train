@@ -25,7 +25,62 @@ import { AddWarriorButton } from "./add-warrior-button";
 import { ExpandableText } from "./expandable-text";
 import { InPageNav } from "./in-page-nav";
 import { JumpToGuestbook } from "./jump-to-guestbook";
+import { shouldShowNoteOnWall } from "@/lib/notes";
+import type { WallEntry } from "./guestbook";
 import { CrossIcon, CrossDivider, RecipientAvatar } from "@/components/ui/catholic-icons";
+
+/**
+ * Build the unified encouragement-wall feed by merging two sources:
+ *  - GuestbookEntry rows (the explicit wall posts)
+ *  - PrayerSlot completion notes where the claimer opted in via the
+ *    shareWall checkbox (see src/lib/notes.ts for the predicate)
+ *
+ * Both sources share the same shape so the Guestbook component
+ * renders them with identical chrome plus an optional source badge.
+ * Sorted descending by createdAt; capped at 30 to balance the two
+ * sources without runaway growth.
+ */
+function buildWallEntries(
+  guestbook: Array<{
+    id: string;
+    createdAt: Date;
+    authorName: string;
+    message: string;
+  }>,
+  slots: Array<{
+    id: string;
+    completionNote: string | null;
+    completionNoteShareWall: boolean;
+    completedAt: Date | null;
+    claimerName: string | null;
+  }>,
+): WallEntry[] {
+  const fromGuestbook: WallEntry[] = guestbook.map((e) => ({
+    id: `guestbook-${e.id}`,
+    createdAt: e.createdAt,
+    authorName: e.authorName,
+    message: e.message,
+    source: "guestbook" as const,
+  }));
+  const fromSlots: WallEntry[] = slots
+    .filter((s) =>
+      shouldShowNoteOnWall({
+        completionNote: s.completionNote,
+        completionNoteShareWall: s.completionNoteShareWall,
+      }),
+    )
+    .filter((s) => s.completedAt && s.claimerName && s.completionNote)
+    .map((s) => ({
+      id: `slot-${s.id}`,
+      createdAt: s.completedAt!,
+      authorName: s.claimerName!,
+      message: s.completionNote!,
+      source: "prayer-note" as const,
+    }));
+  return [...fromGuestbook, ...fromSlots]
+    .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
+    .slice(0, 30);
+}
 
 export async function generateMetadata({
   params,
@@ -409,7 +464,7 @@ export default async function PrayerTrainPage({
         </div>
         <div id="guestbook" className="scroll-mt-32">
           <Guestbook
-            entries={train.guestbook}
+            entries={buildWallEntries(train.guestbook, train.slots)}
             trainId={train.id}
           />
         </div>

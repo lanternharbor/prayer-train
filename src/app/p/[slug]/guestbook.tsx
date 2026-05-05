@@ -2,20 +2,32 @@
 
 import { useState } from "react";
 import { postGuestbookEntry } from "@/lib/actions";
-import { MessageCircle, Send, Loader2 } from "lucide-react";
+import { MessageCircle, Send, Loader2, HandHeart } from "lucide-react";
 
-type GuestbookEntry = {
+/**
+ * Unified encouragement-wall entry. Two sources today:
+ *   - "guestbook"    — explicit wall posts via the form below
+ *   - "prayer-note"  — slot completion notes where the claimer
+ *                      opted to surface their note on the wall
+ *
+ * Source-badge rendering distinguishes them in the entry list so the
+ * provenance is legible. The component takes a pre-merged array so
+ * the page (server) controls the sort + cap; this client component
+ * just renders.
+ */
+export type WallEntry = {
   id: string;
   createdAt: Date;
   authorName: string;
   message: string;
+  source: "guestbook" | "prayer-note";
 };
 
 export function Guestbook({
   entries,
   trainId,
 }: {
-  entries: GuestbookEntry[];
+  entries: WallEntry[];
   trainId: string;
 }) {
   const [name, setName] = useState("");
@@ -82,11 +94,13 @@ export function Guestbook({
         </button>
       </form>
 
-      {/* Entries */}
+      {/* Entries — both guestbook posts and shared prayer notes,
+          rendered with the same chrome plus a small "from a prayer"
+          badge on the slot-sourced ones so the provenance is clear. */}
       <div className="space-y-3">
         {entries.map((entry) => (
           <div key={entry.id} className="prayer-card py-3 px-4">
-            <div className="flex items-center gap-2 mb-1">
+            <div className="flex items-center gap-2 mb-1 flex-wrap">
               <span className="font-medium text-sm text-navy-700">
                 {entry.authorName}
               </span>
@@ -96,6 +110,15 @@ export function Guestbook({
                   day: "numeric",
                 })}
               </span>
+              {entry.source === "prayer-note" && (
+                <span
+                  title="A note left by a prayer warrior when marking their commitment complete"
+                  className="inline-flex items-center gap-1 text-[10px] uppercase tracking-wider text-gold-700 font-semibold bg-gold-50 border border-gold-200 rounded-full px-1.5 py-0.5"
+                >
+                  <HandHeart className="w-2.5 h-2.5" />
+                  from a prayer
+                </span>
+              )}
             </div>
             <p className="text-sm text-muted-foreground leading-relaxed">
               {entry.message}

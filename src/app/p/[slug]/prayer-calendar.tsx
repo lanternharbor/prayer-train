@@ -1,16 +1,17 @@
 "use client";
 
 import { useState } from "react";
-import { markSlotComplete } from "@/lib/actions";
 import {
   Clock,
   User,
   Check,
-  Loader2,
   ChevronDown,
   ChevronUp,
+  MessageSquare,
+  Pencil,
 } from "lucide-react";
 import { ClaimModal } from "./claim-modal";
+import { CompletionModal } from "./completion-modal";
 import { dateKeyInTimezone, groupByWeek } from "@/lib/dates";
 
 type Slot = {
@@ -26,6 +27,19 @@ type Slot = {
    */
   claimedById: string | null;
   completedAt: Date | null;
+  /**
+   * Optional short note left by the claimer when marking complete.
+   * Null until they submit one. Shown via a comment icon on completed
+   * slots; expanding the icon reveals the note text inline.
+   */
+  completionNote: string | null;
+  /**
+   * Whether the claimer opted to also surface their note on the
+   * public encouragement wall. Doesn't affect display on the slot
+   * card itself; passed through so the edit modal can pre-fill the
+   * checkbox accurately.
+   */
+  completionNoteShareWall: boolean;
   prayerType: {
     id: string;
     name: string;
@@ -159,6 +173,7 @@ export function PrayerCalendar({
               slot={slot}
               isPast={isPast}
               trainActive={trainStatus === "ACTIVE"}
+              trainFrozen={trainStatus === "COMPLETED"}
               currentUserId={currentUserId}
               onClaim={() => setClaimingSlot(slot)}
             />
@@ -296,34 +311,34 @@ function SlotCard({
   slot,
   isPast,
   trainActive,
+  trainFrozen,
   currentUserId,
   onClaim,
 }: {
   slot: Slot;
   isPast: boolean;
   trainActive: boolean;
+  /** train.status === COMPLETED — note edit/delete is locked. */
+  trainFrozen: boolean;
   currentUserId: string | null;
   onClaim: () => void;
 }) {
-  const [marking, setMarking] = useState(false);
-  const [completed, setCompleted] = useState(slot.status === "COMPLETED");
-  const isOpen = slot.status === "OPEN" && !completed;
-  const isClaimed = slot.status === "CLAIMED" && !completed;
+  const [showModal, setShowModal] = useState(false);
+  const [noteExpanded, setNoteExpanded] = useState(false);
+  const isOpen = slot.status === "OPEN";
+  const isClaimed = slot.status === "CLAIMED";
+  const completed = slot.status === "COMPLETED";
   // Page-button completion is only for authenticated owners. Guest
   // claimers complete from the signed link in their reminder email.
-  const canMarkComplete =
+  const isOwner =
     !!currentUserId && slot.claimedById === currentUserId;
+  const hasNote =
+    !!slot.completionNote && slot.completionNote.trim().length > 0;
 
-  const handleMarkPrayed = async () => {
-    setMarking(true);
-    try {
-      await markSlotComplete(slot.id);
-      setCompleted(true);
-    } catch {
-      // Slot may not belong to this user — that's ok
-    }
-    setMarking(false);
-  };
+  // Owner can open the modal (initial mark, or edit existing note)
+  // while the train is still active. After the train ends, notes are
+  // frozen but the icon-expand still works for read-only viewing.
+  const canEdit = isOwner && !trainFrozen;
 
   return (
     <div
@@ -359,29 +374,72 @@ function SlotCard({
             <User className="w-3 h-3" />
             {slot.claimerName}
           </div>
-          {canMarkComplete && (
+          {canEdit && (
             <button
-              onClick={handleMarkPrayed}
-              disabled={marking}
+              onClick={() => setShowModal(true)}
               className="w-full py-1.5 text-xs font-medium bg-white/80 hover:bg-white border border-gold-300 rounded text-gold-700 hover:text-gold-800 transition-colors flex items-center justify-center gap-1"
             >
-              {marking ? (
-                <Loader2 className="w-3 h-3 animate-spin" />
-              ) : (
-                <>
-                  <Check className="w-3 h-3" />
-                  I prayed
-                </>
-              )}
+              <Check className="w-3 h-3" />
+              I prayed
             </button>
           )}
         </div>
       ) : completed && slot.claimerName ? (
-        <div className="mt-2 flex items-center gap-1 text-xs text-blue-600">
-          <Check className="w-3 h-3" />
-          {slot.claimerName} — prayed
+        <div className="mt-2">
+          <div className="flex items-center gap-1.5 text-xs text-blue-600">
+            <Check className="w-3 h-3" />
+            <span className="flex-1">{slot.claimerName} — prayed</span>
+            {hasNote && (
+              <button
+                type="button"
+                onClick={() => setNoteExpanded((v) => !v)}
+                aria-expanded={noteExpanded}
+                aria-label={
+                  noteExpanded ? "Hide note" : "Show note from prayer"
+                }
+                className="text-blue-600 hover:text-blue-700 transition-colors"
+              >
+                <MessageSquare className="w-3.5 h-3.5" />
+              </button>
+            )}
+            {canEdit && !hasNote && (
+              <button
+                type="button"
+                onClick={() => setShowModal(true)}
+                className="text-blue-600 hover:text-blue-700 text-xs underline-offset-2 hover:underline"
+              >
+                Add note
+              </button>
+            )}
+          </div>
+          {hasNote && noteExpanded && (
+            <div className="mt-2 px-3 py-2 bg-white/60 border border-blue-100 rounded text-xs text-navy-700 italic leading-relaxed">
+              &ldquo;{slot.completionNote}&rdquo;
+              {canEdit && (
+                <button
+                  type="button"
+                  onClick={() => setShowModal(true)}
+                  className="mt-2 inline-flex items-center gap-1 text-blue-600 hover:text-blue-700 not-italic text-[11px] underline-offset-2 hover:underline"
+                >
+                  <Pencil className="w-3 h-3" />
+                  Edit
+                </button>
+              )}
+            </div>
+          )}
         </div>
       ) : null}
+
+      {showModal && (
+        <CompletionModal
+          slotId={slot.id}
+          prayerName={slot.prayerType.name}
+          initialNote={slot.completionNote ?? ""}
+          initialShareWall={slot.completionNoteShareWall}
+          isEdit={completed && hasNote}
+          onClose={() => setShowModal(false)}
+        />
+      )}
     </div>
   );
 }

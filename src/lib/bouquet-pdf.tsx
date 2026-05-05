@@ -74,6 +74,16 @@ export type BouquetData = {
    * Rendered in its own section below the slot-holders.
    */
   additionalWarriors?: string[];
+  /**
+   * Personal notes left by individual prayer warriors when marking
+   * their slot complete. Optional; empty/undefined renders nothing.
+   * The bouquet includes EVERY note regardless of the in-product
+   * shareWall flag — this is the comprehensive private record the
+   * recipient family receives. Each entry attributed by claimer
+   * name + the date the slot was completed. Sort order is up to the
+   * caller; the route currently passes ascending by completedAt.
+   */
+  notes?: Array<{ name: string; date: Date; note: string }>;
 };
 
 const PALETTE = {
@@ -172,6 +182,24 @@ const styles = StyleSheet.create({
     fontSize: 10,
     color: PALETTE.text,
     lineHeight: 1.6,
+  },
+  noteRow: {
+    marginBottom: 10,
+    paddingBottom: 8,
+    borderBottomWidth: 0.5,
+    borderBottomColor: PALETTE.border,
+  },
+  noteText: {
+    fontFamily: "Times-Italic",
+    fontSize: 10.5,
+    lineHeight: 1.55,
+    color: PALETTE.text,
+    marginBottom: 3,
+  },
+  noteAttribution: {
+    fontSize: 9,
+    color: PALETTE.muted,
+    fontFamily: "Times-Roman",
   },
   total: {
     fontSize: 12,
@@ -291,6 +319,36 @@ export function BouquetDocument({ data }: { data: BouquetData }) {
             <Text style={styles.warriorsParagraph}>
               {data.additionalWarriors.join(" · ")}
             </Text>
+          </View>
+        )}
+
+        {/* Personal notes left by individual prayer warriors. The
+            bouquet includes EVERY note regardless of the in-product
+            shareWall flag — this is the comprehensive private record
+            the recipient family receives. Italic Times-Italic at
+            slightly smaller size keeps the section reading as
+            personal reflection rather than tabular data. */}
+        {data.notes && data.notes.length > 0 && (
+          <View style={styles.section}>
+            <Text style={styles.sectionLabel}>Notes from Those Who Prayed</Text>
+            {data.notes.map((n, i) => (
+              <View
+                style={i === data.notes!.length - 1
+                  ? { ...styles.noteRow, borderBottomWidth: 0 }
+                  : styles.noteRow}
+                key={`${n.name}-${n.date.toISOString()}-${i}`}
+              >
+                <Text style={styles.noteText}>&ldquo;{n.note}&rdquo;</Text>
+                <Text style={styles.noteAttribution}>
+                  — {n.name},{" "}
+                  {n.date.toLocaleDateString("en-US", {
+                    month: "long",
+                    day: "numeric",
+                    timeZone: "UTC",
+                  })}
+                </Text>
+              </View>
+            ))}
           </View>
         )}
 

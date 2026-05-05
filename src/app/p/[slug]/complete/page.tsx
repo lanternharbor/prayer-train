@@ -5,6 +5,8 @@ import { Check, Heart, AlertCircle } from "lucide-react";
 import { prisma } from "@/lib/db";
 import { markSlotCompleteByToken } from "@/lib/actions";
 import { CrossDivider } from "@/components/ui/catholic-icons";
+import { verifyCompletionToken } from "@/lib/completion-tokens";
+import { CompleteForm } from "./complete-form";
 
 /**
  * Tokenized one-click completion handler. Daily reminder emails point
@@ -38,19 +40,35 @@ export default async function CompleteSlotPage({
   // who they were trying to pray for).
   const train = await prisma.prayerTrain.findUnique({
     where: { slug },
-    select: { recipientName: true, slug: true },
+    select: { recipientName: true, slug: true, status: true },
   });
   if (!train) notFound();
 
   let outcome: "success" | "missing-params" | "invalid";
   let errorMessage: string | null = null;
+  // Slot fields read AFTER the auto-mark so the form can render with
+  // the canonical post-action state (note + shareWall + status).
+  let slotState: {
+    completionNote: string | null;
+    completionNoteShareWall: boolean;
+  } | null = null;
 
   if (!slotId || !token) {
     outcome = "missing-params";
   } else {
     try {
+      // Auto-mark on render preserves the existing zero-click-after-
+      // email-tap UX for users who don't want to leave a note. If the
+      // slot is already COMPLETED this is idempotent.
       await markSlotCompleteByToken(slotId, token);
       outcome = "success";
+      // Re-read the slot post-mutation so the form gets the actual
+      // current note (if the user is returning to edit).
+      const slot = await prisma.prayerSlot.findUnique({
+        where: { id: slotId },
+        select: { completionNote: true, completionNoteShareWall: true },
+      });
+      slotState = slot;
     } catch (err) {
       outcome = "invalid";
       errorMessage =
@@ -59,6 +77,18 @@ export default async function CompleteSlotPage({
           : "We couldn't verify this completion link.";
     }
   }
+
+  // The form is rendered only when the auto-mark succeeded AND the
+  // token is genuinely valid for this slot (defensive double-check —
+  // markSlotCompleteByToken already verifies but the form's submit
+  // action will independently re-verify too).
+  const showForm =
+    outcome === "success" &&
+    !!slotId &&
+    !!token &&
+    slotState !== null &&
+    verifyCompletionToken("slot", slotId, token);
+  const trainFrozen = train.status === "COMPLETED";
 
   return (
     <div className="max-w-xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
@@ -122,6 +152,21 @@ export default async function CompleteSlotPage({
           View the prayer train
         </Link>
       </div>
+
+      {/* Optional note form — surfaced only when the auto-mark
+          succeeded. Same form for initial submit and edit; if the
+          slot already has a note the form pre-fills. The component
+          itself disables interactions when the train has been
+          marked COMPLETED (notes are frozen with the bouquet). */}
+      {showForm && slotId && token && slotState && (
+        <CompleteForm
+          slotId={slotId}
+          token={token}
+          initialNote={slotState.completionNote ?? ""}
+          initialShareWall={slotState.completionNoteShareWall}
+          frozen={trainFrozen}
+        />
+      )}
     </div>
   );
 }

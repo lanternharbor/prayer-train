@@ -227,6 +227,17 @@ model PrayerSlot {
   claimerEmail String?   // for non-auth users
   completedAt DateTime?
 
+  // Optional short note left by the claimer when marking the slot
+  // complete. Capped at 200 chars by the Zod validator. Empty /
+  // whitespace-only submissions normalize to null so the slot card
+  // and bouquet don't render anything.
+  completionNote          String?  @db.Text
+  // When the claimer also opts in to surface their note on the
+  // public encouragement wall. Default false (private to the slot
+  // and the eventual bouquet PDF). Caller flips via the form
+  // checkbox; the wall query joins on this flag.
+  completionNoteShareWall Boolean  @default(false)
+
   // Novena grouping — all slots in a novena share the same groupId
   novenaGroupId String?
 

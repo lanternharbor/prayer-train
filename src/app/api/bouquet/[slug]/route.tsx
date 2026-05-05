@@ -147,6 +147,23 @@ export async function GET(
   }
   additionalWarriors.sort((a, b) => a.localeCompare(b));
 
+  // Personal notes left when claimers marked their slot complete.
+  // The bouquet is the comprehensive record for the family, so we
+  // include EVERY note regardless of the in-product shareWall flag.
+  // Sorted ascending by completedAt so the family reads them in the
+  // order they were offered.
+  const notes = completedSlots
+    .filter(
+      (s) => s.completionNote && s.claimerName && s.completedAt,
+    )
+    .map((s) => ({
+      name: s.claimerName!,
+      date: s.completedAt!,
+      note: s.completionNote!.trim(),
+    }))
+    .filter((n) => n.note.length > 0)
+    .sort((a, b) => a.date.getTime() - b.date.getTime());
+
   const data: BouquetData = {
     recipientName: train.recipientName,
     // Pass null (not "the organizer") when the User row has no name —
@@ -160,6 +177,7 @@ export async function GET(
     prayers,
     prayerWarriors: warriors,
     additionalWarriors,
+    notes,
   };
 
   const pdfBuffer = await renderToBuffer(

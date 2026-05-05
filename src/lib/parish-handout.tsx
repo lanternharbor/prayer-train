@@ -478,7 +478,7 @@ export function ParishCardSheetDocument({
                           prayertrains.com
                         </Text>
                         <Text style={cardStyles.cardProject}>
-                          A Lantern Harbor project
+                          lanternharbor.co
                         </Text>
                       </View>
                     </View>

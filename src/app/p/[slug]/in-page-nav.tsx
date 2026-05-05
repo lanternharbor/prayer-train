@@ -31,31 +31,36 @@ export function InPageNav({
   return (
     <nav
       aria-label="In-page sections"
-      className="sticky top-16 z-40 -mx-4 sm:-mx-6 lg:-mx-8 mb-6 bg-card/95 backdrop-blur border-b border-border"
+      // Outer wrapper handles sticky positioning and the alignment
+      // axis (flex justify-start). The inner pill is content-width
+      // so the strip doesn't read as a wide empty bar on desktop —
+      // it hugs the chips and stays visually compact.
+      className="sticky top-16 z-40 mb-6 flex justify-start"
     >
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Horizontal scroll on small screens if the chips overflow.
-            flex-nowrap + overflow-x-auto is the standard chip-strip
-            pattern; the parent has matched horizontal padding so
-            chips can flush left at the page edge. */}
-        <div className="flex flex-nowrap items-center gap-2 py-2.5 overflow-x-auto">
-          <NavChip href="#calendar" icon={<CalendarDays className="w-3.5 h-3.5" />}>
-            Calendar
+      {/* Content-width pill. inline-flex sizes to its chip contents;
+          overflow-x-auto + max-w-full lets the chips scroll
+          horizontally when the pill would exceed the available
+          width (mobile narrow viewports). The pill carries its own
+          subtle background + border + shadow so it reads as a
+          self-contained navigation widget rather than a full-width
+          bar. */}
+      <div className="inline-flex items-center gap-2 px-2 py-1.5 rounded-full bg-card/95 backdrop-blur border border-cream-300 shadow-sm overflow-x-auto max-w-full">
+        <NavChip href="#calendar" icon={<CalendarDays className="w-3.5 h-3.5" />}>
+          Calendar
+        </NavChip>
+        {showWarriors && (
+          <NavChip href="#prayer-warriors" icon={<HandHeart className="w-3.5 h-3.5" />}>
+            Prayer warriors
           </NavChip>
-          {showWarriors && (
-            <NavChip href="#prayer-warriors" icon={<HandHeart className="w-3.5 h-3.5" />}>
-              Prayer warriors
-            </NavChip>
-          )}
-          {showUpdates && (
-            <NavChip href="#updates" icon={<Newspaper className="w-3.5 h-3.5" />}>
-              Updates
-            </NavChip>
-          )}
-          <NavChip href="#guestbook" icon={<MessageSquare className="w-3.5 h-3.5" />}>
-            Encouragement
+        )}
+        {showUpdates && (
+          <NavChip href="#updates" icon={<Newspaper className="w-3.5 h-3.5" />}>
+            Updates
           </NavChip>
-        </div>
+        )}
+        <NavChip href="#guestbook" icon={<MessageSquare className="w-3.5 h-3.5" />}>
+          Encouragement
+        </NavChip>
       </div>
     </nav>
   );

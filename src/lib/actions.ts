@@ -1181,6 +1181,43 @@ export async function reactivatePrayerChain(formData: FormData) {
   redirect(`/chain/${chain.slug}/manage`);
 }
 
+// ─── Set User Display Name ──────────────────────────────────
+//
+// One-time backfill action used by the dashboard "Set your name"
+// card. Magic-link sign-in leaves User.name=null because nothing in
+// that flow asks for a name; the create wizard captures it for
+// future trains, but existing organizers' rows still display as
+// "Anonymous" until they update User.name through this action.
+//
+// Idempotent — calling it again with a new name just overwrites the
+// previous one (not a destructive operation; the user's display name
+// is data they own). Bounded length matches the create-wizard /
+// chain-new validation so all three paths agree on the cap.
+
+export async function setUserDisplayName(name: string) {
+  const session = await auth();
+  if (!session?.user?.id) redirect("/signin");
+
+  const trimmed = name.trim();
+  if (!trimmed) {
+    throw new Error("Please enter your name.");
+  }
+  if (trimmed.length > 80) {
+    throw new Error("Name must be 80 characters or fewer.");
+  }
+
+  await prisma.user.update({
+    where: { id: session.user.id },
+    data: { name: trimmed },
+  });
+
+  // Refresh the dashboard so the card disappears (the gating
+  // condition is `!session.user.name`, which now resolves true) and
+  // every "Organized by" surface re-renders with the new name.
+  revalidatePath("/dashboard");
+  revalidatePath("/browse");
+}
+
 // ─── Add PrayerWarrior pledge ───────────────────────────────
 //
 // Soft-pledge to pray for a train without claiming a calendar slot.

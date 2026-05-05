@@ -29,6 +29,8 @@ export type ClaimableTrain = { status: string };
 export const ERR_SLOT_NOT_AVAILABLE = "This slot is no longer available.";
 export const ERR_TRAIN_CANCELLED =
   "This prayer train has been cancelled by the organizer.";
+export const ERR_TRAIN_PAUSED =
+  "This prayer train is paused. New sign-ups will resume when the organizer reactivates it.";
 export const ERR_NOVENA_NOT_AVAILABLE =
   "This novena is no longer fully available.";
 
@@ -46,16 +48,20 @@ export function checkSlotClaimable<T extends ClaimableSlot>(
 }
 
 /**
- * Throws if the parent train has been cancelled by the organizer.
- * COMPLETED and PAUSED trains aren't checked here on purpose:
- *  - COMPLETED is reached only after the cron rolls a date past
- *    endDate, so by definition no future slots are OPEN.
- *  - PAUSED currently has UI copy ("No new sign-ups while paused")
- *    but no server-side enforcement; that's a known gap to address
- *    in its own change.
+ * Throws if the parent train isn't accepting new sign-ups.
+ *  - CANCELLED: organizer permanently stopped the train.
+ *  - PAUSED: organizer temporarily disabled new sign-ups (the manage
+ *    page UI says "No new sign-ups while paused"). Previously a
+ *    server-side enforcement gap — anyone hitting the page directly
+ *    could still claim — now hard-rejected here so the UI promise
+ *    holds even when an existing tab raced past the pause.
+ *  - COMPLETED isn't checked here: it's reached only after the cron
+ *    rolls a date past endDate, so by definition no future slots
+ *    are OPEN; the slot-level guard catches that case.
  */
 export function checkTrainAcceptingClaims(train: ClaimableTrain): void {
   if (train.status === "CANCELLED") throw new Error(ERR_TRAIN_CANCELLED);
+  if (train.status === "PAUSED") throw new Error(ERR_TRAIN_PAUSED);
 }
 
 /**

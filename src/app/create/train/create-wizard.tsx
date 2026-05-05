@@ -501,8 +501,8 @@ export function CreateWizard({
                   </>
                 ) : (
                   <>
-                    Only people with the link can view it. Turn this on only if
-                    the recipient is comfortable being publicly listed.
+                    Only people with the link can view it. Choose this if the
+                    recipient should not be publicly listed.
                   </>
                 )}
               </p>

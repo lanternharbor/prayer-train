@@ -34,6 +34,7 @@ export function PhotoUploadField({
   );
   const [hasNewFile, setHasNewFile] = useState(false);
   const [inputKey, setInputKey] = useState(0); // bumped to clear the input
+  const [error, setError] = useState<string | null>(null);
 
   const showingExisting = !hasNewFile && !!existingImageUrl;
 
@@ -74,10 +75,15 @@ export function PhotoUploadField({
               const file = e.target.files?.[0];
               if (!file) return;
               if (file.size > 5 * 1024 * 1024) {
-                alert("Photo must be under 5MB.");
+                // Inline error pattern instead of alert() — matches
+                // the rest of the app (claim-modal, completion-modal,
+                // create-wizard photo) so the wizard/edit flow isn't
+                // jarringly interrupted by a native dialog.
+                setError("Photo must be under 5MB.");
                 e.target.value = "";
                 return;
               }
+              setError(null);
               setPreview(URL.createObjectURL(file));
               setHasNewFile(true);
             }}
@@ -91,6 +97,7 @@ export function PhotoUploadField({
                 setPreview(existingImageUrl ?? null);
                 setHasNewFile(false);
                 setInputKey((k) => k + 1);
+                setError(null);
               }}
               className="text-red-500 hover:text-red-600 font-medium"
             >
@@ -103,6 +110,14 @@ export function PhotoUploadField({
           )}
         </div>
       </div>
+      {error && (
+        <p
+          role="alert"
+          className="text-xs text-red-700 bg-red-50 border border-red-200 rounded px-2 py-1 mt-2"
+        >
+          {error}
+        </p>
+      )}
     </div>
   );
 }

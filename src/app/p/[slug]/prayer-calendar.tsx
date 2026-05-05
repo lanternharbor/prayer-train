@@ -11,7 +11,7 @@ import {
   ChevronUp,
 } from "lucide-react";
 import { ClaimModal } from "./claim-modal";
-import { dateKeyInTimezone } from "@/lib/dates";
+import { dateKeyInTimezone, groupByWeek } from "@/lib/dates";
 
 type Slot = {
   id: string;
@@ -71,6 +71,31 @@ export function PrayerCalendar({
   );
   const pastDates = dates.filter((d) => d < today);
   const upcomingDates = dates.filter((d) => d >= today);
+
+  // Week grouping: for long-running trains (90 days+), rendering every
+  // upcoming day stacked vertically buries the rest of the page. Group
+  // by Monday-start calendar week and collapse all but the current
+  // week by default. Each collapsed week shows "Week of [date] — N of
+  // M slots open" so far-out availability stays discoverable in one
+  // tap. See src/lib/dates.ts for the grouping helper.
+  const upcomingWeeks = groupByWeek(upcomingDates);
+  // Initialize with the current week (the one containing `today`)
+  // expanded. useState initializer runs once, so this default is
+  // stable for the life of the component instance.
+  const [expandedWeeks, setExpandedWeeks] = useState<Set<string>>(() => {
+    const currentWeek = upcomingWeeks.find((w) =>
+      w.dates.some((d) => d === today),
+    );
+    return new Set(currentWeek ? [currentWeek.weekStart] : []);
+  });
+  const toggleWeek = (weekStart: string) => {
+    setExpandedWeeks((prev) => {
+      const next = new Set(prev);
+      if (next.has(weekStart)) next.delete(weekStart);
+      else next.add(weekStart);
+      return next;
+    });
+  };
 
   /**
    * Inner renderer for a single day's card. Extracted so the past
@@ -167,8 +192,80 @@ export function PrayerCalendar({
           </div>
         )}
 
-        {/* Today + upcoming — always expanded. */}
-        {upcomingDates.map(renderDateCard)}
+        {/* Upcoming days, grouped by Monday-start week. The current
+            week (the one containing today) is auto-expanded; other
+            weeks render as a collapsible header showing how many
+            slots are still open. Trains shorter than two weeks
+            effectively only have the current week, so the layout
+            collapses to "exactly the same as before" for them. */}
+        {upcomingWeeks.map((week) => {
+          const isCurrent = week.dates.some((d) => d === today);
+          const isExpanded = expandedWeeks.has(week.weekStart);
+          // Slot stats for the collapsed-week label. Counts at the
+          // slot level (not the date level) so multi-slot days
+          // contribute their full available count.
+          let totalSlots = 0;
+          let openSlots = 0;
+          for (const d of week.dates) {
+            for (const s of slotsByDate[d] ?? []) {
+              totalSlots++;
+              if (s.status === "OPEN") openSlots++;
+            }
+          }
+          // Friendly week label like "Week of May 11 — May 17"
+          const weekStart = new Date(week.weekStart + "T12:00:00");
+          const weekEnd = new Date(week.weekEnd + "T12:00:00");
+          const weekLabel = `Week of ${weekStart.toLocaleDateString(
+            "en-US",
+            { month: "short", day: "numeric" },
+          )} – ${weekEnd.toLocaleDateString("en-US", {
+            month: "short",
+            day: "numeric",
+          })}`;
+          return (
+            <div key={week.weekStart}>
+              <button
+                type="button"
+                onClick={() => toggleWeek(week.weekStart)}
+                aria-expanded={isExpanded}
+                aria-controls={`week-${week.weekStart}`}
+                className={`w-full flex items-center justify-between gap-2 px-4 py-3 rounded-lg border text-sm transition-colors ${
+                  isCurrent
+                    ? "border-gold-300 bg-gold-50 text-navy-800 hover:bg-gold-100"
+                    : "border-cream-300 bg-cream-50 text-muted-foreground hover:bg-cream-100"
+                }`}
+              >
+                <span className="flex items-center gap-2 text-left">
+                  <span className="font-medium">{weekLabel}</span>
+                  {isCurrent && (
+                    <span className="text-xs uppercase tracking-wider text-gold-700 font-semibold">
+                      This week
+                    </span>
+                  )}
+                </span>
+                <span className="flex items-center gap-2">
+                  <span className="text-xs whitespace-nowrap">
+                    {openSlots} of {totalSlots}{" "}
+                    {totalSlots === 1 ? "slot" : "slots"} open
+                  </span>
+                  {isExpanded ? (
+                    <ChevronUp className="w-4 h-4" />
+                  ) : (
+                    <ChevronDown className="w-4 h-4" />
+                  )}
+                </span>
+              </button>
+              {isExpanded && (
+                <div
+                  id={`week-${week.weekStart}`}
+                  className="space-y-3 mt-3"
+                >
+                  {week.dates.map(renderDateCard)}
+                </div>
+              )}
+            </div>
+          );
+        })}
       </div>
 
       {claimingSlot && (

@@ -33,6 +33,11 @@ export const PROTECTED_SLUGS: ReadonlySet<string> = new Set([
   // prayer warriors, real prayer offered for real grief. Bouquet
   // delivers May 23, 2026. Cannot be deleted under any circumstance.
   "the-spina-family-dlmm",
+  // Live train "Prayers for Denis Wilson" — long-running train (ends
+  // August 2, 2026) organized for Denis's complete healing and for
+  // his family Jolly + Ella. Live data, real prayer offered; same
+  // protection as Spina at William's explicit request on May 4, 2026.
+  "denis-wilson-hn9g",
 ]);
 
 /**

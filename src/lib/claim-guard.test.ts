@@ -7,6 +7,7 @@ import {
   ERR_NOVENA_NOT_AVAILABLE,
   ERR_SLOT_NOT_AVAILABLE,
   ERR_TRAIN_CANCELLED,
+  ERR_TRAIN_PAUSED,
 } from "./claim-guard";
 
 describe("checkSlotClaimable", () => {
@@ -44,8 +45,14 @@ describe("checkTrainAcceptingClaims", () => {
     expect(() => checkTrainAcceptingClaims({ status: "ACTIVE" })).not.toThrow();
   });
 
-  it("does not throw for a PAUSED train (server-side gap is intentional; UI copy says paused but no enforcement here)", () => {
-    expect(() => checkTrainAcceptingClaims({ status: "PAUSED" })).not.toThrow();
+  it("throws for a PAUSED train (matches the UI promise: 'No new sign-ups while paused')", () => {
+    // Closes a previously-known server-side gap: the manage page told
+    // the organizer that pausing stops new sign-ups, but the server
+    // happily accepted claims anyway. This pin keeps the UI promise
+    // and the server contract aligned.
+    expect(() => checkTrainAcceptingClaims({ status: "PAUSED" })).toThrowError(
+      ERR_TRAIN_PAUSED,
+    );
   });
 
   it("does not throw for a COMPLETED train (no OPEN slots remain by definition)", () => {
@@ -58,6 +65,20 @@ describe("checkTrainAcceptingClaims", () => {
     expect(() => checkTrainAcceptingClaims({ status: "CANCELLED" })).toThrowError(
       ERR_TRAIN_CANCELLED,
     );
+  });
+
+  it("uses the pastoral 'will resume when the organizer reactivates' wording for paused", () => {
+    // The pause case is recoverable (organizer can hit Activate), so
+    // the message tells the volunteer to come back rather than
+    // implying finality. Pinning the wording so a future copy edit
+    // doesn't accidentally make it sound like CANCELLED.
+    try {
+      checkTrainAcceptingClaims({ status: "PAUSED" });
+    } catch (e) {
+      const msg = e instanceof Error ? e.message : "";
+      expect(msg).toContain("paused");
+      expect(msg).toContain("reactivates");
+    }
   });
 });
 

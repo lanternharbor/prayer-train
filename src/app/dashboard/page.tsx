@@ -16,6 +16,7 @@ import {
 } from "lucide-react";
 import { MarkCompleteButton } from "./mark-complete-button";
 import { SignOutButton } from "./sign-out-button";
+import { SetNameCard } from "./set-name-card";
 
 export const metadata: Metadata = {
   title: "Dashboard",
@@ -95,6 +96,12 @@ export default async function DashboardPage() {
           <SignOutButton />
         </div>
       </div>
+
+      {/* One-time backfill prompt for organizers whose User.name is
+          still null. Renders only when name is missing; submitting
+          revalidates the page so the card disappears. See PR #27 for
+          the underlying bug this closes. */}
+      {!session.user.name && <SetNameCard />}
 
       {/* Today's Commitments */}
       {todaySlots.length > 0 && (

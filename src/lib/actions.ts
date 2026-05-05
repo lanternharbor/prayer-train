@@ -23,10 +23,13 @@ import {
   parseFormData,
   reactivatePrayerChainSchema,
   reactivatePrayerTrainSchema,
+  submitSlotNoteByTokenSchema,
+  submitSlotNoteSchema,
   trainUpdateSchema,
   updateChainSchema,
   updateTrainSchema,
 } from "@/lib/validation";
+import { normalizeNoteText } from "@/lib/notes";
 import {
   confirmationMatches,
   isProtectedChain,
@@ -336,6 +339,78 @@ export async function markSlotComplete(slotId: string) {
 }
 
 /**
+ * Mark a slot complete (if not already) AND set/update/clear its
+ * optional completion note in one call. Used by the page-button
+ * modal which always opens with a textarea + checkbox; the user
+ * may submit empty (just-mark-complete) or with a note.
+ *
+ * Auth-gated: only the slot's authenticated claimer can call this
+ * for their own slot. Guest claimers use submitSlotNoteByToken via
+ * the email-link page.
+ *
+ * Behavior matrix:
+ *   slot OPEN          -> error (must claim before completing)
+ *   slot CLAIMED       -> set status: COMPLETED, completedAt = now,
+ *                          note = trimmed text or null,
+ *                          shareWall = checkbox value
+ *   slot COMPLETED     -> update note + shareWall only (this is the
+ *                          edit / delete-via-empty path)
+ *   train COMPLETED    -> error (notes are frozen with the bouquet)
+ *
+ * Empty / whitespace-only note normalizes to null in the DB so the
+ * slot card doesn't render an empty bubble for accidental submits.
+ */
+export async function submitSlotNote(formData: FormData) {
+  const session = await auth();
+  if (!session?.user?.id) {
+    throw new Error("You must be signed in to submit a completion note.");
+  }
+
+  const { slotId, note, shareWall } = parseFormData(
+    submitSlotNoteSchema,
+    formData,
+  );
+
+  const slot = await prisma.prayerSlot.findUnique({
+    where: { id: slotId },
+    include: { train: { select: { slug: true, status: true } } },
+  });
+  if (!slot) throw new Error("That prayer slot no longer exists.");
+  if (slot.claimedById !== session.user.id) {
+    throw new Error("You can only update your own commitments.");
+  }
+  if (slot.train.status === "COMPLETED") {
+    throw new Error(
+      "Notes are locked once the prayer train has ended.",
+    );
+  }
+  if (slot.status === "OPEN") {
+    throw new Error("This slot isn't currently claimed.");
+  }
+
+  const normalizedNote = normalizeNoteText(note);
+  // shareWall only meaningful when there's a note. Force false when
+  // note is being cleared so the wall query doesn't keep an orphan.
+  const effectiveShareWall = normalizedNote === null ? false : shareWall;
+
+  await prisma.prayerSlot.update({
+    where: { id: slotId },
+    data: {
+      // Mark complete on the CLAIMED -> COMPLETED transition; leave
+      // status alone if already COMPLETED (this is the edit path).
+      ...(slot.status === "CLAIMED"
+        ? { status: "COMPLETED" as const, completedAt: new Date() }
+        : {}),
+      completionNote: normalizedNote,
+      completionNoteShareWall: effectiveShareWall,
+    },
+  });
+
+  revalidatePath(`/p/${slot.train.slug}`);
+  revalidatePath("/dashboard");
+}
+
+/**
  * Mark a slot complete via a tokenized email link. The daily-reminder
  * cron mints an HMAC-signed token that covers slotId + expiry, and the
  * email's "Mark as Prayed" CTA points at /p/[slug]/complete?slot=X&token=Y.
@@ -382,6 +457,61 @@ export async function markSlotCompleteByToken(slotId: string, token: string) {
   // detail page is dynamic anyway (root layout calls auth() so
   // every public route is server-rendered per request), so the
   // next page load reads fresh data without any cache help.
+  return { ok: true as const, slug: slot.train.slug };
+}
+
+/**
+ * Token-gated variant of submitSlotNote. Used by the email-link
+ * landing page form so guest claimers (no account) can leave or
+ * edit their completion note. Same behavior matrix and same
+ * trim-empty-to-null normalization.
+ *
+ * The token already authenticates the caller as the slot's claimer
+ * (it's HMAC-signed against slotId), so no session check is needed.
+ * The COMPLETED-train freeze still applies.
+ */
+export async function submitSlotNoteByToken(formData: FormData) {
+  const { slotId, token, note, shareWall } = parseFormData(
+    submitSlotNoteByTokenSchema,
+    formData,
+  );
+
+  if (!verifyCompletionToken("slot", slotId, token)) {
+    throw new Error("This completion link is invalid or has expired.");
+  }
+
+  const slot = await prisma.prayerSlot.findUnique({
+    where: { id: slotId },
+    include: { train: { select: { slug: true, status: true } } },
+  });
+  if (!slot) throw new Error("That prayer slot no longer exists.");
+  if (slot.train.status === "COMPLETED") {
+    throw new Error(
+      "Notes are locked once the prayer train has ended.",
+    );
+  }
+  if (slot.status === "OPEN") {
+    throw new Error("This slot isn't currently claimed.");
+  }
+
+  const normalizedNote = normalizeNoteText(note);
+  const effectiveShareWall = normalizedNote === null ? false : shareWall;
+
+  await prisma.prayerSlot.update({
+    where: { id: slotId },
+    data: {
+      ...(slot.status === "CLAIMED"
+        ? { status: "COMPLETED" as const, completedAt: new Date() }
+        : {}),
+      completionNote: normalizedNote,
+      completionNoteShareWall: effectiveShareWall,
+    },
+  });
+
+  revalidatePath(`/p/${slot.train.slug}`);
+  // Caller (the form on /complete) will redirect back to itself or
+  // to the train detail page. Returning a small success object lets
+  // the form distinguish initial-mark from edit success.
   return { ok: true as const, slug: slot.train.slug };
 }
 

@@ -157,6 +157,36 @@ export type ReactivatePrayerChainInput = z.infer<
   typeof reactivatePrayerChainSchema
 >;
 
+// ─── Submit a Slot Completion Note ──────────────────────────
+//
+// Used by both completion paths (page button + email link). Both
+// fields are optional so the same schema serves the
+// "just-mark-complete" tap and the "mark-complete-with-a-note"
+// submission. Empty / whitespace-only note normalizes to undefined
+// via optionalTrimmed; the server action stores undefined as null
+// in the database (deletes any pre-existing note).
+
+export const submitSlotNoteSchema = z.object({
+  slotId: trimmedString(1, 60),
+  note: optionalTrimmed(200),
+  shareWall: z.coerce.boolean().default(false),
+});
+
+export type SubmitSlotNoteInput = z.infer<typeof submitSlotNoteSchema>;
+
+// Token-gated variant: same shape plus a token for the signed
+// email-link flow. Server action verifies the token before mutation.
+export const submitSlotNoteByTokenSchema = z.object({
+  slotId: trimmedString(1, 60),
+  token: trimmedString(1, 200),
+  note: optionalTrimmed(200),
+  shareWall: z.coerce.boolean().default(false),
+});
+
+export type SubmitSlotNoteByTokenInput = z.infer<
+  typeof submitSlotNoteByTokenSchema
+>;
+
 // ─── Claim a Prayer Slot ────────────────────────────────────
 
 export const claimSlotSchema = z.object({

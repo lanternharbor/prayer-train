@@ -1,5 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import {
+  chainDayTokenId,
   signCompletionToken,
   verifyCompletionToken,
 } from "./completion-tokens";
@@ -96,5 +97,63 @@ describe("signCompletionToken / verifyCompletionToken", () => {
     expect(() => signCompletionToken("slot", "slot_abc")).toThrow(
       /CRON_SECRET/,
     );
+  });
+});
+
+/**
+ * The chain-day token previously signed only the memberId, leaving
+ * the `day` query parameter unbound — a member receiving a day-3
+ * reminder could edit ?day=3 to ?day=90 and still pass verification.
+ * The action's Math.max(lastDayCompleted, day) only moves the counter
+ * up, so worst-case a user could claim credit for days they hadn't
+ * prayed yet. chainDayTokenId composes (memberId, day) into the
+ * signed id; both the cron mint and the action verify go through it.
+ *
+ * These tests pin the day-binding so a future change can't silently
+ * regress to memberId-only signing.
+ */
+describe("chainDayTokenId day-binding", () => {
+  it("composes memberId and day into a stable string", () => {
+    expect(chainDayTokenId("mem_abc", 3)).toBe("mem_abc:3");
+    expect(chainDayTokenId("mem_xyz", 90)).toBe("mem_xyz:90");
+  });
+
+  it("a token signed for (member, day=1) verifies for (member, day=1)", () => {
+    const id = chainDayTokenId("mem_abc", 1);
+    const token = signCompletionToken("chain-day", id);
+    expect(
+      verifyCompletionToken("chain-day", chainDayTokenId("mem_abc", 1), token),
+    ).toBe(true);
+  });
+
+  it("a token signed for (member, day=3) FAILS verification when day is tampered to 90", () => {
+    // The exploit case: an attacker (or a curious user) edits the
+    // ?day=3 query parameter to ?day=90 to claim credit for days
+    // they didn't pray. With day bound into the signed id, the
+    // composite no longer matches and verification fails.
+    const id = chainDayTokenId("mem_abc", 3);
+    const token = signCompletionToken("chain-day", id);
+    expect(
+      verifyCompletionToken("chain-day", chainDayTokenId("mem_abc", 90), token),
+    ).toBe(false);
+  });
+
+  it("a token signed for (memberA, day=3) does not verify for (memberB, day=3)", () => {
+    // memberId binding is preserved.
+    const tokenA = signCompletionToken("chain-day", chainDayTokenId("mem_a", 3));
+    expect(
+      verifyCompletionToken("chain-day", chainDayTokenId("mem_b", 3), tokenA),
+    ).toBe(false);
+  });
+
+  it("a memberId-only chain-day token (legacy format) does not verify under the new composite scheme", () => {
+    // Defense against accidental rollback: if a cron run somewhere
+    // still mints `signCompletionToken("chain-day", member.id)`
+    // without the composite, the action's verify call (which uses
+    // chainDayTokenId) won't accept it.
+    const legacyToken = signCompletionToken("chain-day", "mem_abc");
+    expect(
+      verifyCompletionToken("chain-day", chainDayTokenId("mem_abc", 3), legacyToken),
+    ).toBe(false);
   });
 });

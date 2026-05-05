@@ -78,6 +78,24 @@ export function signCompletionToken(
 }
 
 /**
+ * Compose the id portion of a chain-day token so the day number is
+ * cryptographically bound to the token, not just a query-string
+ * parameter the user can edit.
+ *
+ * Without this, a member receiving a day-3 reminder could change
+ * `?day=3` to `?day=90` on the completion link and the token would
+ * still verify (it only signed the memberId). The day cap in
+ * markChainDayCompleteByToken caps the value at 365, but a member
+ * could still claim credit for days they hadn't prayed yet.
+ *
+ * Both the cron mint and the action-level verify call go through
+ * this helper so they can't drift apart.
+ */
+export function chainDayTokenId(memberId: string, day: number): string {
+  return `${memberId}:${day}`;
+}
+
+/**
  * Verify a token. Returns `true` if the signature matches and the
  * expiry hasn't passed. Returns `false` on any malformed or stale
  * input — never throws on user-supplied data.

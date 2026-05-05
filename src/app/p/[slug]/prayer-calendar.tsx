@@ -79,13 +79,22 @@ export function PrayerCalendar({
   // M slots open" so far-out availability stays discoverable in one
   // tap. See src/lib/dates.ts for the grouping helper.
   const upcomingWeeks = groupByWeek(upcomingDates);
-  // Initialize with the current week (the one containing `today`)
-  // expanded. useState initializer runs once, so this default is
-  // stable for the life of the component instance.
+  // Initialize with the current week expanded (the week whose
+  // [weekStart, weekEnd] contains today, regardless of whether today
+  // itself is in the slot-date set). The earlier "today in week.dates"
+  // check failed for trains that started mid-week — e.g., a train
+  // beginning Tuesday May 5 has week-dates [May 5..May 10], so
+  // `today === "2026-05-04"` (Monday) was missing from .dates and the
+  // current week stayed collapsed. Date-range comparison fixes that.
+  // Falls back to the first upcoming week if today is before the
+  // train start (so the user sees something they can act on).
+  // useState initializer runs once, so this default is stable for
+  // the life of the component instance.
   const [expandedWeeks, setExpandedWeeks] = useState<Set<string>>(() => {
-    const currentWeek = upcomingWeeks.find((w) =>
-      w.dates.some((d) => d === today),
-    );
+    const currentWeek =
+      upcomingWeeks.find(
+        (w) => today >= w.weekStart && today <= w.weekEnd,
+      ) ?? upcomingWeeks[0];
     return new Set(currentWeek ? [currentWeek.weekStart] : []);
   });
   const toggleWeek = (weekStart: string) => {
@@ -199,7 +208,12 @@ export function PrayerCalendar({
             effectively only have the current week, so the layout
             collapses to "exactly the same as before" for them. */}
         {upcomingWeeks.map((week) => {
-          const isCurrent = week.dates.some((d) => d === today);
+          // "This week" label by date-range, matching the auto-expand
+          // logic above. A train that starts Tue May 5 should still
+          // label its May 4-10 week as THIS WEEK on Monday May 4 even
+          // though no slot exists on May 4 itself.
+          const isCurrent =
+            today >= week.weekStart && today <= week.weekEnd;
           const isExpanded = expandedWeeks.has(week.weekStart);
           // Slot stats for the collapsed-week label. Counts at the
           // slot level (not the date level) so multi-slot days

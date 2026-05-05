@@ -75,17 +75,28 @@ async function run(): Promise<void> {
     ok: /Prayer Coverage/i.test(html) && /covered/i.test(html),
   });
 
-  // Slot cards — the calendar grid should render at least 30+ slot cells
-  // (30-day train with multiple slots per day). Loose count via a marker
-  // class or the "Sign up to pray" / "Mark complete" button text.
+  // Calendar structure renders. After the week-grouping refactor in
+  // PR #16, only the current week is server-rendered with expanded
+  // slot cards; other weeks ship as collapsed "Week of ..." headers
+  // that hydrate-toggle on the client. The earlier "at least 50 slot
+  // cells" threshold was correct for the all-expanded layout but
+  // brittle now (current-week alone has ~21 slots, and once the
+  // train COMPLETES every week is collapsed past).
+  //
+  // New check: pass if EITHER the current week has slots OR the
+  // calendar shows the week-grouping structure OR a past-days toggle
+  // exists. Covers active-train, post-complete-train, and future-
+  // start states without over-fitting to slot count.
   const slotMarkerCount =
     (html.match(/Sign up to pray/g) ?? []).length +
     (html.match(/slot-claimed/g) ?? []).length +
     (html.match(/slot-completed/g) ?? []).length;
+  const hasWeekHeader = /Week of /.test(html);
+  const hasPastDaysToggle = /\d+ past day/i.test(html);
   checks.push({
-    name: "At least 50 slot cells present",
-    ok: slotMarkerCount >= 50,
-    detail: `found ${slotMarkerCount} slot markers`,
+    name: "Calendar renders (current-week slots OR week headers OR past-days toggle)",
+    ok: slotMarkerCount >= 5 || hasWeekHeader || hasPastDaysToggle,
+    detail: `slots=${slotMarkerCount}, weekHeader=${hasWeekHeader}, pastToggle=${hasPastDaysToggle}`,
   });
 
   // JSON-LD schema present (sanity check that Vercel didn't strip metadata)

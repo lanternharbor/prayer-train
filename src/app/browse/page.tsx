@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { organizerFirstName } from "@/lib/organizer-display";
 import { prisma } from "@/lib/db";
 import {
   formatSituation,
@@ -112,6 +113,7 @@ export default async function BrowsePage({
     durationDays: number;
     startDate: Date;
     endDate: Date;
+    organizerAnonymous: boolean;
     organizer: { name: string | null } | null;
     prayerType: { name: string };
     members: { id: string }[];
@@ -357,8 +359,16 @@ export default async function BrowsePage({
           </p>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {chains.map((chain) => {
-              const orgFirst =
-                chain.organizer?.name?.trim().split(/\s+/)[0] ?? "Someone";
+              // Anonymous-organizer cards drop the possessive prefix
+              // ("Anonymous's St. Blaise novena" reads awkward); other
+              // cards render "Bill's St. Blaise novena" as before.
+              const orgFirst = organizerFirstName({
+                organizerAnonymous: chain.organizerAnonymous,
+                organizer: chain.organizer ?? { name: null },
+              });
+              const titlePrefix = chain.organizerAnonymous
+                ? ""
+                : `${orgFirst}'s `;
               const { day: dayInRange, pct } = computeChainProgress(
                 chain.startDate,
                 chain.durationDays,
@@ -378,7 +388,8 @@ export default async function BrowsePage({
                     </span>
                   </div>
                   <h3 className="font-heading text-xl font-semibold text-navy-800 group-hover:text-navy-600 transition-colors mb-2">
-                    {orgFirst}&apos;s {chain.prayerType.name}
+                    {titlePrefix}
+                    {chain.prayerType.name}
                     {chain.recipientName ? ` for ${chain.recipientName}` : ""}
                   </h3>
                   <p className="text-sm text-muted-foreground leading-relaxed mb-4 line-clamp-2 flex-1">

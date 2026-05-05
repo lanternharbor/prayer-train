@@ -100,6 +100,47 @@ export default async function NewChainPage({
         <form action={createPrayerChain} className="prayer-card space-y-5">
           <input type="hidden" name="prayerTypeId" value={prayerType.id} />
 
+          {/* Organizer self-identification. Pre-filled with whatever name
+              is on the User row (Google sign-in fills it; magic-link
+              users start blank and fill it here). Server-side refinement
+              in createChainSchema enforces "name OR anonymous"; the
+              required attribute is omitted because the no-JS path needs
+              to allow empty-name + anonymous checked. */}
+          <div className="rounded-lg bg-cream-50 border border-cream-300 p-4 space-y-3">
+            <div>
+              <label
+                htmlFor="organizerName"
+                className="block text-sm font-medium text-navy-700 mb-1.5"
+              >
+                Your name
+              </label>
+              <input
+                id="organizerName"
+                name="organizerName"
+                type="text"
+                maxLength={80}
+                defaultValue={session.user.name ?? ""}
+                placeholder="How you'd like to appear on the prayer page"
+                className="w-full px-4 py-2.5 border border-border rounded-lg bg-white focus:ring-2 focus:ring-gold-400/50 focus:border-gold-400 transition"
+              />
+              <p className="text-xs text-muted-foreground mt-1.5">
+                Shown as &ldquo;Organized by [your name]&rdquo; on the public
+                page. Leave blank and check the box below to stay anonymous.
+              </p>
+            </div>
+            <label className="flex items-start gap-2 cursor-pointer">
+              <input
+                name="organizerAnonymous"
+                type="checkbox"
+                value="true"
+                className="mt-0.5"
+              />
+              <span className="text-sm text-navy-700">
+                Show me as &ldquo;Anonymous&rdquo; on the public page
+              </span>
+            </label>
+          </div>
+
           <div>
             <label
               htmlFor="recipientName"

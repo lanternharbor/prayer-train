@@ -166,12 +166,15 @@ export async function GET(
 
   const data: BouquetData = {
     recipientName: train.recipientName,
-    // Pass null (not "the organizer") when the User row has no name —
-    // the BouquetDocument omits the line entirely rather than printing
-    // the placeholder string. Prevents the bouquet header from reading
-    // "Organized by the organizer" on trains where the auth flow left
-    // User.name unpopulated.
-    organizerName: train.organizer?.name ?? null,
+    // Pass null (not "the organizer") when the User row has no name OR
+    // when the organizer chose anonymity for this train — the
+    // BouquetDocument omits the line entirely rather than printing
+    // a placeholder. Prevents the bouquet header from reading
+    // "Organized by the organizer" / "Organized by Anonymous" — both
+    // of which look off on a personalized memorial PDF.
+    organizerName: train.organizerAnonymous
+      ? null
+      : (train.organizer?.name ?? null),
     startDate: train.startDate,
     endDate: train.endDate,
     prayers,

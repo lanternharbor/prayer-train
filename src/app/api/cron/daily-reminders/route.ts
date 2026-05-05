@@ -86,8 +86,9 @@ export async function GET(request: Request) {
         prayerText: slot.prayerType.prayerText,
         prayerInstructions: slot.prayerType.instructions,
         customPrayerText: slot.train.customPrayerText,
-        organizerFirstName:
-          slot.train.organizer?.name?.split(/\s+/)[0] ?? null,
+        organizerFirstName: slot.train.organizerAnonymous
+          ? null
+          : (slot.train.organizer?.name?.trim().split(/\s+/)[0] ?? null),
         trainUrl: `${baseUrl}/p/${slot.train.slug}`,
         completeUrl,
         slotId: slot.id,

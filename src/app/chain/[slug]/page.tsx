@@ -7,14 +7,10 @@ import { getBaseUrl } from "@/lib/url";
 import { SaintPortrait } from "@/components/saint-portrait";
 import { RecipientAvatar } from "@/components/ui/catholic-icons";
 import { dayNumberInTimezone, DEFAULT_DISPLAY_TZ } from "@/lib/dates";
+import { organizerFirstName } from "@/lib/organizer-display";
 import { JoinChainButton } from "./join-button";
 import { ChainShareButton } from "./share-button";
 import { ArrowLeft, CalendarDays, HandHeart, Settings, Users } from "lucide-react";
-
-function firstName(fullName: string | null | undefined): string {
-  if (!fullName) return "the organizer";
-  return fullName.trim().split(/\s+/)[0] || fullName;
-}
 
 function recipientPhrase(
   recipientName: string | null,
@@ -51,7 +47,7 @@ export async function generateMetadata({
   });
   if (!chain) return { title: "Not Found" };
 
-  const orgFirst = firstName(chain.organizer?.name);
+  const orgFirst = organizerFirstName(chain);
   const phrase = recipientPhrase(chain.recipientName, chain.intention);
   const day = dayNumberFor(chain.startDate);
   const url = `${getBaseUrl()}/chain/${chain.slug}`;
@@ -120,7 +116,7 @@ export default async function ChainDetailPage({
 
   if (!chain) notFound();
 
-  const orgFirst = firstName(chain.organizer?.name);
+  const orgFirst = organizerFirstName(chain);
   const phrase = recipientPhrase(chain.recipientName, chain.intention);
   const displayTitle = chain.recipientName
     ? `${orgFirst}'s ${chain.prayerType.name} for ${chain.recipientName}`

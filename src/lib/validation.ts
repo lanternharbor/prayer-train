@@ -34,34 +34,51 @@ const situationValues = Object.values(SituationCategory) as [
   ...SituationCategory[],
 ];
 
-export const createTrainSchema = z.object({
-  recipientName: trimmedString(1, 80),
-  recipientRelation: optionalTrimmed(60),
-  parish: optionalTrimmed(120),
-  parishId: optionalTrimmed(60),
-  location: optionalTrimmed(120),
-  intention: trimmedString(1, 2000),
-  situation: z.enum(situationValues),
-  situationDetail: optionalTrimmed(2000),
-  // Optional free-form prayer the organizer wants every volunteer to also
-  // pray. Generous cap because some traditional prayers are long.
-  customPrayerText: optionalTrimmed(4000),
-  durationDays: z.coerce.number().int().min(1).max(365).default(30),
-  slotsPerDay: z.coerce.number().int().min(1).max(24).default(3),
-  isPublic: z.coerce.boolean().default(false),
-  prayerTypeIds: z
-    .string()
-    .max(2000)
-    .optional()
-    .transform((s) =>
-      s
-        ? s
-            .split(",")
-            .map((p) => p.trim())
-            .filter(Boolean)
-        : []
-    ),
-});
+export const createTrainSchema = z
+  .object({
+    recipientName: trimmedString(1, 80),
+    recipientRelation: optionalTrimmed(60),
+    parish: optionalTrimmed(120),
+    parishId: optionalTrimmed(60),
+    location: optionalTrimmed(120),
+    intention: trimmedString(1, 2000),
+    situation: z.enum(situationValues),
+    situationDetail: optionalTrimmed(2000),
+    // Optional free-form prayer the organizer wants every volunteer to also
+    // pray. Generous cap because some traditional prayers are long.
+    customPrayerText: optionalTrimmed(4000),
+    durationDays: z.coerce.number().int().min(1).max(365).default(30),
+    slotsPerDay: z.coerce.number().int().min(1).max(24).default(3),
+    isPublic: z.coerce.boolean().default(false),
+    // Organizer's display name. Required unless they opt into anonymity
+    // (refinement below). Stored on User.name when set, so it appears on
+    // every train this user organizes — anonymity per train is the
+    // override, not the default.
+    organizerName: optionalTrimmed(80),
+    organizerAnonymous: z.coerce.boolean().default(false),
+    prayerTypeIds: z
+      .string()
+      .max(2000)
+      .optional()
+      .transform((s) =>
+        s
+          ? s
+              .split(",")
+              .map((p) => p.trim())
+              .filter(Boolean)
+          : []
+      ),
+  })
+  .refine(
+    (data) =>
+      data.organizerAnonymous ||
+      (data.organizerName && data.organizerName.length > 0),
+    {
+      path: ["organizerName"],
+      message:
+        "Please enter your name, or check the box to show as Anonymous.",
+    }
+  );
 
 export type CreateTrainInput = z.infer<typeof createTrainSchema>;
 
@@ -219,17 +236,32 @@ export type TrainUpdateInput = z.infer<typeof trainUpdateSchema>;
 
 // ─── Create PrayerChain ─────────────────────────────────────
 
-export const createChainSchema = z.object({
-  prayerTypeId: trimmedString(1, 60),
-  recipientName: optionalTrimmed(80),
-  intention: trimmedString(1, 2000),
-  // Optional free-form prayer the organizer wants every member to also pray.
-  // Mirrors createTrainSchema.customPrayerText.
-  customPrayerText: optionalTrimmed(4000),
-  // Optional override; if omitted, we use the prayer's default daysRequired.
-  durationDays: z.coerce.number().int().min(1).max(365).optional(),
-  isPublic: z.coerce.boolean().default(false),
-});
+export const createChainSchema = z
+  .object({
+    prayerTypeId: trimmedString(1, 60),
+    recipientName: optionalTrimmed(80),
+    intention: trimmedString(1, 2000),
+    // Optional free-form prayer the organizer wants every member to also pray.
+    // Mirrors createTrainSchema.customPrayerText.
+    customPrayerText: optionalTrimmed(4000),
+    // Optional override; if omitted, we use the prayer's default daysRequired.
+    durationDays: z.coerce.number().int().min(1).max(365).optional(),
+    isPublic: z.coerce.boolean().default(false),
+    // Organizer-name capture mirrors createTrainSchema. See the
+    // refinement there for the contract.
+    organizerName: optionalTrimmed(80),
+    organizerAnonymous: z.coerce.boolean().default(false),
+  })
+  .refine(
+    (data) =>
+      data.organizerAnonymous ||
+      (data.organizerName && data.organizerName.length > 0),
+    {
+      path: ["organizerName"],
+      message:
+        "Please enter your name, or check the box to show as Anonymous.",
+    }
+  );
 
 export type CreateChainInput = z.infer<typeof createChainSchema>;
 

@@ -47,7 +47,10 @@ export default async function CreatePage() {
         </p>
       </div>
 
-      <CreateWizard prayerTypes={prayerTypes} />
+      <CreateWizard
+        prayerTypes={prayerTypes}
+        currentUserName={session.user.name ?? ""}
+      />
     </div>
   );
 }

@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { Check, Heart, AlertCircle } from "lucide-react";
 import { prisma } from "@/lib/db";
 import { markChainDayCompleteByToken } from "@/lib/actions";
+import { organizerFirstName } from "@/lib/organizer-display";
 import { CrossDivider } from "@/components/ui/catholic-icons";
 
 /**
@@ -40,12 +41,13 @@ export default async function CompleteChainDayPage({
       slug: true,
       recipientName: true,
       durationDays: true,
+      organizerAnonymous: true,
       organizer: { select: { name: true } },
     },
   });
   if (!chain) notFound();
 
-  const orgFirst = chain.organizer?.name?.split(/\s+/)[0] ?? "the organizer";
+  const orgFirst = organizerFirstName(chain);
   const dayNum = dayStr ? Number(dayStr) : NaN;
 
   let outcome: "success" | "missing-params" | "invalid";

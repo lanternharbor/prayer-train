@@ -74,10 +74,12 @@ export async function GET(
 
   const data: BouquetData = {
     recipientName: chain.recipientName ?? chain.intention,
-    // Pass null (not "the organizer") when the User row has no name —
-    // BouquetDocument omits the line entirely rather than rendering
-    // the placeholder. Same fix as the train bouquet route.
-    organizerName: chain.organizer?.name ?? null,
+    // Pass null (not "the organizer") when the User row has no name
+    // OR when the organizer chose anonymity. BouquetDocument omits
+    // the line entirely rather than rendering a placeholder.
+    organizerName: chain.organizerAnonymous
+      ? null
+      : (chain.organizer?.name ?? null),
     startDate: chain.startDate,
     endDate: chain.endDate,
     prayers: [

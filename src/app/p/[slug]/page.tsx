@@ -23,6 +23,8 @@ import { UpdatesFeed } from "./updates-feed";
 import { ShareButton } from "./share-button";
 import { AddWarriorButton } from "./add-warrior-button";
 import { ExpandableText } from "./expandable-text";
+import { InPageNav } from "./in-page-nav";
+import { JumpToGuestbook } from "./jump-to-guestbook";
 import { CrossIcon, CrossDivider, RecipientAvatar } from "@/components/ui/catholic-icons";
 
 export async function generateMetadata({
@@ -253,6 +255,17 @@ export default async function PrayerTrainPage({
         </div>{/* close flex avatar row */}
       </div>
 
+      {/* In-page navigation — sticky chip strip below the global site
+          header. Anchors to Calendar / Prayer warriors / Updates /
+          Encouragement. Conditional sections (warriors, updates) only
+          surface a chip when the underlying section actually exists.
+          Most useful on long-running trains where the calendar buries
+          the secondary content. */}
+      <InPageNav
+        showWarriors={train.warriors.length > 0}
+        showUpdates={train.updates.length > 0}
+      />
+
       {/* Custom prayer card — when the organizer has provided a personal
           prayer (a family tradition, a prayer from a friend, or words of
           their own). Sits in its own card so it stays visually distinct
@@ -349,7 +362,7 @@ export default async function PrayerTrainPage({
       <CrossDivider />
 
       {/* Calendar */}
-      <div className="mb-10">
+      <div id="calendar" className="mb-10 scroll-mt-32">
         <h2 className="font-heading text-2xl font-semibold text-navy-800 mb-4 flex items-center gap-2">
           <CrossIcon className="w-5 h-5 text-gold-400" />
           Prayer Calendar
@@ -365,7 +378,7 @@ export default async function PrayerTrainPage({
           regardless of coverage state. Once a warrior pledges, their
           name belongs on the page from then on. */}
       {train.warriors.length > 0 && (
-        <div className="mb-10">
+        <div id="prayer-warriors" className="mb-10 scroll-mt-32">
           <h2 className="font-heading text-2xl font-semibold text-navy-800 mb-4 flex items-center gap-2">
             <HandHeart className="w-5 h-5 text-gold-500" />
             Also praying alongside ({train.warriors.length})
@@ -386,14 +399,27 @@ export default async function PrayerTrainPage({
         </div>
       )}
 
-      {/* Two-column: Updates + Guestbook */}
+      {/* Two-column: Updates + Guestbook. Each gets an anchor wrapper
+          so InPageNav can scroll to either independently. scroll-mt-32
+          gives clearance below the sticky site header + in-page nav
+          strip when an anchor lands. */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        <UpdatesFeed updates={train.updates} />
-        <Guestbook
-          entries={train.guestbook}
-          trainId={train.id}
-        />
+        <div id="updates" className="scroll-mt-32">
+          <UpdatesFeed updates={train.updates} />
+        </div>
+        <div id="guestbook" className="scroll-mt-32">
+          <Guestbook
+            entries={train.guestbook}
+            trainId={train.id}
+          />
+        </div>
       </div>
+
+      {/* Floating skip-to-encouragement button. Renders fixed at the
+          bottom-right when the viewer has scrolled past the calendar
+          and the guestbook isn't already in view. Self-managing —
+          observes #calendar and #guestbook to decide visibility. */}
+      <JumpToGuestbook />
     </div>
   );
 }

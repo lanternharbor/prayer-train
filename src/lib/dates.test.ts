@@ -4,6 +4,7 @@ import {
   dayNumberInTimezone,
   daysLeftInTimezone,
   DEFAULT_DISPLAY_TZ,
+  groupByWeek,
 } from "./dates";
 
 describe("dateKeyInTimezone", () => {
@@ -107,5 +108,103 @@ describe("daysLeftInTimezone", () => {
     // May 22 noon EDT = May 22 16:00 UTC; one calendar day to May 23
     const dayBefore = new Date("2026-05-22T16:00:00Z");
     expect(daysLeftInTimezone(dayBefore, end, "America/New_York")).toBe(1);
+  });
+});
+
+describe("groupByWeek", () => {
+  it("returns an empty array for an empty input", () => {
+    expect(groupByWeek([])).toEqual([]);
+  });
+
+  it("groups a single date (Monday) into one week starting that day", () => {
+    // 2026-05-04 is a Monday
+    expect(groupByWeek(["2026-05-04"])).toEqual([
+      {
+        weekStart: "2026-05-04",
+        weekEnd: "2026-05-10",
+        dates: ["2026-05-04"],
+      },
+    ]);
+  });
+
+  it("groups a Wednesday back to its Monday", () => {
+    // 2026-05-06 is a Wednesday
+    expect(groupByWeek(["2026-05-06"])).toEqual([
+      {
+        weekStart: "2026-05-04",
+        weekEnd: "2026-05-10",
+        dates: ["2026-05-06"],
+      },
+    ]);
+  });
+
+  it("groups a Sunday into the same week as its preceding Monday", () => {
+    // 2026-05-10 is a Sunday — same week as 2026-05-04 Monday
+    expect(groupByWeek(["2026-05-10"])).toEqual([
+      {
+        weekStart: "2026-05-04",
+        weekEnd: "2026-05-10",
+        dates: ["2026-05-10"],
+      },
+    ]);
+  });
+
+  it("splits dates spanning two weeks into two groups", () => {
+    expect(
+      groupByWeek(["2026-05-06", "2026-05-07", "2026-05-12"]),
+    ).toEqual([
+      {
+        weekStart: "2026-05-04",
+        weekEnd: "2026-05-10",
+        dates: ["2026-05-06", "2026-05-07"],
+      },
+      {
+        weekStart: "2026-05-11",
+        weekEnd: "2026-05-17",
+        dates: ["2026-05-12"],
+      },
+    ]);
+  });
+
+  it("maintains ascending order across many weeks", () => {
+    const result = groupByWeek([
+      "2026-05-04", // Mon
+      "2026-05-11", // next Mon
+      "2026-05-18", // following Mon
+      "2026-05-25", // Memorial Day
+    ]);
+    expect(result.map((g) => g.weekStart)).toEqual([
+      "2026-05-04",
+      "2026-05-11",
+      "2026-05-18",
+      "2026-05-25",
+    ]);
+  });
+
+  it("does not produce empty filler weeks for sparse inputs", () => {
+    // Only May 4 and May 25 — three weeks between are not in input
+    const result = groupByWeek(["2026-05-04", "2026-05-25"]);
+    expect(result.length).toBe(2);
+    expect(result[0].weekStart).toBe("2026-05-04");
+    expect(result[1].weekStart).toBe("2026-05-25");
+  });
+
+  it("handles a date at the end of a year crossing into next year", () => {
+    // 2026-12-28 is a Monday (start of week containing year-end)
+    // 2026-12-31 is a Thursday — same week as Dec 28
+    // 2027-01-04 is the next Monday
+    const result = groupByWeek(["2026-12-31", "2027-01-04"]);
+    expect(result).toEqual([
+      {
+        weekStart: "2026-12-28",
+        weekEnd: "2027-01-03",
+        dates: ["2026-12-31"],
+      },
+      {
+        weekStart: "2027-01-04",
+        weekEnd: "2027-01-10",
+        dates: ["2027-01-04"],
+      },
+    ]);
   });
 });

@@ -1,7 +1,36 @@
 import { Resend } from "resend";
 import { getBaseUrl } from "./url";
 
-const FROM = process.env.EMAIL_FROM || "PrayerTrain <noreply@ourfaithtrain.com>";
+/**
+ * Resolve the From address for outgoing transactional mail.
+ *
+ * In production we REFUSE to fall back to a default — silent misdelivery
+ * (Resend rejection or spam folder from an unverified domain) is worse
+ * than a loud thrown error that surfaces the misconfiguration before
+ * any user gets a malformed email. Each `send*` helper already swallows
+ * its own errors, so this throw turns an invisible deliverability bug
+ * into a visible "no email got sent" alarm in the logs.
+ *
+ * In development / preview we fall back to a sane prayertrains.com
+ * default so local work keeps flowing without local `.env` setup.
+ *
+ * Resolved on every call (not at module load) so:
+ *   1. The build never breaks just because EMAIL_FROM isn't present in
+ *      the build env (it's read from the runtime env by every send).
+ *   2. Tests can mutate `process.env.EMAIL_FROM` between cases without
+ *      reloading the module.
+ */
+export function getFromAddress(): string {
+  const explicit = process.env.EMAIL_FROM;
+  if (explicit) return explicit;
+  if (process.env.NODE_ENV === "production") {
+    throw new Error(
+      "EMAIL_FROM environment variable must be set in production. " +
+        "Refusing to send mail without an explicit, verified sender.",
+    );
+  }
+  return "PrayerTrain <noreply@prayertrains.com>";
+}
 
 /**
  * Escape user-controlled content before injecting it into HTML email
@@ -166,7 +195,7 @@ export async function sendClaimConfirmation({
     : null;
   try {
     await resend.emails.send({
-      from: FROM,
+      from: getFromAddress(),
       to,
       subject: `You're praying for ${recipientName} — ${prayerName}`,
       html: `
@@ -274,7 +303,7 @@ export async function sendDailyReminder({
   const eOrgFirst = escapeHtml(organizerFirstName || "the organizer");
   try {
     await resend.emails.send({
-      from: FROM,
+      from: getFromAddress(),
       to,
       subject: `Prayer reminder: ${prayerName} for ${recipientName}`,
       html: `
@@ -361,7 +390,7 @@ export async function sendTrainCancellationNotice({
   const eOrgFirst = escapeHtml(organizerFirstName ?? "the organizer");
   try {
     await resend.emails.send({
-      from: FROM,
+      from: getFromAddress(),
       to,
       subject: `The prayer train for ${recipientName} has been cancelled`,
       html: `
@@ -446,7 +475,7 @@ export async function sendChainJoinConfirmation({
   const ePhrase = escapeHtml(phrase);
   try {
     await resend.emails.send({
-      from: FROM,
+      from: getFromAddress(),
       to,
       subject,
       html: `
@@ -533,7 +562,7 @@ export async function sendChainDailyReminder({
     : null;
   try {
     await resend.emails.send({
-      from: FROM,
+      from: getFromAddress(),
       to,
       subject,
       html: `
@@ -630,7 +659,7 @@ export async function sendChainClosingDayEmail({
   const eClosingNote = closingNote ? escapeHtml(closingNote) : null;
   try {
     await resend.emails.send({
-      from: FROM,
+      from: getFromAddress(),
       to,
       subject,
       html: `
@@ -698,7 +727,7 @@ export async function sendChainCancellationNotice({
   const subject = `${orgFirst}'s ${prayerName} ${phrase} has been cancelled`;
   try {
     await resend.emails.send({
-      from: FROM,
+      from: getFromAddress(),
       to,
       subject,
       html: `
@@ -760,7 +789,7 @@ export async function sendPrayerWarriorWelcome({
   const eOrgFirst = escapeHtml(orgFirst);
   try {
     await resend.emails.send({
-      from: FROM,
+      from: getFromAddress(),
       to,
       subject,
       html: `
@@ -823,7 +852,7 @@ export async function sendPrayerWarriorClosing({
   const eRecipientName = escapeHtml(recipientName);
   try {
     await resend.emails.send({
-      from: FROM,
+      from: getFromAddress(),
       to,
       subject,
       html: `

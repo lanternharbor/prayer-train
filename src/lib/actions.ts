@@ -53,6 +53,7 @@ import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { addDays, eachDayOfInterval } from "date-fns";
 import {
+  chainDayTokenId,
   signCompletionToken,
   verifyCompletionToken,
 } from "@/lib/completion-tokens";
@@ -1413,11 +1414,14 @@ export async function markChainDayCompleteByToken(
   day: number,
   token: string,
 ) {
-  if (!verifyCompletionToken("chain-day", memberId, token)) {
-    throw new Error("This completion link is invalid or has expired.");
-  }
   if (!Number.isInteger(day) || day < 1 || day > 365) {
     throw new Error("That day number doesn't look right.");
+  }
+  // Token signs the (memberId, day) tuple — see chainDayTokenId in
+  // completion-tokens.ts. Tampering with ?day= in the URL changes the
+  // composite id and invalidates the signature.
+  if (!verifyCompletionToken("chain-day", chainDayTokenId(memberId, day), token)) {
+    throw new Error("This completion link is invalid or has expired.");
   }
 
   const member = await prisma.prayerChainMember.findUnique({

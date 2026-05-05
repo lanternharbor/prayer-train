@@ -3,7 +3,7 @@ import { timingSafeEqual } from "node:crypto";
 import { prisma } from "@/lib/db";
 import { sendChainDailyReminder } from "@/lib/email";
 import { getBaseUrl } from "@/lib/url";
-import { signCompletionToken } from "@/lib/completion-tokens";
+import { chainDayTokenId, signCompletionToken } from "@/lib/completion-tokens";
 
 /**
  * Vercel Cron hits this endpoint daily at 11:05 UTC — five minutes after the
@@ -79,24 +79,33 @@ export async function GET(request: Request) {
 
     const chainUrl = `${baseUrl}/chain/${chain.slug}`;
 
-    for (const member of chain.members) {
-      const otherCount = chain.members.length - 1;
+    // Fire all member emails in parallel so a large chain doesn't exhaust
+    // the 30s Vercel function timeout through sequential awaits.
+    const results = await Promise.allSettled(
+      chain.members.map((member) => {
+        const otherCount = chain.members.length - 1;
+        // Tokenized one-click completion URL. Points at the
+        // /chain/[slug]/complete handler which verifies the HMAC before
+        // calling markChainDayCompleteByToken. Default 14-day TTL — a
+        // member who reads the reminder a few days late can still mark
+        // complete; ancient archived reminders can't be replayed.
+        //
+        // The token signs the (memberId, day) tuple so the day number
+        // is cryptographically bound — a member can't tamper with
+        // ?day= in the URL to claim credit for a day other than the
+        // one this reminder was for.
+        const completionToken = signCompletionToken(
+          "chain-day",
+          chainDayTokenId(member.id, dayNum),
+        );
+        const markCompleteUrl = `${baseUrl}/chain/${
+          chain.slug
+        }/complete?day=${dayNum}&memberId=${encodeURIComponent(
+          member.id,
+        )}&token=${encodeURIComponent(completionToken)}`;
+        const unsubscribeUrl = `${baseUrl}/api/chain/unsubscribe?id=${member.id}`;
 
-      // Tokenized one-click completion URL. Points at the
-      // /chain/[slug]/complete handler which verifies the HMAC before
-      // calling markChainDayCompleteByToken. Default 14-day TTL — a
-      // member who reads the reminder a few days late can still mark
-      // complete; ancient archived reminders can't be replayed.
-      const completionToken = signCompletionToken("chain-day", member.id);
-      const markCompleteUrl = `${baseUrl}/chain/${
-        chain.slug
-      }/complete?day=${dayNum}&memberId=${encodeURIComponent(
-        member.id,
-      )}&token=${encodeURIComponent(completionToken)}`;
-      const unsubscribeUrl = `${baseUrl}/api/chain/unsubscribe?id=${member.id}`;
-
-      try {
-        await sendChainDailyReminder({
+        return sendChainDailyReminder({
           to: member.email,
           memberName: member.name,
           organizerName: chain.organizer?.name ?? "the organizer",
@@ -113,11 +122,16 @@ export async function GET(request: Request) {
           unsubscribeUrl,
           otherMembersCount: otherCount,
         });
+      }),
+    );
+
+    for (let i = 0; i < results.length; i++) {
+      if (results[i].status === "fulfilled") {
         sent++;
-      } catch (e) {
+      } else {
         console.error(
-          `[chain-cron] failed to send reminder for chain ${chain.id} member ${member.id}:`,
-          e,
+          `[chain-cron] failed to send reminder for chain ${chain.id} member ${chain.members[i].id}:`,
+          (results[i] as PromiseRejectedResult).reason,
         );
         errors++;
       }

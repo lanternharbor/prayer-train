@@ -12,10 +12,15 @@ describe("isProtectedTrain", () => {
     expect(isProtectedTrain("the-spina-family-dlmm")).toBe(true);
   });
 
+  it("returns true for the Denis Wilson slug", () => {
+    expect(isProtectedTrain("denis-wilson-hn9g")).toBe(true);
+  });
+
   it("returns false for any other slug", () => {
     expect(isProtectedTrain("any-other-train-slug")).toBe(false);
     expect(isProtectedTrain("the-spina-family")).toBe(false); // close but no match
     expect(isProtectedTrain("the-spina-family-dlmm-2")).toBe(false);
+    expect(isProtectedTrain("denis-wilson")).toBe(false); // close but missing suffix
   });
 
   it("returns false for empty input", () => {
@@ -27,10 +32,13 @@ describe("isProtectedTrain", () => {
     // is lowercase by generateSlug() convention; capitals shouldn't
     // happen but if they do they're not the protected slug.
     expect(isProtectedTrain("THE-SPINA-FAMILY-DLMM")).toBe(false);
+    expect(isProtectedTrain("DENIS-WILSON-HN9G")).toBe(false);
   });
 
-  it("PROTECTED_SLUGS contains the Spina slug", () => {
+  it("PROTECTED_SLUGS contains both currently protected slugs", () => {
     expect(PROTECTED_SLUGS.has("the-spina-family-dlmm")).toBe(true);
+    expect(PROTECTED_SLUGS.has("denis-wilson-hn9g")).toBe(true);
+    expect(PROTECTED_SLUGS.size).toBe(2);
   });
 });
 

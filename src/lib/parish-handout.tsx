@@ -34,40 +34,45 @@ import {
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 
-// Lazy-load and cache the bouquet emblem buffer. Same pattern and
-// asset as src/lib/bouquet-pdf.tsx so the parish artifacts inherit
-// the same illustrated mark the spiritual bouquet uses.
-let _emblemBuffer: Buffer | null | undefined;
-function getEmblemBuffer(): Buffer | null {
-  if (_emblemBuffer !== undefined) return _emblemBuffer;
+// Lazy-load and cache the locomotive logo buffer. The parish handout
+// + cards use the brand logo (transparent-background locomotive with
+// cross + halo + passengers) rather than the bouquet emblem; the
+// emblem is reserved for the spiritual-bouquet PDF which is the
+// recipient family's artifact, while the parish print-outs are
+// brand-forward recruitment material.
+let _logoBuffer: Buffer | null | undefined;
+function getLogoBuffer(): Buffer | null {
+  if (_logoBuffer !== undefined) return _logoBuffer;
   try {
-    _emblemBuffer = readFileSync(
-      join(process.cwd(), "public", "bouquet-emblem.png"),
+    _logoBuffer = readFileSync(
+      join(process.cwd(), "public", "logo.png"),
     );
   } catch {
-    _emblemBuffer = null;
+    _logoBuffer = null;
   }
-  return _emblemBuffer;
+  return _logoBuffer;
 }
 
-// Smaller pre-resized emblem (200×200) used by the 10-up card sheet.
-// Embedding the full 3MB emblem ten times produced a 30MB PDF; this
-// drops it to a few hundred KB without visible quality loss at the
-// 64pt render size on the cards.
-let _emblemSmallBuffer: Buffer | null | undefined;
-function getEmblemSmallBuffer(): Buffer | null {
-  if (_emblemSmallBuffer !== undefined) return _emblemSmallBuffer;
+// Smaller pre-resized logo (200×200) used by the 10-up card sheet.
+// Embedding the full ~2.3MB logo ten times would produce a ~23MB
+// PDF; the small variant drops it to a few hundred KB without
+// visible quality loss at the 64pt render size on the cards.
+// Generated via `sips -Z 200 logo.png` (mirrors the
+// bouquet-emblem-sm.png pattern).
+let _logoSmallBuffer: Buffer | null | undefined;
+function getLogoSmallBuffer(): Buffer | null {
+  if (_logoSmallBuffer !== undefined) return _logoSmallBuffer;
   try {
-    _emblemSmallBuffer = readFileSync(
-      join(process.cwd(), "public", "bouquet-emblem-sm.png"),
+    _logoSmallBuffer = readFileSync(
+      join(process.cwd(), "public", "logo-sm.png"),
     );
   } catch {
-    // Fall back to the full-size emblem if the small variant is missing
+    // Fall back to the full-size logo if the small variant is missing
     // (lets the script keep working in environments where the asset
     // hasn't been generated yet — at the cost of a larger PDF).
-    _emblemSmallBuffer = getEmblemBuffer();
+    _logoSmallBuffer = getLogoBuffer();
   }
-  return _emblemSmallBuffer;
+  return _logoSmallBuffer;
 }
 
 const PALETTE = {
@@ -227,7 +232,7 @@ export function ParishHandoutDocument({
 }: {
   qrPngBuffer: Buffer;
 }) {
-  const emblem = getEmblemBuffer();
+  const emblem = getLogoBuffer();
 
   return (
     <Document
@@ -289,11 +294,8 @@ export function ParishHandoutDocument({
             the men's side. No em dashes per stated preference. */}
         <Text style={handoutStyles.body}>
           Most PrayerTrains start with someone close to the person in
-          need: a friend, a family member, or a parish leader. That
-          includes a Knights of Columbus officer, a women&apos;s-ministry
-          lead, an ACTS or men&apos;s-group member. If you carry that
-          kind of leadership in your parish, you&apos;re in the right
-          position to start one.
+          need: a friend, a family member, or a fellow parishioner who
+          knows enough people to fill the calendar.
         </Text>
 
         {/* Thank-you to the parish — written for an audience that
@@ -439,7 +441,7 @@ export function ParishCardSheetDocument({
 }: {
   qrPngBuffer: Buffer;
 }) {
-  const emblem = getEmblemSmallBuffer();
+  const emblem = getLogoSmallBuffer();
 
   // 5 rows × 2 cards = 10 per sheet, standard business-card layout.
   const rows = Array.from({ length: 5 });

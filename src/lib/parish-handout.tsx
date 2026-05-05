@@ -316,7 +316,8 @@ export function ParishHandoutDocument({
             Pass it along where it helps.
           </Text>
           <Text style={handoutStyles.signoff}>
-            With prayers, William and his family
+            With prayers, William Keough and family, your fellow
+            parishioners at St Paul
           </Text>
         </View>
 

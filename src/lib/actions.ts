@@ -562,6 +562,149 @@ export async function postGuestbookEntry(formData: FormData) {
   revalidatePath(`/p/${train.slug}`);
 }
 
+// ─── Encouragement Wall Moderation (Organizer) ─────────────
+//
+// Two-step moderation: hide (reversible, soft) and delete
+// (irreversible, hard). Hide is the default action — clicking
+// "Hide" on a wall entry doesn't ask for confirmation because the
+// row is preserved and unhide is one click away. Delete asks for a
+// single confirm in the UI but doesn't require typing the
+// recipient name (that pattern is reserved for train-level
+// destructive ops where losing a whole train is catastrophic; an
+// individual wall entry is much lower-stakes and the friction
+// would slow real-abuse cleanup).
+//
+// All actions are organizer-auth-gated: only the organizer of the
+// train can moderate that train's wall. There's no admin / staff
+// / cross-train moderation surface — each organizer is sovereign
+// over their own wall.
+//
+// Two parallel surfaces:
+//  - GuestbookEntry rows (the explicit wall posts via the form)
+//  - PrayerSlot.completionNote where shareWall=true (notes the
+//    claimer opted in to surface on the wall). For these, "delete"
+//    means clearing the note text + flipping shareWall to false —
+//    the slot record itself is preserved because it's the prayer
+//    claim, which can't be retracted.
+
+async function assertOrganizesGuestbookEntry(
+  entryId: string,
+  userId: string,
+): Promise<{ trainSlug: string }> {
+  const entry = await prisma.guestbookEntry.findUnique({
+    where: { id: entryId },
+    select: { train: { select: { slug: true, organizerId: true } } },
+  });
+  if (!entry) throw new Error("That message no longer exists.");
+  if (entry.train.organizerId !== userId) {
+    throw new Error("Only the train organizer can moderate this message.");
+  }
+  return { trainSlug: entry.train.slug };
+}
+
+async function assertOrganizesSlot(
+  slotId: string,
+  userId: string,
+): Promise<{ trainSlug: string }> {
+  const slot = await prisma.prayerSlot.findUnique({
+    where: { id: slotId },
+    select: { train: { select: { slug: true, organizerId: true } } },
+  });
+  if (!slot) throw new Error("That slot no longer exists.");
+  if (slot.train.organizerId !== userId) {
+    throw new Error("Only the train organizer can moderate this note.");
+  }
+  return { trainSlug: slot.train.slug };
+}
+
+export async function hideGuestbookEntry(entryId: string) {
+  const session = await auth();
+  if (!session?.user?.id) redirect("/signin");
+  const { trainSlug } = await assertOrganizesGuestbookEntry(
+    entryId,
+    session.user.id,
+  );
+  await prisma.guestbookEntry.update({
+    where: { id: entryId },
+    data: { hiddenAt: new Date(), hiddenById: session.user.id },
+  });
+  revalidatePath(`/p/${trainSlug}`);
+}
+
+export async function unhideGuestbookEntry(entryId: string) {
+  const session = await auth();
+  if (!session?.user?.id) redirect("/signin");
+  const { trainSlug } = await assertOrganizesGuestbookEntry(
+    entryId,
+    session.user.id,
+  );
+  await prisma.guestbookEntry.update({
+    where: { id: entryId },
+    data: { hiddenAt: null, hiddenById: null },
+  });
+  revalidatePath(`/p/${trainSlug}`);
+}
+
+export async function deleteGuestbookEntry(entryId: string) {
+  const session = await auth();
+  if (!session?.user?.id) redirect("/signin");
+  const { trainSlug } = await assertOrganizesGuestbookEntry(
+    entryId,
+    session.user.id,
+  );
+  // Hard delete — irreversible. The UI gates this behind a confirm
+  // modal; once we get here, the organizer has explicitly chosen
+  // permanent removal over the (preferred) soft-hide path.
+  await prisma.guestbookEntry.delete({ where: { id: entryId } });
+  revalidatePath(`/p/${trainSlug}`);
+}
+
+export async function hideSlotNote(slotId: string) {
+  const session = await auth();
+  if (!session?.user?.id) redirect("/signin");
+  const { trainSlug } = await assertOrganizesSlot(slotId, session.user.id);
+  await prisma.prayerSlot.update({
+    where: { id: slotId },
+    data: {
+      completionNoteHiddenAt: new Date(),
+      completionNoteHiddenById: session.user.id,
+    },
+  });
+  revalidatePath(`/p/${trainSlug}`);
+}
+
+export async function unhideSlotNote(slotId: string) {
+  const session = await auth();
+  if (!session?.user?.id) redirect("/signin");
+  const { trainSlug } = await assertOrganizesSlot(slotId, session.user.id);
+  await prisma.prayerSlot.update({
+    where: { id: slotId },
+    data: { completionNoteHiddenAt: null, completionNoteHiddenById: null },
+  });
+  revalidatePath(`/p/${trainSlug}`);
+}
+
+export async function deleteSlotNote(slotId: string) {
+  const session = await auth();
+  if (!session?.user?.id) redirect("/signin");
+  const { trainSlug } = await assertOrganizesSlot(slotId, session.user.id);
+  // Hard delete — but note the SLOT record itself stays. The slot
+  // represents the prayer commitment that was made and fulfilled,
+  // which is the train's primary historical record. We just clear
+  // the note text + the share flag + the hidden flags so the wall
+  // and bouquet both stop seeing it.
+  await prisma.prayerSlot.update({
+    where: { id: slotId },
+    data: {
+      completionNote: null,
+      completionNoteShareWall: false,
+      completionNoteHiddenAt: null,
+      completionNoteHiddenById: null,
+    },
+  });
+  revalidatePath(`/p/${trainSlug}`);
+}
+
 // ─── Post Train Update (Organizer) ─────────────────────────
 
 export async function postTrainUpdate(formData: FormData) {

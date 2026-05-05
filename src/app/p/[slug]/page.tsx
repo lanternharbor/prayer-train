@@ -29,7 +29,10 @@ import { AddWarriorButton } from "./add-warrior-button";
 import { ExpandableText } from "./expandable-text";
 import { InPageNav } from "./in-page-nav";
 import { JumpToGuestbook } from "./jump-to-guestbook";
-import { shouldShowNoteOnWall } from "@/lib/notes";
+import {
+  isNoteVisibleToOrganizer,
+  shouldShowNoteOnWall,
+} from "@/lib/notes";
 import type { WallEntry } from "./guestbook";
 import { CrossIcon, CrossDivider, RecipientAvatar } from "@/components/ui/catholic-icons";
 
@@ -50,36 +53,63 @@ function buildWallEntries(
     createdAt: Date;
     authorName: string;
     message: string;
+    hiddenAt: Date | null;
   }>,
   slots: Array<{
     id: string;
     completionNote: string | null;
     completionNoteShareWall: boolean;
+    completionNoteHiddenAt: Date | null;
     completedAt: Date | null;
     claimerName: string | null;
   }>,
+  /**
+   * The organizer's view includes hidden entries with a `hidden:
+   * true` flag so the moderation UI can surface them. The public
+   * view filters them out entirely. The component (Guestbook) does
+   * not re-filter — it trusts what's passed in.
+   */
+  isOrganizer: boolean,
 ): WallEntry[] {
-  const fromGuestbook: WallEntry[] = guestbook.map((e) => ({
-    id: `guestbook-${e.id}`,
-    createdAt: e.createdAt,
-    authorName: e.authorName,
-    message: e.message,
-    source: "guestbook" as const,
-  }));
+  const fromGuestbook: WallEntry[] = guestbook
+    .filter((e) => isOrganizer || !e.hiddenAt)
+    .map((e) => ({
+      id: e.id,
+      kind: "guestbook" as const,
+      createdAt: e.createdAt,
+      authorName: e.authorName,
+      message: e.message,
+      source: "guestbook" as const,
+      hidden: !!e.hiddenAt,
+    }));
+  // For slot-sourced entries, the public predicate respects both
+  // shareWall and hiddenAt; the organizer view only requires that
+  // the author opted in (shareWall) so they can still moderate
+  // entries they later hid. Notes the AUTHOR un-shared (shareWall
+  // flipped to false) drop off both views — that's the author's
+  // own choice, not moderation.
   const fromSlots: WallEntry[] = slots
     .filter((s) =>
-      shouldShowNoteOnWall({
-        completionNote: s.completionNote,
-        completionNoteShareWall: s.completionNoteShareWall,
-      }),
+      isOrganizer
+        ? isNoteVisibleToOrganizer({
+            completionNote: s.completionNote,
+            completionNoteShareWall: s.completionNoteShareWall,
+          })
+        : shouldShowNoteOnWall({
+            completionNote: s.completionNote,
+            completionNoteShareWall: s.completionNoteShareWall,
+            completionNoteHiddenAt: s.completionNoteHiddenAt,
+          }),
     )
     .filter((s) => s.completedAt && s.claimerName && s.completionNote)
     .map((s) => ({
-      id: `slot-${s.id}`,
+      id: s.id,
+      kind: "slot-note" as const,
       createdAt: s.completedAt!,
       authorName: s.claimerName!,
       message: s.completionNote!,
       source: "prayer-note" as const,
+      hidden: !!s.completionNoteHiddenAt,
     }));
   return [...fromGuestbook, ...fromSlots]
     .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
@@ -468,8 +498,13 @@ export default async function PrayerTrainPage({
         </div>
         <div id="guestbook" className="scroll-mt-32">
           <Guestbook
-            entries={buildWallEntries(train.guestbook, train.slots)}
+            entries={buildWallEntries(
+              train.guestbook,
+              train.slots,
+              isOrganizer,
+            )}
             trainId={train.id}
+            isOrganizer={isOrganizer}
           />
         </div>
       </div>

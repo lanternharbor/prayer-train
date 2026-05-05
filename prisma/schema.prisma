@@ -18,22 +18,22 @@ model User {
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 
-  accounts      Account[]
-  sessions      Session[]
+  accounts Account[]
+  sessions Session[]
 
   // PrayerTrain relations
-  organizedTrains PrayerTrain[]   @relation("Organizer")
-  claimedSlots    PrayerSlot[]    @relation("ClaimedBy")
+  organizedTrains  PrayerTrain[]    @relation("Organizer")
+  claimedSlots     PrayerSlot[]     @relation("ClaimedBy")
   guestbookEntries GuestbookEntry[]
-  trainUpdates    TrainUpdate[]
+  trainUpdates     TrainUpdate[]
 
   // PrayerChain relations
-  organizedChains   PrayerChain[]        @relation("ChainOrganizer")
-  chainMemberships  PrayerChainMember[]
+  organizedChains  PrayerChain[]       @relation("ChainOrganizer")
+  chainMemberships PrayerChainMember[]
 
   // PrayerWarrior pledges — soft-pledge to pray for a train without
   // taking a calendar slot. See PrayerWarrior model below.
-  warriorPledges    PrayerWarrior[]      @relation("WarriorPledges")
+  warriorPledges PrayerWarrior[] @relation("WarriorPledges")
 }
 
 model Account {
@@ -123,14 +123,14 @@ enum DifficultyLevel {
 }
 
 model PrayerTrain {
-  id          String   @id @default(cuid())
-  slug        String   @unique
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id        String   @id @default(cuid())
+  slug      String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   // Organizer
   organizerId String
-  organizer   User     @relation("Organizer", fields: [organizerId], references: [id])
+  organizer   User   @relation("Organizer", fields: [organizerId], references: [id])
 
   // Recipient info
   recipientName     String
@@ -138,16 +138,16 @@ model PrayerTrain {
   recipientImageUrl String?
   parish            String?
   parishId          String?
-  parishRef         Parish?  @relation(fields: [parishId], references: [id])
+  parishRef         Parish?           @relation(fields: [parishId], references: [id])
   location          String?
-  intention         String   @db.Text
+  intention         String            @db.Text
   situation         SituationCategory
-  situationDetail   String?  @db.Text
+  situationDetail   String?           @db.Text
 
   // Train config
   startDate   DateTime
   endDate     DateTime
-  slotsPerDay Int       @default(3)
+  slotsPerDay Int         @default(3)
   status      TrainStatus @default(ACTIVE)
 
   // Optional personal prayer the organizer wants every volunteer to also
@@ -161,14 +161,21 @@ model PrayerTrain {
   // and the product call to make trains discoverable on /browse so the
   // parish network can find them. Privacy is still one click away on
   // the wizard's "List on public directory" toggle.
-  isPublic    Boolean  @default(true)
-  showNames   Boolean  @default(true)
+  isPublic  Boolean @default(true)
+  showNames Boolean @default(true)
+
+  // Per-train organizer-anonymity opt-in. False by default so the
+  // organizer's name (from User.name) is shown on the public page;
+  // true when the organizer explicitly checked "Show me as Anonymous"
+  // in the create wizard. Decoupled from User.name so an organizer
+  // can be Anonymous on this train and still be named on others.
+  organizerAnonymous Boolean @default(false)
 
   // Relations
-  slots       PrayerSlot[]
-  guestbook   GuestbookEntry[]
-  updates     TrainUpdate[]
-  warriors    PrayerWarrior[]
+  slots     PrayerSlot[]
+  guestbook GuestbookEntry[]
+  updates   TrainUpdate[]
+  warriors  PrayerWarrior[]
 
   @@index([slug])
   @@index([organizerId])
@@ -178,65 +185,65 @@ model PrayerTrain {
 }
 
 model PrayerType {
-  id          String   @id @default(cuid())
-  slug        String   @unique
-  name        String
-  category    PrayerCategory
-  description String   @db.Text
-  instructions String? @db.Text
-  prayerText  String?  @db.Text
-  duration    Int      // minutes
-  difficulty  DifficultyLevel
-  daysRequired Int     @default(1) // 9 for novenas, 1 for most
-  patronSaint String?
-  feastDay    String?
+  id            String              @id @default(cuid())
+  slug          String              @unique
+  name          String
+  category      PrayerCategory
+  description   String              @db.Text
+  instructions  String?             @db.Text
+  prayerText    String?             @db.Text
+  duration      Int // minutes
+  difficulty    DifficultyLevel
+  daysRequired  Int                 @default(1) // 9 for novenas, 1 for most
+  patronSaint   String?
+  feastDay      String?
   situationTags SituationCategory[]
-  imageUrl    String?
-  sourceUrl   String?
-  createdAt   DateTime @default(now())
+  imageUrl      String?
+  sourceUrl     String?
+  createdAt     DateTime            @default(now())
 
   // Relations
-  slots       PrayerSlot[]
-  chains      PrayerChain[]
+  slots  PrayerSlot[]
+  chains PrayerChain[]
 
   @@index([category])
   @@index([slug])
 }
 
 model PrayerSlot {
-  id          String     @id @default(cuid())
-  createdAt   DateTime   @default(now())
-  updatedAt   DateTime   @updatedAt
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   // Which train and day
-  trainId     String
-  train       PrayerTrain @relation(fields: [trainId], references: [id], onDelete: Cascade)
-  date        DateTime
-  slotIndex   Int        // 0, 1, 2 for 3 slots/day
+  trainId   String
+  train     PrayerTrain @relation(fields: [trainId], references: [id], onDelete: Cascade)
+  date      DateTime
+  slotIndex Int // 0, 1, 2 for 3 slots/day
 
   // What prayer
   prayerTypeId String
   prayerType   PrayerType @relation(fields: [prayerTypeId], references: [id])
 
   // Who claimed it
-  status      SlotStatus @default(OPEN)
-  claimedById String?
-  claimedBy   User?      @relation("ClaimedBy", fields: [claimedById], references: [id])
-  claimedAt   DateTime?
-  claimerName String?    // for non-auth users
-  claimerEmail String?   // for non-auth users
-  completedAt DateTime?
+  status       SlotStatus @default(OPEN)
+  claimedById  String?
+  claimedBy    User?      @relation("ClaimedBy", fields: [claimedById], references: [id])
+  claimedAt    DateTime?
+  claimerName  String? // for non-auth users
+  claimerEmail String? // for non-auth users
+  completedAt  DateTime?
 
   // Optional short note left by the claimer when marking the slot
   // complete. Capped at 200 chars by the Zod validator. Empty /
   // whitespace-only submissions normalize to null so the slot card
   // and bouquet don't render anything.
-  completionNote          String?  @db.Text
+  completionNote          String? @db.Text
   // When the claimer also opts in to surface their note on the
   // public encouragement wall. Default false (private to the slot
   // and the eventual bouquet PDF). Caller flips via the form
   // checkbox; the wall query joins on this flag.
-  completionNoteShareWall Boolean  @default(false)
+  completionNoteShareWall Boolean @default(false)
 
   // Novena grouping — all slots in a novena share the same groupId
   novenaGroupId String?
@@ -258,13 +265,13 @@ model GuestbookEntry {
   id        String   @id @default(cuid())
   createdAt DateTime @default(now())
 
-  trainId   String
-  train     PrayerTrain @relation(fields: [trainId], references: [id], onDelete: Cascade)
+  trainId String
+  train   PrayerTrain @relation(fields: [trainId], references: [id], onDelete: Cascade)
 
-  authorId  String?
-  author    User?    @relation(fields: [authorId], references: [id])
-  authorName String  // displayed name (works for non-auth too)
-  message   String   @db.Text
+  authorId   String?
+  author     User?   @relation(fields: [authorId], references: [id])
+  authorName String // displayed name (works for non-auth too)
+  message    String  @db.Text
 
   @@index([trainId])
 }
@@ -273,13 +280,13 @@ model TrainUpdate {
   id        String   @id @default(cuid())
   createdAt DateTime @default(now())
 
-  trainId   String
-  train     PrayerTrain @relation(fields: [trainId], references: [id], onDelete: Cascade)
+  trainId String
+  train   PrayerTrain @relation(fields: [trainId], references: [id], onDelete: Cascade)
 
-  authorId  String
-  author    User     @relation(fields: [authorId], references: [id])
-  title     String
-  content   String   @db.Text
+  authorId String
+  author   User   @relation(fields: [authorId], references: [id])
+  title    String
+  content  String @db.Text
 
   @@index([trainId])
 }
@@ -295,21 +302,21 @@ model TrainUpdate {
 // (trainId, email)).
 
 model PrayerWarrior {
-  id        String      @id @default(cuid())
-  createdAt DateTime    @default(now())
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
 
-  trainId   String
-  train     PrayerTrain @relation(fields: [trainId], references: [id], onDelete: Cascade)
+  trainId String
+  train   PrayerTrain @relation(fields: [trainId], references: [id], onDelete: Cascade)
 
   // Joiner identity. Account is optional — name + email is the minimum,
   // matching PrayerSlot.claimerName/claimerEmail and PrayerChainMember.
-  userId    String?
-  user      User?       @relation("WarriorPledges", fields: [userId], references: [id])
-  name      String
-  email     String
+  userId String?
+  user   User?   @relation("WarriorPledges", fields: [userId], references: [id])
+  name   String
+  email  String
 
   // Optional brief intention shown alongside their name on the roster.
-  message   String?     @db.Text
+  message String? @db.Text
 
   // One pledge per email per train. Re-submitting with the same email
   // updates name/message rather than creating duplicates.
@@ -328,48 +335,54 @@ enum ChainStatus {
   ACTIVE
   COMPLETED
   CANCELLED
-  PROMOTED   // converted into a Train via the future Promote-to-Train flow
+  PROMOTED // converted into a Train via the future Promote-to-Train flow
 }
 
 model PrayerChain {
-  id                String       @id @default(cuid())
-  slug              String       @unique
-  createdAt         DateTime     @default(now())
-  updatedAt         DateTime     @updatedAt
+  id        String   @id @default(cuid())
+  slug      String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   // Organizer
-  organizerId       String
-  organizer         User         @relation("ChainOrganizer", fields: [organizerId], references: [id])
+  organizerId String
+  organizer   User   @relation("ChainOrganizer", fields: [organizerId], references: [id])
 
   // Which prayer the chain prays
-  prayerTypeId      String
-  prayerType        PrayerType   @relation(fields: [prayerTypeId], references: [id])
+  prayerTypeId String
+  prayerType   PrayerType @relation(fields: [prayerTypeId], references: [id])
 
   // Recipient + intention (one-line free text — no situation taxonomy needed
   // for chains; intention text carries the meaning)
   recipientName     String?
-  recipientImageUrl String?      // optional Vercel Blob URL — same shape as PrayerTrain
-  intention         String       @db.Text
+  recipientImageUrl String? // optional Vercel Blob URL — same shape as PrayerTrain
+  intention         String  @db.Text
 
   // Optional personal prayer the organizer wants every member to also pray,
   // alongside the prayer-type text from the library. Renders as its own card
   // on the chain detail page and gets appended to the daily reminder emails.
   // Mirrors PrayerTrain.customPrayerText.
-  customPrayerText  String?      @db.Text
+  customPrayerText String? @db.Text
 
   // Schedule
-  startDate         DateTime
-  durationDays      Int
-  endDate           DateTime
+  startDate    DateTime
+  durationDays Int
+  endDate      DateTime
 
   // Visibility. Default-public matches /chain/new's defaultChecked
   // toggle and the product call to make shared prayers discoverable
   // on /browse. Privacy is still one click away.
-  isPublic          Boolean      @default(true)
+  isPublic Boolean @default(true)
+
+  // Per-chain organizer-anonymity opt-in. Mirrors PrayerTrain.
+  // organizerAnonymous — false by default; true only when the
+  // organizer explicitly checked "Show me as Anonymous" on the
+  // create form.
+  organizerAnonymous Boolean @default(false)
 
   // State
-  status            ChainStatus  @default(ACTIVE)
-  closingNote       String?      @db.Text
+  status      ChainStatus @default(ACTIVE)
+  closingNote String?     @db.Text
 
   // Future Phase D: link to a PrayerTrain that this chain was promoted into.
   // Soft reference (no FK) so promote-to-train can ship later without a
@@ -377,7 +390,7 @@ model PrayerChain {
   promotedToTrainId String?
 
   // Relations
-  members           PrayerChainMember[]
+  members PrayerChainMember[]
 
   @@index([organizerId])
   @@index([prayerTypeId])
@@ -387,25 +400,25 @@ model PrayerChain {
 }
 
 model PrayerChainMember {
-  id               String       @id @default(cuid())
-  chainId          String
-  chain            PrayerChain  @relation(fields: [chainId], references: [id], onDelete: Cascade)
+  id      String      @id @default(cuid())
+  chainId String
+  chain   PrayerChain @relation(fields: [chainId], references: [id], onDelete: Cascade)
 
   // Joiner identity. Account is optional — name + email is the minimum,
   // matching the PrayerSlot claim pattern.
-  userId           String?
-  user             User?        @relation(fields: [userId], references: [id])
-  name             String
-  email            String
+  userId String?
+  user   User?   @relation(fields: [userId], references: [id])
+  name   String
+  email  String
 
   // Optional daily-completion tracking. 1-indexed; null until the member
   // marks anything. Idempotent updates via max(current, day).
   lastDayCompleted Int?
 
-  joinedAt         DateTime     @default(now())
+  joinedAt       DateTime  @default(now())
   // Soft leave — they stop receiving reminders but stay in the roster
   // and on the spiritual bouquet.
-  unsubscribedAt   DateTime?
+  unsubscribedAt DateTime?
 
   // One membership per email per chain.
   @@unique([chainId, email])
@@ -425,7 +438,7 @@ model Parish {
   createdAt DateTime @default(now())
 
   // Relations
-  trains    PrayerTrain[]
+  trains PrayerTrain[]
 
   @@unique([name, city, state])
   @@index([name])

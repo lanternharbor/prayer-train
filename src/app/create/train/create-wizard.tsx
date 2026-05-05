@@ -56,11 +56,22 @@ const DURATIONS = [
 
 export function CreateWizard({
   prayerTypes,
+  currentUserName,
 }: {
   prayerTypes: PrayerTypeSelect[];
+  /** session.user.name if known — pre-fills "Your name" so users with
+   *  a name on file (Google sign-in, prior submission) don't retype. */
+  currentUserName?: string;
 }) {
   const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
+
+  // Organizer self-identification. Pre-filled from currentUserName if set;
+  // otherwise empty and the user fills it in. The anonymous checkbox is
+  // an opt-in override — silent anonymity (the previous behavior) was
+  // never an explicit user choice.
+  const [organizerName, setOrganizerName] = useState(currentUserName ?? "");
+  const [organizerAnonymous, setOrganizerAnonymous] = useState(false);
 
   // Form state
   const [recipientName, setRecipientName] = useState("");
@@ -104,7 +115,14 @@ export function CreateWizard({
   const canProceed = () => {
     switch (step) {
       case 1:
-        return recipientName.trim() && intention.trim();
+        // Step 1 also captures the organizer's own name. They must
+        // either provide one or check the anonymous box; the wizard
+        // can't advance past step 1 without that choice being made.
+        return (
+          recipientName.trim() &&
+          intention.trim() &&
+          (organizerAnonymous || organizerName.trim().length > 0)
+        );
       case 2:
         return !!situation;
       case 3:
@@ -137,6 +155,8 @@ export function CreateWizard({
     );
     formData.set("slotsPerDay", slotsPerDay.toString());
     formData.set("isPublic", isPublic ? "true" : "false");
+    formData.set("organizerName", organizerName);
+    formData.set("organizerAnonymous", organizerAnonymous ? "true" : "false");
     formData.set("prayerTypeIds", selectedPrayerIds.join(","));
     await createPrayerTrain(formData);
   };
@@ -184,6 +204,46 @@ export function CreateWizard({
                 Tell us about the person who needs prayers
               </p>
             </div>
+          </div>
+
+          {/* Organizer self-identification. Shown FIRST so the framing
+              is "you're starting this for someone else" — answers
+              "who are you" before "who is this for". Persisted to
+              User.name on submit (unless anonymous), so future trains
+              by this organizer pre-fill. */}
+          <div className="rounded-lg border border-cream-300 bg-cream-50 p-4 space-y-3">
+            <div>
+              <label className="block text-sm font-medium text-navy-700 mb-1.5">
+                Your name{" "}
+                {!organizerAnonymous && (
+                  <span className="text-red-400">*</span>
+                )}
+              </label>
+              <input
+                type="text"
+                value={organizerName}
+                onChange={(e) => setOrganizerName(e.target.value)}
+                disabled={organizerAnonymous}
+                placeholder="How you'd like to appear on the prayer page"
+                className="w-full px-4 py-2.5 border border-border rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-gold-400/50 focus:border-gold-400 transition disabled:opacity-50 disabled:cursor-not-allowed"
+              />
+              <p className="text-xs text-muted-foreground mt-1.5">
+                {organizerAnonymous
+                  ? "Your name will be hidden from the public prayer page."
+                  : "Shown as “Organized by [your name]” on the public page."}
+              </p>
+            </div>
+            <label className="flex items-start gap-2 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={organizerAnonymous}
+                onChange={(e) => setOrganizerAnonymous(e.target.checked)}
+                className="mt-0.5"
+              />
+              <span className="text-sm text-navy-700">
+                Show me as &ldquo;Anonymous&rdquo; on the public page
+              </span>
+            </label>
           </div>
 
           <div>

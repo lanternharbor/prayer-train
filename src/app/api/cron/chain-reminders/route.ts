@@ -108,7 +108,10 @@ export async function GET(request: Request) {
         return sendChainDailyReminder({
           to: member.email,
           memberName: member.name,
-          organizerName: chain.organizer?.name ?? "the organizer",
+          organizerName:
+            chain.organizerAnonymous || !chain.organizer?.name
+              ? "the organizer"
+              : chain.organizer.name,
           prayerName: chain.prayerType.name,
           prayerText: chain.prayerType.prayerText,
           prayerInstructions: chain.prayerType.instructions,

@@ -83,8 +83,24 @@ export async function createPrayerTrain(formData: FormData) {
     durationDays,
     slotsPerDay,
     isPublic,
+    organizerName,
+    organizerAnonymous,
     prayerTypeIds,
   } = input;
+
+  // Persist the organizer's display name to User.name. Skipped when
+  // they opted into anonymity for this train (we don't want to wipe a
+  // previously-set name on a per-train opt-out). Otherwise this
+  // populates the User.name column that every render site reads —
+  // closes the silent-Anonymous bug where magic-link sign-ins left
+  // name=null and downstream surfaces fell back to "Anonymous"
+  // without the user ever choosing it.
+  if (!organizerAnonymous && organizerName && organizerName.length > 0) {
+    await prisma.user.update({
+      where: { id: session.user.id },
+      data: { name: organizerName },
+    });
+  }
 
   const slug = generateSlug(recipientName);
   const startDate = new Date();
@@ -135,6 +151,7 @@ export async function createPrayerTrain(formData: FormData) {
       endDate,
       slotsPerDay,
       isPublic,
+      organizerAnonymous,
     },
   });
 
@@ -598,6 +615,11 @@ export async function updateTrainStatus(
     },
   });
 
+  // organizerAnonymous comes back automatically because findUnique
+  // without `select` returns all train columns. Captured for use in
+  // the email-payload builders below so anonymous organizers don't
+  // leak their name into closing-day notifications.
+
   if (!train || train.organizerId !== session.user.id) {
     throw new Error("Only the organizer can update the train status.");
   }
@@ -617,7 +639,9 @@ export async function updateTrainStatus(
     const baseUrl = getBaseUrl();
     const trainUrl = `${baseUrl}/p/${train.slug}`;
     const bouquetUrl = `${baseUrl}/api/bouquet/${train.slug}`;
-    const orgFirst = train.organizer?.name?.split(/\s+/)[0] ?? null;
+    const orgFirst = train.organizerAnonymous
+      ? null
+      : (train.organizer?.name?.trim().split(/\s+/)[0] ?? null);
 
     // Fire emails sequentially, never blocking the status update.
     // Each send is wrapped in the email function's try/catch so a
@@ -834,6 +858,7 @@ export async function cancelPrayerTrain(formData: FormData) {
       id: true,
       slug: true,
       organizerId: true,
+      organizerAnonymous: true,
       recipientName: true,
       status: true,
       organizer: { select: { name: true } },
@@ -882,7 +907,11 @@ export async function cancelPrayerTrain(formData: FormData) {
   for (const warrior of train.warriors) {
     if (warrior.email) emails.add(warrior.email);
   }
-  const orgFirst = train.organizer?.name?.trim().split(/\s+/)[0] ?? null;
+  // Honor organizerAnonymous: anonymous trains pass null so the email
+  // helper falls back to "the organizer" instead of leaking the name.
+  const orgFirst = train.organizerAnonymous
+    ? null
+    : (train.organizer?.name?.trim().split(/\s+/)[0] ?? null);
   for (const email of emails) {
     await sendTrainCancellationNotice({
       to: email,
@@ -1037,6 +1066,7 @@ export async function cancelPrayerChain(formData: FormData) {
       id: true,
       slug: true,
       organizerId: true,
+      organizerAnonymous: true,
       recipientName: true,
       intention: true,
       status: true,
@@ -1090,7 +1120,13 @@ export async function cancelPrayerChain(formData: FormData) {
   // (chainId, email) pair is unique in the schema but the dedupe
   // adds zero cost and protects future-edits.
   const seen = new Set<string>();
-  const orgName = chain.organizer?.name ?? "the organizer";
+  // Honor organizerAnonymous: anonymous chains use the generic
+  // "the organizer" label so the cancellation email doesn't leak the
+  // name they explicitly chose to hide.
+  const orgName =
+    chain.organizerAnonymous || !chain.organizer?.name
+      ? "the organizer"
+      : chain.organizer.name;
   for (const member of chain.members) {
     if (!member.email || seen.has(member.email)) continue;
     seen.add(member.email);
@@ -1169,6 +1205,7 @@ export async function addPrayerWarrior(formData: FormData) {
       slug: true,
       recipientName: true,
       status: true,
+      organizerAnonymous: true,
       organizer: { select: { name: true } },
     },
   });
@@ -1195,7 +1232,9 @@ export async function addPrayerWarrior(formData: FormData) {
     to: email,
     warriorName: name,
     recipientName: train.recipientName,
-    organizerFirstName: train.organizer?.name?.split(/\s+/)[0] ?? null,
+    organizerFirstName: train.organizerAnonymous
+      ? null
+      : (train.organizer?.name?.trim().split(/\s+/)[0] ?? null),
     trainUrl: `${getBaseUrl()}/p/${train.slug}`,
   });
 
@@ -1231,7 +1270,19 @@ export async function createPrayerChain(formData: FormData) {
     customPrayerText,
     durationDays,
     isPublic,
+    organizerName,
+    organizerAnonymous,
   } = parseFormData(createChainSchema, formData);
+
+  // Persist the organizer's display name to User.name. See createPrayerTrain
+  // for the full rationale; this mirrors that behavior so chains and trains
+  // stay consistent.
+  if (!organizerAnonymous && organizerName && organizerName.length > 0) {
+    await prisma.user.update({
+      where: { id: session.user.id },
+      data: { name: organizerName },
+    });
+  }
 
   const prayerType = await prisma.prayerType.findUnique({
     where: { id: prayerTypeId },
@@ -1300,6 +1351,7 @@ export async function createPrayerChain(formData: FormData) {
       durationDays: finalDurationDays,
       endDate,
       isPublic,
+      organizerAnonymous,
       members: {
         create: {
           userId: session.user.id,
@@ -1359,7 +1411,10 @@ export async function joinPrayerChain(formData: FormData) {
   await sendChainJoinConfirmation({
     to: email,
     memberName: name,
-    organizerName: chain.organizer?.name ?? "the organizer",
+    organizerName:
+      chain.organizerAnonymous || !chain.organizer?.name
+        ? "the organizer"
+        : chain.organizer.name,
     prayerName: chain.prayerType.name,
     recipientName: chain.recipientName,
     intention: chain.intention,
@@ -1554,7 +1609,10 @@ export async function closePrayerChain(formData: FormData) {
     await sendChainClosingDayEmail({
       to: member.email,
       memberName: member.name,
-      organizerName: chain.organizer?.name ?? "the organizer",
+      organizerName:
+        chain.organizerAnonymous || !chain.organizer?.name
+          ? "the organizer"
+          : chain.organizer.name,
       prayerName: chain.prayerType.name,
       recipientName: chain.recipientName,
       closingNote: closingNote ?? null,

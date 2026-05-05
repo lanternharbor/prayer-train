@@ -4,6 +4,10 @@ import { prisma } from "@/lib/db";
 import { auth } from "@/lib/auth";
 import { getBaseUrl } from "@/lib/url";
 import {
+  organizerDisplayName,
+  organizerFirstName,
+} from "@/lib/organizer-display";
+import {
   formatSituation,
   formatDate,
   calculateFillRate,
@@ -277,7 +281,7 @@ export default async function PrayerTrainPage({
           <span className="text-sm text-muted-foreground">
             Organized by{" "}
             <span className="font-medium text-navy-700">
-              {train.organizer.name || "Anonymous"}
+              {organizerDisplayName(train)}
             </span>
           </span>
           {train.parish && (
@@ -330,7 +334,7 @@ export default async function PrayerTrainPage({
         <div className="prayer-card mb-8 bg-cream-50 border-cream-300">
           <h2 className="font-heading text-xl font-semibold text-navy-800 mb-3 flex items-center gap-2">
             <HandHeart className="w-5 h-5 text-gold-500" />
-            A prayer from {train.organizer.name?.split(/\s+/)[0] || "the organizer"}
+            A prayer from {organizerFirstName(train)}
           </h2>
           <p className="text-sm text-muted-foreground mb-3">
             Pray this alongside the prayers below.

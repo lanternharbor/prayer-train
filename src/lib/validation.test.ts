@@ -126,11 +126,46 @@ describe("createTrainSchema", () => {
     recipientName: "Test Family",
     intention: "Prayers for healing",
     situation: "ILLNESS",
+    // The schema requires either an organizer name or the anonymous
+    // checkbox — see the refinement on createTrainSchema. Default the
+    // base payload to providing a name so the existing tests focus on
+    // the field-under-test (e.g. customPrayerText) rather than tripping
+    // over the organizer-identity requirement.
+    organizerName: "William",
   };
 
   it("accepts a minimal valid payload", () => {
     const result = createTrainSchema.safeParse(validBase);
     expect(result.success).toBe(true);
+  });
+
+  it("accepts a payload with organizerAnonymous=true and no name", () => {
+    const { organizerName: _ignored, ...withoutName } = validBase;
+    void _ignored;
+    const result = createTrainSchema.safeParse({
+      ...withoutName,
+      organizerAnonymous: true,
+    });
+    expect(result.success).toBe(true);
+  });
+
+  it("rejects a payload with neither organizerName nor organizerAnonymous", () => {
+    // This is the bug the refinement guards against — silent
+    // anonymity from a missing name. The wizard's canProceed gate
+    // already prevents this in the UI, but the server schema is the
+    // canonical line of defense.
+    const { organizerName: _ignored, ...withoutName } = validBase;
+    void _ignored;
+    const result = createTrainSchema.safeParse(withoutName);
+    expect(result.success).toBe(false);
+  });
+
+  it("rejects a payload with empty organizerName when not anonymous", () => {
+    const result = createTrainSchema.safeParse({
+      ...validBase,
+      organizerName: "   ",
+    });
+    expect(result.success).toBe(false);
   });
 
   it("accepts an optional customPrayerText", () => {
@@ -171,6 +206,9 @@ describe("createChainSchema", () => {
   const validBase = {
     prayerTypeId: "prayer_abc123",
     intention: "Prayers for the family",
+    // Same organizer-name requirement as createTrainSchema; defaulted
+    // here so existing tests focus on the field-under-test.
+    organizerName: "William",
   };
 
   it("accepts an optional customPrayerText (parity with trains)", () => {
@@ -190,5 +228,22 @@ describe("createChainSchema", () => {
     const result = createChainSchema.safeParse(validBase);
     expect(result.success).toBe(true);
     if (result.success) expect(result.data.isPublic).toBe(false);
+  });
+
+  it("accepts a payload with organizerAnonymous=true and no name", () => {
+    const { organizerName: _ignored, ...withoutName } = validBase;
+    void _ignored;
+    const result = createChainSchema.safeParse({
+      ...withoutName,
+      organizerAnonymous: true,
+    });
+    expect(result.success).toBe(true);
+  });
+
+  it("rejects a payload with neither organizerName nor organizerAnonymous", () => {
+    const { organizerName: _ignored, ...withoutName } = validBase;
+    void _ignored;
+    const result = createChainSchema.safeParse(withoutName);
+    expect(result.success).toBe(false);
   });
 });

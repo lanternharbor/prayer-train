@@ -1,5 +1,5 @@
-import { describe, expect, it } from "vitest";
-import { escapeHtml } from "./email";
+import { afterEach, describe, expect, it, vi } from "vitest";
+import { escapeHtml, getFromAddress } from "./email";
 
 /**
  * The email module's HTML templates inject user-controlled strings
@@ -62,5 +62,65 @@ describe("escapeHtml", () => {
     // documenting that the helper is not idempotent and must only
     // be applied at the HTML-injection boundary.
     expect(escapeHtml(once)).toBe("&amp;amp;");
+  });
+});
+
+/**
+ * getFromAddress() is the single point where outgoing-mail sender
+ * resolution happens. Pinning this contract here prevents a regression
+ * where someone reintroduces a silent fallback to a stale/unverified
+ * domain in production. Silent misdelivery is the failure mode we're
+ * defending against — Resend rejecting mail or it landing in spam from
+ * an unverified sender produces no obvious error trail.
+ */
+describe("getFromAddress", () => {
+  afterEach(() => {
+    vi.unstubAllEnvs();
+  });
+
+  it("returns the EMAIL_FROM value verbatim when set, in production", () => {
+    vi.stubEnv("NODE_ENV", "production");
+    vi.stubEnv("EMAIL_FROM", "PrayerTrain <noreply@prayertrains.com>");
+    expect(getFromAddress()).toBe("PrayerTrain <noreply@prayertrains.com>");
+  });
+
+  it("returns the EMAIL_FROM value verbatim when set, in development", () => {
+    vi.stubEnv("NODE_ENV", "development");
+    vi.stubEnv("EMAIL_FROM", "PrayerTrain <override@example.com>");
+    expect(getFromAddress()).toBe("PrayerTrain <override@example.com>");
+  });
+
+  it("throws in production when EMAIL_FROM is unset", () => {
+    vi.stubEnv("NODE_ENV", "production");
+    vi.stubEnv("EMAIL_FROM", "");
+    expect(() => getFromAddress()).toThrow(/EMAIL_FROM/);
+  });
+
+  it("throws in production when EMAIL_FROM is an empty string", () => {
+    // Empty-string env vars are a common Vercel misconfiguration shape
+    // (the var exists in the dashboard but has no value). We treat
+    // empty as unset for the purposes of the loud-fail invariant.
+    vi.stubEnv("NODE_ENV", "production");
+    vi.stubEnv("EMAIL_FROM", "");
+    expect(() => getFromAddress()).toThrow(/must be set in production/);
+  });
+
+  it("falls back to a prayertrains.com default in development when unset", () => {
+    vi.stubEnv("NODE_ENV", "development");
+    vi.stubEnv("EMAIL_FROM", "");
+    expect(getFromAddress()).toBe(
+      "PrayerTrain <noreply@prayertrains.com>",
+    );
+  });
+
+  it("falls back to the dev default in test env too (no production gate)", () => {
+    // `NODE_ENV === "test"` is what vitest sets by default. The throw
+    // is gated specifically on production — non-prod envs should
+    // always get a working fallback so local + CI keep flowing.
+    vi.stubEnv("NODE_ENV", "test");
+    vi.stubEnv("EMAIL_FROM", "");
+    expect(getFromAddress()).toBe(
+      "PrayerTrain <noreply@prayertrains.com>",
+    );
   });
 });

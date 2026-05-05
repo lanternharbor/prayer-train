@@ -3,7 +3,7 @@ import { PrismaAdapter } from "@auth/prisma-adapter";
 import Google from "next-auth/providers/google";
 import Resend from "next-auth/providers/resend";
 import { prisma } from "./db";
-import { sendSignInEmail } from "./email";
+import { getFromAddress, sendSignInEmail } from "./email";
 
 // NOTE: Sign in with Apple is intentionally disabled.
 //
@@ -43,12 +43,19 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   providers: [
     Resend({
       apiKey: process.env.RESEND_API_KEY,
-      from: "PrayerTrain <noreply@ourfaithtrain.com>",
-      async sendVerificationRequest({ identifier: to, url, provider }) {
+      // The literal here is unused at runtime — sendVerificationRequest
+      // below ignores `provider.from` and calls getFromAddress() so the
+      // production EMAIL_FROM discipline is enforced. NextAuth's Resend
+      // provider config requires *some* string, and we don't want to
+      // call getFromAddress() at module load (it throws in prod when
+      // EMAIL_FROM is unset, which would crash app boot, not just
+      // email). The runtime call is what actually controls deliverability.
+      from: "PrayerTrain <noreply@prayertrains.com>",
+      async sendVerificationRequest({ identifier: to, url }) {
         await sendSignInEmail({
           to,
           url,
-          from: provider.from ?? "PrayerTrain <noreply@ourfaithtrain.com>",
+          from: getFromAddress(),
         });
       },
     }),

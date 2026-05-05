@@ -1,5 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
+  isNoteIncludedInBouquet,
+  isNoteVisibleToOrganizer,
   normalizeNoteText,
   NOTE_MAX_LENGTH,
   shouldShowNoteOnWall,
@@ -92,6 +94,91 @@ describe("shouldShowNoteOnWall", () => {
         completionNoteShareWall: true,
       }),
     ).toBe(true);
+  });
+});
+
+describe("shouldShowNoteOnWall (with hidden flag)", () => {
+  it("returns false when the organizer has soft-hidden the note", () => {
+    // Even with shareWall=true and a real note, a hiddenAt timestamp
+    // takes the entry off the public wall. Organizer view uses
+    // isNoteVisibleToOrganizer for the unmoderated list.
+    expect(
+      shouldShowNoteOnWall({
+        completionNote: "Praying for you",
+        completionNoteShareWall: true,
+        completionNoteHiddenAt: new Date("2026-05-05T00:00:00Z"),
+      }),
+    ).toBe(false);
+  });
+
+  it("returns true when hiddenAt is explicitly null and other conditions hold", () => {
+    expect(
+      shouldShowNoteOnWall({
+        completionNote: "Praying for you",
+        completionNoteShareWall: true,
+        completionNoteHiddenAt: null,
+      }),
+    ).toBe(true);
+  });
+});
+
+describe("isNoteVisibleToOrganizer", () => {
+  it("returns true even when the note is soft-hidden (organizer needs to see it to unhide)", () => {
+    expect(
+      isNoteVisibleToOrganizer({
+        completionNote: "Hidden by the organizer",
+        completionNoteShareWall: true,
+      }),
+    ).toBe(true);
+  });
+
+  it("returns false when shareWall is false (the author chose not to surface it)", () => {
+    expect(
+      isNoteVisibleToOrganizer({
+        completionNote: "Praying for you",
+        completionNoteShareWall: false,
+      }),
+    ).toBe(false);
+  });
+
+  it("returns false when note is empty (nothing to moderate)", () => {
+    expect(
+      isNoteVisibleToOrganizer({
+        completionNote: "",
+        completionNoteShareWall: true,
+      }),
+    ).toBe(false);
+  });
+});
+
+describe("isNoteIncludedInBouquet", () => {
+  it("includes notes regardless of shareWall (bouquet is the comprehensive record)", () => {
+    expect(
+      isNoteIncludedInBouquet({
+        completionNote: "Praying for you",
+        completionNoteHiddenAt: null,
+      }),
+    ).toBe(true);
+  });
+
+  it("excludes notes the organizer hid", () => {
+    // Hiding is a moderation signal; bad-faith content shouldn't end
+    // up in the family's printed memorial PDF.
+    expect(
+      isNoteIncludedInBouquet({
+        completionNote: "Inappropriate text",
+        completionNoteHiddenAt: new Date("2026-05-05T00:00:00Z"),
+      }),
+    ).toBe(false);
+  });
+
+  it("excludes empty notes", () => {
+    expect(
+      isNoteIncludedInBouquet({
+        completionNote: null,
+        completionNoteHiddenAt: null,
+      }),
+    ).toBe(false);
   });
 });
 

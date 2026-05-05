@@ -149,12 +149,19 @@ export async function GET(
 
   // Personal notes left when claimers marked their slot complete.
   // The bouquet is the comprehensive record for the family, so we
-  // include EVERY note regardless of the in-product shareWall flag.
-  // Sorted ascending by completedAt so the family reads them in the
-  // order they were offered.
+  // include EVERY note regardless of the in-product shareWall flag —
+  // EXCEPT entries the organizer soft-hid via wall moderation.
+  // `completionNoteHiddenAt != null` flags content the organizer
+  // chose to suppress; that shouldn't appear on the family's
+  // memorial keepsake either. Hard-deleted notes are already gone
+  // (completionNote = null) and drop out via the existing filter.
   const notes = completedSlots
     .filter(
-      (s) => s.completionNote && s.claimerName && s.completedAt,
+      (s) =>
+        s.completionNote &&
+        s.claimerName &&
+        s.completedAt &&
+        !s.completionNoteHiddenAt,
     )
     .map((s) => ({
       name: s.claimerName!,

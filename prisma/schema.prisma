@@ -238,12 +238,20 @@ model PrayerSlot {
   // complete. Capped at 200 chars by the Zod validator. Empty /
   // whitespace-only submissions normalize to null so the slot card
   // and bouquet don't render anything.
-  completionNote          String? @db.Text
+  completionNote           String?   @db.Text
   // When the claimer also opts in to surface their note on the
   // public encouragement wall. Default false (private to the slot
   // and the eventual bouquet PDF). Caller flips via the form
   // checkbox; the wall query joins on this flag.
-  completionNoteShareWall Boolean @default(false)
+  completionNoteShareWall  Boolean   @default(false)
+  // Soft-hide moderation for slot completion notes. Mirrors the
+  // GuestbookEntry pattern: `completionNoteHiddenAt` set means the
+  // note no longer renders on the wall or in the bouquet PDF, but
+  // the slot record itself stays intact so the prayer claim is
+  // preserved. Hard delete is a separate path that nulls out
+  // `completionNote` + flips `completionNoteShareWall` to false.
+  completionNoteHiddenAt   DateTime?
+  completionNoteHiddenById String?
 
   // Novena grouping — all slots in a novena share the same groupId
   novenaGroupId String?
@@ -272,6 +280,15 @@ model GuestbookEntry {
   author     User?   @relation(fields: [authorId], references: [id])
   authorName String // displayed name (works for non-auth too)
   message    String  @db.Text
+
+  // Soft-hide moderation. When `hiddenAt` is set, the entry no longer
+  // renders on the public wall or in the bouquet PDF, but the row is
+  // preserved so the organizer can unhide. `hiddenById` records who
+  // hid it (always the train organizer under the current model — see
+  // hideGuestbookEntry in src/lib/actions.ts). Hard delete is a
+  // separate path that drops the row entirely.
+  hiddenAt   DateTime?
+  hiddenById String?
 
   @@index([trainId])
 }

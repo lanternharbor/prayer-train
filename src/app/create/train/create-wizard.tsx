@@ -70,6 +70,7 @@ export function CreateWizard({
   const [location, setLocation] = useState("");
   const [recipientPhoto, setRecipientPhoto] = useState<File | null>(null);
   const [photoPreview, setPhotoPreview] = useState<string | null>(null);
+  const [photoError, setPhotoError] = useState<string | null>(null);
   const [intention, setIntention] = useState("");
   const [situation, setSituation] = useState<SituationCategory | "">("");
   const [situationDetail, setSituationDetail] = useState("");
@@ -278,9 +279,13 @@ export function CreateWizard({
                     const file = e.target.files?.[0];
                     if (file) {
                       if (file.size > 5 * 1024 * 1024) {
-                        alert("Photo must be under 5MB");
+                        // Inline-error pattern instead of alert() — keeps the
+                        // wizard flow uninterrupted and avoids the jarring
+                        // browser dialog the rest of the app stopped using.
+                        setPhotoError("Photo must be under 5MB.");
                         return;
                       }
+                      setPhotoError(null);
                       setRecipientPhoto(file);
                       setPhotoPreview(URL.createObjectURL(file));
                     }
@@ -294,6 +299,7 @@ export function CreateWizard({
                     onClick={() => {
                       setRecipientPhoto(null);
                       setPhotoPreview(null);
+                      setPhotoError(null);
                     }}
                     className="text-red-500 hover:text-red-600 font-medium"
                   >
@@ -304,6 +310,14 @@ export function CreateWizard({
                 )}
               </div>
             </div>
+            {photoError && (
+              <p
+                role="alert"
+                className="text-xs text-red-700 bg-red-50 border border-red-200 rounded px-2 py-1 mt-2"
+              >
+                {photoError}
+              </p>
+            )}
           </div>
 
           <div>

@@ -5,7 +5,7 @@ import { auth } from "@/lib/auth";
 import { getBaseUrl } from "@/lib/url";
 import {
   organizerDisplayName,
-  organizerFirstName,
+  organizerFirstNameOrNull,
 } from "@/lib/organizer-display";
 import {
   formatSituation,
@@ -364,7 +364,9 @@ export default async function PrayerTrainPage({
         <div className="prayer-card mb-8 bg-cream-50 border-cream-300">
           <h2 className="font-heading text-xl font-semibold text-navy-800 mb-3 flex items-center gap-2">
             <HandHeart className="w-5 h-5 text-gold-500" />
-            A prayer from {organizerFirstName(train)}
+            {organizerFirstNameOrNull(train)
+              ? `A prayer from ${organizerFirstNameOrNull(train)}`
+              : "A personal prayer"}
           </h2>
           <p className="text-sm text-muted-foreground mb-3">
             Pray this alongside the prayers below.

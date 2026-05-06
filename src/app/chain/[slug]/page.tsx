@@ -7,7 +7,10 @@ import { getBaseUrl } from "@/lib/url";
 import { SaintPortrait } from "@/components/saint-portrait";
 import { RecipientAvatar } from "@/components/ui/catholic-icons";
 import { dayNumberInTimezone, DEFAULT_DISPLAY_TZ } from "@/lib/dates";
-import { organizerFirstName } from "@/lib/organizer-display";
+import {
+  organizerFirstName,
+  organizerFirstNameOrNull,
+} from "@/lib/organizer-display";
 import { reflectionForDay } from "@/lib/daily-reflections";
 import { JoinChainButton } from "./join-button";
 import { ChainShareButton } from "./share-button";
@@ -57,7 +60,7 @@ export async function generateMetadata({
   });
   if (!chain) return { title: "Not Found" };
 
-  const orgFirst = organizerFirstName(chain);
+  const orgFirstOrNull = organizerFirstNameOrNull(chain);
   const phrase = recipientPhrase(chain.recipientName, chain.intention);
   const day = dayNumberFor(chain.startDate, chain.durationDays);
   const url = `${getBaseUrl()}/chain/${chain.slug}`;
@@ -69,12 +72,14 @@ export async function generateMetadata({
     chain.prayerType.imageUrl ||
     `${getBaseUrl()}/logo.png`;
 
-  // Anonymous chains drop the possessive prefix — "the organizer's Novena
-  // to St. Therese for X" reads broken. With a real name, keep the
-  // possessive. Same pattern as the browse-card titlePrefix in PR #27.
-  const title = chain.organizerAnonymous
-    ? `${chain.prayerType.name} ${phrase}`
-    : `${orgFirst}'s ${chain.prayerType.name} ${phrase}`;
+  // Drop the possessive prefix when no real organizer name is
+  // available (anonymous chain OR User.name is null). Possessive form
+  // would render "the organizer's Novena to St. Therese for X" which
+  // reads broken in <title> and OG metadata. With a real name, keep
+  // the possessive. PR #36 fixed this same bug class in cron emails.
+  const title = orgFirstOrNull
+    ? `${orgFirstOrNull}'s ${chain.prayerType.name} ${phrase}`
+    : `${chain.prayerType.name} ${phrase}`;
   const description = `Day ${day} of ${chain.durationDays}. Pray along.`;
 
   return {
@@ -137,16 +142,19 @@ export default async function ChainDetailPage({
   if (!chain) notFound();
 
   const orgFirst = organizerFirstName(chain);
+  const orgFirstOrNull = organizerFirstNameOrNull(chain);
   const phrase = recipientPhrase(chain.recipientName, chain.intention);
-  // Anonymous chains drop the "[name]'s" possessive prefix to avoid
-  // rendering literal "the organizer's Novena to ..." in the H1.
-  // Mirrors the browse-card titlePrefix pattern from PR #27.
+  // H1 drops the "[name]'s" possessive prefix when no real organizer
+  // name is available (anonymous chain OR User.name is null).
+  // Possessive would yield "the organizer's Novena to ..." in either
+  // case. Mirrors the browse-card titlePrefix pattern from PR #27 and
+  // the metadata-title fix above.
   const titleSuffix = chain.recipientName
     ? `${chain.prayerType.name} for ${chain.recipientName}`
     : chain.prayerType.name;
-  const displayTitle = chain.organizerAnonymous
-    ? titleSuffix
-    : `${orgFirst}'s ${titleSuffix}`;
+  const displayTitle = orgFirstOrNull
+    ? `${orgFirstOrNull}'s ${titleSuffix}`
+    : titleSuffix;
   const day = dayNumberFor(chain.startDate, chain.durationDays);
   const isOrganizer = session?.user?.id === chain.organizerId;
   const isMember = !!chain.members.find(
@@ -156,9 +164,16 @@ export default async function ChainDetailPage({
     100,
     Math.round((day / chain.durationDays) * 100),
   );
-  const prayingWithLabel = `${chain.members.length} ${
-    chain.members.length === 1 ? "person" : "people"
-  } praying with ${orgFirst}`;
+  // "X people praying with [name]" reads well when a name is present
+  // and stiff when it would fall back to "the organizer". Drop the
+  // attribution entirely in the latter case so the line stays clean.
+  const prayingWithLabel = orgFirstOrNull
+    ? `${chain.members.length} ${
+        chain.members.length === 1 ? "person" : "people"
+      } praying with ${orgFirstOrNull}`
+    : `${chain.members.length} ${
+        chain.members.length === 1 ? "person" : "people"
+      } praying along`;
 
   return (
     <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
@@ -275,7 +290,9 @@ export default async function ChainDetailPage({
         <div className="prayer-card mb-8 bg-cream-50 border-cream-300">
           <h2 className="font-heading text-xl font-semibold text-navy-800 mb-3 flex items-center gap-2">
             <HandHeart className="w-5 h-5 text-gold-500" />
-            A prayer from {orgFirst}
+            {orgFirstOrNull
+              ? `A prayer from ${orgFirstOrNull}`
+              : "A personal prayer"}
           </h2>
           <p className="text-sm text-muted-foreground mb-3">
             Pray this alongside today&apos;s prayer below.
@@ -359,7 +376,9 @@ export default async function ChainDetailPage({
       {chain.status === "COMPLETED" && chain.closingNote && (
         <div className="prayer-card mb-8 bg-cream-50 border-cream-300">
           <p className="text-xs uppercase tracking-widest text-gold-700 mb-2">
-            A note from {orgFirst}
+            {orgFirstOrNull
+              ? `A note from ${orgFirstOrNull}`
+              : "A note from the organizer"}
           </p>
           <p className="text-navy-700 leading-relaxed italic whitespace-pre-line">
             {chain.closingNote}
@@ -367,7 +386,11 @@ export default async function ChainDetailPage({
         </div>
       )}
 
-      {/* Pray-along CTA — only when active and viewer hasn't joined */}
+      {/* Pray-along CTA — only when active and viewer hasn't joined.
+          isAnonymous is true when EITHER organizerAnonymous OR no
+          User.name is set, so child components drop the "with [name]"
+          attribution in either case rather than falling back to
+          "with the organizer". */}
       {chain.status === "ACTIVE" && !isMember && !isOrganizer && (
         <div className="text-center mb-8">
           <JoinChainButton
@@ -375,7 +398,7 @@ export default async function ChainDetailPage({
             organizerFirstName={orgFirst}
             recipientPhrase={phrase}
             durationDays={chain.durationDays}
-            isAnonymous={chain.organizerAnonymous}
+            isAnonymous={!orgFirstOrNull}
           />
         </div>
       )}
@@ -387,7 +410,7 @@ export default async function ChainDetailPage({
           slug={chain.slug}
           organizerFirstName={orgFirst}
           recipientPhrase={phrase}
-          isAnonymous={chain.organizerAnonymous}
+          isAnonymous={!orgFirstOrNull}
         />
       )}
 

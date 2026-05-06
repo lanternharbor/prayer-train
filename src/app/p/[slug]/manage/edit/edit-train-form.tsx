@@ -53,6 +53,11 @@ export function EditTrainForm({
     situationDetail: string | null;
     customPrayerText: string | null;
     recipientImageUrl: string | null;
+    /** session.user.name when known. Pre-fills the organizer-name
+     *  input. May be null for organizers from before PR #27. */
+    organizerName: string | null;
+    /** train.organizerAnonymous. Drives the checkbox + disabled-input. */
+    organizerAnonymous: boolean;
   };
 }) {
   const [parish, setParish] = useState(initial.parish ?? "");
@@ -65,6 +70,13 @@ export function EditTrainForm({
   );
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  // Organizer identity. Same shape as create-flow + edit-chain-form.
+  const [organizerName, setOrganizerName] = useState(
+    initial.organizerName ?? "",
+  );
+  const [organizerAnonymous, setOrganizerAnonymous] = useState(
+    initial.organizerAnonymous,
+  );
 
   const handleSubmit = async (formData: FormData) => {
     setError(null);
@@ -77,6 +89,8 @@ export function EditTrainForm({
     formData.set("parishId", parishId ?? "");
     formData.set("location", location);
     formData.set("situation", situation);
+    formData.set("organizerName", organizerName);
+    formData.set("organizerAnonymous", organizerAnonymous ? "true" : "false");
     try {
       await updateTrainDetails(formData);
     } catch (err) {
@@ -110,6 +124,48 @@ export function EditTrainForm({
           {error}
         </p>
       )}
+
+      {/* Organizer identity. Same card shape as the create wizard +
+          chain edit form. Updating User.name (when not anonymous + a
+          name is present) propagates to ALL of this user's trains
+          and chains. The anonymous checkbox is per-train only. */}
+      <div className="rounded-lg border border-cream-300 bg-cream-50 p-4 space-y-3">
+        <div>
+          <label
+            htmlFor="organizerName"
+            className="block text-sm font-medium text-navy-700 mb-1.5"
+          >
+            Your name{" "}
+            {!organizerAnonymous && <span className="text-red-400">*</span>}
+          </label>
+          <input
+            id="organizerName"
+            type="text"
+            value={organizerName}
+            onChange={(e) => setOrganizerName(e.target.value)}
+            disabled={organizerAnonymous}
+            maxLength={80}
+            placeholder="How you'd like to appear on the prayer page"
+            className="w-full px-4 py-2.5 border border-border rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-gold-400/50 focus:border-gold-400 transition disabled:opacity-50 disabled:cursor-not-allowed"
+          />
+          <p className="text-xs text-muted-foreground mt-1.5">
+            {organizerAnonymous
+              ? "Your name is hidden on this train's public page."
+              : "Shown as “Organized by [your name]” on the public page. Updating this changes your name on every train and prayer you've organized."}
+          </p>
+        </div>
+        <label className="flex items-start gap-2 cursor-pointer">
+          <input
+            type="checkbox"
+            checked={organizerAnonymous}
+            onChange={(e) => setOrganizerAnonymous(e.target.checked)}
+            className="mt-0.5"
+          />
+          <span className="text-sm text-navy-700">
+            Show me as &ldquo;Anonymous&rdquo; on this train&apos;s page
+          </span>
+        </label>
+      </div>
 
       {/* Recipient name */}
       <div>

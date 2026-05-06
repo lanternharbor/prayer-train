@@ -33,6 +33,7 @@ export default async function EditTrainPage({
 
   const train = await prisma.prayerTrain.findUnique({
     where: { slug },
+    include: { organizer: { select: { name: true } } },
   });
   if (!train) notFound();
   if (train.organizerId !== session.user.id) {
@@ -76,6 +77,8 @@ export default async function EditTrainPage({
           situationDetail: train.situationDetail,
           customPrayerText: train.customPrayerText,
           recipientImageUrl: train.recipientImageUrl,
+          organizerName: train.organizer.name,
+          organizerAnonymous: train.organizerAnonymous,
         }}
       />
     </div>

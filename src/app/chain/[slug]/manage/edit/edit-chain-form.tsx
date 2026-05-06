@@ -27,15 +27,32 @@ export function EditChainForm({
     intention: string;
     customPrayerText: string | null;
     recipientImageUrl: string | null;
+    /** session.user.name when known. Pre-fills the organizer-name
+     *  input. May be null for organizers who created their chain
+     *  before PR #27 added name capture. */
+    organizerName: string | null;
+    /** chain.organizerAnonymous. Drives the checkbox initial state
+     *  + the disabled-name-input behavior. */
+    organizerAnonymous: boolean;
   };
 }) {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  // Organizer identity. Pre-filled from props so the form reflects
+  // the current state rather than always defaulting to anonymous.
+  const [organizerName, setOrganizerName] = useState(
+    initial.organizerName ?? "",
+  );
+  const [organizerAnonymous, setOrganizerAnonymous] = useState(
+    initial.organizerAnonymous,
+  );
 
   const handleSubmit = async (formData: FormData) => {
     setError(null);
     setSubmitting(true);
     formData.set("chainId", chainId);
+    formData.set("organizerName", organizerName);
+    formData.set("organizerAnonymous", organizerAnonymous ? "true" : "false");
     try {
       await updateChainDetails(formData);
     } catch (err) {
@@ -68,6 +85,49 @@ export function EditChainForm({
           {error}
         </p>
       )}
+
+      {/* Organizer identity. Same shape as the create-flow
+          organizer-identity card. Updates User.name (which propagates
+          to ALL of this user's trains + chains) when name is provided
+          and anonymous is unchecked. Anonymous-flag changes are per-
+          chain only. */}
+      <div className="rounded-lg border border-cream-300 bg-cream-50 p-4 space-y-3">
+        <div>
+          <label
+            htmlFor="organizerName"
+            className="block text-sm font-medium text-navy-700 mb-1.5"
+          >
+            Your name{" "}
+            {!organizerAnonymous && <span className="text-red-400">*</span>}
+          </label>
+          <input
+            id="organizerName"
+            type="text"
+            value={organizerName}
+            onChange={(e) => setOrganizerName(e.target.value)}
+            disabled={organizerAnonymous}
+            maxLength={80}
+            placeholder="How you'd like to appear on the prayer page"
+            className="w-full px-4 py-2.5 border border-border rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-gold-400/50 focus:border-gold-400 transition disabled:opacity-50 disabled:cursor-not-allowed"
+          />
+          <p className="text-xs text-muted-foreground mt-1.5">
+            {organizerAnonymous
+              ? "Your name is hidden on this prayer's public page."
+              : "Shown as “Organized by [your name]” on the public page. Updating this changes your name on every prayer you've organized."}
+          </p>
+        </div>
+        <label className="flex items-start gap-2 cursor-pointer">
+          <input
+            type="checkbox"
+            checked={organizerAnonymous}
+            onChange={(e) => setOrganizerAnonymous(e.target.checked)}
+            className="mt-0.5"
+          />
+          <span className="text-sm text-navy-700">
+            Show me as &ldquo;Anonymous&rdquo; on this prayer&apos;s page
+          </span>
+        </label>
+      </div>
 
       {/* Recipient name */}
       <div>

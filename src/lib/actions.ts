@@ -888,6 +888,22 @@ export async function updateTrainDetails(formData: FormData) {
     }
   }
 
+  // Mirror the create-flow: persist organizer name to User.name when
+  // they're not opting into anonymity. Skipped on anonymous so an
+  // organizer toggling THIS train's anonymous flag doesn't wipe the
+  // name they may want kept on other trains/chains. Always set
+  // organizerAnonymous from the form value.
+  if (
+    !input.organizerAnonymous &&
+    input.organizerName &&
+    input.organizerName.length > 0
+  ) {
+    await prisma.user.update({
+      where: { id: session.user.id },
+      data: { name: input.organizerName },
+    });
+  }
+
   await prisma.prayerTrain.update({
     where: { id: train.id },
     data: {
@@ -901,6 +917,7 @@ export async function updateTrainDetails(formData: FormData) {
       situationDetail: input.situationDetail || null,
       customPrayerText: input.customPrayerText || null,
       recipientImageUrl,
+      organizerAnonymous: input.organizerAnonymous,
     },
   });
 
@@ -1734,6 +1751,20 @@ export async function updateChainDetails(formData: FormData) {
     }
   }
 
+  // Mirror the create-flow: persist organizer name to User.name when
+  // not opting into anonymity. See updateTrainDetails for the same
+  // pattern and rationale.
+  if (
+    !input.organizerAnonymous &&
+    input.organizerName &&
+    input.organizerName.length > 0
+  ) {
+    await prisma.user.update({
+      where: { id: session.user.id },
+      data: { name: input.organizerName },
+    });
+  }
+
   await prisma.prayerChain.update({
     where: { id: chain.id },
     data: {
@@ -1741,6 +1772,7 @@ export async function updateChainDetails(formData: FormData) {
       intention: input.intention,
       customPrayerText: input.customPrayerText || null,
       recipientImageUrl,
+      organizerAnonymous: input.organizerAnonymous,
     },
   });
 

@@ -1,9 +1,19 @@
 import { NextResponse } from "next/server";
 import { timingSafeEqual } from "node:crypto";
 import { prisma } from "@/lib/db";
-import { sendChainDailyReminder } from "@/lib/email";
+import {
+  sendChainClosingPrompt,
+  sendChainDailyReminder,
+} from "@/lib/email";
 import { getBaseUrl } from "@/lib/url";
 import { chainDayTokenId, signCompletionToken } from "@/lib/completion-tokens";
+import {
+  AUTO_CLOSE_GRACE_DAYS,
+  shouldAutoClose,
+  shouldSendClosingPrompt,
+} from "@/lib/chain-lifecycle";
+import { DEFAULT_DISPLAY_TZ } from "@/lib/dates";
+import { organizerFirstName } from "@/lib/organizer-display";
 
 /**
  * Vercel Cron hits this endpoint daily at 11:05 UTC — five minutes after the
@@ -141,6 +151,140 @@ export async function GET(request: Request) {
     }
   }
 
+  // ─── End-of-life passes ──────────────────────────────────────
+  //
+  // Two additional sweeps after the daily-reminders dispatch above:
+  //
+  //   1. Closing prompt — fires the day a chain hits its endDate.
+  //      One-shot per chain via PrayerChain.closingPromptSentAt
+  //      idempotency. Email goes to the organizer; members already
+  //      received their final daily reminder above.
+  //
+  //   2. Auto-close — flips status: ACTIVE → COMPLETED for chains
+  //      that lingered past endDate + AUTO_CLOSE_GRACE_DAYS (default
+  //      7). Silent cleanup; no member-facing emails on this path
+  //      (those are reserved for manual closePrayerChain so the
+  //      organizer's intent is preserved when emails go out).
+  //
+  // Both passes use shouldSendClosingPrompt / shouldAutoClose as the
+  // final guard so the predicates stay unit-testable. SQL queries
+  // are slightly broader than the predicates require (we let the
+  // predicate make the final call) so we don't have to encode TZ-
+  // aware date math in raw Postgres.
+
+  let closingPromptsSent = 0;
+  let autoClosed = 0;
+  const nowForCron = new Date();
+
+  // Pass 1: closing prompt to organizer
+  const promptCandidates = await prisma.prayerChain.findMany({
+    where: {
+      status: "ACTIVE",
+      closingPromptSentAt: null,
+      // Broaden slightly — pull the last 2 days of endDates so a chain
+      // that ended yesterday at the TZ boundary still gets caught
+      // even though "today" in DEFAULT_DISPLAY_TZ vs UTC may straddle.
+      // The shouldSendClosingPrompt predicate compares exact calendar
+      // keys and rejects anything other than today.
+      endDate: {
+        gte: new Date(nowForCron.getTime() - 2 * 24 * 60 * 60 * 1000),
+        lte: new Date(nowForCron.getTime() + 1 * 24 * 60 * 60 * 1000),
+      },
+    },
+    include: {
+      organizer: {
+        select: { name: true, email: true },
+      },
+      prayerType: { select: { name: true } },
+    },
+  });
+
+  for (const chain of promptCandidates) {
+    if (
+      !shouldSendClosingPrompt(
+        {
+          status: chain.status,
+          endDate: chain.endDate,
+          closingPromptSentAt: chain.closingPromptSentAt,
+          organizer: { email: chain.organizer?.email ?? null },
+        },
+        nowForCron,
+        DEFAULT_DISPLAY_TZ,
+      )
+    ) {
+      continue;
+    }
+    try {
+      await sendChainClosingPrompt({
+        to: chain.organizer!.email!,
+        organizerFirstName: organizerFirstName({
+          organizerAnonymous: chain.organizerAnonymous,
+          organizer: { name: chain.organizer?.name ?? null },
+        }),
+        prayerName: chain.prayerType.name,
+        recipientName: chain.recipientName,
+        chainManageUrl: `${baseUrl}/chain/${chain.slug}/manage`,
+      });
+      // Set the idempotency timestamp inside the same loop iteration
+      // so a repeated send within the same cron run can't double-fire.
+      // sendChainClosingPrompt already swallows its own errors and
+      // logs them; if it failed silently the column stays null and
+      // the next cron run will retry. Acceptable trade-off.
+      await prisma.prayerChain.update({
+        where: { id: chain.id },
+        data: { closingPromptSentAt: new Date() },
+      });
+      closingPromptsSent++;
+    } catch (e) {
+      console.error(
+        `[chain-cron] closing prompt failed for chain ${chain.id}:`,
+        e,
+      );
+      errors++;
+    }
+  }
+
+  // Pass 2: auto-close past the grace period
+  const closeCandidates = await prisma.prayerChain.findMany({
+    where: {
+      status: "ACTIVE",
+      // Anything ending more than (graceDays + 1) ago is a candidate.
+      // The +1 buffers TZ skew so we don't miss anything at the edge.
+      endDate: {
+        lt: new Date(
+          nowForCron.getTime() -
+            (AUTO_CLOSE_GRACE_DAYS + 1) * 24 * 60 * 60 * 1000,
+        ),
+      },
+    },
+    select: { id: true, status: true, endDate: true, slug: true },
+  });
+
+  for (const chain of closeCandidates) {
+    if (
+      !shouldAutoClose(
+        { status: chain.status, endDate: chain.endDate },
+        nowForCron,
+        DEFAULT_DISPLAY_TZ,
+      )
+    ) {
+      continue;
+    }
+    try {
+      await prisma.prayerChain.update({
+        where: { id: chain.id },
+        data: { status: "COMPLETED" },
+      });
+      autoClosed++;
+    } catch (e) {
+      console.error(
+        `[chain-cron] auto-close failed for chain ${chain.id}:`,
+        e,
+      );
+      errors++;
+    }
+  }
+
   // Heartbeat ping. Same opt-in env-var pattern as the train cron — see
   // docs/operational-safety.md for the Healthchecks.io setup. Wrapped to
   // never throw so a Healthchecks outage cannot mask a successful run.
@@ -149,7 +293,7 @@ export async function GET(request: Request) {
     try {
       await fetch(healthcheckUrl, {
         method: "POST",
-        body: `chains=${chainsProcessed} sent=${sent} errors=${errors}`,
+        body: `chains=${chainsProcessed} sent=${sent} closingPrompts=${closingPromptsSent} autoClosed=${autoClosed} errors=${errors}`,
       });
     } catch (e) {
       console.error("[chain-cron] healthcheck ping failed:", e);
@@ -161,6 +305,8 @@ export async function GET(request: Request) {
     date: today.toISOString(),
     chainsProcessed,
     sent,
+    closingPromptsSent,
+    autoClosed,
     errors,
   });
 }

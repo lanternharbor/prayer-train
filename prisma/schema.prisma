@@ -397,6 +397,16 @@ model PrayerChain {
   // create form.
   organizerAnonymous Boolean @default(false)
 
+  // Idempotency tracker for the organizer-facing closing-prompt
+  // email. Set when the chain-reminders cron has dispatched the
+  // "your prayer is wrapping up today" nudge for this chain.
+  // Null = never sent. Once set, the cron skips this chain on
+  // subsequent runs so a chain lingering ACTIVE past its endDate
+  // doesn't get the prompt re-sent every day. The 7-day-grace
+  // auto-close in the same cron eventually flips status to
+  // COMPLETED for chains the organizer doesn't close manually.
+  closingPromptSentAt DateTime?
+
   // State
   status      ChainStatus @default(ACTIVE)
   closingNote String?     @db.Text

@@ -118,9 +118,13 @@ export async function GET(request: Request) {
         return sendChainDailyReminder({
           to: member.email,
           memberName: member.name,
+          // Pass null when the chain is anonymous OR User.name is unset.
+          // The render helper drops the possessive ("the's Surrender Novena")
+          // and substitutes anonymous-friendly copy. See firstNameOrNull
+          // and renderChainDailyReminder in src/lib/email.ts.
           organizerName:
             chain.organizerAnonymous || !chain.organizer?.name
-              ? "the organizer"
+              ? null
               : chain.organizer.name,
           prayerName: chain.prayerType.name,
           prayerText: chain.prayerType.prayerText,

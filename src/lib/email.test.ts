@@ -1,5 +1,12 @@
 import { describe, expect, it } from "vitest";
-import { escapeHtml } from "./email";
+import {
+  escapeHtml,
+  firstNameOrNull,
+  renderChainCancellationNotice,
+  renderChainClosingDayEmail,
+  renderChainDailyReminder,
+  renderChainJoinConfirmation,
+} from "./email";
 
 /**
  * The email module's HTML templates inject user-controlled strings
@@ -62,5 +69,284 @@ describe("escapeHtml", () => {
     // documenting that the helper is not idempotent and must only
     // be applied at the HTML-injection boundary.
     expect(escapeHtml(once)).toBe("&amp;amp;");
+  });
+});
+
+/**
+ * The pure render helpers for chain-audience emails branch on
+ * organizerName (string vs. null) to drop possessive constructions
+ * when the organizer is anonymous or has no User.name set.
+ *
+ * The original bug: when chain.organizerAnonymous was true OR
+ * User.name was null, the cron passed the literal string
+ * "the organizer" into the email helper, which then ran
+ * firstName("the organizer") → "the" and rendered subject lines like
+ * "Day 5 of the's Surrender Novena for Denis Wilson". The H1, the
+ * "A prayer from the" attribution, and the "praying with the today"
+ * lines were all broken in the same way.
+ *
+ * These tests pin three properties for each of the four chain emails:
+ *   1. Named organizer renders the warm possessive form (regression)
+ *   2. Anonymous (organizerName: null) renders without possessives
+ *   3. No rendered output ever contains the broken-grammar substring
+ *      "the's " or "the organizer's " under any input
+ */
+describe("firstNameOrNull", () => {
+  it("returns null for null input", () => {
+    expect(firstNameOrNull(null)).toBeNull();
+  });
+
+  it("returns null for empty-string input", () => {
+    expect(firstNameOrNull("")).toBeNull();
+  });
+
+  it("returns null for whitespace-only input", () => {
+    expect(firstNameOrNull("   ")).toBeNull();
+  });
+
+  it("returns first word from a multi-word name", () => {
+    expect(firstNameOrNull("William Keough")).toBe("William");
+  });
+
+  it("returns the only word when input has no spaces", () => {
+    expect(firstNameOrNull("William")).toBe("William");
+  });
+
+  it("trims surrounding whitespace before splitting", () => {
+    expect(firstNameOrNull("  William Keough  ")).toBe("William");
+  });
+});
+
+/**
+ * Shared test fixture for chain emails. Real-world Surrender Novena
+ * for Denis Wilson — mirrors the actual data shape Jilu's chains
+ * would render with after the fix.
+ */
+const surrenderNovenaInputs = {
+  prayerName: "Surrender Novena",
+  recipientName: "Denis Wilson",
+  intention:
+    "Denis has found out that after a year of remission, his lymphoma has returned.",
+  durationDays: 9,
+};
+
+describe("renderChainJoinConfirmation", () => {
+  const base = {
+    to: "alice@example.com",
+    memberName: "Alice",
+    chainUrl: "https://prayertrains.com/chain/denis-wilson-9ghj",
+    ...surrenderNovenaInputs,
+  };
+
+  it("uses warm possessive form when a real name is provided", () => {
+    const r = renderChainJoinConfirmation({ ...base, organizerName: "Jilu Chengat" });
+    expect(r.subject).toBe("You're praying with Jilu for Denis Wilson");
+    // Apostrophes inside template literals (not user-controlled) aren't
+    // routed through escapeHtml — they render verbatim. Only ${eOrgFirst}
+    // gets escaped, and "Jilu" has no special chars.
+    expect(r.html).toContain("Jilu's <strong>Surrender Novena</strong>");
+    expect(r.text).toContain("You've joined Jilu's Surrender Novena for Denis Wilson.");
+  });
+
+  it("drops the possessive when organizerName is null (anonymous)", () => {
+    const r = renderChainJoinConfirmation({ ...base, organizerName: null });
+    expect(r.subject).toBe("You're praying along for Denis Wilson");
+    expect(r.html).toContain("You've joined the <strong>Surrender Novena</strong>");
+    expect(r.text).toContain("You've joined the Surrender Novena for Denis Wilson.");
+  });
+
+  it("treats empty-string organizerName as anonymous", () => {
+    const r = renderChainJoinConfirmation({ ...base, organizerName: "" });
+    expect(r.subject).toBe("You're praying along for Denis Wilson");
+  });
+
+  it("never produces broken-grammar 'the's' or 'the organizer's' substrings", () => {
+    for (const organizerName of [null, "", "   ", "Jilu", "Jilu Chengat"]) {
+      const r = renderChainJoinConfirmation({ ...base, organizerName });
+      const all = r.subject + "\n" + r.html + "\n" + r.text;
+      expect(all).not.toContain("the's ");
+      expect(all).not.toContain("the organizer's ");
+    }
+  });
+});
+
+describe("renderChainDailyReminder", () => {
+  const base = {
+    to: "alice@example.com",
+    memberName: "Alice",
+    prayerText: "O Jesus, I surrender myself to You.",
+    prayerInstructions: "Pray once daily.",
+    customPrayerText: null,
+    day: 5,
+    chainUrl: "https://prayertrains.com/chain/denis-wilson-9ghj",
+    markCompleteUrl: "https://prayertrains.com/chain/denis-wilson-9ghj/complete?day=5",
+    unsubscribeUrl: "https://prayertrains.com/api/chain/unsubscribe?id=abc",
+    otherMembersCount: 4,
+    ...surrenderNovenaInputs,
+  };
+
+  it("subject + H1 use possessive when a real name is provided", () => {
+    const r = renderChainDailyReminder({ ...base, organizerName: "Jilu Chengat" });
+    expect(r.subject).toBe("Day 5 of Jilu's Surrender Novena for Denis Wilson");
+    // Apostrophe in the template `'s` is not escaped (only ${eOrgFirst} is).
+    expect(r.html).toContain("Jilu's Surrender Novena for Denis Wilson");
+  });
+
+  it("subject + H1 drop possessive when organizerName is null", () => {
+    const r = renderChainDailyReminder({ ...base, organizerName: null });
+    expect(r.subject).toBe("Day 5 of the Surrender Novena for Denis Wilson");
+    // H1 mirrors the chain detail page (PR #30): no "[name]'s" prefix.
+    expect(r.html).toContain("Surrender Novena for Denis Wilson");
+    expect(r.html).not.toContain("the's Surrender Novena");
+    expect(r.html).not.toContain("the organizer's Surrender Novena");
+  });
+
+  it("custom-prayer attribution falls back to neutral label when anonymous", () => {
+    const r = renderChainDailyReminder({
+      ...base,
+      organizerName: null,
+      customPrayerText: "A prayer my mother taught me.",
+    });
+    expect(r.html).toContain("A personal prayer included");
+    expect(r.html).not.toContain("A prayer from the organizer");
+    expect(r.html).not.toContain("A prayer from the");
+  });
+
+  it("custom-prayer attribution uses 'A prayer from X' when named", () => {
+    const r = renderChainDailyReminder({
+      ...base,
+      organizerName: "Jilu",
+      customPrayerText: "A prayer my mother taught me.",
+    });
+    expect(r.html).toContain("A prayer from Jilu");
+  });
+
+  it("'praying with X today' line drops the 'with X' suffix when anonymous", () => {
+    const r = renderChainDailyReminder({ ...base, organizerName: null });
+    expect(r.html).toContain("4 other people are praying today.");
+    expect(r.html).not.toContain("praying with today");
+    expect(r.html).not.toContain("praying with the today");
+  });
+
+  it("'praying with X today' line uses singular 'is' when count is 1", () => {
+    // Pin the existing pluralization contract — neither anonymous nor
+    // named branch should regress this.
+    const r = renderChainDailyReminder({
+      ...base,
+      organizerName: null,
+      otherMembersCount: 1,
+    });
+    expect(r.html).toContain("1 other person is praying today.");
+  });
+
+  it("does not render the 'others praying' line when count is zero", () => {
+    const r = renderChainDailyReminder({
+      ...base,
+      organizerName: null,
+      otherMembersCount: 0,
+    });
+    expect(r.html).not.toContain("praying today.");
+    expect(r.html).not.toContain("other person");
+    expect(r.html).not.toContain("other people");
+  });
+
+  it("never produces broken-grammar substrings under any organizerName input", () => {
+    for (const organizerName of [null, "", "   ", "Jilu", "Jilu Chengat"]) {
+      const r = renderChainDailyReminder({ ...base, organizerName });
+      const all = r.subject + "\n" + r.html + "\n" + r.text;
+      expect(all).not.toContain("the's ");
+      expect(all).not.toContain("the&#39;s ");
+      expect(all).not.toContain("the organizer's ");
+      expect(all).not.toContain("the organizer&#39;s ");
+    }
+  });
+});
+
+describe("renderChainClosingDayEmail", () => {
+  const base = {
+    to: "alice@example.com",
+    memberName: "Alice",
+    prayerName: "Surrender Novena",
+    recipientName: "Denis Wilson" as string | null,
+    closingNote: null as string | null,
+    chainUrl: "https://prayertrains.com/chain/denis-wilson-9ghj",
+  };
+
+  it("subject keeps 'with X' when a name is provided", () => {
+    const r = renderChainClosingDayEmail({ ...base, organizerName: "Jilu" });
+    expect(r.subject).toBe(
+      "The Surrender Novena is complete — thank you for praying with Jilu",
+    );
+  });
+
+  it("subject drops 'with X' when organizerName is null", () => {
+    const r = renderChainClosingDayEmail({ ...base, organizerName: null });
+    expect(r.subject).toBe("The Surrender Novena is complete — thank you for praying");
+    expect(r.subject).not.toContain("with the organizer");
+    expect(r.subject).not.toContain("with the");
+  });
+
+  it("body thank-you keeps 'with X' when a name is provided", () => {
+    const r = renderChainClosingDayEmail({ ...base, organizerName: "Jilu" });
+    expect(r.html).toContain("Thank you for praying with Jilu for Denis Wilson, Alice.");
+  });
+
+  it("body thank-you drops 'with X' when anonymous", () => {
+    const r = renderChainClosingDayEmail({ ...base, organizerName: null });
+    expect(r.html).toContain("Thank you for praying for Denis Wilson, Alice.");
+    expect(r.html).not.toContain("praying with the for");
+  });
+
+  it("closing-note attribution uses generic label when anonymous", () => {
+    const r = renderChainClosingDayEmail({
+      ...base,
+      organizerName: null,
+      closingNote: "Thank you all for carrying this with us.",
+    });
+    expect(r.html).toContain("A note from the organizer");
+  });
+
+  it("closing-note attribution uses 'A note from X' when named", () => {
+    const r = renderChainClosingDayEmail({
+      ...base,
+      organizerName: "Jilu",
+      closingNote: "Thank you all for carrying this with us.",
+    });
+    expect(r.html).toContain("A note from Jilu");
+  });
+});
+
+describe("renderChainCancellationNotice", () => {
+  const base = {
+    to: "alice@example.com",
+    memberName: "Alice",
+    prayerName: "Surrender Novena",
+    recipientName: "Denis Wilson" as string | null,
+    intention: "Denis has found out that...",
+  };
+
+  it("subject + H1 use possessive when a name is provided", () => {
+    const r = renderChainCancellationNotice({ ...base, organizerName: "Jilu" });
+    expect(r.subject).toBe(
+      "Jilu's Surrender Novena for Denis Wilson has been cancelled",
+    );
+    expect(r.html).toContain("Jilu&rsquo;s Surrender Novena for Denis Wilson has been cancelled.");
+  });
+
+  it("subject + H1 drop possessive when organizerName is null", () => {
+    const r = renderChainCancellationNotice({ ...base, organizerName: null });
+    expect(r.subject).toBe(
+      "The Surrender Novena for Denis Wilson has been cancelled",
+    );
+    expect(r.html).toContain("The Surrender Novena for Denis Wilson has been cancelled.");
+    expect(r.html).not.toContain("the&rsquo;s Surrender Novena");
+  });
+
+  it("body 'has closed this' sentence reads cleanly in both modes", () => {
+    const named = renderChainCancellationNotice({ ...base, organizerName: "Jilu" });
+    expect(named.html).toContain("Jilu has closed this shared prayer");
+
+    const anon = renderChainCancellationNotice({ ...base, organizerName: null });
+    expect(anon.html).toContain("The organizer has closed this shared prayer");
   });
 });

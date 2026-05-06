@@ -16,10 +16,15 @@ export function ChainShareButton({
   slug,
   organizerFirstName,
   recipientPhrase,
+  isAnonymous = false,
 }: {
   slug: string;
   organizerFirstName: string;
   recipientPhrase: string;
+  /** When true, the organizer chose anonymity. Drops "with [name]"
+   *  from the native-share sheet text so it doesn't read "with the
+   *  organizer" in iMessage / link unfurls. */
+  isAnonymous?: boolean;
 }) {
   const [copied, setCopied] = useState(false);
   const [showQr, setShowQr] = useState(false);
@@ -32,7 +37,9 @@ export function ChainShareButton({
       ? `${window.location.origin}/chain/${slug}`
       : `/chain/${slug}`;
 
-  const shareText = `Pray along with ${organizerFirstName} ${recipientPhrase}:`;
+  const shareText = isAnonymous
+    ? `Pray along ${recipientPhrase}:`
+    : `Pray along with ${organizerFirstName} ${recipientPhrase}:`;
 
   const handleCopy = async () => {
     try {

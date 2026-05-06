@@ -59,7 +59,12 @@ export async function generateMetadata({
     chain.prayerType.imageUrl ||
     `${getBaseUrl()}/logo.png`;
 
-  const title = `${orgFirst}'s ${chain.prayerType.name} ${phrase}`;
+  // Anonymous chains drop the possessive prefix — "the organizer's Novena
+  // to St. Therese for X" reads broken. With a real name, keep the
+  // possessive. Same pattern as the browse-card titlePrefix in PR #27.
+  const title = chain.organizerAnonymous
+    ? `${chain.prayerType.name} ${phrase}`
+    : `${orgFirst}'s ${chain.prayerType.name} ${phrase}`;
   const description = `Day ${day} of ${chain.durationDays}. Pray along.`;
 
   return {
@@ -118,9 +123,15 @@ export default async function ChainDetailPage({
 
   const orgFirst = organizerFirstName(chain);
   const phrase = recipientPhrase(chain.recipientName, chain.intention);
-  const displayTitle = chain.recipientName
-    ? `${orgFirst}'s ${chain.prayerType.name} for ${chain.recipientName}`
-    : `${orgFirst}'s ${chain.prayerType.name}`;
+  // Anonymous chains drop the "[name]'s" possessive prefix to avoid
+  // rendering literal "the organizer's Novena to ..." in the H1.
+  // Mirrors the browse-card titlePrefix pattern from PR #27.
+  const titleSuffix = chain.recipientName
+    ? `${chain.prayerType.name} for ${chain.recipientName}`
+    : chain.prayerType.name;
+  const displayTitle = chain.organizerAnonymous
+    ? titleSuffix
+    : `${orgFirst}'s ${titleSuffix}`;
   const day = dayNumberFor(chain.startDate);
   const isOrganizer = session?.user?.id === chain.organizerId;
   const isMember = !!chain.members.find(
@@ -160,14 +171,31 @@ export default async function ChainDetailPage({
       <div className="mb-8">
         <div className="flex flex-col sm:flex-row sm:items-start sm:gap-6">
           <div className="flex-1 min-w-0">
-            <p className="text-xs uppercase tracking-widest text-gold-700 mb-2">
-              Day {day} of {chain.durationDays}
-              {chain.status === "COMPLETED"
-                ? " · Complete"
-                : chain.status === "CANCELLED"
-                ? " · Cancelled"
-                : ""}
-            </p>
+            {/* Day counter. Multi-day chains show "Day X of Y" with an
+                optional status suffix. Single-day chains (durationDays
+                === 1) skip the day count entirely — "Day 1 of 1" reads
+                like a bug — and fall through to a status-only label
+                when the chain is complete or cancelled. */}
+            {chain.durationDays === 1 ? (
+              chain.status === "COMPLETED" ? (
+                <p className="text-xs uppercase tracking-widest text-gold-700 mb-2">
+                  Complete
+                </p>
+              ) : chain.status === "CANCELLED" ? (
+                <p className="text-xs uppercase tracking-widest text-gold-700 mb-2">
+                  Cancelled
+                </p>
+              ) : null
+            ) : (
+              <p className="text-xs uppercase tracking-widest text-gold-700 mb-2">
+                Day {day} of {chain.durationDays}
+                {chain.status === "COMPLETED"
+                  ? " · Complete"
+                  : chain.status === "CANCELLED"
+                  ? " · Cancelled"
+                  : ""}
+              </p>
+            )}
             <div className="flex items-start gap-4 mb-3">
               {/* Recipient photo (if uploaded). Sits next to the title to
                   emotionally tie the prayer to a specific person. */}
@@ -294,6 +322,7 @@ export default async function ChainDetailPage({
             organizerFirstName={orgFirst}
             recipientPhrase={phrase}
             durationDays={chain.durationDays}
+            isAnonymous={chain.organizerAnonymous}
           />
         </div>
       )}
@@ -305,6 +334,7 @@ export default async function ChainDetailPage({
           slug={chain.slug}
           organizerFirstName={orgFirst}
           recipientPhrase={phrase}
+          isAnonymous={chain.organizerAnonymous}
         />
       )}
 

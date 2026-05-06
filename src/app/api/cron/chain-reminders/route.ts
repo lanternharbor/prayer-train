@@ -14,6 +14,7 @@ import {
 } from "@/lib/chain-lifecycle";
 import { DEFAULT_DISPLAY_TZ } from "@/lib/dates";
 import { organizerFirstName } from "@/lib/organizer-display";
+import { reflectionForDay } from "@/lib/daily-reflections";
 
 /**
  * Vercel Cron hits this endpoint daily at 11:05 UTC — five minutes after the
@@ -63,7 +64,17 @@ export async function GET(request: Request) {
     include: {
       organizer: { select: { name: true } },
       prayerType: {
-        select: { name: true, prayerText: true, instructions: true },
+        // dailyReflections is included so the cron can resolve the
+        // day-N specific meditation (Surrender Novena, Divine Mercy,
+        // etc.) for each member's reminder. Empty array on legacy
+        // rows means reflectionForDay returns null and the email
+        // template's empty-gate skips the reflection card entirely.
+        select: {
+          name: true,
+          prayerText: true,
+          instructions: true,
+          dailyReflections: true,
+        },
       },
       members: {
         where: { unsubscribedAt: null },
@@ -129,6 +140,12 @@ export async function GET(request: Request) {
           prayerName: chain.prayerType.name,
           prayerText: chain.prayerType.prayerText,
           prayerInstructions: chain.prayerType.instructions,
+          // Day-specific meditation when populated; null otherwise.
+          // The email template's empty-gate skips the card when null.
+          dailyReflection: reflectionForDay(
+            chain.prayerType.dailyReflections,
+            dayNum,
+          ),
           customPrayerText: chain.customPrayerText,
           recipientName: chain.recipientName,
           intention: chain.intention,

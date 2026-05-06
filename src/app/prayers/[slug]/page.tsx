@@ -10,6 +10,7 @@ import {
   formatDifficulty,
   formatSituation,
 } from "@/lib/utils";
+import { hasCompleteReflections } from "@/lib/daily-reflections";
 import {
   Clock,
   Star,
@@ -188,6 +189,44 @@ export default async function PrayerDetailPage({
             <p className="font-heading text-lg leading-relaxed text-navy-700 italic whitespace-pre-line">
               {prayer.prayerText}
             </p>
+          </div>
+        </div>
+      )}
+
+      {/* Daily meditations — for novenas where each day has distinct
+       *  content (Surrender Novena most famously, with the day-by-day
+       *  meditations from Don Dolindo Ruotolo). Renders only when
+       *  the prayer has a complete reflection set (every day from 1
+       *  to daysRequired populated). Partial fills don't render here
+       *  to avoid showing an incomplete-looking list. The chain page
+       *  and email helpers render whatever days exist; this disclosure
+       *  is the library reference, so it should be all-or-nothing. */}
+      {hasCompleteReflections(prayer.dailyReflections, prayer.daysRequired) && (
+        <div className="prayer-card mb-8">
+          <h2 className="font-heading text-xl font-semibold text-navy-800 mb-3 flex items-center gap-2">
+            <CalendarDays className="w-5 h-5 text-gold-500" />
+            Daily Meditations
+          </h2>
+          <p className="text-sm text-muted-foreground mb-4 leading-relaxed">
+            Each day of this {prayer.daysRequired}-day prayer has a distinct
+            meditation. Tap to expand.
+          </p>
+          <div className="space-y-2">
+            {prayer.dailyReflections.slice(0, prayer.daysRequired).map(
+              (reflection, idx) => (
+                <details
+                  key={idx}
+                  className="rounded-lg border border-cream-300 bg-cream-50 p-4"
+                >
+                  <summary className="cursor-pointer font-medium text-navy-700">
+                    Day {idx + 1}
+                  </summary>
+                  <p className="mt-3 text-base leading-relaxed text-navy-700 whitespace-pre-line">
+                    {reflection}
+                  </p>
+                </details>
+              ),
+            )}
           </div>
         </div>
       )}

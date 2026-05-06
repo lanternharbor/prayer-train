@@ -202,6 +202,18 @@ model PrayerType {
   description   String              @db.Text
   instructions  String?             @db.Text
   prayerText    String?             @db.Text
+  // Per-day meditations for prayers where each day has distinct
+  // content (Surrender Novena most famously, plus Divine Mercy and
+  // others). Postgres text[] keyed by day index: dailyReflections[0]
+  // is day 1, dailyReflections[N-1] is day N. When length === 0
+  // (the default), pages and emails fall through to prayerText —
+  // the existing single-blob behavior. When length === daysRequired,
+  // pages and emails render the day's specific text on top of the
+  // refrain. Length mismatches are handled by callers gating on
+  // the equality check; the schema doesn't enforce it because
+  // legacy rows ship empty and partial-fill (5 of 9 reflections)
+  // is a reasonable in-progress state.
+  dailyReflections String[]         @default([])
   duration      Int // minutes
   difficulty    DifficultyLevel
   daysRequired  Int                 @default(1) // 9 for novenas, 1 for most

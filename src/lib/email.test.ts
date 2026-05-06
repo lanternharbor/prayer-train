@@ -260,6 +260,40 @@ describe("renderChainDailyReminder", () => {
       expect(all).not.toContain("the organizer&#39;s ");
     }
   });
+
+  it("omits the daily reflection card when dailyReflection is null/undefined", () => {
+    // Default state: dailyReflection isn't passed, or the lookup
+    // returned null because the prayer type has no dailyReflections
+    // array. Email must not render an empty "Day N reflection" card.
+    const r = renderChainDailyReminder({ ...base, organizerName: "Jilu" });
+    expect(r.html).not.toContain("Day 5 reflection");
+    expect(r.html).not.toContain("reflection</p>");
+    expect(r.text).not.toContain("Day 5 reflection:");
+  });
+
+  it("renders the daily reflection card when dailyReflection is provided", () => {
+    const reflection =
+      "Why do you confuse yourselves by worrying? Leave the care of your affairs to me and everything will be peaceful.";
+    const r = renderChainDailyReminder({
+      ...base,
+      organizerName: "Jilu",
+      dailyReflection: reflection,
+    });
+    expect(r.html).toContain("Day 5 reflection");
+    expect(r.html).toContain("Why do you confuse yourselves");
+    expect(r.text).toContain("Day 5 reflection:");
+    expect(r.text).toContain("Why do you confuse yourselves");
+  });
+
+  it("escapes HTML special characters in the daily reflection (XSS guard)", () => {
+    const r = renderChainDailyReminder({
+      ...base,
+      organizerName: "Jilu",
+      dailyReflection: "<script>alert(1)</script>",
+    });
+    expect(r.html).not.toContain("<script>alert");
+    expect(r.html).toContain("&lt;script&gt;");
+  });
 });
 
 describe("renderChainClosingDayEmail", () => {

@@ -8,6 +8,7 @@ import { SaintPortrait } from "@/components/saint-portrait";
 import { RecipientAvatar } from "@/components/ui/catholic-icons";
 import { dayNumberInTimezone, DEFAULT_DISPLAY_TZ } from "@/lib/dates";
 import { organizerFirstName } from "@/lib/organizer-display";
+import { reflectionForDay } from "@/lib/daily-reflections";
 import { JoinChainButton } from "./join-button";
 import { ChainShareButton } from "./share-button";
 import { BookOpen, CalendarDays, HandHeart, Settings, Users } from "lucide-react";
@@ -118,6 +119,11 @@ export default async function ChainDetailPage({
           prayerText: true,
           instructions: true,
           duration: true,
+          // Per-day meditations for prayers like the Surrender Novena
+          // where each day has distinct content. Empty array on legacy
+          // rows; the render block below is empty-gated so chain pages
+          // for prayers without reflections fall through to prayerText.
+          dailyReflections: true,
         },
       },
       members: {
@@ -282,38 +288,72 @@ export default async function ChainDetailPage({
         </div>
       )}
 
-      {/* Today's prayer */}
-      {chain.status === "ACTIVE" && (
-        <div className="prayer-card mb-8">
-          <h2 className="font-heading text-xl font-semibold text-navy-800 mb-3 flex items-center gap-2">
-            <CalendarDays className="w-5 h-5 text-gold-500" />
-            Today&apos;s prayer
-          </h2>
-          {chain.prayerType.instructions && (
-            <div className="text-sm text-muted-foreground mb-4 leading-relaxed whitespace-pre-line">
-              {chain.prayerType.instructions}
-            </div>
-          )}
-          {chain.prayerType.prayerText ? (
-            <div className="bg-cream-50 border border-cream-300 rounded-lg p-5">
-              <p className="font-heading text-lg leading-relaxed text-navy-700 italic whitespace-pre-line">
-                {chain.prayerType.prayerText}
+      {/* Today's prayer.
+       *
+       * Rendering order, when ACTIVE:
+       *   1. Optional "Today's reflection" card — the day-N meditation
+       *      from prayerType.dailyReflections, when populated. Empty
+       *      array (the default for every legacy row) skips this block
+       *      entirely, so chain pages for prayers without per-day
+       *      content fall through to the existing prayerText behavior
+       *      unchanged.
+       *   2. Prayer instructions (how to pray)
+       *   3. Prayer text — the always-the-same refrain or single block
+       *
+       * On the Surrender Novena specifically: instructions promise
+       * "Each day has a unique meditation." The day-N reflection card
+       * keeps that promise once Fr. Palladino reviews the nine
+       * meditations (theology-review.md item #14) and they land in a
+       * follow-up seed update. Until then, dailyReflections is empty
+       * and the page renders exactly as it did before.
+       */}
+      {chain.status === "ACTIVE" && (() => {
+        const todaysReflection = reflectionForDay(
+          chain.prayerType.dailyReflections,
+          day,
+        );
+        return (
+          <div className="prayer-card mb-8">
+            <h2 className="font-heading text-xl font-semibold text-navy-800 mb-3 flex items-center gap-2">
+              <CalendarDays className="w-5 h-5 text-gold-500" />
+              Today&apos;s prayer
+            </h2>
+            {chain.prayerType.instructions && (
+              <div className="text-sm text-muted-foreground mb-4 leading-relaxed whitespace-pre-line">
+                {chain.prayerType.instructions}
+              </div>
+            )}
+            {todaysReflection && (
+              <div className="bg-gold-50 border border-gold-200 rounded-lg p-5 mb-4">
+                <p className="text-xs uppercase tracking-widest text-gold-700 mb-2">
+                  Day {day} reflection
+                </p>
+                <p className="text-base leading-relaxed text-navy-700 whitespace-pre-line">
+                  {todaysReflection}
+                </p>
+              </div>
+            )}
+            {chain.prayerType.prayerText ? (
+              <div className="bg-cream-50 border border-cream-300 rounded-lg p-5">
+                <p className="font-heading text-lg leading-relaxed text-navy-700 italic whitespace-pre-line">
+                  {chain.prayerType.prayerText}
+                </p>
+              </div>
+            ) : (
+              <p className="text-sm text-muted-foreground italic">
+                See{" "}
+                <Link
+                  href={`/prayers/${chain.prayerType.slug}`}
+                  className="text-gold-700 hover:underline underline-offset-2"
+                >
+                  the prayer&apos;s page
+                </Link>{" "}
+                for the full text and instructions.
               </p>
-            </div>
-          ) : (
-            <p className="text-sm text-muted-foreground italic">
-              See{" "}
-              <Link
-                href={`/prayers/${chain.prayerType.slug}`}
-                className="text-gold-700 hover:underline underline-offset-2"
-              >
-                the prayer&apos;s page
-              </Link>{" "}
-              for the full text and instructions.
-            </p>
-          )}
-        </div>
-      )}
+            )}
+          </div>
+        );
+      })()}
 
       {/* Closing note (when COMPLETED) */}
       {chain.status === "COMPLETED" && chain.closingNote && (

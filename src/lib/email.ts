@@ -532,6 +532,13 @@ export interface ChainDailyReminderInput {
   prayerText: string | null;
   prayerInstructions: string | null;
   customPrayerText?: string | null;
+  /** Day-N specific meditation when prayerType.dailyReflections is
+   *  populated (e.g., the Surrender Novena's nine distinct daily texts
+   *  from Don Dolindo Ruotolo). Caller resolves via reflectionForDay
+   *  in src/lib/daily-reflections.ts and passes through; null when the
+   *  prayer doesn't have per-day reflections or this day isn't covered.
+   *  Renders as a "Day N reflection" card above the refrain block. */
+  dailyReflection?: string | null;
   recipientName: string | null;
   intention: string;
   day: number;
@@ -568,6 +575,9 @@ export function renderChainDailyReminder(input: ChainDailyReminderInput): {
   const eCustomPrayerText = input.customPrayerText
     ? escapeHtml(input.customPrayerText)
     : null;
+  const eDailyReflection = input.dailyReflection
+    ? escapeHtml(input.dailyReflection)
+    : null;
   // H1 mirrors the chain detail page (PR #30): drop possessive when
   // anonymous so the heading reads as a clean description.
   const h1 = eOrgFirst
@@ -600,6 +610,14 @@ export function renderChainDailyReminder(input: ChainDailyReminderInput): {
               ePrayerInstructions
                 ? `<div style="border-left: 3px solid #d4a843; background: #fdf8ef; padding: 14px 18px; margin: 0 0 18px;">
                     <p style="color: #11152c; font-size: 14px; line-height: 1.6; margin: 0; white-space: pre-line;">${ePrayerInstructions}</p>
+                  </div>`
+                : ""
+            }
+            ${
+              eDailyReflection
+                ? `<div style="background: #fdf8ef; border: 1px solid #e8d5a8; border-radius: 12px; padding: 20px; margin: 0 0 22px;">
+                    <p style="color: #947324; font-size: 11px; letter-spacing: 2px; text-transform: uppercase; margin: 0 0 10px;">Day ${input.day} reflection</p>
+                    <p style="color: #11152c; font-size: 15px; line-height: 1.7; white-space: pre-line; margin: 0;">${eDailyReflection}</p>
                   </div>`
                 : ""
             }
@@ -647,7 +665,10 @@ export function renderChainDailyReminder(input: ChainDailyReminderInput): {
   const customTextAttribution = orgFirst
     ? `\n\nA prayer from ${orgFirst}:\n${input.customPrayerText}`
     : `\n\nA personal prayer included:\n${input.customPrayerText}`;
-  const text = `${textHeader}\n\n${input.prayerInstructions ? input.prayerInstructions + "\n\n" : ""}${input.prayerText ?? ""}${input.customPrayerText ? customTextAttribution : ""}\n\nI prayed today: ${input.markCompleteUrl}\nVisit the prayer page: ${input.chainUrl}\nUnsubscribe: ${input.unsubscribeUrl}`;
+  const reflectionText = input.dailyReflection
+    ? `\n\nDay ${input.day} reflection:\n${input.dailyReflection}`
+    : "";
+  const text = `${textHeader}\n\n${input.prayerInstructions ? input.prayerInstructions + "\n\n" : ""}${reflectionText ? reflectionText + "\n\n" : ""}${input.prayerText ?? ""}${input.customPrayerText ? customTextAttribution : ""}\n\nI prayed today: ${input.markCompleteUrl}\nVisit the prayer page: ${input.chainUrl}\nUnsubscribe: ${input.unsubscribeUrl}`;
   return { subject, html, text };
 }
 

@@ -669,6 +669,73 @@ export async function sendChainClosingDayEmail({
   }
 }
 
+// ─── Train closing prompt to organizer ──────────────────────
+//
+// Mirrors sendChainClosingPrompt but for the calendar/coverage
+// PrayerTrain primitive. Fires from the daily-reminders cron on a
+// train's endDate, once per train. Idempotency lives on
+// PrayerTrain.closingPromptSentAt.
+//
+// CTA links to /p/[slug]/manage where the organizer hits the
+// "Mark Completed" status button. That path fires the existing
+// warrior-closing-email fan-out (preserved — auto-close is silent).
+
+export async function sendTrainClosingPrompt({
+  to,
+  organizerFirstName,
+  recipientName,
+  trainManageUrl,
+}: {
+  to: string;
+  /** Organizer's first name. Caller resolves anonymity via the
+   *  organizer-display helper before passing in. */
+  organizerFirstName: string;
+  /** Always present on trains (recipientName is required at create). */
+  recipientName: string;
+  /** /p/[slug]/manage — where organizer hits Mark Completed. */
+  trainManageUrl: string;
+}) {
+  const subject = `Your prayer train for ${recipientName} is wrapping up`;
+  const eOrgFirst = escapeHtml(organizerFirstName);
+  const eRecipientName = escapeHtml(recipientName);
+  try {
+    await resend.emails.send({
+      from: FROM,
+      to,
+      subject,
+      html: `
+        <div style="font-family: Georgia, 'Times New Roman', serif; max-width: 560px; margin: 0 auto; padding: 32px 24px; background: #faf8f5;">
+          <div style="background: #ffffff; border: 1px solid #e8e0d5; border-radius: 16px; padding: 32px 28px;">
+            <h1 style="color: #11152c; font-family: 'EB Garamond', Georgia, serif; font-size: 26px; font-weight: 700; margin: 0 0 16px; line-height: 1.3;">
+              Prayers for ${eRecipientName}
+            </h1>
+            <p style="color: #11152c; font-size: 15px; line-height: 1.7; margin: 0 0 16px;">
+              ${eOrgFirst}, the prayer train you organized for ${eRecipientName} reaches its final day today.
+            </p>
+            <p style="color: #11152c; font-size: 15px; line-height: 1.7; margin: 0 0 24px;">
+              When you're ready, visit the manage page and click <strong>Mark Completed</strong> to wrap things up. Doing so notifies the prayer warriors who pledged to pray and unlocks the spiritual bouquet PDF — every prayer offered, every day covered — that you can send to the family.
+            </p>
+            <div style="text-align: center; margin: 8px 0 4px;">
+              <a href="${trainManageUrl}" style="display: inline-block; background: #242e58; color: #ffffff; padding: 12px 28px; border-radius: 10px; text-decoration: none; font-weight: 600; font-size: 15px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;">
+                Mark the train completed
+              </a>
+            </div>
+            <p style="color: #b8a994; font-size: 13px; font-style: italic; line-height: 1.6; margin: 24px 0 0; text-align: center;">
+              No rush. The page stays available; you can come back to it whenever you're ready.
+            </p>
+          </div>
+          <p style="text-align: center; color: #b8a994; font-size: 12px; margin: 18px 0 0;">
+            PrayerTrain &middot; A Lantern Harbor project
+          </p>
+        </div>
+      `,
+      text: `Prayers for ${recipientName}\n\n${organizerFirstName}, the prayer train you organized for ${recipientName} reaches its final day today.\n\nWhen you're ready, visit the manage page and click Mark Completed to wrap things up. Doing so notifies the prayer warriors and unlocks the spiritual bouquet PDF — every prayer offered, every day covered — that you can send to the family.\n\nMark the train completed: ${trainManageUrl}\n\nNo rush. The page stays available; you can come back to it whenever you're ready.`,
+    });
+  } catch (error) {
+    console.error("Failed to send train closing-prompt email:", error);
+  }
+}
+
 // ─── Chain closing prompt to organizer ──────────────────────
 //
 // Fires from the chain-reminders cron on a chain's endDate, once per

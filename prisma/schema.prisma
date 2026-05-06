@@ -171,6 +171,16 @@ model PrayerTrain {
   // can be Anonymous on this train and still be named on others.
   organizerAnonymous Boolean @default(false)
 
+  // Idempotency tracker for the organizer-facing closing-prompt
+  // email. Set when the daily-reminders cron has dispatched the
+  // "your prayer train is wrapping up today" nudge for this train.
+  // Null = never sent. Once set, the cron skips this train on
+  // subsequent runs so a train lingering ACTIVE past its endDate
+  // doesn't get the prompt re-sent every day. Mirrors
+  // PrayerChain.closingPromptSentAt — see the chain version for the
+  // shape and the 7-day-grace auto-close pattern that pairs with it.
+  closingPromptSentAt DateTime?
+
   // Relations
   slots     PrayerSlot[]
   guestbook GuestbookEntry[]

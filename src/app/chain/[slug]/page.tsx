@@ -10,7 +10,7 @@ import { dayNumberInTimezone, DEFAULT_DISPLAY_TZ } from "@/lib/dates";
 import { organizerFirstName } from "@/lib/organizer-display";
 import { JoinChainButton } from "./join-button";
 import { ChainShareButton } from "./share-button";
-import { ArrowLeft, CalendarDays, HandHeart, Settings, Users } from "lucide-react";
+import { BookOpen, CalendarDays, HandHeart, Settings, Users } from "lucide-react";
 
 function recipientPhrase(
   recipientName: string | null,
@@ -147,13 +147,17 @@ export default async function ChainDetailPage({
 
   return (
     <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-      {/* Top nav */}
+      {/* Top nav. The "About this prayer" link points FORWARD to the
+          prayer-library detail page — it's a learn-more affordance,
+          not a back navigation. Uses a BookOpen icon (not a back-
+          arrow) so users arriving from /browse don't read it as
+          "go back to a page you've never visited." */}
       <div className="flex items-center justify-between mb-8">
         <Link
           href={`/prayers/${chain.prayerType.slug}`}
           className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors"
         >
-          <ArrowLeft className="w-4 h-4" />
+          <BookOpen className="w-4 h-4" />
           About this prayer
         </Link>
         {isOrganizer && (

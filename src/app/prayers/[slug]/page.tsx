@@ -11,7 +11,6 @@ import {
   formatSituation,
 } from "@/lib/utils";
 import {
-  ArrowLeft,
   Clock,
   Star,
   CalendarDays,
@@ -92,13 +91,18 @@ export default async function PrayerDetailPage({
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(article) }}
       />
-      {/* Breadcrumb */}
+      {/* Library link. Uses a BookOpen icon (not a back-arrow) because
+          this page is reachable from many entrypoints — /browse, a
+          /chain/[slug] "About this prayer" link, search, direct visit
+          — and "Back to Prayer Library" was misleading on every path
+          except the library itself. The icon signals "library /
+          reference" without implying history. */}
       <Link
         href="/prayers"
         className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground mb-8 transition-colors"
       >
-        <ArrowLeft className="w-4 h-4" />
-        Back to Prayer Library
+        <BookOpen className="w-4 h-4" />
+        Prayer Library
       </Link>
 
       {/* Header */}

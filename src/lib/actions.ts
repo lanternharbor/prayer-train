@@ -1280,12 +1280,13 @@ export async function cancelPrayerChain(formData: FormData) {
   // (chainId, email) pair is unique in the schema but the dedupe
   // adds zero cost and protects future-edits.
   const seen = new Set<string>();
-  // Honor organizerAnonymous: anonymous chains use the generic
-  // "the organizer" label so the cancellation email doesn't leak the
-  // name they explicitly chose to hide.
+  // Honor organizerAnonymous: pass null so the email helper drops
+  // the possessive subject/H1 and renders anonymous-friendly copy
+  // ("The Surrender Novena for X has been cancelled" rather than
+  // "the's Surrender Novena ..."). See renderChainCancellationNotice.
   const orgName =
     chain.organizerAnonymous || !chain.organizer?.name
-      ? "the organizer"
+      ? null
       : chain.organizer.name;
   for (const member of chain.members) {
     if (!member.email || seen.has(member.email)) continue;
@@ -1608,9 +1609,12 @@ export async function joinPrayerChain(formData: FormData) {
   await sendChainJoinConfirmation({
     to: email,
     memberName: name,
+    // null = anonymous OR no User.name. Email helper renders
+    // "You're praying along for X" instead of broken-grammar
+    // "You're praying with the for X". See renderChainJoinConfirmation.
     organizerName:
       chain.organizerAnonymous || !chain.organizer?.name
-        ? "the organizer"
+        ? null
         : chain.organizer.name,
     prayerName: chain.prayerType.name,
     recipientName: chain.recipientName,
@@ -1821,9 +1825,12 @@ export async function closePrayerChain(formData: FormData) {
     await sendChainClosingDayEmail({
       to: member.email,
       memberName: member.name,
+      // null = anonymous OR no User.name. The render helper drops the
+      // possessive in the subject/body and uses generic "A note from
+      // the organizer" attribution. See renderChainClosingDayEmail.
       organizerName:
         chain.organizerAnonymous || !chain.organizer?.name
-          ? "the organizer"
+          ? null
           : chain.organizer.name,
       prayerName: chain.prayerType.name,
       recipientName: chain.recipientName,

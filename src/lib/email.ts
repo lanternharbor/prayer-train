@@ -271,7 +271,14 @@ export async function sendDailyReminder({
   const eCustomPrayerText = customPrayerText
     ? escapeHtml(customPrayerText)
     : null;
-  const eOrgFirst = escapeHtml(organizerFirstName || "the organizer");
+  // Anonymous-aware attribution. When organizerFirstName is null or
+  // empty, drop the "from X" attribution and use a generic neutral
+  // label ("A personal prayer included") instead of the previous
+  // stiff "A prayer from the organizer" fallback.
+  const eOrgFirst = organizerFirstName ? escapeHtml(organizerFirstName) : null;
+  const customPrayerHeading = eOrgFirst
+    ? `A prayer from ${eOrgFirst}`
+    : `A personal prayer included`;
   try {
     await resend.emails.send({
       from: FROM,
@@ -310,7 +317,7 @@ export async function sendDailyReminder({
           ${eCustomPrayerText ? `
             <div style="background: #fdf8ef; border: 1px solid #e8d5a8; border-radius: 12px; padding: 20px; margin-bottom: 16px;">
               <p style="margin: 0 0 10px 0; color: #947324; font-size: 11px; letter-spacing: 2px; text-transform: uppercase;">
-                A prayer from ${eOrgFirst}
+                ${customPrayerHeading}
               </p>
               <p style="margin: 0; color: #242e58; font-style: italic; line-height: 1.8; font-size: 15px; white-space: pre-line;">
                 ${eCustomPrayerText}
@@ -411,61 +418,96 @@ function recipientPhrase(
   return `for ${words}${intention.trim().split(/\s+/).length > 8 ? "…" : ""}`;
 }
 
-function firstName(fullName: string): string {
-  return fullName.trim().split(/\s+/)[0] || fullName;
+/**
+ * Resolve an organizer's first name for sentence interpolation, returning
+ * `null` when the caller has signalled that no real name is available
+ * (anonymous chain/train, or User.name is null/blank).
+ *
+ * Templates use the null branch to drop possessive constructions like
+ * `${orgFirst}'s ${prayerName}` that previously produced broken-grammar
+ * subjects ("Day 5 of the's Surrender Novena ..." — see PR commentary in
+ * fix/anonymous-email-rendering for the original bug).
+ *
+ * Contract:
+ *   - null input → null output (anonymous flag, propagate)
+ *   - empty/whitespace input → null (defensive: treat as unset)
+ *   - "First Last" → "First"
+ *   - "First" → "First"
+ */
+export function firstNameOrNull(organizerName: string | null): string | null {
+  if (organizerName === null) return null;
+  const trimmed = organizerName.trim();
+  if (trimmed.length === 0) return null;
+  return trimmed.split(/\s+/)[0];
 }
 
-export async function sendChainJoinConfirmation({
-  to,
-  memberName,
-  organizerName,
-  prayerName,
-  recipientName,
-  intention,
-  durationDays,
-  chainUrl,
-}: {
+// ─── Chain email rendering helpers ────────────────────────────
+//
+// The four chain-audience email templates (sendChainJoinConfirmation,
+// sendChainDailyReminder, sendChainClosingDayEmail,
+// sendChainCancellationNotice) are split into pure `render*` helpers
+// returning { subject, html, text } and thin async senders that call
+// Resend. The split keeps the rendering logic testable without
+// network mocks — the test suite asserts on subject/html shape for
+// the (named, anonymous, null-name) permutations.
+//
+// All four take `organizerName: string | null`. The null path drops
+// possessive constructions and substitutes anonymous-friendly copy,
+// mirroring the chain detail page H1 fix from PR #30.
+
+export interface ChainJoinConfirmationInput {
   to: string;
   memberName: string;
-  organizerName: string;
+  /** null = anonymous OR no User.name. Template branches on this. */
+  organizerName: string | null;
   prayerName: string;
   recipientName: string | null;
   intention: string;
   durationDays: number;
   chainUrl: string;
-}) {
-  const phrase = recipientPhrase(recipientName, intention);
-  const orgFirst = firstName(organizerName);
-  const subject = `You're praying with ${orgFirst} ${phrase}`;
-  // Pre-escape user-controlled fields for safe HTML injection. `phrase`
-  // is derived from user-provided recipientName/intention so it gets
-  // escaped too.
-  const eMemberName = escapeHtml(memberName);
-  const eOrgFirst = escapeHtml(orgFirst);
-  const ePrayerName = escapeHtml(prayerName);
+}
+
+export function renderChainJoinConfirmation(input: ChainJoinConfirmationInput): {
+  subject: string;
+  html: string;
+  text: string;
+} {
+  const phrase = recipientPhrase(input.recipientName, input.intention);
+  const orgFirst = firstNameOrNull(input.organizerName);
+  // Subject + greeting branch on whether a real name is available.
+  // Anonymous: "You're praying along for Denis" — no "with X".
+  // Named: "You're praying with William for Denis" — keeps the warm
+  // first-name attribution.
+  const subject = orgFirst
+    ? `You're praying with ${orgFirst} ${phrase}`
+    : `You're praying along ${phrase}`;
+  // Pre-escape user-controlled fields for safe HTML injection.
+  const eMemberName = escapeHtml(input.memberName);
+  const eOrgFirst = orgFirst ? escapeHtml(orgFirst) : null;
+  const ePrayerName = escapeHtml(input.prayerName);
   const ePhrase = escapeHtml(phrase);
-  try {
-    await resend.emails.send({
-      from: FROM,
-      to,
-      subject,
-      html: `
+  // Intro sentence: drop the possessive ("the's Surrender Novena") when
+  // anonymous. "the Surrender Novena for X" reads cleanly.
+  const introSentence = eOrgFirst
+    ? `You've joined ${eOrgFirst}'s <strong>${ePrayerName}</strong> ${ePhrase}.`
+    : `You've joined the <strong>${ePrayerName}</strong> ${ePhrase}.`;
+  const html = `
         <div style="font-family: Georgia, 'Times New Roman', serif; max-width: 560px; margin: 0 auto; padding: 32px 24px; background: #faf8f5;">
           <div style="background: #ffffff; border: 1px solid #e8e0d5; border-radius: 16px; padding: 28px 26px;">
             <h1 style="color: #11152c; font-size: 22px; font-weight: 700; margin: 0 0 12px;">
               Welcome, ${eMemberName}.
             </h1>
             <p style="color: #11152c; font-size: 15px; line-height: 1.6; margin: 0 0 14px;">
-              You've joined ${eOrgFirst}'s <strong>${ePrayerName}</strong> ${ePhrase}.
+              ${introSentence}
             </p>
             <p style="color: #11152c; font-size: 15px; line-height: 1.6; margin: 0 0 14px;">
-              For the next ${durationDays} days, you'll receive an email each
+              For the next ${input.durationDays} days, you'll receive an email each
               morning with the day's prayer text. Pray it whenever and wherever
               works for you. There's no obligation, no streak to maintain — just
               the grace of doing this together.
             </p>
             <div style="text-align: center; margin: 24px 0 8px;">
-              <a href="${chainUrl}" style="display: inline-block; background: #242e58; color: #ffffff; padding: 12px 28px; border-radius: 10px; text-decoration: none; font-weight: 600; font-size: 15px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;">
+              <a href="${input.chainUrl}" style="display: inline-block; background: #242e58; color: #ffffff; padding: 12px 28px; border-radius: 10px; text-decoration: none; font-weight: 600; font-size: 15px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;">
                 Open the prayer
               </a>
             </div>
@@ -474,38 +516,21 @@ export async function sendChainJoinConfirmation({
             PrayerTrain · A Lantern Harbor project
           </p>
         </div>
-      `,
-      text: `You've joined ${orgFirst}'s ${prayerName} ${phrase}.\n\nFor the next ${durationDays} days, you'll receive a daily email with the prayer text.\n\nOpen the prayer page: ${chainUrl}`,
-    });
-  } catch (error) {
-    console.error("Failed to send chain join confirmation:", error);
-  }
+      `;
+  const textIntro = orgFirst
+    ? `You've joined ${orgFirst}'s ${input.prayerName} ${phrase}.`
+    : `You've joined the ${input.prayerName} ${phrase}.`;
+  const text = `${textIntro}\n\nFor the next ${input.durationDays} days, you'll receive a daily email with the prayer text.\n\nOpen the prayer page: ${input.chainUrl}`;
+  return { subject, html, text };
 }
 
-export async function sendChainDailyReminder({
-  to,
-  memberName,
-  organizerName,
-  prayerName,
-  prayerText,
-  prayerInstructions,
-  customPrayerText,
-  recipientName,
-  intention,
-  day,
-  durationDays,
-  chainUrl,
-  markCompleteUrl,
-  unsubscribeUrl,
-  otherMembersCount,
-}: {
+export interface ChainDailyReminderInput {
   to: string;
   memberName: string;
-  organizerName: string;
+  organizerName: string | null;
   prayerName: string;
   prayerText: string | null;
   prayerInstructions: string | null;
-  /** Optional personal prayer the organizer added on chain creation. */
   customPrayerText?: string | null;
   recipientName: string | null;
   intention: string;
@@ -515,35 +540,58 @@ export async function sendChainDailyReminder({
   markCompleteUrl: string;
   unsubscribeUrl: string;
   otherMembersCount: number;
-}) {
-  const phrase = recipientPhrase(recipientName, intention);
-  const orgFirst = firstName(organizerName);
-  const subject = `Day ${day} of ${orgFirst}'s ${prayerName} ${phrase}`;
+}
+
+export function renderChainDailyReminder(input: ChainDailyReminderInput): {
+  subject: string;
+  html: string;
+  text: string;
+} {
+  const phrase = recipientPhrase(input.recipientName, input.intention);
+  const orgFirst = firstNameOrNull(input.organizerName);
+  // Subject branches on name availability. Named uses the warm
+  // "Day 5 of William's Surrender Novena for X" form. Anonymous
+  // drops the possessive: "Day 5 of the Surrender Novena for X" —
+  // grammatical and reads as a neutral description.
+  const subject = orgFirst
+    ? `Day ${input.day} of ${orgFirst}'s ${input.prayerName} ${phrase}`
+    : `Day ${input.day} of the ${input.prayerName} ${phrase}`;
   // Pre-escape user-controlled fields for safe HTML injection.
-  const eMemberName = escapeHtml(memberName);
-  const eOrgFirst = escapeHtml(orgFirst);
-  const ePrayerName = escapeHtml(prayerName);
+  const eMemberName = escapeHtml(input.memberName);
+  const eOrgFirst = orgFirst ? escapeHtml(orgFirst) : null;
+  const ePrayerName = escapeHtml(input.prayerName);
   const ePhrase = escapeHtml(phrase);
-  const ePrayerText = prayerText ? escapeHtml(prayerText) : null;
-  const ePrayerInstructions = prayerInstructions
-    ? escapeHtml(prayerInstructions)
+  const ePrayerText = input.prayerText ? escapeHtml(input.prayerText) : null;
+  const ePrayerInstructions = input.prayerInstructions
+    ? escapeHtml(input.prayerInstructions)
     : null;
-  const eCustomPrayerText = customPrayerText
-    ? escapeHtml(customPrayerText)
+  const eCustomPrayerText = input.customPrayerText
+    ? escapeHtml(input.customPrayerText)
     : null;
-  try {
-    await resend.emails.send({
-      from: FROM,
-      to,
-      subject,
-      html: `
+  // H1 mirrors the chain detail page (PR #30): drop possessive when
+  // anonymous so the heading reads as a clean description.
+  const h1 = eOrgFirst
+    ? `${eOrgFirst}'s ${ePrayerName} ${ePhrase}`
+    : `${ePrayerName} ${ePhrase}`;
+  // Custom-prayer attribution: drop the "from X" when anonymous.
+  // "A personal prayer included" reads as a neutral label rather
+  // than "A prayer from the organizer" (stiff) or worse.
+  const customPrayerHeading = eOrgFirst
+    ? `A prayer from ${eOrgFirst}`
+    : `A personal prayer included`;
+  // "N other people are praying with William today" → "N other people
+  // are praying today" when anonymous.
+  const otherMembersLine = eOrgFirst
+    ? `${input.otherMembersCount} ${input.otherMembersCount === 1 ? "other person is" : "other people are"} praying with ${eOrgFirst} today.`
+    : `${input.otherMembersCount} ${input.otherMembersCount === 1 ? "other person is" : "other people are"} praying today.`;
+  const html = `
         <div style="font-family: Georgia, 'Times New Roman', serif; max-width: 600px; margin: 0 auto; padding: 32px 24px; background: #faf8f5;">
           <div style="background: #ffffff; border: 1px solid #e8e0d5; border-radius: 16px; padding: 28px 26px;">
             <p style="color: #947324; font-size: 11px; letter-spacing: 2px; text-transform: uppercase; margin: 0 0 6px;">
-              Day ${day} of ${durationDays}
+              Day ${input.day} of ${input.durationDays}
             </p>
             <h1 style="color: #11152c; font-size: 22px; font-weight: 700; margin: 0 0 16px; line-height: 1.3;">
-              ${eOrgFirst}'s ${ePrayerName} ${ePhrase}
+              ${h1}
             </h1>
             <p style="color: #6e6150; font-size: 14px; line-height: 1.6; margin: 0 0 20px;">
               Take a moment, ${eMemberName}. The prayer for today is below.
@@ -565,87 +613,100 @@ export async function sendChainDailyReminder({
             ${
               eCustomPrayerText
                 ? `<div style="background: #fdf8ef; border: 1px solid #e8d5a8; border-radius: 12px; padding: 20px; margin: 0 0 22px;">
-                    <p style="color: #947324; font-size: 11px; letter-spacing: 2px; text-transform: uppercase; margin: 0 0 10px;">A prayer from ${eOrgFirst}</p>
+                    <p style="color: #947324; font-size: 11px; letter-spacing: 2px; text-transform: uppercase; margin: 0 0 10px;">${customPrayerHeading}</p>
                     <p style="font-family: 'EB Garamond', Georgia, serif; color: #11152c; font-size: 16px; font-style: italic; line-height: 1.7; white-space: pre-line; margin: 0;">${eCustomPrayerText}</p>
                   </div>`
                 : ""
             }
             ${
-              otherMembersCount > 0
+              input.otherMembersCount > 0
                 ? `<p style="color: #6e6150; font-size: 13px; line-height: 1.6; margin: 0 0 18px; font-style: italic; text-align: center;">
-                    ${otherMembersCount} ${otherMembersCount === 1 ? "other person is" : "other people are"} praying with ${eOrgFirst} today.
+                    ${otherMembersLine}
                   </p>`
                 : ""
             }
             <div style="text-align: center; margin: 24px 0 8px;">
-              <a href="${markCompleteUrl}" style="display: inline-block; background: #d4a843; color: #0a0c1a; padding: 12px 28px; border-radius: 10px; text-decoration: none; font-weight: 600; font-size: 14px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;">
+              <a href="${input.markCompleteUrl}" style="display: inline-block; background: #d4a843; color: #0a0c1a; padding: 12px 28px; border-radius: 10px; text-decoration: none; font-weight: 600; font-size: 14px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;">
                 I prayed today
               </a>
             </div>
             <p style="text-align: center; color: #b8a994; font-size: 12px; margin: 18px 0 0;">
-              <a href="${chainUrl}" style="color: #947324; text-decoration: none;">Visit the prayer</a>
+              <a href="${input.chainUrl}" style="color: #947324; text-decoration: none;">Visit the prayer</a>
               &nbsp;·&nbsp;
-              <a href="${unsubscribeUrl}" style="color: #b8a994; text-decoration: none;">Unsubscribe</a>
+              <a href="${input.unsubscribeUrl}" style="color: #b8a994; text-decoration: none;">Unsubscribe</a>
             </p>
           </div>
           <p style="text-align: center; color: #b8a994; font-size: 12px; margin: 16px 0 0;">
             PrayerTrain · A Lantern Harbor project
           </p>
         </div>
-      `,
-      text: `Day ${day} of ${durationDays} — ${orgFirst}'s ${prayerName} ${phrase}\n\n${prayerInstructions ? prayerInstructions + "\n\n" : ""}${prayerText ?? ""}${customPrayerText ? `\n\nA prayer from ${orgFirst}:\n${customPrayerText}` : ""}\n\nI prayed today: ${markCompleteUrl}\nVisit the prayer page: ${chainUrl}\nUnsubscribe: ${unsubscribeUrl}`,
-    });
-  } catch (error) {
-    console.error("Failed to send chain daily reminder:", error);
-  }
+      `;
+  const textHeader = orgFirst
+    ? `Day ${input.day} of ${input.durationDays} — ${orgFirst}'s ${input.prayerName} ${phrase}`
+    : `Day ${input.day} of ${input.durationDays} — ${input.prayerName} ${phrase}`;
+  const customTextAttribution = orgFirst
+    ? `\n\nA prayer from ${orgFirst}:\n${input.customPrayerText}`
+    : `\n\nA personal prayer included:\n${input.customPrayerText}`;
+  const text = `${textHeader}\n\n${input.prayerInstructions ? input.prayerInstructions + "\n\n" : ""}${input.prayerText ?? ""}${input.customPrayerText ? customTextAttribution : ""}\n\nI prayed today: ${input.markCompleteUrl}\nVisit the prayer page: ${input.chainUrl}\nUnsubscribe: ${input.unsubscribeUrl}`;
+  return { subject, html, text };
 }
 
-export async function sendChainClosingDayEmail({
-  to,
-  memberName,
-  organizerName,
-  prayerName,
-  recipientName,
-  closingNote,
-  chainUrl,
-}: {
+export interface ChainClosingDayEmailInput {
   to: string;
   memberName: string;
-  organizerName: string;
+  organizerName: string | null;
   prayerName: string;
   recipientName: string | null;
   closingNote: string | null;
   chainUrl: string;
-}) {
-  const orgFirst = firstName(organizerName);
-  const recipientPhraseShort = recipientName?.trim()
-    ? `for ${recipientName.trim()}`
+}
+
+export function renderChainClosingDayEmail(input: ChainClosingDayEmailInput): {
+  subject: string;
+  html: string;
+  text: string;
+} {
+  const orgFirst = firstNameOrNull(input.organizerName);
+  const recipientPhraseShort = input.recipientName?.trim()
+    ? `for ${input.recipientName.trim()}`
     : "";
-  const subject = `The ${prayerName} is complete — thank you for praying with ${orgFirst}`;
-  // Pre-escape user-controlled fields for safe HTML injection.
-  const eMemberName = escapeHtml(memberName);
-  const eOrgFirst = escapeHtml(orgFirst);
-  const ePrayerName = escapeHtml(prayerName);
+  // Subject: keep the closing line's warmth. Named version reads "thank
+  // you for praying with William"; anonymous drops the trailing "with X"
+  // since there's no name to attribute. The Prayer name + "is complete"
+  // anchor stays.
+  const subject = orgFirst
+    ? `The ${input.prayerName} is complete — thank you for praying with ${orgFirst}`
+    : `The ${input.prayerName} is complete — thank you for praying`;
+  const eMemberName = escapeHtml(input.memberName);
+  const eOrgFirst = orgFirst ? escapeHtml(orgFirst) : null;
+  const ePrayerName = escapeHtml(input.prayerName);
   const eRecipientPhraseShort = escapeHtml(recipientPhraseShort);
-  const eClosingNote = closingNote ? escapeHtml(closingNote) : null;
-  try {
-    await resend.emails.send({
-      from: FROM,
-      to,
-      subject,
-      html: `
+  const eClosingNote = input.closingNote ? escapeHtml(input.closingNote) : null;
+  // Body thank-you line: drop "with X" when anonymous. The recipient
+  // phrase ("for Denis") still anchors the prayer to its subject so
+  // the email is not generic.
+  const thankYouLine = eOrgFirst
+    ? `Thank you for praying with ${eOrgFirst} ${eRecipientPhraseShort}, ${eMemberName}.`
+    : `Thank you for praying ${eRecipientPhraseShort}, ${eMemberName}.`;
+  // Closing-note attribution: when anonymous, use generic "A note from
+  // the organizer" rather than blank. The closing note is the
+  // organizer's voice and that framing is grammatical even unnamed.
+  const closingNoteHeading = eOrgFirst
+    ? `A note from ${eOrgFirst}`
+    : `A note from the organizer`;
+  const html = `
         <div style="font-family: Georgia, 'Times New Roman', serif; max-width: 560px; margin: 0 auto; padding: 32px 24px; background: #faf8f5;">
           <div style="background: #ffffff; border: 1px solid #e8e0d5; border-radius: 16px; padding: 32px 28px; text-align: center;">
             <h1 style="color: #11152c; font-family: 'EB Garamond', Georgia, serif; font-size: 26px; font-weight: 700; margin: 0 0 12px; line-height: 1.3;">
               The ${ePrayerName} is complete.
             </h1>
             <p style="color: #11152c; font-size: 15px; line-height: 1.7; margin: 0 0 18px;">
-              Thank you for praying with ${eOrgFirst} ${eRecipientPhraseShort}, ${eMemberName}.
+              ${thankYouLine}
             </p>
             ${
               eClosingNote
                 ? `<div style="background: #fdf8ef; border-radius: 12px; padding: 20px; margin: 0 0 18px; text-align: left;">
-                    <p style="color: #947324; font-size: 11px; letter-spacing: 2px; text-transform: uppercase; margin: 0 0 8px;">A note from ${eOrgFirst}</p>
+                    <p style="color: #947324; font-size: 11px; letter-spacing: 2px; text-transform: uppercase; margin: 0 0 8px;">${closingNoteHeading}</p>
                     <p style="color: #11152c; font-style: italic; font-size: 15px; line-height: 1.7; margin: 0; white-space: pre-line;">${eClosingNote}</p>
                   </div>`
                 : ""
@@ -655,15 +716,106 @@ export async function sendChainClosingDayEmail({
             </p>
           </div>
           <p style="text-align: center; color: #b8a994; font-size: 12px; margin: 18px 0 0;">
-            <a href="${chainUrl}" style="color: #947324; text-decoration: none;">Visit the prayer page</a>
+            <a href="${input.chainUrl}" style="color: #947324; text-decoration: none;">Visit the prayer page</a>
           </p>
           <p style="text-align: center; color: #b8a994; font-size: 12px; margin: 8px 0 0;">
             PrayerTrain · A Lantern Harbor project
           </p>
         </div>
-      `,
-      text: `The ${prayerName} is complete.\n\nThank you for praying with ${orgFirst} ${recipientPhraseShort}, ${memberName}.\n\n${closingNote ? "A note from " + orgFirst + ":\n" + closingNote + "\n\n" : ""}May the Lord bless and keep all who carried this prayer.\n\n${chainUrl}`,
-    });
+      `;
+  const textThank = orgFirst
+    ? `Thank you for praying with ${orgFirst} ${recipientPhraseShort}, ${input.memberName}.`
+    : `Thank you for praying ${recipientPhraseShort}, ${input.memberName}.`;
+  const textCloseAttrib = orgFirst ? `A note from ${orgFirst}` : `A note from the organizer`;
+  const text = `The ${input.prayerName} is complete.\n\n${textThank}\n\n${input.closingNote ? textCloseAttrib + ":\n" + input.closingNote + "\n\n" : ""}May the Lord bless and keep all who carried this prayer.\n\n${input.chainUrl}`;
+  return { subject, html, text };
+}
+
+export interface ChainCancellationNoticeInput {
+  to: string;
+  memberName: string;
+  organizerName: string | null;
+  prayerName: string;
+  recipientName: string | null;
+  intention: string;
+}
+
+export function renderChainCancellationNotice(input: ChainCancellationNoticeInput): {
+  subject: string;
+  html: string;
+  text: string;
+} {
+  const phrase = recipientPhrase(input.recipientName, input.intention);
+  const orgFirst = firstNameOrNull(input.organizerName);
+  const eMemberName = escapeHtml(input.memberName);
+  const eOrgFirst = orgFirst ? escapeHtml(orgFirst) : null;
+  const ePrayerName = escapeHtml(input.prayerName);
+  const ePhrase = escapeHtml(phrase);
+  // Subject + H1: drop possessive when anonymous. The "has been
+  // cancelled" structure still reads cleanly without an owner.
+  const subject = orgFirst
+    ? `${orgFirst}'s ${input.prayerName} ${phrase} has been cancelled`
+    : `The ${input.prayerName} ${phrase} has been cancelled`;
+  const h1 = eOrgFirst
+    ? `${eOrgFirst}&rsquo;s ${ePrayerName} ${ePhrase} has been cancelled.`
+    : `The ${ePrayerName} ${ePhrase} has been cancelled.`;
+  const closedSentence = eOrgFirst
+    ? `${eOrgFirst} has closed this shared prayer, so you won&rsquo;t`
+    : `The organizer has closed this shared prayer, so you won&rsquo;t`;
+  const html = `
+        <div style="font-family: Georgia, 'Times New Roman', serif; max-width: 560px; margin: 0 auto; padding: 32px 24px; background: #faf8f5;">
+          <div style="background: #ffffff; border: 1px solid #e8e0d5; border-radius: 16px; padding: 28px 26px;">
+            <h1 style="color: #11152c; font-size: 22px; font-weight: 700; margin: 0 0 14px;">
+              ${h1}
+            </h1>
+            <p style="color: #11152c; font-size: 15px; line-height: 1.7; margin: 0 0 14px;">
+              ${closedSentence}
+              receive any more daily reminders for it. Thank you for the
+              prayers you offered while it was running, ${eMemberName}.
+              Whatever was prayed has been prayed; the Lord receives every
+              offering whether or not the calendar around it continues.
+            </p>
+            <p style="color: #11152c; font-size: 15px; line-height: 1.7; margin: 0;">
+              No action is needed from you.
+            </p>
+          </div>
+          <p style="text-align: center; color: #b8a994; font-size: 12px; margin: 18px 0 0;">
+            PrayerTrain &middot; A Lantern Harbor project
+          </p>
+        </div>
+      `;
+  const textHeader = orgFirst
+    ? `${orgFirst}'s ${input.prayerName} ${phrase} has been cancelled.`
+    : `The ${input.prayerName} ${phrase} has been cancelled.`;
+  const textBody = orgFirst
+    ? `${orgFirst} has closed this shared prayer, so you won't receive any more daily reminders for it. Thank you for the prayers you offered while it was running, ${input.memberName}.`
+    : `The organizer has closed this shared prayer, so you won't receive any more daily reminders for it. Thank you for the prayers you offered while it was running, ${input.memberName}.`;
+  const text = `${textHeader}\n\n${textBody}\n\nNo action is needed from you.`;
+  return { subject, html, text };
+}
+
+export async function sendChainJoinConfirmation(input: ChainJoinConfirmationInput) {
+  const { subject, html, text } = renderChainJoinConfirmation(input);
+  try {
+    await resend.emails.send({ from: FROM, to: input.to, subject, html, text });
+  } catch (error) {
+    console.error("Failed to send chain join confirmation:", error);
+  }
+}
+
+export async function sendChainDailyReminder(input: ChainDailyReminderInput) {
+  const { subject, html, text } = renderChainDailyReminder(input);
+  try {
+    await resend.emails.send({ from: FROM, to: input.to, subject, html, text });
+  } catch (error) {
+    console.error("Failed to send chain daily reminder:", error);
+  }
+}
+
+export async function sendChainClosingDayEmail(input: ChainClosingDayEmailInput) {
+  const { subject, html, text } = renderChainClosingDayEmail(input);
+  try {
+    await resend.emails.send({ from: FROM, to: input.to, subject, html, text });
   } catch (error) {
     console.error("Failed to send chain closing-day email:", error);
   }
@@ -821,57 +973,10 @@ export async function sendChainClosingPrompt({
 // when an organizer cancels the chain. Caller dedupes by email and
 // handles the empty-recipients case.
 
-export async function sendChainCancellationNotice({
-  to,
-  memberName,
-  organizerName,
-  prayerName,
-  recipientName,
-  intention,
-}: {
-  to: string;
-  memberName: string;
-  organizerName: string;
-  prayerName: string;
-  recipientName: string | null;
-  intention: string;
-}) {
-  const phrase = recipientPhrase(recipientName, intention);
-  const orgFirst = firstName(organizerName);
-  const eMemberName = escapeHtml(memberName);
-  const eOrgFirst = escapeHtml(orgFirst);
-  const ePrayerName = escapeHtml(prayerName);
-  const ePhrase = escapeHtml(phrase);
-  const subject = `${orgFirst}'s ${prayerName} ${phrase} has been cancelled`;
+export async function sendChainCancellationNotice(input: ChainCancellationNoticeInput) {
+  const { subject, html, text } = renderChainCancellationNotice(input);
   try {
-    await resend.emails.send({
-      from: FROM,
-      to,
-      subject,
-      html: `
-        <div style="font-family: Georgia, 'Times New Roman', serif; max-width: 560px; margin: 0 auto; padding: 32px 24px; background: #faf8f5;">
-          <div style="background: #ffffff; border: 1px solid #e8e0d5; border-radius: 16px; padding: 28px 26px;">
-            <h1 style="color: #11152c; font-size: 22px; font-weight: 700; margin: 0 0 14px;">
-              ${eOrgFirst}&rsquo;s ${ePrayerName} ${ePhrase} has been cancelled.
-            </h1>
-            <p style="color: #11152c; font-size: 15px; line-height: 1.7; margin: 0 0 14px;">
-              ${eOrgFirst} has closed this shared prayer, so you won&rsquo;t
-              receive any more daily reminders for it. Thank you for the
-              prayers you offered while it was running, ${eMemberName}.
-              Whatever was prayed has been prayed; the Lord receives every
-              offering whether or not the calendar around it continues.
-            </p>
-            <p style="color: #11152c; font-size: 15px; line-height: 1.7; margin: 0;">
-              No action is needed from you.
-            </p>
-          </div>
-          <p style="text-align: center; color: #b8a994; font-size: 12px; margin: 18px 0 0;">
-            PrayerTrain &middot; A Lantern Harbor project
-          </p>
-        </div>
-      `,
-      text: `${orgFirst}'s ${prayerName} ${phrase} has been cancelled.\n\n${orgFirst} has closed this shared prayer, so you won't receive any more daily reminders for it. Thank you for the prayers you offered while it was running, ${memberName}.\n\nNo action is needed from you.`,
-    });
+    await resend.emails.send({ from: FROM, to: input.to, subject, html, text });
   } catch (error) {
     console.error("Failed to send chain cancellation notice:", error);
   }
@@ -899,12 +1004,18 @@ export async function sendPrayerWarriorWelcome({
   organizerFirstName: string | null;
   trainUrl: string;
 }) {
-  const orgFirst = organizerFirstName ?? "the organizer";
   const subject = `Thank you for praying for ${recipientName}`;
   // Pre-escape user-controlled fields for safe HTML injection.
   const eWarriorName = escapeHtml(warriorName);
   const eRecipientName = escapeHtml(recipientName);
-  const eOrgFirst = escapeHtml(orgFirst);
+  // Drop possessive when the organizer is anonymous or has no name.
+  // "the organizer's prayer for X" reads stiff; the anonymous form
+  // "the prayer for X" mirrors the chain detail-page H1 fix from
+  // PR #30. Mirrors the rendering pattern in the chain email helpers.
+  const eOrgFirst = organizerFirstName ? escapeHtml(organizerFirstName) : null;
+  const joinSentence = eOrgFirst
+    ? `You've joined ${eOrgFirst}'s prayer for <strong>${eRecipientName}</strong>.`
+    : `You've joined the prayer for <strong>${eRecipientName}</strong>.`;
   try {
     await resend.emails.send({
       from: FROM,
@@ -917,7 +1028,7 @@ export async function sendPrayerWarriorWelcome({
               Thank you, ${eWarriorName}.
             </h1>
             <p style="color: #11152c; font-size: 15px; line-height: 1.7; margin: 0 0 14px;">
-              You've joined ${eOrgFirst}'s prayer for <strong>${eRecipientName}</strong>.
+              ${joinSentence}
               Every slot on the calendar is filled — and your prayer adds to the
               cloud of intercession surrounding ${eRecipientName}.
             </p>
@@ -938,7 +1049,7 @@ export async function sendPrayerWarriorWelcome({
           </p>
         </div>
       `,
-      text: `Thank you for praying for ${recipientName}, ${warriorName}.\n\nYou've joined ${orgFirst}'s prayer. Every calendar slot is filled — and your prayer adds to the cloud of intercession.\n\nPray however and whenever you can. When the prayer train ends, we'll send you a closing note.\n\nVisit: ${trainUrl}`,
+      text: `Thank you for praying for ${recipientName}, ${warriorName}.\n\n${organizerFirstName ? `You've joined ${organizerFirstName}'s prayer.` : `You've joined the prayer for ${recipientName}.`} Every calendar slot is filled — and your prayer adds to the cloud of intercession.\n\nPray however and whenever you can. When the prayer train ends, we'll send you a closing note.\n\nVisit: ${trainUrl}`,
     });
   } catch (error) {
     console.error("Failed to send prayer-warrior welcome email:", error);

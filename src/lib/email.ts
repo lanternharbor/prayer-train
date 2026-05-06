@@ -1003,6 +1003,175 @@ export async function sendChainCancellationNotice(input: ChainCancellationNotice
   }
 }
 
+// ─── Bouquet-ready email (chain + train) ────────────────────
+//
+// Sent to the organizer when their prayer transitions to COMPLETED
+// (manual close OR cron auto-close path). Surfaces the spiritual
+// bouquet PDF download link so the organizer doesn't have to dig
+// through the manage page to find it.
+//
+// End-user motivation: William closed the Benji novena May 6 2026
+// and asked "shouldn't I get an email with the bouquet?" — yes,
+// you should. The bouquet exists at /api/bouquet/chain/[slug]
+// (and /api/bouquet/[slug] for trains) but nothing emails the
+// link to the organizer when the prayer ends.
+//
+// Audience: just the organizer. Members already received their
+// closing-day email. Warriors on trains already received their
+// closing email with the bouquet link (existing behavior). This
+// helper closes the gap for the organizer themselves.
+//
+// Tone: warm, not transactional. The PDF is a sacred artifact for
+// the recipient family, not a downloadable invoice.
+
+export interface ChainBouquetReadyInput {
+  to: string;
+  /** Organizer name when available; null when anonymous OR no User.name.
+   *  Template uses null to drop possessive constructions and substitute
+   *  neutral copy. Same contract as the other chain emails. */
+  organizerName: string | null;
+  prayerName: string;
+  recipientName: string | null;
+  /** /api/bouquet/chain/[slug] — direct link to the PDF. Generates
+   *  fresh on each request; organizer-auth gated server-side. */
+  bouquetUrl: string;
+  /** /chain/[slug] — back to the public prayer page. */
+  chainUrl: string;
+}
+
+export function renderChainBouquetReady(input: ChainBouquetReadyInput): {
+  subject: string;
+  html: string;
+  text: string;
+} {
+  const orgFirst = firstNameOrNull(input.organizerName);
+  const recipientPhraseShort = input.recipientName?.trim()
+    ? `for ${input.recipientName.trim()}`
+    : "";
+  const subject = input.recipientName?.trim()
+    ? `Your spiritual bouquet for ${input.recipientName.trim()} is ready`
+    : `Your spiritual bouquet is ready`;
+  const eOrgFirst = orgFirst ? escapeHtml(orgFirst) : null;
+  const ePrayerName = escapeHtml(input.prayerName);
+  const eRecipientPhraseShort = escapeHtml(recipientPhraseShort);
+  // Greeting: "William, the [Prayer] for [Recipient] is complete."
+  // When anonymous, drop the name and start the sentence with "The".
+  const greeting = eOrgFirst
+    ? `${eOrgFirst}, the ${ePrayerName} ${eRecipientPhraseShort} is complete.`
+    : `The ${ePrayerName} ${eRecipientPhraseShort} is complete.`;
+  const html = `
+        <div style="font-family: Georgia, 'Times New Roman', serif; max-width: 560px; margin: 0 auto; padding: 32px 24px; background: #faf8f5;">
+          <div style="background: #ffffff; border: 1px solid #e8e0d5; border-radius: 16px; padding: 32px 28px;">
+            <h1 style="color: #11152c; font-family: 'EB Garamond', Georgia, serif; font-size: 26px; font-weight: 700; margin: 0 0 16px; line-height: 1.3;">
+              The spiritual bouquet is ready.
+            </h1>
+            <p style="color: #11152c; font-size: 15px; line-height: 1.7; margin: 0 0 16px;">
+              ${greeting}
+            </p>
+            <p style="color: #11152c; font-size: 15px; line-height: 1.7; margin: 0 0 24px;">
+              The bouquet PDF below holds every name that prayed and every day that was covered. It&rsquo;s yours to download, print, or send on to the family.
+            </p>
+            <div style="text-align: center; margin: 8px 0 4px;">
+              <a href="${input.bouquetUrl}" style="display: inline-block; background: #d4a843; color: #0a0c1a; padding: 12px 28px; border-radius: 10px; text-decoration: none; font-weight: 600; font-size: 15px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;">
+                Download the spiritual bouquet
+              </a>
+            </div>
+            <p style="color: #6e6150; font-size: 13px; line-height: 1.6; margin: 24px 0 0; text-align: center;">
+              <a href="${input.chainUrl}" style="color: #947324; text-decoration: none;">Visit the prayer page</a>
+            </p>
+            <p style="color: #b8a994; font-size: 13px; font-style: italic; line-height: 1.6; margin: 18px 0 0; text-align: center;">
+              May the Lord bless and keep all who carried this prayer.
+            </p>
+          </div>
+          <p style="text-align: center; color: #b8a994; font-size: 12px; margin: 18px 0 0;">
+            PrayerTrain &middot; A Lantern Harbor project
+          </p>
+        </div>
+      `;
+  const textGreeting = orgFirst
+    ? `${orgFirst}, the ${input.prayerName} ${recipientPhraseShort} is complete.`
+    : `The ${input.prayerName} ${recipientPhraseShort} is complete.`;
+  const text = `The spiritual bouquet is ready.\n\n${textGreeting}\n\nThe bouquet PDF holds every name that prayed and every day that was covered. It's yours to download, print, or send on to the family.\n\nDownload: ${input.bouquetUrl}\nVisit the prayer page: ${input.chainUrl}\n\nMay the Lord bless and keep all who carried this prayer.`;
+  return { subject, html, text };
+}
+
+export async function sendChainBouquetReady(input: ChainBouquetReadyInput) {
+  const { subject, html, text } = renderChainBouquetReady(input);
+  try {
+    await resend.emails.send({ from: FROM, to: input.to, subject, html, text });
+  } catch (error) {
+    console.error("Failed to send chain bouquet-ready email:", error);
+  }
+}
+
+export interface TrainBouquetReadyInput {
+  to: string;
+  organizerName: string | null;
+  /** Always present on trains (recipientName is required at create). */
+  recipientName: string;
+  /** /api/bouquet/[slug] — direct link to the PDF. */
+  bouquetUrl: string;
+  /** /p/[slug] — back to the public train page. */
+  trainUrl: string;
+}
+
+export function renderTrainBouquetReady(input: TrainBouquetReadyInput): {
+  subject: string;
+  html: string;
+  text: string;
+} {
+  const orgFirst = firstNameOrNull(input.organizerName);
+  const subject = `Your spiritual bouquet for ${input.recipientName} is ready`;
+  const eOrgFirst = orgFirst ? escapeHtml(orgFirst) : null;
+  const eRecipientName = escapeHtml(input.recipientName);
+  const greeting = eOrgFirst
+    ? `${eOrgFirst}, the prayer train for ${eRecipientName} is complete.`
+    : `The prayer train for ${eRecipientName} is complete.`;
+  const html = `
+        <div style="font-family: Georgia, 'Times New Roman', serif; max-width: 560px; margin: 0 auto; padding: 32px 24px; background: #faf8f5;">
+          <div style="background: #ffffff; border: 1px solid #e8e0d5; border-radius: 16px; padding: 32px 28px;">
+            <h1 style="color: #11152c; font-family: 'EB Garamond', Georgia, serif; font-size: 26px; font-weight: 700; margin: 0 0 16px; line-height: 1.3;">
+              The spiritual bouquet is ready.
+            </h1>
+            <p style="color: #11152c; font-size: 15px; line-height: 1.7; margin: 0 0 16px;">
+              ${greeting}
+            </p>
+            <p style="color: #11152c; font-size: 15px; line-height: 1.7; margin: 0 0 24px;">
+              The bouquet PDF below holds every name that prayed and every day that was covered. It&rsquo;s yours to download, print, or send on to the family.
+            </p>
+            <div style="text-align: center; margin: 8px 0 4px;">
+              <a href="${input.bouquetUrl}" style="display: inline-block; background: #d4a843; color: #0a0c1a; padding: 12px 28px; border-radius: 10px; text-decoration: none; font-weight: 600; font-size: 15px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;">
+                Download the spiritual bouquet
+              </a>
+            </div>
+            <p style="color: #6e6150; font-size: 13px; line-height: 1.6; margin: 24px 0 0; text-align: center;">
+              <a href="${input.trainUrl}" style="color: #947324; text-decoration: none;">Visit the prayer train</a>
+            </p>
+            <p style="color: #b8a994; font-size: 13px; font-style: italic; line-height: 1.6; margin: 18px 0 0; text-align: center;">
+              May the Lord bless and keep all who carried this prayer.
+            </p>
+          </div>
+          <p style="text-align: center; color: #b8a994; font-size: 12px; margin: 18px 0 0;">
+            PrayerTrain &middot; A Lantern Harbor project
+          </p>
+        </div>
+      `;
+  const textGreeting = orgFirst
+    ? `${orgFirst}, the prayer train for ${input.recipientName} is complete.`
+    : `The prayer train for ${input.recipientName} is complete.`;
+  const text = `The spiritual bouquet is ready.\n\n${textGreeting}\n\nThe bouquet PDF holds every name that prayed and every day that was covered. It's yours to download, print, or send on to the family.\n\nDownload: ${input.bouquetUrl}\nVisit the prayer train: ${input.trainUrl}\n\nMay the Lord bless and keep all who carried this prayer.`;
+  return { subject, html, text };
+}
+
+export async function sendTrainBouquetReady(input: TrainBouquetReadyInput) {
+  const { subject, html, text } = renderTrainBouquetReady(input);
+  try {
+    await resend.emails.send({ from: FROM, to: input.to, subject, html, text });
+  } catch (error) {
+    console.error("Failed to send train bouquet-ready email:", error);
+  }
+}
+
 // ─── PrayerWarrior Emails ───────────────────────────────────
 //
 // Templates for the overflow-pledge primitive — visitors who pledge to

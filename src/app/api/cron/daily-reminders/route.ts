@@ -1,7 +1,11 @@
 import { NextResponse } from "next/server";
 import { timingSafeEqual } from "node:crypto";
 import { prisma } from "@/lib/db";
-import { sendDailyReminder, sendTrainClosingPrompt } from "@/lib/email";
+import {
+  sendDailyReminder,
+  sendTrainBouquetReady,
+  sendTrainClosingPrompt,
+} from "@/lib/email";
 import { getBaseUrl } from "@/lib/url";
 import { signCompletionToken } from "@/lib/completion-tokens";
 import {
@@ -210,7 +214,18 @@ export async function GET(request: Request) {
         ),
       },
     },
-    select: { id: true, status: true, endDate: true, slug: true },
+    // Pull organizer + recipient fields for the bouquet-ready email
+    // below. organizerAnonymous + organizer.name route through the
+    // null-name branch in the helper when needed.
+    select: {
+      id: true,
+      status: true,
+      endDate: true,
+      slug: true,
+      recipientName: true,
+      organizerAnonymous: true,
+      organizer: { select: { name: true, email: true } },
+    },
   });
 
   for (const train of closeCandidates) {
@@ -229,6 +244,23 @@ export async function GET(request: Request) {
         data: { status: "COMPLETED" },
       });
       autoClosed++;
+      // Bouquet-ready email to the organizer on the auto-close path.
+      // Mirrors the chain auto-close behavior so a train that ages
+      // out without manual close still surfaces the artifact (the
+      // bouquet PDF) the organizer would have gotten on the manual
+      // path. Best-effort; helper swallows errors.
+      if (train.organizer?.email) {
+        await sendTrainBouquetReady({
+          to: train.organizer.email,
+          organizerName:
+            train.organizerAnonymous || !train.organizer.name
+              ? null
+              : train.organizer.name,
+          recipientName: train.recipientName,
+          bouquetUrl: `${baseUrl}/api/bouquet/${train.slug}`,
+          trainUrl: `${baseUrl}/p/${train.slug}`,
+        });
+      }
     } catch (e) {
       console.error(
         `[cron] auto-close failed for train ${train.id}:`,

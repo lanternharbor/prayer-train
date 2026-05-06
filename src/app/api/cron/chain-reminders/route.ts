@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { timingSafeEqual } from "node:crypto";
 import { prisma } from "@/lib/db";
 import {
+  sendChainBouquetReady,
   sendChainClosingPrompt,
   sendChainDailyReminder,
 } from "@/lib/email";
@@ -278,7 +279,19 @@ export async function GET(request: Request) {
         ),
       },
     },
-    select: { id: true, status: true, endDate: true, slug: true },
+    // Pull the fields needed for the bouquet-ready email below so a
+    // second roundtrip per auto-close isn't required. Empty/anonymous
+    // organizers are handled via the helper's null-name branch.
+    select: {
+      id: true,
+      status: true,
+      endDate: true,
+      slug: true,
+      organizerAnonymous: true,
+      recipientName: true,
+      organizer: { select: { name: true, email: true } },
+      prayerType: { select: { name: true } },
+    },
   });
 
   for (const chain of closeCandidates) {
@@ -297,6 +310,25 @@ export async function GET(request: Request) {
         data: { status: "COMPLETED" },
       });
       autoClosed++;
+      // Bouquet-ready email to the organizer. Auto-close means the
+      // organizer missed the closing prompt + 7-day grace; this email
+      // catches them up by surfacing the artifact (the bouquet PDF)
+      // they would have gotten on the manual-close path. Best-effort;
+      // helper swallows errors so a single send failure doesn't stall
+      // the rest of the auto-close loop.
+      if (chain.organizer?.email) {
+        await sendChainBouquetReady({
+          to: chain.organizer.email,
+          organizerName:
+            chain.organizerAnonymous || !chain.organizer.name
+              ? null
+              : chain.organizer.name,
+          prayerName: chain.prayerType.name,
+          recipientName: chain.recipientName,
+          bouquetUrl: `${baseUrl}/api/bouquet/chain/${chain.slug}`,
+          chainUrl: `${baseUrl}/chain/${chain.slug}`,
+        });
+      }
     } catch (e) {
       console.error(
         `[chain-cron] auto-close failed for chain ${chain.id}:`,

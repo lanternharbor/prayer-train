@@ -2,10 +2,12 @@ import { describe, expect, it } from "vitest";
 import {
   escapeHtml,
   firstNameOrNull,
+  renderChainBouquetReady,
   renderChainCancellationNotice,
   renderChainClosingDayEmail,
   renderChainDailyReminder,
   renderChainJoinConfirmation,
+  renderTrainBouquetReady,
 } from "./email";
 
 /**
@@ -382,5 +384,114 @@ describe("renderChainCancellationNotice", () => {
 
     const anon = renderChainCancellationNotice({ ...base, organizerName: null });
     expect(anon.html).toContain("The organizer has closed this shared prayer");
+  });
+});
+
+/**
+ * Bouquet-ready emails fire to the organizer when their prayer
+ * transitions to COMPLETED (manual close OR cron auto-close path).
+ * The email surfaces the spiritual bouquet PDF link so the organizer
+ * doesn't have to hunt through the manage page to find it.
+ *
+ * Originated from end-user feedback: William closed Benji's novena
+ * May 6 2026 and asked "shouldn't I get an email with the bouquet?"
+ *
+ * Same anonymity-aware contract as the rest of the chain emails:
+ * organizerName=null routes through the no-name branch (drops
+ * possessive constructions, substitutes neutral copy).
+ */
+describe("renderChainBouquetReady", () => {
+  const base = {
+    to: "william@example.com",
+    prayerName: "Surrender Novena",
+    recipientName: "Benji" as string | null,
+    bouquetUrl: "https://prayertrains.com/api/bouquet/chain/benji-abc1",
+    chainUrl: "https://prayertrains.com/chain/benji-abc1",
+  };
+
+  it("uses warm greeting with organizer's name when present", () => {
+    const r = renderChainBouquetReady({ ...base, organizerName: "William" });
+    expect(r.subject).toBe("Your spiritual bouquet for Benji is ready");
+    expect(r.html).toContain("William, the Surrender Novena for Benji is complete.");
+    expect(r.text).toContain("William, the Surrender Novena for Benji is complete.");
+  });
+
+  it("drops the name from the greeting when organizerName is null", () => {
+    const r = renderChainBouquetReady({ ...base, organizerName: null });
+    expect(r.subject).toBe("Your spiritual bouquet for Benji is ready");
+    expect(r.html).toContain("The Surrender Novena for Benji is complete.");
+    expect(r.html).not.toContain(", the Surrender Novena");
+  });
+
+  it("subject drops the recipient phrase when no recipient name", () => {
+    const r = renderChainBouquetReady({
+      ...base,
+      organizerName: "William",
+      recipientName: null,
+    });
+    expect(r.subject).toBe("Your spiritual bouquet is ready");
+    expect(r.html).toContain("The spiritual bouquet is ready.");
+  });
+
+  it("renders the download CTA pointing at the bouquet URL", () => {
+    const r = renderChainBouquetReady({ ...base, organizerName: "William" });
+    expect(r.html).toContain(base.bouquetUrl);
+    expect(r.html).toContain("Download the spiritual bouquet");
+  });
+
+  it("renders a link back to the prayer page", () => {
+    const r = renderChainBouquetReady({ ...base, organizerName: "William" });
+    expect(r.html).toContain(base.chainUrl);
+  });
+
+  it("never produces broken-grammar substrings under any organizerName input", () => {
+    for (const organizerName of [null, "", "   ", "William", "William Keough"]) {
+      const r = renderChainBouquetReady({ ...base, organizerName });
+      const all = r.subject + "\n" + r.html + "\n" + r.text;
+      expect(all).not.toContain("the's ");
+      expect(all).not.toContain("the&#39;s ");
+      expect(all).not.toContain("the organizer's ");
+      expect(all).not.toContain("the organizer&#39;s ");
+    }
+  });
+});
+
+describe("renderTrainBouquetReady", () => {
+  const base = {
+    to: "william@example.com",
+    recipientName: "Benji",
+    bouquetUrl: "https://prayertrains.com/api/bouquet/benji-train-xyz",
+    trainUrl: "https://prayertrains.com/p/benji-train-xyz",
+  };
+
+  it("uses warm greeting with organizer's name when present", () => {
+    const r = renderTrainBouquetReady({ ...base, organizerName: "William" });
+    expect(r.subject).toBe("Your spiritual bouquet for Benji is ready");
+    expect(r.html).toContain("William, the prayer train for Benji is complete.");
+    expect(r.text).toContain("William, the prayer train for Benji is complete.");
+  });
+
+  it("drops the name from the greeting when organizerName is null", () => {
+    const r = renderTrainBouquetReady({ ...base, organizerName: null });
+    expect(r.subject).toBe("Your spiritual bouquet for Benji is ready");
+    expect(r.html).toContain("The prayer train for Benji is complete.");
+  });
+
+  it("renders the download CTA + link back to the train page", () => {
+    const r = renderTrainBouquetReady({ ...base, organizerName: "William" });
+    expect(r.html).toContain(base.bouquetUrl);
+    expect(r.html).toContain(base.trainUrl);
+    expect(r.html).toContain("Download the spiritual bouquet");
+  });
+
+  it("never produces broken-grammar substrings under any organizerName input", () => {
+    for (const organizerName of [null, "", "   ", "William", "William Keough"]) {
+      const r = renderTrainBouquetReady({ ...base, organizerName });
+      const all = r.subject + "\n" + r.html + "\n" + r.text;
+      expect(all).not.toContain("the's ");
+      expect(all).not.toContain("the&#39;s ");
+      expect(all).not.toContain("the organizer's ");
+      expect(all).not.toContain("the organizer&#39;s ");
+    }
   });
 });

@@ -11,21 +11,29 @@ import { BouquetDocument, type BouquetData } from "@/lib/bouquet-pdf";
  * Spiritual Bouquet PDF for a completed PrayerChain. Reuses the same
  * BouquetDocument component — chain data is reshaped into the same
  * BouquetData type so both primitives produce visually-identical artifacts.
+ *
+ * Access model:
+ *   - Standard download (no `?preview=1`): NO auth required. The PDF
+ *     exposes nothing that isn't already on the public /chain/[slug]
+ *     page (recipient name, organizer name, date range, prayer types,
+ *     and the member roster). Members of the chain receive the bouquet
+ *     URL directly via email after close (PR #40 organizer email,
+ *     PR #42 member email); requiring sign-in to view it broke those
+ *     emails for every recipient who wasn't the signed-in organizer.
+ *     Status === COMPLETED is the only gate.
+ *   - Preview (`?preview=1`): organizer-only, signed-in. Preview lets
+ *     the organizer see the current artifact BEFORE COMPLETED so they
+ *     can verify what'll go to the family. The auth check stays for
+ *     this branch because preview bypasses the COMPLETED gate, and we
+ *     don't want a logged-out third party generating preview PDFs of
+ *     in-flight chains.
  */
 export async function GET(
   req: Request,
   { params }: { params: Promise<{ slug: string }> },
 ) {
   const { slug } = await params;
-  const session = await auth();
   const isPreview = new URL(req.url).searchParams.get("preview") === "1";
-
-  if (!session?.user?.id) {
-    return NextResponse.json(
-      { error: "Sign in to download a spiritual bouquet." },
-      { status: 401 },
-    );
-  }
 
   const chain = await prisma.prayerChain.findUnique({
     where: { slug },
@@ -43,17 +51,25 @@ export async function GET(
     return NextResponse.json({ error: "Not found." }, { status: 404 });
   }
 
-  if (chain.organizerId !== session.user.id) {
-    return NextResponse.json(
-      { error: "Only the organizer can download the bouquet." },
-      { status: 403 },
-    );
-  }
-
-  // Organizer preview bypass: ?preview=1 lets the organizer see the
-  // current artifact before COMPLETED. Auth has already gated this to
-  // organizer-only above. Non-preview requests still need COMPLETED.
-  if (!isPreview && chain.status !== "COMPLETED") {
+  // Preview is organizer-only and requires sign-in (it bypasses the
+  // COMPLETED gate, so we don't want it to leak to anyone with the URL).
+  if (isPreview) {
+    const session = await auth();
+    if (!session?.user?.id) {
+      return NextResponse.json(
+        { error: "Sign in to preview a spiritual bouquet." },
+        { status: 401 },
+      );
+    }
+    if (chain.organizerId !== session.user.id) {
+      return NextResponse.json(
+        { error: "Only the organizer can preview the bouquet." },
+        { status: 403 },
+      );
+    }
+  } else if (chain.status !== "COMPLETED") {
+    // Standard (non-preview) download requires the prayer to be closed.
+    // Anyone with the slug can download once it is — no sign-in needed.
     return NextResponse.json(
       {
         error: "The spiritual bouquet is available once the prayer is closed.",

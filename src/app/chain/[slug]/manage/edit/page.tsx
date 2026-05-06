@@ -33,6 +33,7 @@ export default async function EditChainPage({
 
   const chain = await prisma.prayerChain.findUnique({
     where: { slug },
+    include: { organizer: { select: { name: true } } },
   });
   if (!chain) notFound();
   if (chain.organizerId !== session.user.id) {
@@ -70,6 +71,8 @@ export default async function EditChainPage({
           intention: chain.intention,
           customPrayerText: chain.customPrayerText,
           recipientImageUrl: chain.recipientImageUrl,
+          organizerName: chain.organizer.name,
+          organizerAnonymous: chain.organizerAnonymous,
         }}
       />
     </div>

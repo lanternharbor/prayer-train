@@ -90,18 +90,35 @@ export type CreateTrainInput = z.infer<typeof createTrainSchema>;
 // schedule). isPublic also excluded because it has its own dedicated
 // toggle on the manage page.
 
-export const updateTrainSchema = z.object({
-  trainId: trimmedString(1, 60),
-  recipientName: trimmedString(1, 80),
-  recipientRelation: optionalTrimmed(60),
-  parish: optionalTrimmed(120),
-  parishId: optionalTrimmed(60),
-  location: optionalTrimmed(120),
-  intention: trimmedString(1, 2000),
-  situation: z.enum(situationValues),
-  situationDetail: optionalTrimmed(2000),
-  customPrayerText: optionalTrimmed(4000),
-});
+export const updateTrainSchema = z
+  .object({
+    trainId: trimmedString(1, 60),
+    recipientName: trimmedString(1, 80),
+    recipientRelation: optionalTrimmed(60),
+    parish: optionalTrimmed(120),
+    parishId: optionalTrimmed(60),
+    location: optionalTrimmed(120),
+    intention: trimmedString(1, 2000),
+    situation: z.enum(situationValues),
+    situationDetail: optionalTrimmed(2000),
+    customPrayerText: optionalTrimmed(4000),
+    // Mirrors the create-flow organizer-identity capture so the edit
+    // form can flip anonymity on / off later. Same refinement: name
+    // OR anonymous required. Updating User.name from this path
+    // propagates to every train + chain this user organizes.
+    organizerName: optionalTrimmed(80),
+    organizerAnonymous: z.coerce.boolean().default(false),
+  })
+  .refine(
+    (data) =>
+      data.organizerAnonymous ||
+      (data.organizerName && data.organizerName.length > 0),
+    {
+      path: ["organizerName"],
+      message:
+        "Please enter your name, or check the box to show as Anonymous.",
+    }
+  );
 
 export type UpdateTrainInput = z.infer<typeof updateTrainSchema>;
 
@@ -272,12 +289,27 @@ export type CreateChainInput = z.infer<typeof createChainSchema>;
 // durationDays/startDate/endDate (already-sent reminders are pinned
 // to those values), isPublic (V1 keeps that off the form).
 
-export const updateChainSchema = z.object({
-  chainId: trimmedString(1, 60),
-  recipientName: optionalTrimmed(80),
-  intention: trimmedString(1, 2000),
-  customPrayerText: optionalTrimmed(4000),
-});
+export const updateChainSchema = z
+  .object({
+    chainId: trimmedString(1, 60),
+    recipientName: optionalTrimmed(80),
+    intention: trimmedString(1, 2000),
+    customPrayerText: optionalTrimmed(4000),
+    // Mirrors the create-flow organizer-identity capture. See
+    // updateTrainSchema for the full rationale.
+    organizerName: optionalTrimmed(80),
+    organizerAnonymous: z.coerce.boolean().default(false),
+  })
+  .refine(
+    (data) =>
+      data.organizerAnonymous ||
+      (data.organizerName && data.organizerName.length > 0),
+    {
+      path: ["organizerName"],
+      message:
+        "Please enter your name, or check the box to show as Anonymous.",
+    }
+  );
 
 export type UpdateChainInput = z.infer<typeof updateChainSchema>;
 

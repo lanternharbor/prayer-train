@@ -4,6 +4,8 @@ import {
   createChainSchema,
   createTrainSchema,
   markChainDayCompleteSchema,
+  updateChainSchema,
+  updateTrainSchema,
 } from "./validation";
 
 /**
@@ -245,5 +247,70 @@ describe("createChainSchema", () => {
     void _ignored;
     const result = createChainSchema.safeParse(withoutName);
     expect(result.success).toBe(false);
+  });
+});
+
+describe("updateTrainSchema (organizer-identity refinement)", () => {
+  // Pins the same name-OR-anonymous refinement as createTrainSchema for
+  // the edit-flow path. Sister's chain in PR #30's screenshot showed
+  // why this matters: organizers who flipped anonymous on at create
+  // need to be able to flip it off later, and the schema is the
+  // canonical line of defense.
+  const validBase = {
+    trainId: "train_abc123",
+    recipientName: "Test Family",
+    intention: "Prayers for healing",
+    situation: "ILLNESS",
+    organizerName: "William",
+  };
+
+  it("accepts a name-only payload", () => {
+    expect(updateTrainSchema.safeParse(validBase).success).toBe(true);
+  });
+
+  it("accepts an anonymous-only payload (no name)", () => {
+    const { organizerName: _ignored, ...withoutName } = validBase;
+    void _ignored;
+    expect(
+      updateTrainSchema.safeParse({
+        ...withoutName,
+        organizerAnonymous: true,
+      }).success,
+    ).toBe(true);
+  });
+
+  it("rejects a payload with neither name nor anonymous", () => {
+    const { organizerName: _ignored, ...withoutName } = validBase;
+    void _ignored;
+    expect(updateTrainSchema.safeParse(withoutName).success).toBe(false);
+  });
+});
+
+describe("updateChainSchema (organizer-identity refinement)", () => {
+  const validBase = {
+    chainId: "chain_abc123",
+    intention: "Prayers for the family",
+    organizerName: "William",
+  };
+
+  it("accepts a name-only payload", () => {
+    expect(updateChainSchema.safeParse(validBase).success).toBe(true);
+  });
+
+  it("accepts an anonymous-only payload (no name)", () => {
+    const { organizerName: _ignored, ...withoutName } = validBase;
+    void _ignored;
+    expect(
+      updateChainSchema.safeParse({
+        ...withoutName,
+        organizerAnonymous: true,
+      }).success,
+    ).toBe(true);
+  });
+
+  it("rejects a payload with neither name nor anonymous", () => {
+    const { organizerName: _ignored, ...withoutName } = validBase;
+    void _ignored;
+    expect(updateChainSchema.safeParse(withoutName).success).toBe(false);
   });
 });

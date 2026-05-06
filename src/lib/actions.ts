@@ -42,9 +42,11 @@ import {
   checkUpdateCountMatches,
 } from "@/lib/claim-guard";
 import {
+  sendChainBouquetReady,
   sendChainCancellationNotice,
   sendChainClosingDayEmail,
   sendChainJoinConfirmation,
+  sendTrainBouquetReady,
   sendPrayerWarriorClosing,
   sendPrayerWarriorWelcome,
   sendTrainCancellationNotice,
@@ -749,7 +751,10 @@ export async function updateTrainStatus(
   const train = await prisma.prayerTrain.findUnique({
     where: { id: trainId },
     include: {
-      organizer: { select: { name: true } },
+      // organizer.email pulled so the bouquet-ready email below can
+      // reach the organizer regardless of organizerAnonymous (anonymity
+      // is about public display, not delivery).
+      organizer: { select: { name: true, email: true } },
       // Pull warriors here so we can email them on transition to
       // COMPLETED without a second roundtrip. Empty roster is fine.
       warriors: {
@@ -778,7 +783,7 @@ export async function updateTrainStatus(
     data: { status },
   });
 
-  if (isTransitioningToCompleted && train.warriors.length > 0) {
+  if (isTransitioningToCompleted) {
     const baseUrl = getBaseUrl();
     const trainUrl = `${baseUrl}/p/${train.slug}`;
     const bouquetUrl = `${baseUrl}/api/bouquet/${train.slug}`;
@@ -786,9 +791,10 @@ export async function updateTrainStatus(
       ? null
       : (train.organizer?.name?.trim().split(/\s+/)[0] ?? null);
 
-    // Fire emails sequentially, never blocking the status update.
-    // Each send is wrapped in the email function's try/catch so a
-    // single failure doesn't stop the rest from going out.
+    // Fire warrior closing emails sequentially, never blocking the
+    // status update. Each send is wrapped in the email function's
+    // try/catch so a single failure doesn't stop the rest from
+    // going out.
     for (const warrior of train.warriors) {
       await sendPrayerWarriorClosing({
         to: warrior.email,
@@ -797,6 +803,23 @@ export async function updateTrainStatus(
         organizerFirstName: orgFirst,
         trainUrl,
         bouquetUrl,
+      });
+    }
+
+    // Bouquet-ready email to the organizer. Fires whether or not
+    // there are warriors — the bouquet PDF is meaningful even on
+    // a slot-only train. Anonymous organizers still receive the
+    // delivery; only the rendered "from" name is suppressed.
+    if (train.organizer?.email) {
+      await sendTrainBouquetReady({
+        to: train.organizer.email,
+        organizerName:
+          train.organizerAnonymous || !train.organizer.name
+            ? null
+            : train.organizer.name,
+        recipientName: train.recipientName,
+        bouquetUrl,
+        trainUrl,
       });
     }
   }
@@ -1797,7 +1820,11 @@ export async function closePrayerChain(formData: FormData) {
   const chain = await prisma.prayerChain.findUnique({
     where: { id: chainId },
     include: {
-      organizer: { select: { name: true } },
+      // Pull organizer.email so we can fire the bouquet-ready email
+      // after the member fan-out below. Email goes to the organizer
+      // regardless of organizerAnonymous (anonymity is about public
+      // display, not delivery).
+      organizer: { select: { name: true, email: true } },
       prayerType: { select: { name: true } },
       members: {
         where: { unsubscribedAt: null },
@@ -1820,7 +1847,8 @@ export async function closePrayerChain(formData: FormData) {
   });
 
   // Closing-day emails to all active members. Best-effort.
-  const chainUrl = `${getBaseUrl()}/chain/${chain.slug}`;
+  const baseUrl = getBaseUrl();
+  const chainUrl = `${baseUrl}/chain/${chain.slug}`;
   for (const member of chain.members) {
     await sendChainClosingDayEmail({
       to: member.email,
@@ -1835,6 +1863,25 @@ export async function closePrayerChain(formData: FormData) {
       prayerName: chain.prayerType.name,
       recipientName: chain.recipientName,
       closingNote: closingNote ?? null,
+      chainUrl,
+    });
+  }
+
+  // Bouquet-ready email to the organizer. Sent after the member
+  // fan-out so a slow Resend call earlier in the loop never delays
+  // the organizer's notification. Always sends regardless of
+  // organizerAnonymous (anonymity is about public display, not
+  // delivery), as long as we have an email on the User row.
+  if (chain.organizer?.email) {
+    await sendChainBouquetReady({
+      to: chain.organizer.email,
+      organizerName:
+        chain.organizerAnonymous || !chain.organizer.name
+          ? null
+          : chain.organizer.name,
+      prayerName: chain.prayerType.name,
+      recipientName: chain.recipientName,
+      bouquetUrl: `${baseUrl}/api/bouquet/chain/${chain.slug}`,
       chainUrl,
     });
   }

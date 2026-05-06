@@ -9,12 +9,16 @@ export function JoinChainModal({
   organizerFirstName,
   recipientPhrase,
   durationDays,
+  isAnonymous = false,
   onClose,
 }: {
   chainId: string;
   organizerFirstName: string;
   recipientPhrase: string;
   durationDays: number;
+  /** When true, drops "with [organizer name]" from the modal copy
+   *  so anonymous chains don't render literal "with the organizer." */
+  isAnonymous?: boolean;
   onClose: () => void;
 }) {
   const [name, setName] = useState("");
@@ -77,7 +81,9 @@ export function JoinChainModal({
             Welcome, {name}.
           </h2>
           <p className="text-muted-foreground mb-2">
-            You&apos;re praying with {organizerFirstName} {recipientPhrase}.
+            {isAnonymous
+              ? `You're praying ${recipientPhrase}.`
+              : `You're praying with ${organizerFirstName} ${recipientPhrase}.`}
           </p>
           <p className="text-sm text-muted-foreground mb-6">
             We&apos;ll send a daily reminder to <strong>{email}</strong> for the
@@ -107,7 +113,9 @@ export function JoinChainModal({
             id="chain-join-title"
             className="font-heading text-xl font-semibold text-navy-800"
           >
-            Pray along with {organizerFirstName}
+            {isAnonymous
+              ? "Pray along"
+              : `Pray along with ${organizerFirstName}`}
           </h2>
           <button
             onClick={onClose}

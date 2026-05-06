@@ -669,6 +669,86 @@ export async function sendChainClosingDayEmail({
   }
 }
 
+// ─── Chain closing prompt to organizer ──────────────────────
+//
+// Fires from the chain-reminders cron on a chain's endDate, once per
+// chain. Idempotency lives on PrayerChain.closingPromptSentAt — the
+// cron sets it after a successful send; subsequent runs skip.
+//
+// Audience: just the organizer. Members already received their final
+// daily reminder; this email is the nudge for the organizer to write
+// a closing note + click Close, which generates the spiritual bouquet
+// PDF for the recipient family.
+//
+// Tone: warm, parishioner-flavored, calm. Not productivity-app
+// energy. Mirrors sendChainClosingDayEmail's shape but the audience +
+// CTA differ.
+
+export async function sendChainClosingPrompt({
+  to,
+  organizerFirstName,
+  prayerName,
+  recipientName,
+  chainManageUrl,
+}: {
+  to: string;
+  /** Organizer's first name for greeting. Caller resolves anonymity
+   *  via the organizer-display helper before passing in; this template
+   *  treats whatever it receives as the literal greeting. */
+  organizerFirstName: string;
+  prayerName: string;
+  recipientName: string | null;
+  /** /chain/[slug]/manage — where the organizer writes the closing
+   *  note and clicks Close. */
+  chainManageUrl: string;
+}) {
+  const recipientPhraseShort = recipientName?.trim()
+    ? `for ${recipientName.trim()}`
+    : "";
+  const subject = recipientName?.trim()
+    ? `Your ${prayerName} for ${recipientName.trim()} is wrapping up`
+    : `Your ${prayerName} is wrapping up`;
+  const eOrgFirst = escapeHtml(organizerFirstName);
+  const ePrayerName = escapeHtml(prayerName);
+  const eRecipientPhraseShort = escapeHtml(recipientPhraseShort);
+  try {
+    await resend.emails.send({
+      from: FROM,
+      to,
+      subject,
+      html: `
+        <div style="font-family: Georgia, 'Times New Roman', serif; max-width: 560px; margin: 0 auto; padding: 32px 24px; background: #faf8f5;">
+          <div style="background: #ffffff; border: 1px solid #e8e0d5; border-radius: 16px; padding: 32px 28px;">
+            <h1 style="color: #11152c; font-family: 'EB Garamond', Georgia, serif; font-size: 26px; font-weight: 700; margin: 0 0 16px; line-height: 1.3;">
+              ${ePrayerName} ${eRecipientPhraseShort}
+            </h1>
+            <p style="color: #11152c; font-size: 15px; line-height: 1.7; margin: 0 0 16px;">
+              ${eOrgFirst}, the ${ePrayerName} you organized ${eRecipientPhraseShort} comes to its final day today.
+            </p>
+            <p style="color: #11152c; font-size: 15px; line-height: 1.7; margin: 0 0 24px;">
+              When you're ready, visit the manage page to add a closing note and wrap things up. Closing the prayer generates a spiritual bouquet PDF you can send to the family — every prayer offered, every day covered.
+            </p>
+            <div style="text-align: center; margin: 8px 0 4px;">
+              <a href="${chainManageUrl}" style="display: inline-block; background: #242e58; color: #ffffff; padding: 12px 28px; border-radius: 10px; text-decoration: none; font-weight: 600; font-size: 15px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;">
+                Close the prayer
+              </a>
+            </div>
+            <p style="color: #b8a994; font-size: 13px; font-style: italic; line-height: 1.6; margin: 24px 0 0; text-align: center;">
+              No rush. The page stays available; you can come back to it whenever you're ready.
+            </p>
+          </div>
+          <p style="text-align: center; color: #b8a994; font-size: 12px; margin: 18px 0 0;">
+            PrayerTrain &middot; A Lantern Harbor project
+          </p>
+        </div>
+      `,
+      text: `${prayerName} ${recipientPhraseShort}\n\n${organizerFirstName}, the ${prayerName} you organized ${recipientPhraseShort} comes to its final day today.\n\nWhen you're ready, visit the manage page to add a closing note and wrap things up. Closing the prayer generates a spiritual bouquet PDF you can send to the family — every prayer offered, every day covered.\n\nClose the prayer: ${chainManageUrl}\n\nNo rush. The page stays available; you can come back to it whenever you're ready.`,
+    });
+  } catch (error) {
+    console.error("Failed to send chain closing-prompt email:", error);
+  }
+}
+
 // Cancellation notice (chain) — same shape and pastoral framing as the
 // train version. Sent to every active member (unsubscribedAt is null)
 // when an organizer cancels the chain. Caller dedupes by email and

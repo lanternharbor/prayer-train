@@ -13,8 +13,13 @@ import { dayNumberInTimezone, DEFAULT_DISPLAY_TZ } from "@/lib/dates";
 // react-hooks/purity rule, which rejects Date.now() inside render.
 // TZ-aware via the shared helper so we don't anchor "today" to UTC
 // (Vercel runtime) when the operator's calendar is on the East Coast.
-function currentDayNumber(startDate: Date): number {
-  return dayNumberInTimezone(new Date(), startDate, DEFAULT_DISPLAY_TZ);
+//
+// Clamped at durationDays so chains lingering ACTIVE past their
+// endDate don't render "Day 10 of 9". Same convention as the
+// browse-page card progress + the chain detail page.
+function currentDayNumber(startDate: Date, durationDays: number): number {
+  const raw = dayNumberInTimezone(new Date(), startDate, DEFAULT_DISPLAY_TZ);
+  return Math.min(raw, durationDays);
 }
 
 export async function generateMetadata({
@@ -70,7 +75,7 @@ export default async function ChainManagePage({
   }
 
   const activeCount = chain.members.filter((m) => !m.unsubscribedAt).length;
-  const dayNum = currentDayNumber(chain.startDate);
+  const dayNum = currentDayNumber(chain.startDate, chain.durationDays);
 
   return (
     <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-12">

@@ -83,6 +83,29 @@ async function main() {
     process.exit(1);
   }
 
+  // Localhost guard. Local .env files often set NEXTAUTH_URL to
+  // http://localhost:3000 for the dev server, and getBaseUrl()
+  // honors that. If the script runs from a dev shell without
+  // overriding the env, the bouquet + chain URLs in the rendered
+  // emails point at localhost and recipients can't open them.
+  // This guard turned an embarrassing 6-email mistake into the
+  // history that informed it; refuse to send unless the resolved
+  // base URL is plausibly public-facing.
+  const baseUrl = getBaseUrl();
+  const isLocalUrl =
+    /^https?:\/\/(localhost|127\.0\.0\.1|0\.0\.0\.0)(:\d+)?(\/|$)/i.test(
+      baseUrl,
+    );
+  if (isLocalUrl) {
+    console.error(
+      `\nABORT: getBaseUrl() returned '${baseUrl}', which looks like a\n` +
+        `local dev URL. Recipients would see broken links.\n\n` +
+        `Re-run with NEXTAUTH_URL overridden, e.g.:\n` +
+        `  NEXTAUTH_URL=https://prayertrains.com npx tsx scripts/resend-chain-bouquet.ts ${slug} "${AUTH_PHRASE}"\n`,
+    );
+    process.exit(1);
+  }
+
   const adapter = new PrismaNeon({
     connectionString: process.env.DATABASE_URL!,
   });
@@ -128,7 +151,6 @@ async function main() {
     process.exit(1);
   }
 
-  const baseUrl = getBaseUrl();
   const bouquetUrl = `${baseUrl}/api/bouquet/chain/${chain.slug}`;
   const chainUrl = `${baseUrl}/chain/${chain.slug}`;
   // null = anonymous OR no User.name; render helper drops "with [name]"

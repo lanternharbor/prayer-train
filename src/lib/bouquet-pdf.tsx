@@ -31,9 +31,11 @@ import { join } from "node:path";
  * template renders cleanly without the emblem in that case (graceful
  * fallback for dev environments where the asset hasn't been added).
  *
- * The emblem is a hand-illustrated bouquet of white roses and lilies
- * with a gold halo and ribbon — designed to match the prayer-card
- * aesthetic of the bouquet itself. See public/bouquet-emblem.png.
+ * The emblem is a hand-illustrated wooden cross set above a bouquet
+ * of white roses and lilies bound with a gold ribbon, backed by a
+ * radiant halo. Designed to match the navy + antique gold + parchment
+ * holy-card aesthetic of the rest of the bouquet PDF. See
+ * public/bouquet-emblem.png.
  */
 let _emblemBuffer: Buffer | null | undefined;
 function getEmblemBuffer(): Buffer | null {

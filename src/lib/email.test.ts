@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   escapeHtml,
   firstNameOrNull,
+  renderChainBouquetForMembers,
   renderChainBouquetReady,
   renderChainCancellationNotice,
   renderChainClosingDayEmail,
@@ -487,6 +488,75 @@ describe("renderTrainBouquetReady", () => {
   it("never produces broken-grammar substrings under any organizerName input", () => {
     for (const organizerName of [null, "", "   ", "William", "William Keough"]) {
       const r = renderTrainBouquetReady({ ...base, organizerName });
+      const all = r.subject + "\n" + r.html + "\n" + r.text;
+      expect(all).not.toContain("the's ");
+      expect(all).not.toContain("the&#39;s ");
+      expect(all).not.toContain("the organizer's ");
+      expect(all).not.toContain("the organizer&#39;s ");
+    }
+  });
+});
+
+/**
+ * Member-facing variant of the bouquet email. Tone is gracious-
+ * thank-you, not "your bouquet" — members joined the prayer rather
+ * than organizing it. Used by the resend-chain-bouquet one-off and
+ * (potentially) future close flows that want every member to
+ * receive the bouquet artifact.
+ */
+describe("renderChainBouquetForMembers", () => {
+  const base = {
+    to: "alice@example.com",
+    memberName: "Alice",
+    prayerName: "Surrender Novena",
+    recipientName: "Benji" as string | null,
+    bouquetUrl: "https://prayertrains.com/api/bouquet/chain/benji-abc1",
+    chainUrl: "https://prayertrains.com/chain/benji-abc1",
+  };
+
+  it("uses 'praying with X' phrasing when organizer name is present", () => {
+    const r = renderChainBouquetForMembers({ ...base, organizerName: "William" });
+    expect(r.subject).toBe("The spiritual bouquet for Benji");
+    expect(r.html).toContain("Alice, thank you for praying with William for Benji.");
+    expect(r.text).toContain("Alice, thank you for praying with William for Benji.");
+  });
+
+  it("drops 'with X' when organizerName is null (anonymous)", () => {
+    const r = renderChainBouquetForMembers({ ...base, organizerName: null });
+    expect(r.html).toContain("Alice, thank you for joining this prayer for Benji.");
+    expect(r.html).not.toContain("praying with the organizer");
+    expect(r.html).not.toContain("praying with the for");
+  });
+
+  it("subject falls back to prayer name when no recipient", () => {
+    const r = renderChainBouquetForMembers({
+      ...base,
+      organizerName: "William",
+      recipientName: null,
+    });
+    expect(r.subject).toBe("The spiritual bouquet from the Surrender Novena");
+  });
+
+  it("renders the download CTA + link back to the prayer page", () => {
+    const r = renderChainBouquetForMembers({ ...base, organizerName: "William" });
+    expect(r.html).toContain(base.bouquetUrl);
+    expect(r.html).toContain(base.chainUrl);
+    expect(r.html).toContain("View the spiritual bouquet");
+  });
+
+  it("escapes HTML in member name (XSS guard)", () => {
+    const r = renderChainBouquetForMembers({
+      ...base,
+      memberName: "<script>alert(1)</script>",
+      organizerName: "William",
+    });
+    expect(r.html).not.toContain("<script>alert");
+    expect(r.html).toContain("&lt;script&gt;");
+  });
+
+  it("never produces broken-grammar substrings under any organizerName input", () => {
+    for (const organizerName of [null, "", "   ", "William", "William Keough"]) {
+      const r = renderChainBouquetForMembers({ ...base, organizerName });
       const all = r.subject + "\n" + r.html + "\n" + r.text;
       expect(all).not.toContain("the's ");
       expect(all).not.toContain("the&#39;s ");

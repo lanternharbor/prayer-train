@@ -69,8 +69,13 @@ export default async function BrowsePage({
     status: "ACTIVE",
   };
 
-  if (situation && SITUATIONS.includes(situation as SituationCategory)) {
-    where.situation = situation;
+  const validSituation =
+    situation && SITUATIONS.includes(situation as SituationCategory)
+      ? (situation as SituationCategory)
+      : null;
+
+  if (validSituation) {
+    where.situation = validSituation;
   }
 
   if (q && q.trim()) {
@@ -94,6 +99,12 @@ export default async function BrowsePage({
   // dedicated section below the trains grid so any chain query failure
   // can never affect the train rendering. The Spina train (most-trafficked
   // page) is downstream of `trains`, not `chains`.
+  //
+  // When a search is active and the trains query returns nothing, the
+  // page suppresses the trains-empty-state and lifts the chains list
+  // to the primary search-result position (see render branch below).
+  // That keeps a chain-only match like "/browse?q=priscilla" from
+  // hiding behind a misleading "No prayer trains match" empty-state.
   const chainsWhere: Record<string, unknown> = {
     isPublic: true,
     status: "ACTIVE",
@@ -103,6 +114,15 @@ export default async function BrowsePage({
       { recipientName: { contains: q.trim(), mode: "insensitive" } },
       { intention: { contains: q.trim(), mode: "insensitive" } },
     ];
+  }
+  if (validSituation) {
+    // Chains carry situation indirectly via PrayerType.situationTags
+    // (a SituationCategory[] on the chain's prayer type). Filter
+    // chains whose prayer type's tags array contains the selected
+    // situation so the situation chip filters BOTH primitives.
+    chainsWhere.prayerType = {
+      situationTags: { has: validSituation },
+    };
   }
 
   let chains: Array<{
@@ -207,8 +227,23 @@ export default async function BrowsePage({
         ))}
       </div>
 
-      {/* Results */}
-      {trains.length > 0 ? (
+      {/* Results.
+       *
+       * The trains grid renders whenever there are train results.
+       * The trains-empty-state below ONLY renders when BOTH trains
+       * and chains are empty — otherwise a search like ?q=priscilla
+       * (which matches a chain but no train) shows a tall "No
+       * prayer trains match" empty-state that swallows visual
+       * attention, and the matching chain rendered in the section
+       * below is hidden behind/below the misleading copy.
+       *
+       * The chains section below adapts: when there are no train
+       * results and a search IS active, it lifts up to the primary
+       * search-result position (no `mt-16`, no "Praying together"
+       * subsection header) so chains become the result-set, not a
+       * footer.
+       */}
+      {trains.length > 0 && (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {trains.map((train) => {
             const total = train.slots.length;
@@ -318,12 +353,22 @@ export default async function BrowsePage({
             );
           })}
         </div>
-      ) : (
+      )}
+
+      {/* Empty-state. Only renders when BOTH lists are empty —
+          otherwise the matching chains below would sit behind a
+          misleading "no results" message. Two copy branches:
+          - Searching (q or situation): brief "No prayers match your
+            search" with a clear-filters hint, NO "Start a PrayerTrain"
+            CTA (the user is looking, not creating).
+          - Default (no search): keep the existing
+            "No public prayer trains yet" + create CTA. */}
+      {trains.length === 0 && chains.length === 0 && (
         <div className="text-center py-20">
           <PrayingHandsIcon className="w-14 h-14 text-gold-300 mx-auto mb-4" />
           <h2 className="font-heading text-2xl font-semibold text-navy-700 mb-3">
             {q || situation
-              ? "No prayer trains match your search"
+              ? "No prayers match your search"
               : "No public prayer trains yet"}
           </h2>
           <p className="text-muted-foreground mb-6 max-w-md mx-auto">
@@ -331,32 +376,52 @@ export default async function BrowsePage({
               ? "Try a different search or clear your filters."
               : "Be the first to create a prayer train and share it with your community."}
           </p>
-          <Link
-            href="/create"
-            className="inline-flex items-center gap-2 px-6 py-3 bg-primary text-primary-foreground font-medium rounded-lg hover:bg-navy-700 transition-colors"
-          >
-            <Heart className="w-4 h-4" />
-            Start a PrayerTrain
-          </Link>
+          {!q && !situation && (
+            <Link
+              href="/create"
+              className="inline-flex items-center gap-2 px-6 py-3 bg-primary text-primary-foreground font-medium rounded-lg hover:bg-navy-700 transition-colors"
+            >
+              <Heart className="w-4 h-4" />
+              Start a PrayerTrain
+            </Link>
+          )}
         </div>
       )}
 
-      {/* Public "pray together" PrayerTrains — separate section below the
-          calendar trains. Renders only when there's at least one to show.
-          Failures fetching these do not affect the calendar trains
-          rendering above. */}
+      {/* "Pray together" PrayerTrains.
+       *
+       * Two layout modes:
+       *
+       * 1. **Lifted (search-active + no train results).** The chains
+       *    grid sits in the primary results position — no `mt-16`
+       *    margin pushing it below the trains zone, no
+       *    "Praying together" subsection H2 above it, no subhead.
+       *    The chains ARE the search results in this branch.
+       *
+       * 2. **Default (otherwise).** Two-section split: trains grid
+       *    on top, then `mt-16` + "Praying together" H2 + subhead
+       *    + chains grid below. The categorization is meaningful
+       *    when there's both a trains list and a chains list, or
+       *    when the user is browsing without a query.
+       *
+       * Failures fetching chains never affect the trains rendering
+       * above — they fall through with an empty array. */}
       {chains.length > 0 && (
-        <section className="mt-16">
-          <div className="flex items-center gap-2 mb-6">
-            <Users className="w-5 h-5 text-gold-500" />
-            <h2 className="font-heading text-2xl font-semibold text-navy-800">
-              Praying together
-            </h2>
-          </div>
-          <p className="text-muted-foreground mb-6 max-w-2xl">
-            Novenas and devotions a small group is praying together —
-            join them and pray every day.
-          </p>
+        <section className={trains.length === 0 && (q || situation) ? "" : "mt-16"}>
+          {!(trains.length === 0 && (q || situation)) && (
+            <>
+              <div className="flex items-center gap-2 mb-6">
+                <Users className="w-5 h-5 text-gold-500" />
+                <h2 className="font-heading text-2xl font-semibold text-navy-800">
+                  Praying together
+                </h2>
+              </div>
+              <p className="text-muted-foreground mb-6 max-w-2xl">
+                Novenas and devotions a small group is praying together —
+                join them and pray every day.
+              </p>
+            </>
+          )}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {chains.map((chain) => {
               // Anonymous-organizer cards drop the possessive prefix

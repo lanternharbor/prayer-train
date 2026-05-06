@@ -8,15 +8,23 @@ import { BouquetDocument, type BouquetData } from "@/lib/bouquet-pdf";
  * GET /api/bouquet/[slug]
  *
  * Returns a printable Spiritual Bouquet PDF for a completed prayer train.
- * Auth pattern matches /p/[slug]/manage (organizer-only). The train must
- * be in COMPLETED status — otherwise we 403 with a small JSON message.
  *
- * Organizer preview: passing ?preview=1 lets the organizer (and ONLY the
- * organizer; auth check still runs first) generate the PDF from the
- * train's current state regardless of status. Useful before the train
- * ends so the organizer can see what the artifact will look like for
- * the recipient family on delivery day. Non-organizers always need
- * COMPLETED.
+ * Access model:
+ *   - Standard download (no `?preview=1`): NO auth required. The PDF
+ *     exposes nothing that isn't already on the public /p/[slug] page
+ *     (recipient name, organizer name, date range, prayer types,
+ *     claimer + warrior names). The bouquet URL is sent to warriors
+ *     in their closing email (sendPrayerWarriorClosing) and to the
+ *     organizer via the bouquet-ready email shipped in PR #40 —
+ *     requiring sign-in to view it broke those emails for every
+ *     recipient who wasn't the signed-in organizer. Status ===
+ *     COMPLETED is the only gate.
+ *   - Preview (`?preview=1`): organizer-only, signed-in. Preview lets
+ *     the organizer see the current artifact BEFORE COMPLETED so
+ *     they can verify what'll go to the family. Auth stays for this
+ *     branch because preview bypasses the COMPLETED gate, and we
+ *     don't want a logged-out third party generating preview PDFs of
+ *     in-flight trains.
  *
  * Precedent: /api/qr/[slug]/route.ts (SVG response) and
  * /api/ics/[slotId]/route.ts (text/calendar response). This is the
@@ -27,15 +35,7 @@ export async function GET(
   { params }: { params: Promise<{ slug: string }> },
 ) {
   const { slug } = await params;
-  const session = await auth();
   const isPreview = new URL(req.url).searchParams.get("preview") === "1";
-
-  if (!session?.user?.id) {
-    return NextResponse.json(
-      { error: "Sign in to download a spiritual bouquet." },
-      { status: 401 },
-    );
-  }
 
   const train = await prisma.prayerTrain.findUnique({
     where: { slug },
@@ -60,19 +60,26 @@ export async function GET(
     return NextResponse.json({ error: "Not found." }, { status: 404 });
   }
 
-  // Organizer-only — same gate as /p/[slug]/manage.
-  if (train.organizerId !== session.user.id) {
-    return NextResponse.json(
-      { error: "Only the train organizer can download the bouquet." },
-      { status: 403 },
-    );
-  }
-
-  // Organizer preview bypass: ?preview=1 lets the organizer see the
-  // current artifact before COMPLETED. Auth has already gated this to
-  // organizer-only above, so the bypass cannot leak the bouquet to
-  // anyone else. Non-preview requests still need COMPLETED.
-  if (!isPreview && train.status !== "COMPLETED") {
+  // Preview is organizer-only and requires sign-in (it bypasses the
+  // COMPLETED gate, so we don't want it to leak to anyone with the URL).
+  if (isPreview) {
+    const session = await auth();
+    if (!session?.user?.id) {
+      return NextResponse.json(
+        { error: "Sign in to preview a spiritual bouquet." },
+        { status: 401 },
+      );
+    }
+    if (train.organizerId !== session.user.id) {
+      return NextResponse.json(
+        { error: "Only the train organizer can preview the bouquet." },
+        { status: 403 },
+      );
+    }
+  } else if (train.status !== "COMPLETED") {
+    // Standard (non-preview) download requires the train to be marked
+    // complete. Anyone with the slug can download once it is — no
+    // sign-in needed.
     return NextResponse.json(
       {
         error:

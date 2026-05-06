@@ -1104,6 +1104,102 @@ export async function sendChainBouquetReady(input: ChainBouquetReadyInput) {
   }
 }
 
+// ─── Bouquet shared with members ─────────────────────────────
+//
+// Member-facing variant of the bouquet-ready email. Tone is
+// gracious-thank-you, not "your bouquet" — members joined the
+// prayer, they didn't organize it, so the framing is "the artifact
+// your prayers helped create." Used by the resend-chain-bouquet
+// one-off script to follow up with members of chains that closed
+// before PR #40 wired the organizer-only bouquet email; can also
+// be invoked from closePrayerChain in the future if William wants
+// every member to get the bouquet on close (PR #40 explicitly
+// excluded this; revisitable).
+//
+// Audience: each active member (unsubscribedAt: null) of a
+// COMPLETED chain. NOT the organizer — they get
+// sendChainBouquetReady, which is keyed on "Your" pronoun.
+
+export interface ChainBouquetForMembersInput {
+  to: string;
+  memberName: string;
+  /** Organizer first name when available; null when anonymous OR
+   *  no User.name. Template uses null to drop "with [name]" from the
+   *  thank-you sentence and substitute "joining this prayer." Same
+   *  contract as the other chain emails. */
+  organizerName: string | null;
+  prayerName: string;
+  recipientName: string | null;
+  bouquetUrl: string;
+  chainUrl: string;
+}
+
+export function renderChainBouquetForMembers(input: ChainBouquetForMembersInput): {
+  subject: string;
+  html: string;
+  text: string;
+} {
+  const orgFirst = firstNameOrNull(input.organizerName);
+  const recipientPhraseShort = input.recipientName?.trim()
+    ? `for ${input.recipientName.trim()}`
+    : "";
+  const subject = input.recipientName?.trim()
+    ? `The spiritual bouquet for ${input.recipientName.trim()}`
+    : `The spiritual bouquet from the ${input.prayerName}`;
+  const eMemberName = escapeHtml(input.memberName);
+  const eOrgFirst = orgFirst ? escapeHtml(orgFirst) : null;
+  const ePrayerName = escapeHtml(input.prayerName);
+  const eRecipientPhraseShort = escapeHtml(recipientPhraseShort);
+  // Thank-you greeting: drop "with [name]" when anonymous so the
+  // sentence still reads cleanly without the organizer attribution.
+  const thankYou = eOrgFirst
+    ? `${eMemberName}, thank you for praying with ${eOrgFirst} ${eRecipientPhraseShort}.`
+    : `${eMemberName}, thank you for joining this prayer ${eRecipientPhraseShort}.`;
+  const html = `
+        <div style="font-family: Georgia, 'Times New Roman', serif; max-width: 560px; margin: 0 auto; padding: 32px 24px; background: #faf8f5;">
+          <div style="background: #ffffff; border: 1px solid #e8e0d5; border-radius: 16px; padding: 32px 28px;">
+            <h1 style="color: #11152c; font-family: 'EB Garamond', Georgia, serif; font-size: 26px; font-weight: 700; margin: 0 0 16px; line-height: 1.3;">
+              The spiritual bouquet is ready.
+            </h1>
+            <p style="color: #11152c; font-size: 15px; line-height: 1.7; margin: 0 0 16px;">
+              ${thankYou}
+            </p>
+            <p style="color: #11152c; font-size: 15px; line-height: 1.7; margin: 0 0 24px;">
+              The ${ePrayerName} is complete. The bouquet below holds every name that prayed and every day that was covered.
+            </p>
+            <div style="text-align: center; margin: 8px 0 4px;">
+              <a href="${input.bouquetUrl}" style="display: inline-block; background: #d4a843; color: #0a0c1a; padding: 12px 28px; border-radius: 10px; text-decoration: none; font-weight: 600; font-size: 15px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;">
+                View the spiritual bouquet
+              </a>
+            </div>
+            <p style="color: #6e6150; font-size: 13px; line-height: 1.6; margin: 24px 0 0; text-align: center;">
+              <a href="${input.chainUrl}" style="color: #947324; text-decoration: none;">Visit the prayer page</a>
+            </p>
+            <p style="color: #b8a994; font-size: 13px; font-style: italic; line-height: 1.6; margin: 18px 0 0; text-align: center;">
+              May the Lord bless and keep all who carried this prayer.
+            </p>
+          </div>
+          <p style="text-align: center; color: #b8a994; font-size: 12px; margin: 18px 0 0;">
+            PrayerTrain &middot; A Lantern Harbor project
+          </p>
+        </div>
+      `;
+  const textThank = orgFirst
+    ? `${input.memberName}, thank you for praying with ${orgFirst} ${recipientPhraseShort}.`
+    : `${input.memberName}, thank you for joining this prayer ${recipientPhraseShort}.`;
+  const text = `The spiritual bouquet is ready.\n\n${textThank}\n\nThe ${input.prayerName} is complete. The bouquet holds every name that prayed and every day that was covered.\n\nView the bouquet: ${input.bouquetUrl}\nVisit the prayer page: ${input.chainUrl}\n\nMay the Lord bless and keep all who carried this prayer.`;
+  return { subject, html, text };
+}
+
+export async function sendChainBouquetForMembers(input: ChainBouquetForMembersInput) {
+  const { subject, html, text } = renderChainBouquetForMembers(input);
+  try {
+    await resend.emails.send({ from: FROM, to: input.to, subject, html, text });
+  } catch (error) {
+    console.error("Failed to send chain bouquet-for-members email:", error);
+  }
+}
+
 export interface TrainBouquetReadyInput {
   to: string;
   organizerName: string | null;

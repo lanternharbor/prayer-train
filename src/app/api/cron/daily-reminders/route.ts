@@ -1,9 +1,16 @@
 import { NextResponse } from "next/server";
 import { timingSafeEqual } from "node:crypto";
 import { prisma } from "@/lib/db";
-import { sendDailyReminder } from "@/lib/email";
+import { sendDailyReminder, sendTrainClosingPrompt } from "@/lib/email";
 import { getBaseUrl } from "@/lib/url";
 import { signCompletionToken } from "@/lib/completion-tokens";
+import {
+  shouldAutoClose,
+  shouldSendClosingPrompt,
+  TRAIN_AUTO_CLOSE_GRACE_DAYS,
+} from "@/lib/train-lifecycle";
+import { DEFAULT_DISPLAY_TZ } from "@/lib/dates";
+import { organizerFirstName } from "@/lib/organizer-display";
 
 // Vercel Cron hits this endpoint daily at 11:00 UTC.
 // Schedule is in vercel.json. Authorization is the standard Vercel
@@ -100,6 +107,137 @@ export async function GET(request: Request) {
     }
   }
 
+  // ─── Train end-of-life passes ────────────────────────────────
+  //
+  // Two additional sweeps after the daily-reminder dispatch above:
+  //
+  //   1. Closing prompt — fires the day a train hits its endDate.
+  //      One-shot per train via PrayerTrain.closingPromptSentAt
+  //      idempotency. Email goes to the organizer; prayer warriors
+  //      already received their final daily reminder above (if they
+  //      had a slot today).
+  //
+  //   2. Auto-close — flips status: ACTIVE → COMPLETED for trains
+  //      that lingered past endDate + TRAIN_AUTO_CLOSE_GRACE_DAYS
+  //      (default 7). Silent cleanup; NO warrior closing emails on
+  //      this path — those are reserved for manual updateTrainStatus
+  //      so the organizer's intent is preserved when emails go out.
+  //
+  //      PAUSED trains are explicitly excluded from auto-close: the
+  //      organizer chose to halt sign-ups intentionally; the cron
+  //      shouldn't override that. See shouldAutoClose for the gate.
+  //
+  // Both passes use shouldSendClosingPrompt / shouldAutoClose as
+  // the final guard so the predicates stay unit-testable. Mirrors
+  // the chain-reminders cron's end-of-life passes.
+
+  let closingPromptsSent = 0;
+  let autoClosed = 0;
+  const nowForCron = new Date();
+
+  // Pass 1: closing prompt to organizer
+  const promptCandidates = await prisma.prayerTrain.findMany({
+    where: {
+      status: "ACTIVE",
+      closingPromptSentAt: null,
+      // Broaden by ~2-day window so TZ skew at the boundary doesn't
+      // drop a train that ended right around the cron's UTC moment.
+      // The shouldSendClosingPrompt predicate compares calendar keys
+      // and rejects anything other than today.
+      endDate: {
+        gte: new Date(nowForCron.getTime() - 2 * 24 * 60 * 60 * 1000),
+        lte: new Date(nowForCron.getTime() + 1 * 24 * 60 * 60 * 1000),
+      },
+    },
+    include: {
+      organizer: { select: { name: true, email: true } },
+    },
+  });
+
+  for (const train of promptCandidates) {
+    if (
+      !shouldSendClosingPrompt(
+        {
+          status: train.status,
+          endDate: train.endDate,
+          closingPromptSentAt: train.closingPromptSentAt,
+          organizer: { email: train.organizer?.email ?? null },
+        },
+        nowForCron,
+        DEFAULT_DISPLAY_TZ,
+      )
+    ) {
+      continue;
+    }
+    try {
+      await sendTrainClosingPrompt({
+        to: train.organizer!.email!,
+        organizerFirstName: organizerFirstName({
+          organizerAnonymous: train.organizerAnonymous,
+          organizer: { name: train.organizer?.name ?? null },
+        }),
+        recipientName: train.recipientName,
+        trainManageUrl: `${baseUrl}/p/${train.slug}/manage`,
+      });
+      // Set the idempotency timestamp inside the same loop iteration
+      // so repeated sends within the same cron run can't double-fire.
+      // sendTrainClosingPrompt swallows + logs its own errors; if it
+      // failed silently the column stays null and the next cron run
+      // retries. Acceptable trade-off.
+      await prisma.prayerTrain.update({
+        where: { id: train.id },
+        data: { closingPromptSentAt: new Date() },
+      });
+      closingPromptsSent++;
+    } catch (e) {
+      console.error(
+        `[cron] closing prompt failed for train ${train.id}:`,
+        e,
+      );
+      errors++;
+    }
+  }
+
+  // Pass 2: auto-close past the grace period
+  const closeCandidates = await prisma.prayerTrain.findMany({
+    where: {
+      status: "ACTIVE",
+      // (graceDays + 1) buffer to account for TZ skew at the edge.
+      endDate: {
+        lt: new Date(
+          nowForCron.getTime() -
+            (TRAIN_AUTO_CLOSE_GRACE_DAYS + 1) * 24 * 60 * 60 * 1000,
+        ),
+      },
+    },
+    select: { id: true, status: true, endDate: true, slug: true },
+  });
+
+  for (const train of closeCandidates) {
+    if (
+      !shouldAutoClose(
+        { status: train.status, endDate: train.endDate },
+        nowForCron,
+        DEFAULT_DISPLAY_TZ,
+      )
+    ) {
+      continue;
+    }
+    try {
+      await prisma.prayerTrain.update({
+        where: { id: train.id },
+        data: { status: "COMPLETED" },
+      });
+      autoClosed++;
+    } catch (e) {
+      console.error(
+        `[cron] auto-close failed for train ${train.id}:`,
+        e,
+      );
+      errors++;
+    }
+  }
+
   // Heartbeat ping to Healthchecks.io (or any compatible monitor). Opt-in
   // via env var — zero behavior change if not set. Wrapped to never throw,
   // so a Healthchecks outage cannot mask or fail an otherwise successful
@@ -111,7 +249,7 @@ export async function GET(request: Request) {
     try {
       await fetch(healthcheckUrl, {
         method: "POST",
-        body: `slotsFound=${slotsToRemind.length} sent=${sent} errors=${errors}`,
+        body: `slotsFound=${slotsToRemind.length} sent=${sent} closingPrompts=${closingPromptsSent} autoClosed=${autoClosed} errors=${errors}`,
       });
     } catch (e) {
       console.error("[cron] healthcheck ping failed:", e);
@@ -123,6 +261,8 @@ export async function GET(request: Request) {
     date: today.toISOString(),
     slotsFound: slotsToRemind.length,
     sent,
+    closingPromptsSent,
+    autoClosed,
     errors,
   });
 }

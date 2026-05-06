@@ -28,8 +28,17 @@ function recipientPhrase(
 // extracts startDate's UTC-encoded canonical day and observes "now"
 // in the canonical East Coast TZ (DEFAULT_DISPLAY_TZ from
 // src/lib/dates.ts) — see that module for the West Coast caveat.
-function dayNumberFor(startDate: Date): number {
-  return dayNumberInTimezone(new Date(), startDate, DEFAULT_DISPLAY_TZ);
+//
+// `durationDays` cap: dayNumberInTimezone returns a true count
+// (Math.max(1, ...) floor, no upper cap). Past a chain's endDate
+// the raw count keeps growing, so the page would render
+// "Day 10 of 9" for a 9-day novena visited the day after it ended.
+// Clamping at the call site here matches the convention already
+// used by the browse-page card progress (computeChainProgress
+// in /browse/page.tsx).
+function dayNumberFor(startDate: Date, durationDays: number): number {
+  const raw = dayNumberInTimezone(new Date(), startDate, DEFAULT_DISPLAY_TZ);
+  return Math.min(raw, durationDays);
 }
 
 export async function generateMetadata({
@@ -49,7 +58,7 @@ export async function generateMetadata({
 
   const orgFirst = organizerFirstName(chain);
   const phrase = recipientPhrase(chain.recipientName, chain.intention);
-  const day = dayNumberFor(chain.startDate);
+  const day = dayNumberFor(chain.startDate, chain.durationDays);
   const url = `${getBaseUrl()}/chain/${chain.slug}`;
   // Prefer the recipient's uploaded photo for the share preview — it
   // makes iMessage / link-unfurl cards feel personal. Falls back to the
@@ -132,7 +141,7 @@ export default async function ChainDetailPage({
   const displayTitle = chain.organizerAnonymous
     ? titleSuffix
     : `${orgFirst}'s ${titleSuffix}`;
-  const day = dayNumberFor(chain.startDate);
+  const day = dayNumberFor(chain.startDate, chain.durationDays);
   const isOrganizer = session?.user?.id === chain.organizerId;
   const isMember = !!chain.members.find(
     (m) => session?.user && m.email === session.user.email,

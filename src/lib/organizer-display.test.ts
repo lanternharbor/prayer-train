@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   organizerDisplayName,
   organizerFirstName,
+  organizerFirstNameOrNull,
 } from "./organizer-display";
 
 /**
@@ -106,5 +107,84 @@ describe("organizerFirstName", () => {
         organizer: { name: "William" },
       }),
     ).toBe("William");
+  });
+});
+
+/**
+ * organizerFirstNameOrNull is the variant that returns null instead
+ * of "the organizer" so callers using a possessive construction can
+ * drop the whole construction entirely. Pins the contract that null
+ * means "drop possessive" — both the anonymous case and the unset-
+ * name case need to drop it because either way the rendered output
+ * would be "the organizer's Novena ..." (broken or stiff).
+ */
+describe("organizerFirstNameOrNull", () => {
+  it("returns null when organizerAnonymous is true", () => {
+    expect(
+      organizerFirstNameOrNull({
+        organizerAnonymous: true,
+        organizer: { name: "William Keough" },
+      }),
+    ).toBeNull();
+  });
+
+  it("returns null when name is null and not anonymous", () => {
+    // The case Jilu hit: she chose to be named (organizerAnonymous=false)
+    // but her User row has name=null because magic-link sign-in didn't
+    // capture a name. Possessive constructions must drop in this case
+    // too — they shouldn't fall back to "the organizer's".
+    expect(
+      organizerFirstNameOrNull({
+        organizerAnonymous: false,
+        organizer: { name: null },
+      }),
+    ).toBeNull();
+  });
+
+  it("returns null when name is empty after trim", () => {
+    expect(
+      organizerFirstNameOrNull({
+        organizerAnonymous: false,
+        organizer: { name: "   " },
+      }),
+    ).toBeNull();
+  });
+
+  it("returns first name when present and not anonymous", () => {
+    expect(
+      organizerFirstNameOrNull({
+        organizerAnonymous: false,
+        organizer: { name: "William Keough" },
+      }),
+    ).toBe("William");
+  });
+
+  it("trims and collapses whitespace before splitting", () => {
+    expect(
+      organizerFirstNameOrNull({
+        organizerAnonymous: false,
+        organizer: { name: "  William   Keough  " },
+      }),
+    ).toBe("William");
+  });
+
+  it("returns the only word when there's no whitespace", () => {
+    expect(
+      organizerFirstNameOrNull({
+        organizerAnonymous: false,
+        organizer: { name: "William" },
+      }),
+    ).toBe("William");
+  });
+
+  it("anonymous overrides a present name (consistent with display contract)", () => {
+    // Anonymity is the organizer's deliberate choice; even with a
+    // name on the user row, the possessive construction must drop.
+    expect(
+      organizerFirstNameOrNull({
+        organizerAnonymous: true,
+        organizer: { name: "William Keough" },
+      }),
+    ).toBeNull();
   });
 });

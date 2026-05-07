@@ -209,6 +209,11 @@ async function main() {
   );
   console.log(`  durationDays: ${chain.durationDays}`);
   console.log(`  resending day(s): ${days.join(", ")}`);
+  if (!process.env.CRON_SECRET) {
+    console.log(
+      `  CRON_SECRET not set → "I prayed today" links will route to the\n  chain page (no token-based completion). Email content lands intact.`,
+    );
+  }
   console.log(``);
 
   let sent = 0;
@@ -232,11 +237,26 @@ async function main() {
         continue;
       }
       try {
-        const completionToken = signCompletionToken(
-          "chain-day",
-          chainDayTokenId(member.id, day),
-        );
-        const markCompleteUrl = `${baseUrl}/chain/${chain.slug}/complete?day=${day}&memberId=${encodeURIComponent(member.id)}&token=${encodeURIComponent(completionToken)}`;
+        // CRON_SECRET availability gates the completion-token flow.
+        // It's marked Sensitive on Vercel (write-only after creation),
+        // so a local catch-up run typically does NOT have it. We
+        // gracefully degrade: when the secret is unset we substitute
+        // the chain detail page as the "I prayed today" link target.
+        // The email's prayer + reflection content (the meaningful
+        // payload of a daily reminder) still arrives intact; the
+        // one-click mark-complete button just routes to the chain
+        // page instead of the tokenized handler. For a backfill of
+        // past days, completion-tracking precision matters less than
+        // delivery of the prayer content itself.
+        const haveSecret = Boolean(process.env.CRON_SECRET);
+        const markCompleteUrl = haveSecret
+          ? `${baseUrl}/chain/${chain.slug}/complete?day=${day}&memberId=${encodeURIComponent(member.id)}&token=${encodeURIComponent(
+              signCompletionToken(
+                "chain-day",
+                chainDayTokenId(member.id, day),
+              ),
+            )}`
+          : `${baseUrl}/chain/${chain.slug}`;
         const unsubscribeUrl = `${baseUrl}/api/chain/unsubscribe?id=${member.id}`;
         const otherCount = chain.members.length - 1;
 

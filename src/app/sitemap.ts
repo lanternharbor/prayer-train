@@ -1,6 +1,7 @@
 import type { MetadataRoute } from "next";
 import { prisma } from "@/lib/db";
 import { getBaseUrl } from "@/lib/url";
+import { SITUATION_TOPICS } from "./situations/[topic]/content";
 
 /**
  * Dynamic sitemap. Includes the static marketing pages plus every public
@@ -45,6 +46,22 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: "monthly",
       priority: 0.6,
     },
+    // Situations cluster — six use-case landing pages mapped to
+    // high-intent Catholic search clusters ("Catholic prayers for a
+    // friend with cancer", etc.). The /situations index + each leaf
+    // page get listed so Google indexes the whole cluster.
+    {
+      url: `${base}/situations`,
+      lastModified: now,
+      changeFrequency: "weekly",
+      priority: 0.7,
+    },
+    ...SITUATION_TOPICS.map((topic) => ({
+      url: `${base}/situations/${topic}`,
+      lastModified: now,
+      changeFrequency: "weekly" as const,
+      priority: 0.8,
+    })),
     {
       url: `${base}/privacy`,
       lastModified: now,

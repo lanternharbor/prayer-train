@@ -18,6 +18,7 @@ import {
   formatPrayerCategory,
   formatDifficulty,
   formatSituation,
+  smartTruncate,
 } from "@/lib/utils";
 import { hasCompleteReflections } from "@/lib/daily-reflections";
 import {
@@ -48,11 +49,11 @@ export async function generateMetadata({
 
   return {
     title: prayer.name,
-    description: prayer.description.slice(0, 160),
+    description: smartTruncate(prayer.description, 160),
     alternates: { canonical: url },
     openGraph: {
       title: prayer.name,
-      description: prayer.description.slice(0, 160),
+      description: smartTruncate(prayer.description, 160),
       url,
       type: "article",
       siteName: "PrayerTrain",
@@ -61,7 +62,7 @@ export async function generateMetadata({
     twitter: {
       card: "summary_large_image",
       title: prayer.name,
-      description: prayer.description.slice(0, 160),
+      description: smartTruncate(prayer.description, 160),
       images: [image],
     },
   };

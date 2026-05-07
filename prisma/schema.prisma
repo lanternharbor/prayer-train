@@ -278,6 +278,14 @@ model PrayerSlot {
   // Novena grouping — all slots in a novena share the same groupId
   novenaGroupId String?
 
+  // Reminder-send audit trail. Daily-reminders cron writes this after
+  // a successful Resend dispatch on the slot's `date`. The cron skips
+  // any slot where this is non-null, making the route idempotent on
+  // manual re-trigger. Mirrors PrayerChainMember.lastReminderSentAt;
+  // the slot version is a single timestamp (not per-day) because
+  // each slot maps to exactly one calendar date.
+  lastReminderSentAt DateTime?
+
   @@unique([trainId, date, slotIndex])
   @@index([trainId])
   @@index([claimedById])
@@ -468,6 +476,17 @@ model PrayerChainMember {
   // Soft leave — they stop receiving reminders but stay in the roster
   // and on the spiritual bouquet.
   unsubscribedAt DateTime?
+
+  // Reminder-send audit trail. The chain-reminders cron writes
+  // `lastReminderSentForDay = N` after a successful Resend dispatch
+  // for day N, plus `lastReminderSentAt = now()`. The cron's day-N
+  // dispatch is gated on `lastReminderSentForDay !== N`, which makes
+  // the route idempotent under retry / manual replay and gives ops a
+  // direct query for "did this member get their day-N reminder?"
+  // (previously invisible — sends were Promise.allSettled +
+  // console.error on rejection, with no DB trace either way).
+  lastReminderSentForDay Int?
+  lastReminderSentAt     DateTime?
 
   // One membership per email per chain.
   @@unique([chainId, email])

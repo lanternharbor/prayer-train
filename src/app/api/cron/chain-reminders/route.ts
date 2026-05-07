@@ -79,12 +79,18 @@ export async function GET(request: Request) {
       },
       members: {
         where: { unsubscribedAt: null },
-        select: { id: true, name: true, email: true },
+        select: {
+          id: true,
+          name: true,
+          email: true,
+          lastReminderSentForDay: true,
+        },
       },
     },
   });
 
   let sent = 0;
+  let skippedAlreadySent = 0;
   let errors = 0;
   let chainsProcessed = 0;
   const baseUrl = getBaseUrl();
@@ -101,10 +107,24 @@ export async function GET(request: Request) {
 
     const chainUrl = `${baseUrl}/chain/${chain.slug}`;
 
+    // Idempotency gate: drop members who already received this day's
+    // reminder. Lets the route stay safe under retry / manual replay
+    // (e.g. ops curl after a Vercel cron miss) without double-sending.
+    // The flip side — a member whose send failed yesterday — has
+    // lastReminderSentForDay still pointing at the previous successful
+    // day (or null), so they remain in the eligible set and get caught
+    // up on the current day's send. We deliberately do NOT try to
+    // backfill missed prior days here: the catch-up path is a one-off
+    // scripts/resend-chain-reminders.ts run with explicit auth.
+    const eligibleMembers = chain.members.filter(
+      (m) => m.lastReminderSentForDay !== dayNum,
+    );
+    skippedAlreadySent += chain.members.length - eligibleMembers.length;
+
     // Fire all member emails in parallel so a large chain doesn't exhaust
     // the 30s Vercel function timeout through sequential awaits.
     const results = await Promise.allSettled(
-      chain.members.map((member) => {
+      eligibleMembers.map((member) => {
         const otherCount = chain.members.length - 1;
         // Tokenized one-click completion URL. Points at the
         // /chain/[slug]/complete handler which verifies the HMAC before
@@ -160,14 +180,55 @@ export async function GET(request: Request) {
       }),
     );
 
+    // Pair settled results back with the member we sent for. Write-
+    // back happens in a second pass so a slow Prisma update can't
+    // stall the parallel send fan-out above.
+    const successfulMemberIds: string[] = [];
     for (let i = 0; i < results.length; i++) {
-      if (results[i].status === "fulfilled") {
+      const member = eligibleMembers[i];
+      const result = results[i];
+      if (result.status === "fulfilled") {
         sent++;
+        successfulMemberIds.push(member.id);
       } else {
-        console.error(
-          `[chain-cron] failed to send reminder for chain ${chain.id} member ${chain.members[i].id}:`,
-          (results[i] as PromiseRejectedResult).reason,
-        );
+        // Structured error so a future search for "did Jilu's day-5
+        // reminder fail?" can grep `memberId:cm... day:5 reason:...`
+        // out of Vercel logs. Previously the message interpolated
+        // chain id + member id only, with the reason as a separate
+        // serialized object — harder to grep across log entries.
+        console.error("[chain-cron] reminder send failed", {
+          chainId: chain.id,
+          memberId: member.id,
+          email: member.email,
+          day: dayNum,
+          reason: String(result.reason),
+        });
+        errors++;
+      }
+    }
+
+    if (successfulMemberIds.length > 0) {
+      // Single batched updateMany rather than N updates: the cron
+      // dispatches one chain at a time but a Spina-sized chain (38
+      // members) still benefits from one round-trip vs 38. Failures
+      // here are non-fatal — the email already went out — but we log
+      // loudly so a partial-write divergence (sent but DB didn't
+      // record) is visible in ops.
+      try {
+        await prisma.prayerChainMember.updateMany({
+          where: { id: { in: successfulMemberIds } },
+          data: {
+            lastReminderSentForDay: dayNum,
+            lastReminderSentAt: new Date(),
+          },
+        });
+      } catch (e) {
+        console.error("[chain-cron] failed to record reminder sends", {
+          chainId: chain.id,
+          memberIdCount: successfulMemberIds.length,
+          day: dayNum,
+          reason: String(e),
+        });
         errors++;
       }
     }
@@ -346,7 +407,7 @@ export async function GET(request: Request) {
     try {
       await fetch(healthcheckUrl, {
         method: "POST",
-        body: `chains=${chainsProcessed} sent=${sent} closingPrompts=${closingPromptsSent} autoClosed=${autoClosed} errors=${errors}`,
+        body: `chains=${chainsProcessed} sent=${sent} skipped=${skippedAlreadySent} closingPrompts=${closingPromptsSent} autoClosed=${autoClosed} errors=${errors}`,
       });
     } catch (e) {
       console.error("[chain-cron] healthcheck ping failed:", e);
@@ -358,6 +419,7 @@ export async function GET(request: Request) {
     date: today.toISOString(),
     chainsProcessed,
     sent,
+    skippedAlreadySent,
     closingPromptsSent,
     autoClosed,
     errors,

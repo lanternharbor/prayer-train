@@ -51,11 +51,18 @@ export async function GET(request: Request) {
   tomorrow.setDate(tomorrow.getDate() + 1);
 
   // Find all claimed slots for today that haven't been completed.
+  // The `lastReminderSentAt: null` clause is the idempotency gate:
+  // each slot maps to exactly one calendar date, so once we've
+  // dispatched a reminder for it the slot is permanently retired
+  // from the cron's working set. A manual replay (ops curl) after a
+  // Vercel cron miss won't double-send; a per-slot send failure
+  // leaves lastReminderSentAt null so the next cron run retries.
   const slotsToRemind = await prisma.prayerSlot.findMany({
     where: {
       date: { gte: today, lt: tomorrow },
       status: "CLAIMED",
       claimerEmail: { not: null },
+      lastReminderSentAt: null,
       train: { status: "ACTIVE" },
     },
     include: {
@@ -104,9 +111,37 @@ export async function GET(request: Request) {
         completeUrl,
         slotId: slot.id,
       });
+      // Record the send so the slot is excluded from the cron's
+      // working set on subsequent runs (the `lastReminderSentAt:
+      // null` filter on the findMany above). Wrap so a Prisma flake
+      // here doesn't mask a successful send. If this update fails,
+      // worst case the next cron run re-sends; we'd rather a duplicate
+      // reminder than a missed one.
+      try {
+        await prisma.prayerSlot.update({
+          where: { id: slot.id },
+          data: { lastReminderSentAt: new Date() },
+        });
+      } catch (writeErr) {
+        console.error("[cron] failed to record slot reminder send", {
+          slotId: slot.id,
+          trainId: slot.trainId,
+          reason: String(writeErr),
+        });
+        // Note: we DO NOT increment errors here — the email did go
+        // out; this is purely a bookkeeping miss. The next cron run
+        // will re-send, which is the safe-on-prayer side of the
+        // tradeoff.
+      }
       sent++;
     } catch (e) {
-      console.error(`[cron] failed to send reminder for slot ${slot.id}:`, e);
+      console.error("[cron] reminder send failed", {
+        slotId: slot.id,
+        trainId: slot.trainId,
+        email,
+        date: slot.date.toISOString(),
+        reason: String(e),
+      });
       errors++;
     }
   }

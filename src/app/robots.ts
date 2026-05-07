@@ -16,7 +16,14 @@ export default function robots(): MetadataRoute.Robots {
           "/signin",
           "/signin/verify",
           "/p/*/manage",
+          "/chain/*/manage",
+          // Trailing slash + wildcard catches /create itself plus the
+          // sub-flows /create/train and /chain/new isn't under /create
+          // so it's listed separately above. Plain "/create" without
+          // the slash matched only the bare path on some crawlers.
           "/create",
+          "/create/",
+          "/chain/new",
         ],
       },
     ],

@@ -3,6 +3,7 @@ import {
   breadcrumbSchema,
   organizationSchema,
   prayerArticleSchema,
+  prayerFaqSchema,
   websiteSchema,
 } from "./schema";
 
@@ -139,5 +140,87 @@ describe("prayerArticleSchema", () => {
       about: unknown[];
     };
     expect(s.about).toEqual([]);
+  });
+});
+
+/**
+ * FAQPage schema lights up the FAQ rich-result on /prayers/[slug]
+ * pages. Pin the field shape so a future refactor can't quietly drop
+ * a question or change the answer-text contract.
+ */
+describe("prayerFaqSchema", () => {
+  const fullPrayer = {
+    name: "Surrender Novena",
+    description:
+      "Based on the words of Don Dolindo Ruotolo: A novena of radical trust.",
+    instructions: "Pray once daily for nine consecutive days.",
+    patronSaint: "Don Dolindo Ruotolo",
+  };
+
+  it("declares FAQPage with the standard context", () => {
+    const s = prayerFaqSchema(fullPrayer);
+    expect(s).not.toBeNull();
+    expect(s!["@context"]).toBe(CONTEXT);
+    expect(s!["@type"]).toBe("FAQPage");
+  });
+
+  it("renders three questions when description, instructions, and patronSaint are all present", () => {
+    const s = prayerFaqSchema(fullPrayer);
+    const main = s!.mainEntity as Array<{ name: string }>;
+    expect(main).toHaveLength(3);
+    expect(main[0].name).toBe("What is the Surrender Novena?");
+    expect(main[1].name).toBe("How do I pray the Surrender Novena?");
+    expect(main[2].name).toBe(
+      "Who is the patron saint of the Surrender Novena?",
+    );
+  });
+
+  it("drops the patron-saint question when patronSaint is null", () => {
+    const s = prayerFaqSchema({ ...fullPrayer, patronSaint: null });
+    const main = s!.mainEntity as Array<{ name: string }>;
+    expect(main).toHaveLength(2);
+    expect(main.find((q) => q.name.includes("patron"))).toBeUndefined();
+  });
+
+  it("drops the how-to question when instructions are null", () => {
+    const s = prayerFaqSchema({ ...fullPrayer, instructions: null });
+    const main = s!.mainEntity as Array<{ name: string }>;
+    expect(main).toHaveLength(2);
+    expect(main.find((q) => q.name.includes("How do I pray"))).toBeUndefined();
+  });
+
+  it("returns null when even the description is empty (defensive)", () => {
+    // Description is required on PrayerType in the schema, but the
+    // helper shouldn't blow up if it ever isn't.
+    const s = prayerFaqSchema({
+      name: "Test",
+      description: "",
+      instructions: null,
+      patronSaint: null,
+    });
+    expect(s).toBeNull();
+  });
+
+  it("each entry has a non-empty answer text", () => {
+    const s = prayerFaqSchema(fullPrayer);
+    const main = s!.mainEntity as Array<{
+      acceptedAnswer: { text: string };
+    }>;
+    for (const entry of main) {
+      expect(entry.acceptedAnswer.text.length).toBeGreaterThan(0);
+    }
+  });
+
+  it("answer for 'who is the patron saint' weaves the saint into a sentence", () => {
+    const s = prayerFaqSchema(fullPrayer);
+    const main = s!.mainEntity as Array<{
+      name: string;
+      acceptedAnswer: { text: string };
+    }>;
+    const patronEntry = main.find((q) => q.name.includes("patron"));
+    expect(patronEntry?.acceptedAnswer.text).toContain(
+      "Don Dolindo Ruotolo",
+    );
+    expect(patronEntry?.acceptedAnswer.text).toContain("Surrender Novena");
   });
 });

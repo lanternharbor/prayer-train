@@ -26,6 +26,12 @@ export const metadata: Metadata = {
   alternates: { canonical: "/" },
 };
 
+// ISR — revalidate every 5 minutes. The homepage is fully static
+// (no per-user content) but we leave a small revalidation window so
+// updates ship without a manual purge. Translates to a Vercel CDN
+// `Cache-Control: s-maxage=300, stale-while-revalidate=...` header.
+export const revalidate = 300;
+
 export default function HomePage() {
   return (
     <div>

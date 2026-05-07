@@ -87,6 +87,59 @@ export function prayerArticleSchema(prayer: {
   };
 }
 
+/**
+ * FAQ schema for a prayer-detail page. Renders as the FAQPage rich
+ * result in Google search — three questions per prayer derived from
+ * existing PrayerType fields. Origin: SEO audit May 2026 flagged the
+ * gap; FAQ schema is one of the easiest SERP-feature wins.
+ *
+ * Skips entries whose answer is empty (e.g., a prayer with no
+ * patronSaint won't render the third Q). Empty `mainEntity` arrays
+ * are returned as null so callers can skip rendering altogether.
+ */
+export function prayerFaqSchema(prayer: {
+  name: string;
+  description: string;
+  instructions: string | null;
+  patronSaint: string | null;
+}): Record<string, unknown> | null {
+  type FaqEntry = { question: string; answer: string };
+  const candidates: FaqEntry[] = [
+    {
+      question: `What is the ${prayer.name}?`,
+      answer: prayer.description,
+    },
+  ];
+  if (prayer.instructions) {
+    candidates.push({
+      question: `How do I pray the ${prayer.name}?`,
+      answer: prayer.instructions,
+    });
+  }
+  if (prayer.patronSaint) {
+    candidates.push({
+      question: `Who is the patron saint of the ${prayer.name}?`,
+      answer: `${prayer.patronSaint} is the patron saint associated with the ${prayer.name}. The prayer is offered through their intercession.`,
+    });
+  }
+  const entries = candidates.filter(
+    (entry) => entry.answer && entry.answer.trim().length > 0,
+  );
+  if (entries.length === 0) return null;
+  return {
+    "@context": SCHEMA_CONTEXT,
+    "@type": "FAQPage",
+    mainEntity: entries.map((entry) => ({
+      "@type": "Question",
+      name: entry.question,
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: entry.answer,
+      },
+    })),
+  };
+}
+
 export function prayerChainSchema(chain: {
   slug: string;
   prayerName: string;

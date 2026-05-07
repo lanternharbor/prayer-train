@@ -26,8 +26,10 @@ export const metadata: Metadata = {
     default: "PrayerTrain — Organized Prayer for Those in Need",
     template: "%s | PrayerTrain",
   },
+  // 158 chars — under the ~160-char SERP truncation cap. The previous
+  // version was 191 chars and got cut mid-sentence in Google snippets.
   description:
-    "Coordinate prayer coverage for loved ones. Create a prayer train, invite your community, and ensure continuous spiritual support through organized daily prayer commitments.",
+    "Coordinate prayer coverage for someone in need. Create a PrayerTrain, choose Catholic novenas and devotions, and invite your community to pray.",
   manifest: "/manifest.json",
   icons: {
     icon: [

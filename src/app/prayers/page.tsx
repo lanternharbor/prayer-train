@@ -11,6 +11,10 @@ import {
 } from "lucide-react";
 import { PrayerCategory, type Prisma } from "@/generated/prisma/client";
 
+// Static prayer list; revalidate every 5 minutes so seed updates ship
+// without a deploy. Vercel translates to s-maxage=300 SWR header.
+export const revalidate = 300;
+
 export const metadata: Metadata = {
   title: "Prayer Library",
   description:

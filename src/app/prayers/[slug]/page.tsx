@@ -3,7 +3,16 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/db";
 import { getBaseUrl } from "@/lib/url";
-import { breadcrumbSchema, prayerArticleSchema } from "@/lib/schema";
+import {
+  breadcrumbSchema,
+  prayerArticleSchema,
+  prayerFaqSchema,
+} from "@/lib/schema";
+
+// Static-content page (the prayer library entries change rarely;
+// when they do they ship via seed/script). Revalidate every 5
+// minutes so a content edit reaches users without a manual purge.
+export const revalidate = 300;
 import { SaintPortrait } from "@/components/saint-portrait";
 import {
   formatPrayerCategory,
@@ -39,11 +48,11 @@ export async function generateMetadata({
 
   return {
     title: prayer.name,
-    description: prayer.description.slice(0, 200),
+    description: prayer.description.slice(0, 160),
     alternates: { canonical: url },
     openGraph: {
       title: prayer.name,
-      description: prayer.description.slice(0, 200),
+      description: prayer.description.slice(0, 160),
       url,
       type: "article",
       siteName: "PrayerTrain",
@@ -52,7 +61,7 @@ export async function generateMetadata({
     twitter: {
       card: "summary_large_image",
       title: prayer.name,
-      description: prayer.description.slice(0, 200),
+      description: prayer.description.slice(0, 160),
       images: [image],
     },
   };
@@ -81,6 +90,51 @@ export default async function PrayerDetailPage({
     createdAt: prayer.createdAt,
     situationTags: prayer.situationTags,
   });
+  // FAQPage schema. Three Q's per prayer derived from existing fields
+  // — what is this, how to pray, who's the patron saint. Earns the
+  // FAQ rich-result SERP feature on prayer-detail queries. Returns
+  // null when no question has a non-empty answer; we skip rendering
+  // in that case rather than emitting an empty FAQ block.
+  const faq = prayerFaqSchema({
+    name: prayer.name,
+    description: prayer.description,
+    instructions: prayer.instructions,
+    patronSaint: prayer.patronSaint,
+  });
+
+  // Related prayers — three other library entries that share at least
+  // one situationTag with this prayer. Adds internal-linking depth
+  // (which Google rewards) AND helps a reader who's looking for, say,
+  // "novenas of trust" find the Sacred Heart + Surrender Novena +
+  // Divine Mercy together. Excludes self; ordered by daysRequired
+  // proximity then alphabetical so the row reads cohesively.
+  const relatedPrayers = prayer.situationTags.length > 0
+    ? await prisma.prayerType.findMany({
+        where: {
+          slug: { not: prayer.slug },
+          situationTags: { hasSome: prayer.situationTags },
+        },
+        select: {
+          slug: true,
+          name: true,
+          patronSaint: true,
+          daysRequired: true,
+          category: true,
+        },
+        take: 12,
+      })
+    : [];
+  const relatedRanked = relatedPrayers
+    .map((p) => ({
+      ...p,
+      daysDelta: Math.abs(p.daysRequired - prayer.daysRequired),
+    }))
+    .sort((a, b) =>
+      a.daysDelta !== b.daysDelta
+        ? a.daysDelta - b.daysDelta
+        : a.name.localeCompare(b.name),
+    )
+    .slice(0, 3);
 
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
@@ -92,6 +146,12 @@ export default async function PrayerDetailPage({
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(article) }}
       />
+      {faq && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(faq) }}
+        />
+      )}
       {/* Library link. Uses a BookOpen icon (not a back-arrow) because
           this page is reachable from many entrypoints — /browse, a
           /chain/[slug] "About this prayer" link, search, direct visit
@@ -255,6 +315,38 @@ export default async function PrayerDetailPage({
       {prayer.feastDay && (
         <div className="text-sm text-muted-foreground mb-10">
           <span className="font-medium">Feast Day:</span> {prayer.feastDay}
+        </div>
+      )}
+
+      {/* Related prayers — three other library entries sharing at
+          least one situationTag with this one, ordered by closest
+          duration. Internal-linking depth signal for Google + reader
+          affordance ("if this prayer fits your situation, here are
+          three more that do too"). Renders only when at least one
+          related entry exists; otherwise the block is suppressed. */}
+      {relatedRanked.length > 0 && (
+        <div className="mt-10">
+          <h2 className="font-heading text-xl font-semibold text-navy-800 mb-4 flex items-center gap-2">
+            <BookOpen className="w-5 h-5 text-gold-500" />
+            Related prayers
+          </h2>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            {relatedRanked.map((p) => (
+              <Link
+                key={p.slug}
+                href={`/prayers/${p.slug}`}
+                className="prayer-card group flex flex-col"
+              >
+                <h3 className="font-heading text-base font-semibold text-navy-800 group-hover:text-navy-600 transition-colors mb-1">
+                  {p.name}
+                </h3>
+                <p className="text-xs text-muted-foreground">
+                  {formatPrayerCategory(p.category)}
+                  {p.patronSaint ? ` · ${p.patronSaint}` : ""}
+                </p>
+              </Link>
+            ))}
+          </div>
         </div>
       )}
 

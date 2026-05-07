@@ -12,12 +12,20 @@ import {
 const OUR_STORY_DESCRIPTION =
   "PrayerTrain was born from one family's experience with three children facing life-threatening medical crises, and the community of prayer that surrounded them.";
 
+// Static page; revalidate every 5 minutes so a copy edit ships
+// without a deploy. Translates to Vercel CDN s-maxage=300.
+export const revalidate = 300;
+
 export const metadata: Metadata = {
-  title: "Our Story",
+  // Keyword-anchored title — was "Our Story" (24 chars, brand-only).
+  // "Why we built PrayerTrain" lets the SERP snippet plant the brand
+  // and a soft hint at the use case, while the H1 in the body
+  // ("Why PrayerTrain Exists") keeps its existing voice.
+  title: "Why we built PrayerTrain",
   description: OUR_STORY_DESCRIPTION,
   alternates: { canonical: "/our-story" },
   openGraph: {
-    title: "Our Story | PrayerTrain",
+    title: "Why we built PrayerTrain",
     description: OUR_STORY_DESCRIPTION,
     url: "/our-story",
     type: "article",

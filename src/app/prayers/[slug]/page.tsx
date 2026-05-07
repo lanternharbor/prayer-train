@@ -13,6 +13,27 @@ import {
 // when they do they ship via seed/script). Revalidate every 5
 // minutes so a content edit reaches users without a manual purge.
 export const revalidate = 300;
+
+/**
+ * Pre-generate every prayer slug at build time. Without this, Next.js
+ * treats `[slug]` as fully dynamic and renders on demand from the
+ * origin even though the page has no per-user content. With it, each
+ * `/prayers/[slug]` URL becomes a static HTML file in the build
+ * output, served from the Vercel CDN with the `revalidate = 300` SWR
+ * window for fresh-content pickup. Massive cache + latency win on the
+ * 60+ prayer-library URLs without any per-page work.
+ *
+ * New prayers added to the seed after a deploy can either trigger a
+ * redeploy (preferred — full pre-render) or fall through to ISR
+ * on-demand rendering (Next.js's default for unknown params under
+ * the dynamicParams default of true). Either way no broken links.
+ */
+export async function generateStaticParams() {
+  const prayers = await prisma.prayerType.findMany({
+    select: { slug: true },
+  });
+  return prayers.map((p) => ({ slug: p.slug }));
+}
 import { SaintPortrait } from "@/components/saint-portrait";
 import {
   formatPrayerCategory,

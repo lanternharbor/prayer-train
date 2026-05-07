@@ -1,10 +1,38 @@
+"use client";
+
+/**
+ * Site-wide navigation header.
+ *
+ * Client component that reads auth state via `useSession()` from
+ * next-auth/react. Originally a server component that called
+ * `await auth()` server-side, which forced every page in the site
+ * into dynamic-rendering mode and disabled the Vercel CDN cache for
+ * public pages (homepage, /our-story, /prayers, /prayers/[slug]).
+ *
+ * Switching to client-side session lets the public layout serve
+ * from the CDN with `s-maxage=300, stale-while-revalidate=...`
+ * (translated from `export const revalidate = 300` on those pages).
+ * The `<Providers>` wrapper in src/components/providers.tsx supplies
+ * the SessionProvider context this hook needs.
+ *
+ * Trade-off: signed-in users may see the "Sign In" link briefly
+ * before useSession resolves and the component re-renders with
+ * "Dashboard". Treated as acceptable: most public-page visitors
+ * arrive un-authenticated, so the flicker affects a minority. The
+ * `status` field is checked to avoid flashing the wrong state during
+ * the initial loading window — we render the signed-out variant
+ * during loading + signed-out and switch to the signed-in variant
+ * only when status === "authenticated".
+ */
+
 import Link from "next/link";
-import { auth } from "@/lib/auth";
+import { useSession } from "next-auth/react";
 import { CrossIcon } from "@/components/ui/catholic-icons";
 import { MobileNav } from "./mobile-nav";
 
-export async function Header() {
-  const session = await auth();
+export function Header() {
+  const { status } = useSession();
+  const isSignedIn = status === "authenticated";
 
   return (
     <header className="sticky top-0 z-50 bg-card/95 backdrop-blur border-b border-border">
@@ -35,7 +63,7 @@ export async function Header() {
             >
               Prayer Library
             </Link>
-            {session?.user ? (
+            {isSignedIn ? (
               <>
                 <Link
                   href="/dashboard"
@@ -69,7 +97,7 @@ export async function Header() {
           </div>
 
           {/* Mobile Nav Toggle */}
-          <MobileNav isSignedIn={!!session?.user} />
+          <MobileNav isSignedIn={isSignedIn} />
         </div>
       </nav>
     </header>

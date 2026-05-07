@@ -3,6 +3,7 @@ import { EB_Garamond, DM_Sans } from "next/font/google";
 import "./globals.css";
 import { Header } from "@/components/layout/header";
 import { Footer } from "@/components/layout/footer";
+import { Providers } from "@/components/providers";
 import { getBaseUrl } from "@/lib/url";
 import { organizationSchema, websiteSchema } from "@/lib/schema";
 
@@ -78,11 +79,21 @@ export default function RootLayout({
             __html: JSON.stringify(websiteSchema()),
           }}
         />
-        <Header />
-        <main id="main" className="flex-1">
-          {children}
-        </main>
-        <Footer />
+        {/* SessionProvider context wraps the whole app so the
+            client-side `<Header>` can read auth via useSession. The
+            layout itself stays a server component (Providers is the
+            only client boundary; children render through unchanged).
+            Moving auth off the server-side render path is what lets
+            public pages opt back into Vercel's CDN cache via
+            `export const revalidate = 300`. See providers.tsx + the
+            header.tsx comment for the full rationale. */}
+        <Providers>
+          <Header />
+          <main id="main" className="flex-1">
+            {children}
+          </main>
+          <Footer />
+        </Providers>
       </body>
     </html>
   );

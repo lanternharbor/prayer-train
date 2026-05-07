@@ -92,3 +92,46 @@ export function formatDateLong(date: Date): string {
     year: "numeric",
   }).format(date);
 }
+
+/**
+ * Truncate a string to <= maxChars, preferring a word boundary.
+ *
+ * Plain `s.slice(0, maxChars)` chops mid-word, producing snippets like
+ * "...abandonment to God's wil" — fine for character budget, ugly in
+ * a SERP snippet or social-share preview. This helper finds the last
+ * whitespace inside the slice, falls back to a hard cut if no
+ * boundary is reasonably close (within `lookbackChars` of the cap),
+ * and appends a single Unicode ellipsis (U+2026, one char) only when
+ * truncation actually happened.
+ *
+ * Returns the input unchanged if it already fits.
+ *
+ * Default lookback of 30 chars matches typical word lengths in
+ * English; raising it makes the truncation more "courteous" but can
+ * trim too aggressively when the input has long mid-string runs of
+ * non-whitespace (URLs, code, etc.).
+ */
+export function smartTruncate(
+  s: string,
+  maxChars: number,
+  lookbackChars = 30,
+): string {
+  if (s.length <= maxChars) return s;
+  // Reserve 1 char for the ellipsis so the rendered output fits the
+  // caller-supplied budget exactly. Callers can pass a SERP cap like
+  // 160 without doing the math themselves.
+  const budget = Math.max(1, maxChars - 1);
+  const head = s.slice(0, budget);
+  // Search backwards for the last whitespace within the lookback
+  // window. /\s/ catches spaces, tabs, and newlines.
+  const windowStart = Math.max(0, budget - lookbackChars);
+  for (let i = budget - 1; i >= windowStart; i--) {
+    if (/\s/.test(head[i])) {
+      // Trim trailing whitespace + punctuation that would read poorly
+      // immediately before an ellipsis (commas, semicolons, periods).
+      return head.slice(0, i).replace(/[\s,.;:]+$/, "") + "…";
+    }
+  }
+  // No whitespace in the lookback window — fall back to a hard cut.
+  return head + "…";
+}

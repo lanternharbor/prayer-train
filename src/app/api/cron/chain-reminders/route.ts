@@ -183,11 +183,31 @@ export async function GET(request: Request) {
     // Pair settled results back with the member we sent for. Write-
     // back happens in a second pass so a slow Prisma update can't
     // stall the parallel send fan-out above.
+    //
+    // Two paths to failure are checked here, both must be treated as
+    // "do NOT write the audit field":
+    //
+    //   1. settled.status === "rejected" — sendChainDailyReminder threw
+    //      (network outage, programmer error, etc.)
+    //   2. settled.status === "fulfilled" but settled.value.ok === false
+    //      — sendChainDailyReminder returned an EmailDispatchResult
+    //      indicating Resend's API rejected the message, OR the SDK
+    //      threw and the helper caught it. Both cases get logged
+    //      inside dispatchEmail; we just need to NOT advance
+    //      lastReminderSentForDay so the next cron firing retries.
+    //
+    // Pre-PR-#52 the cron treated all "fulfilled" as success, which
+    // hid Resend API rejections (the SDK returns `{data: null, error}`
+    // in the response body — never thrown — so the legacy try/catch
+    // never saw them). The May 8 2026 priscilla-jhg4 audit-field-says-
+    // sent-but-inbox-empty regression came from exactly that gap.
     const successfulMemberIds: string[] = [];
     for (let i = 0; i < results.length; i++) {
       const member = eligibleMembers[i];
-      const result = results[i];
-      if (result.status === "fulfilled") {
+      const settled = results[i];
+      const isSuccess =
+        settled.status === "fulfilled" && settled.value?.ok === true;
+      if (isSuccess) {
         sent++;
         successfulMemberIds.push(member.id);
       } else {
@@ -196,12 +216,16 @@ export async function GET(request: Request) {
         // out of Vercel logs. Previously the message interpolated
         // chain id + member id only, with the reason as a separate
         // serialized object — harder to grep across log entries.
+        const reason =
+          settled.status === "rejected"
+            ? settled.reason
+            : (settled.value as { ok: false; error: unknown }).error;
         console.error("[chain-cron] reminder send failed", {
           chainId: chain.id,
           memberId: member.id,
           email: member.email,
           day: dayNum,
-          reason: String(result.reason),
+          reason: String(reason),
         });
         errors++;
       }

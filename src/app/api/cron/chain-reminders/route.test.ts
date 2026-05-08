@@ -210,7 +210,7 @@ describe("GET /api/cron/chain-reminders — daily reminder dispatch", () => {
       .mockResolvedValueOnce([])
       .mockResolvedValueOnce([]);
 
-    sendChainDailyReminderMock.mockResolvedValue(undefined);
+    sendChainDailyReminderMock.mockResolvedValue({ ok: true, id: "em_test" });
 
     const res = await GET(makeRequest());
     const body = await res.json();
@@ -266,7 +266,7 @@ describe("GET /api/cron/chain-reminders — daily reminder dispatch", () => {
       .mockResolvedValueOnce([])
       .mockResolvedValueOnce([]);
 
-    sendChainDailyReminderMock.mockResolvedValue(undefined);
+    sendChainDailyReminderMock.mockResolvedValue({ ok: true, id: "em_test" });
 
     const res = await GET(makeRequest());
     const body = await res.json();
@@ -313,7 +313,7 @@ describe("GET /api/cron/chain-reminders — daily reminder dispatch", () => {
       .mockResolvedValueOnce([])
       .mockResolvedValueOnce([]);
 
-    sendChainDailyReminderMock.mockResolvedValue(undefined);
+    sendChainDailyReminderMock.mockResolvedValue({ ok: true, id: "em_test" });
 
     await GET(makeRequest());
 
@@ -362,7 +362,7 @@ describe("GET /api/cron/chain-reminders — daily reminder dispatch", () => {
       .mockResolvedValueOnce([]);
 
     sendChainDailyReminderMock
-      .mockResolvedValueOnce(undefined) // m1 success
+      .mockResolvedValueOnce({ ok: true, id: "em_m1" }) // m1 success
       .mockRejectedValueOnce(new Error("Resend timeout")); // m2 fail
 
     const res = await GET(makeRequest());
@@ -379,6 +379,75 @@ describe("GET /api/cron/chain-reminders — daily reminder dispatch", () => {
       where: { id: { in: ["m1"] } },
       data: expect.objectContaining({ lastReminderSentForDay: 1 }),
     });
+  });
+
+  it("does NOT write the audit field when sendChainDailyReminder returns { ok: false } (Resend API error path)", async () => {
+    // The May 8 2026 priscilla-jhg4 regression: Resend's modern SDK
+    // returns API errors as `{ data: null, error: ... }` in the
+    // response body rather than throwing. The legacy try/catch in
+    // sendChainDailyReminder caught only thrown errors, so an API
+    // rejection looked like a successful resolution. The cron then
+    // wrote lastReminderSentForDay = N to the audit trail for sends
+    // that never happened — the database said "sent" while inboxes
+    // stayed empty.
+    //
+    // Contract this test pins:
+    //   - Helper resolves with { ok: false, error: ... } on API error
+    //   - Cron treats { ok: false } as failure
+    //   - Audit field is NOT advanced
+    //   - Structured error log fires with the actual reason
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    (prisma.prayerChain.findMany as ReturnType<typeof vi.fn>)
+      .mockReset()
+      .mockResolvedValueOnce([
+        makeChain({
+          startDate: today,
+          members: [
+            {
+              id: "m1",
+              name: "OK",
+              email: "ok@example.com",
+              lastReminderSentForDay: null,
+            },
+            {
+              id: "m2",
+              name: "Rejected",
+              email: "rejected@example.com",
+              lastReminderSentForDay: null,
+            },
+          ],
+        }),
+      ])
+      .mockResolvedValueOnce([])
+      .mockResolvedValueOnce([]);
+
+    sendChainDailyReminderMock
+      .mockResolvedValueOnce({ ok: true, id: "em_m1" })
+      .mockResolvedValueOnce({
+        ok: false,
+        error: { name: "validation_error", message: "Invalid recipient" },
+      });
+
+    const res = await GET(makeRequest());
+    const body = await res.json();
+
+    expect(res.status).toBe(200);
+    expect(body.sent).toBe(1);
+    expect(body.errors).toBe(1);
+    // Crucially: only the successful member is in the updateMany.
+    // m2's lastReminderSentForDay must stay null so the next cron
+    // firing retries them. This is the assertion that, if it had
+    // existed before May 7, would have caught the silent-success bug.
+    expect(updateManyMember).toHaveBeenCalledWith({
+      where: { id: { in: ["m1"] } },
+      data: expect.objectContaining({ lastReminderSentForDay: 1 }),
+    });
+    // Bookkeeping: ensure m2 is NOT included in the updateMany call
+    expect(updateManyMember).toHaveBeenCalledTimes(1);
+    const callArgs = updateManyMember.mock.calls[0][0];
+    expect(callArgs.where.id.in).not.toContain("m2");
   });
 
   it("calculates Day N correctly when today is N-1 days after startDate at UTC midnight", async () => {
@@ -409,7 +478,7 @@ describe("GET /api/cron/chain-reminders — daily reminder dispatch", () => {
       .mockResolvedValueOnce([])
       .mockResolvedValueOnce([]);
 
-    sendChainDailyReminderMock.mockResolvedValue(undefined);
+    sendChainDailyReminderMock.mockResolvedValue({ ok: true, id: "em_test" });
 
     await GET(makeRequest());
 
@@ -450,7 +519,7 @@ describe("GET /api/cron/chain-reminders — daily reminder dispatch", () => {
       .mockResolvedValueOnce([])
       .mockResolvedValueOnce([]);
 
-    sendChainDailyReminderMock.mockResolvedValue(undefined);
+    sendChainDailyReminderMock.mockResolvedValue({ ok: true, id: "em_test" });
 
     const firstRes = await GET(makeRequest());
     const firstBody = await firstRes.json();

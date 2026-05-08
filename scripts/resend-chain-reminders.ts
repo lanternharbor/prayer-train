@@ -65,6 +65,15 @@ import { reflectionForDay } from "../src/lib/daily-reflections";
 
 const AUTH_PHRASE = "yes resend chain reminders";
 
+// Pace sequential sends under Resend's free-tier rate limit (5 req/s
+// per current API). Mirrors RESEND_RATE_LIMIT_DELAY_MS in the cron
+// route handlers. May 8 2026 history: pre-throttle catch-up runs
+// silently dropped 4-9 members per 25-member chain due to 429 rate-
+// limit responses that the legacy try/catch swallowed; PR #52 makes
+// those failures visible, but the right fix is to not provoke them.
+const RESEND_RATE_LIMIT_DELAY_MS = 250;
+const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
+
 // Strip --force from argv at module init so the rest of the parse
 // (positional slug + days + auth-phrase) keeps a stable layout
 // regardless of whether the operator passed --force or not. Stored
@@ -306,6 +315,9 @@ async function main() {
       if (!result.ok) {
         failed++;
         console.error(`  ! ${member.email} — ${String(result.error)}`);
+        // Sleep on failure too, so a rate-limit 429 doesn't immediately
+        // trigger another rate-limit on the next iteration.
+        await sleep(RESEND_RATE_LIMIT_DELAY_MS);
         continue;
       }
 
@@ -322,6 +334,7 @@ async function main() {
       member.lastReminderSentForDay = day;
       sent++;
       console.log(`  + ${member.email} (id=${result.id})`);
+      await sleep(RESEND_RATE_LIMIT_DELAY_MS);
     }
   }
 

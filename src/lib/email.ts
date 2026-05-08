@@ -61,6 +61,102 @@ const resend = {
   },
 } as unknown as Resend;
 
+/**
+ * Outcome of attempting to dispatch an email through Resend.
+ *
+ * Distinct from the legacy `try { ... } catch { console.error }` pattern
+ * that swallowed every failure mode — including Resend's API-level
+ * `{ data: null, error: ErrorResponse }` rejections, which are returned
+ * in the response body rather than thrown. Callers that need to know
+ * whether the email actually reached Resend's API (notably the
+ * audit-trail-writing daily-reminder crons) check `result.ok` before
+ * recording success.
+ *
+ * `id` on success is Resend's generated email id, useful for log
+ * correlation. `error` on failure is whatever surfaced — Resend's
+ * structured error body, a thrown exception, or a defensive fallback
+ * for malformed responses.
+ */
+export type EmailDispatchResult =
+  | { ok: true; id: string }
+  | { ok: false; error: unknown };
+
+/**
+ * Single source of truth for sending an email through Resend.
+ *
+ * Why this exists: every previous send-helper in this file used
+ * `try { await resend.emails.send(...) } catch (error) { console.error }`
+ * which has two silent-failure modes:
+ *
+ *   1. Resend SDK API errors (rate limits, bounces, suppressions,
+ *      invalid recipients) come back as `{ data: null, error: ... }`
+ *      in the response body — never thrown — so the catch block
+ *      never sees them. The helper resolved as if the send succeeded.
+ *
+ *   2. Even when the SDK threw, the catch swallowed and resolved
+ *      undefined. Callers couldn't tell success from failure.
+ *
+ * The chain-reminders cron's per-day audit trail (PR #50) wrote
+ * `lastReminderSentForDay = N` whenever the helper resolved without
+ * throwing, which the database read as "Resend accepted." It wasn't.
+ * On May 8 2026 the audit field advanced to Day 3 for every priscilla
+ * member — and not one of them got the email. That's the regression
+ * this helper closes.
+ *
+ * Contract:
+ *   - Returns `{ ok: true, id }` only when Resend's response
+ *     resolves with no `error` body AND a non-empty `data.id`.
+ *   - Returns `{ ok: false, error }` for API-error bodies, thrown
+ *     exceptions, or malformed responses.
+ *   - Always logs structured failure context so Vercel logs are
+ *     greppable: `[email] {label} {failed|threw} {to, error}`.
+ *   - Never re-throws. Callers that want to fail loudly should
+ *     check `result.ok` and act on it (the cron's Promise.allSettled
+ *     handles the natural-throw case too, but the explicit check is
+ *     the contract everyone leans on).
+ */
+async function dispatchEmail(args: {
+  to: string;
+  subject: string;
+  html: string;
+  text: string;
+  /** Short label used in failure log lines, e.g. "chain daily reminder". */
+  label: string;
+}): Promise<EmailDispatchResult> {
+  try {
+    const result = await resend.emails.send({
+      from: FROM,
+      to: args.to,
+      subject: args.subject,
+      html: args.html,
+      text: args.text,
+    });
+    if (result.error) {
+      console.error(`[email] ${args.label} failed`, {
+        to: args.to,
+        error: result.error,
+      });
+      return { ok: false, error: result.error };
+    }
+    if (!result.data?.id) {
+      // Defensive — Resend's discriminated union should ensure this
+      // branch is unreachable, but if the SDK's contract ever drifts
+      // (or our resend-not-configured stub returns {data:null, error:null}
+      // as a no-op in dev), we want a clear signal rather than a phantom
+      // success.
+      console.error(`[email] ${args.label} returned no id`, {
+        to: args.to,
+        result,
+      });
+      return { ok: false, error: new Error("Resend returned no id") };
+    }
+    return { ok: true, id: result.data.id };
+  } catch (error) {
+    console.error(`[email] ${args.label} threw`, { to: args.to, error });
+    return { ok: false, error };
+  }
+}
+
 // ─── Branded Sign-In Email ──────────────────────────────────
 // Replaces Auth.js's bare default with the PrayerTrain look and feel.
 
@@ -259,7 +355,7 @@ export async function sendDailyReminder({
   completeUrl: string;
   /** Reserved for future per-slot tracking links */
   slotId: string;
-}) {
+}): Promise<EmailDispatchResult> {
   // Pre-escape user-controlled fields for safe HTML injection.
   const eClaimerName = escapeHtml(claimerName);
   const eRecipientName = escapeHtml(recipientName);
@@ -279,12 +375,14 @@ export async function sendDailyReminder({
   const customPrayerHeading = eOrgFirst
     ? `A prayer from ${eOrgFirst}`
     : `A personal prayer included`;
-  try {
-    await resend.emails.send({
-      from: FROM,
-      to,
-      subject: `Prayer reminder: ${prayerName} for ${recipientName}`,
-      html: `
+
+  // Inlined render → dispatch. Returns EmailDispatchResult so the
+  // train daily-reminders cron can write its PrayerSlot.lastReminderSentAt
+  // audit field only on verified Resend success. The legacy
+  // try-catch-and-swallow shape silently dropped API-level rejections.
+  // See sendChainDailyReminder for the parallel chain-side fix.
+  const subject = `Prayer reminder: ${prayerName} for ${recipientName}`;
+  const html = `
         <div style="font-family: Georgia, serif; max-width: 600px; margin: 0 auto; padding: 32px;">
           <div style="text-align: center; margin-bottom: 24px;">
             <div style="display: inline-block; width: 48px; height: 48px; border-radius: 50%; background: #242e58; line-height: 48px; text-align: center;">
@@ -336,11 +434,18 @@ export async function sendDailyReminder({
             PrayerTrain — Organized prayer for those in need
           </p>
         </div>
-      `,
-    });
-  } catch (error) {
-    console.error("Failed to send daily reminder email:", error);
-  }
+      `;
+  // Plain-text fallback. Mirrors the chain reminder helper —
+  // missing-text used to mean Resend served only HTML, which renders
+  // as "this email has no body" in some clients.
+  const text = `Today's prayer for ${recipientName}\n\nHi ${claimerName}, here's your prayer commitment for today.\n\n${prayerName}\n${prayerInstructions ? prayerInstructions + "\n" : ""}${prayerText ? "\n" + prayerText + "\n" : ""}${customPrayerText ? "\n" + customPrayerHeading + ":\n" + customPrayerText + "\n" : ""}\nI prayed: ${completeUrl}\nView the prayer train: ${trainUrl}`;
+  return dispatchEmail({
+    to,
+    subject,
+    html,
+    text,
+    label: "train daily reminder",
+  });
 }
 
 // ─── Cancellation Notice (PrayerTrain) ─────────────────────
@@ -824,13 +929,23 @@ export async function sendChainJoinConfirmation(input: ChainJoinConfirmationInpu
   }
 }
 
-export async function sendChainDailyReminder(input: ChainDailyReminderInput) {
+export async function sendChainDailyReminder(
+  input: ChainDailyReminderInput,
+): Promise<EmailDispatchResult> {
+  // Returns EmailDispatchResult so the chain-reminders cron can write
+  // its lastReminderSentForDay audit field only on verified Resend
+  // success. The legacy void-returning shape with internal try/catch
+  // hid API-level rejections (Resend's `{ data: null, error: ... }`
+  // response body) as if they were successes — see PR after #50 for
+  // the May 8 2026 priscilla regression that motivated this contract.
   const { subject, html, text } = renderChainDailyReminder(input);
-  try {
-    await resend.emails.send({ from: FROM, to: input.to, subject, html, text });
-  } catch (error) {
-    console.error("Failed to send chain daily reminder:", error);
-  }
+  return dispatchEmail({
+    to: input.to,
+    subject,
+    html,
+    text,
+    label: "chain daily reminder",
+  });
 }
 
 export async function sendChainClosingDayEmail(input: ChainClosingDayEmailInput) {

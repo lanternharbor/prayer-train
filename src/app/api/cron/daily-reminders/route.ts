@@ -86,64 +86,73 @@ export async function GET(request: Request) {
 
     if (!email) continue;
 
-    try {
-      // Sign a 14-day completion token so the email's "I prayed"
-      // button hits a verifiable URL. The handler page at
-      // /p/[slug]/complete validates this server-side before mutating
-      // the slot. Stateless — no DB column needed.
-      const completionToken = signCompletionToken("slot", slot.id);
-      const completeUrl = `${baseUrl}/p/${slot.train.slug}/complete?slot=${
-        slot.id
-      }&token=${encodeURIComponent(completionToken)}`;
+    // Sign a 14-day completion token so the email's "I prayed"
+    // button hits a verifiable URL. The handler page at
+    // /p/[slug]/complete validates this server-side before mutating
+    // the slot. Stateless — no DB column needed.
+    const completionToken = signCompletionToken("slot", slot.id);
+    const completeUrl = `${baseUrl}/p/${slot.train.slug}/complete?slot=${
+      slot.id
+    }&token=${encodeURIComponent(completionToken)}`;
 
-      await sendDailyReminder({
-        to: email,
-        claimerName: name,
-        recipientName: slot.train.recipientName,
-        prayerName: slot.prayerType.name,
-        prayerText: slot.prayerType.prayerText,
-        prayerInstructions: slot.prayerType.instructions,
-        customPrayerText: slot.train.customPrayerText,
-        organizerFirstName: slot.train.organizerAnonymous
-          ? null
-          : (slot.train.organizer?.name?.trim().split(/\s+/)[0] ?? null),
-        trainUrl: `${baseUrl}/p/${slot.train.slug}`,
-        completeUrl,
-        slotId: slot.id,
-      });
-      // Record the send so the slot is excluded from the cron's
-      // working set on subsequent runs (the `lastReminderSentAt:
-      // null` filter on the findMany above). Wrap so a Prisma flake
-      // here doesn't mask a successful send. If this update fails,
-      // worst case the next cron run re-sends; we'd rather a duplicate
-      // reminder than a missed one.
-      try {
-        await prisma.prayerSlot.update({
-          where: { id: slot.id },
-          data: { lastReminderSentAt: new Date() },
-        });
-      } catch (writeErr) {
-        console.error("[cron] failed to record slot reminder send", {
-          slotId: slot.id,
-          trainId: slot.trainId,
-          reason: String(writeErr),
-        });
-        // Note: we DO NOT increment errors here — the email did go
-        // out; this is purely a bookkeeping miss. The next cron run
-        // will re-send, which is the safe-on-prayer side of the
-        // tradeoff.
-      }
-      sent++;
-    } catch (e) {
+    // sendDailyReminder returns EmailDispatchResult so we can write
+    // lastReminderSentAt only on verified Resend success. Pre-PR-#52
+    // the helper had an internal try/catch that swallowed both API
+    // errors and thrown errors, returning void either way — the cron
+    // then read "no exception" as success and wrote the audit field
+    // for sends that never actually happened. See sendDailyReminder
+    // doc comment + chain-reminders/route.ts for the parallel fix.
+    const result = await sendDailyReminder({
+      to: email,
+      claimerName: name,
+      recipientName: slot.train.recipientName,
+      prayerName: slot.prayerType.name,
+      prayerText: slot.prayerType.prayerText,
+      prayerInstructions: slot.prayerType.instructions,
+      customPrayerText: slot.train.customPrayerText,
+      organizerFirstName: slot.train.organizerAnonymous
+        ? null
+        : (slot.train.organizer?.name?.trim().split(/\s+/)[0] ?? null),
+      trainUrl: `${baseUrl}/p/${slot.train.slug}`,
+      completeUrl,
+      slotId: slot.id,
+    });
+
+    if (!result.ok) {
       console.error("[cron] reminder send failed", {
         slotId: slot.id,
         trainId: slot.trainId,
         email,
         date: slot.date.toISOString(),
-        reason: String(e),
+        reason: String(result.error),
       });
       errors++;
+      continue;
     }
+
+    // Record the send so the slot is excluded from the cron's
+    // working set on subsequent runs (the `lastReminderSentAt:
+    // null` filter on the findMany above). Wrap so a Prisma flake
+    // here doesn't mask a successful send. If this update fails,
+    // worst case the next cron run re-sends; we'd rather a duplicate
+    // reminder than a missed one.
+    try {
+      await prisma.prayerSlot.update({
+        where: { id: slot.id },
+        data: { lastReminderSentAt: new Date() },
+      });
+    } catch (writeErr) {
+      console.error("[cron] failed to record slot reminder send", {
+        slotId: slot.id,
+        trainId: slot.trainId,
+        reason: String(writeErr),
+      });
+      // Note: we DO NOT increment errors here — the email did go
+      // out; this is purely a bookkeeping miss. The next cron run
+      // will re-send, which is the safe-on-prayer side of the
+      // tradeoff.
+    }
+    sent++;
   }
 
   // ─── Train end-of-life passes ────────────────────────────────

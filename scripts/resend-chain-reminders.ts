@@ -65,24 +65,38 @@ import { reflectionForDay } from "../src/lib/daily-reflections";
 
 const AUTH_PHRASE = "yes resend chain reminders";
 
+// Strip --force from argv at module init so the rest of the parse
+// (positional slug + days + auth-phrase) keeps a stable layout
+// regardless of whether the operator passed --force or not. Stored
+// separately for the dedup gate below.
+const argv = process.argv.filter((arg) => arg !== "--force");
+const FORCE = process.argv.length !== argv.length;
+
 function usage(): never {
   console.error(
     `\nUsage:\n` +
-      `  npx tsx scripts/resend-chain-reminders.ts <slug> <day>[,<day>,...]\n` +
-      `  npx tsx scripts/resend-chain-reminders.ts <slug> <day>[,<day>,...] "${AUTH_PHRASE}"\n\n` +
+      `  npx tsx scripts/resend-chain-reminders.ts <slug> <day>[,<day>,...] [--force]\n` +
+      `  npx tsx scripts/resend-chain-reminders.ts <slug> <day>[,<day>,...] [--force] "${AUTH_PHRASE}"\n\n` +
       `Examples:\n` +
       `  npx tsx scripts/resend-chain-reminders.ts priscilla-jhg4 1,2\n` +
-      `  npx tsx scripts/resend-chain-reminders.ts priscilla-jhg4 3 "${AUTH_PHRASE}"\n`,
+      `  npx tsx scripts/resend-chain-reminders.ts priscilla-jhg4 3 "${AUTH_PHRASE}"\n` +
+      `  npx tsx scripts/resend-chain-reminders.ts priscilla-jhg4 3 --force "${AUTH_PHRASE}"\n\n` +
+      `--force overrides the lastReminderSentForDay >= day skip.\n` +
+      `Use when the audit field was set by a phantom-success bug and you\n` +
+      `need to re-dispatch that day's reminder regardless of audit state.\n`,
   );
   process.exit(1);
 }
 
 async function isAuthorized(slug: string, days: number[]): Promise<boolean> {
-  const cliArg = process.argv[4];
+  const cliArg = argv[4];
   if (cliArg === AUTH_PHRASE) return true;
   if (!process.stdin.isTTY) return false;
+  const forceNote = FORCE
+    ? ` (--force: bypassing lastReminderSentForDay dedup gate)`
+    : "";
   process.stdout.write(
-    `\nAbout to resend daily reminder emails for chain '${slug}', day(s) ${days.join(", ")}.\n` +
+    `\nAbout to resend daily reminder emails for chain '${slug}', day(s) ${days.join(", ")}${forceNote}.\n` +
       `Type the auth phrase exactly to proceed:\n  ${AUTH_PHRASE}\n> `,
   );
   const line = await new Promise<string>((resolve) => {
@@ -110,8 +124,8 @@ function parseDays(arg: string | undefined): number[] {
 }
 
 async function main() {
-  const slug = process.argv[2];
-  const days = parseDays(process.argv[3]);
+  const slug = argv[2];
+  const days = parseDays(argv[3]);
 
   if (!slug) usage();
   if (!(await isAuthorized(slug, days))) {
@@ -224,64 +238,90 @@ async function main() {
     console.log(`-- Day ${day} --`);
     for (const member of chain.members) {
       const last = member.lastReminderSentForDay ?? 0;
-      if (last >= day) {
+      // Dedup gate. Skipped when --force is passed: that bypass exists
+      // for the case where the audit field was advanced by a phantom-
+      // success cron run (the May 8 priscilla regression — Resend
+      // rejected the API call but the legacy try/catch swallowed the
+      // error and the cron wrote lastReminderSentForDay anyway). In
+      // that scenario the audit field is lying and we need to retry
+      // the day regardless.
+      if (!FORCE && last >= day) {
         console.log(
-          `  - skip ${member.email}: lastReminderSentForDay=${last} >= ${day}`,
+          `  - skip ${member.email}: lastReminderSentForDay=${last} >= ${day} (use --force to override)`,
         );
         skippedAlready++;
         continue;
       }
-      try {
-        const completionToken = signCompletionToken(
-          "chain-day",
-          chainDayTokenId(member.id, day),
-        );
-        const markCompleteUrl = `${baseUrl}/chain/${chain.slug}/complete?day=${day}&memberId=${encodeURIComponent(member.id)}&token=${encodeURIComponent(completionToken)}`;
-        const unsubscribeUrl = `${baseUrl}/api/chain/unsubscribe?id=${member.id}`;
-        const otherCount = chain.members.length - 1;
 
-        await sendChainDailyReminder({
-          to: member.email,
-          memberName: member.name,
-          organizerName,
-          prayerName: chain.prayerType.name,
-          prayerText: chain.prayerType.prayerText,
-          prayerInstructions: chain.prayerType.instructions,
-          dailyReflection: reflectionForDay(
-            chain.prayerType.dailyReflections,
-            day,
-          ),
-          customPrayerText: chain.customPrayerText,
-          recipientName: chain.recipientName,
-          intention: chain.intention,
+      // CRON_SECRET availability gates the completion-token flow.
+      // Vercel marks the secret Sensitive (write-only after creation),
+      // so a local catch-up run typically does NOT have it. We
+      // gracefully degrade: when the secret is unset, substitute the
+      // chain detail page as the "I prayed today" link target. Email
+      // body content (prayer text + day-N reflection) still arrives
+      // intact; the one-click mark-complete button just routes to
+      // the chain page rather than the tokenized handler.
+      const haveSecret = Boolean(process.env.CRON_SECRET);
+      const markCompleteUrl = haveSecret
+        ? `${baseUrl}/chain/${chain.slug}/complete?day=${day}&memberId=${encodeURIComponent(member.id)}&token=${encodeURIComponent(
+            signCompletionToken(
+              "chain-day",
+              chainDayTokenId(member.id, day),
+            ),
+          )}`
+        : `${baseUrl}/chain/${chain.slug}`;
+      const unsubscribeUrl = `${baseUrl}/api/chain/unsubscribe?id=${member.id}`;
+      const otherCount = chain.members.length - 1;
+
+      const result = await sendChainDailyReminder({
+        to: member.email,
+        memberName: member.name,
+        organizerName,
+        prayerName: chain.prayerType.name,
+        prayerText: chain.prayerType.prayerText,
+        prayerInstructions: chain.prayerType.instructions,
+        dailyReflection: reflectionForDay(
+          chain.prayerType.dailyReflections,
           day,
-          durationDays: chain.durationDays,
-          chainUrl: `${baseUrl}/chain/${chain.slug}`,
-          markCompleteUrl,
-          unsubscribeUrl,
-          otherMembersCount: otherCount,
-        });
-        // Record the catch-up send so the cron's idempotency gate
-        // recognizes it. Without this, tomorrow morning's cron firing
-        // would still see lastReminderSentForDay=null and re-send
-        // Day 1 even though we just sent it.
-        await prisma.prayerChainMember.update({
-          where: { id: member.id },
-          data: {
-            lastReminderSentForDay: day,
-            lastReminderSentAt: new Date(),
-          },
-        });
-        // Mutate in-memory member.lastReminderSentForDay so the next
-        // iteration of the outer day loop sees the update without
-        // re-querying.
-        member.lastReminderSentForDay = day;
-        sent++;
-        console.log(`  + ${member.email}`);
-      } catch (e) {
+        ),
+        customPrayerText: chain.customPrayerText,
+        recipientName: chain.recipientName,
+        intention: chain.intention,
+        day,
+        durationDays: chain.durationDays,
+        chainUrl: `${baseUrl}/chain/${chain.slug}`,
+        markCompleteUrl,
+        unsubscribeUrl,
+        otherMembersCount: otherCount,
+      });
+
+      // Critical: only advance audit field on verified Resend success.
+      // Pre-PR #52, sendChainDailyReminder returned void on both
+      // success and failure (Resend API errors come back as
+      // `{ data: null, error }` body, not thrown). The script wrote
+      // lastReminderSentForDay unconditionally — same phantom-success
+      // pattern that broke the cron. New contract: { ok: true, id }
+      // on success, { ok: false, error } on either API rejection or
+      // thrown exception. Audit-write only fires when ok === true.
+      if (!result.ok) {
         failed++;
-        console.error(`  ! ${member.email} — ${e}`);
+        console.error(`  ! ${member.email} — ${String(result.error)}`);
+        continue;
       }
+
+      await prisma.prayerChainMember.update({
+        where: { id: member.id },
+        data: {
+          lastReminderSentForDay: day,
+          lastReminderSentAt: new Date(),
+        },
+      });
+      // Mutate in-memory member.lastReminderSentForDay so the next
+      // iteration of the outer day loop sees the update without
+      // re-querying.
+      member.lastReminderSentForDay = day;
+      sent++;
+      console.log(`  + ${member.email} (id=${result.id})`);
     }
   }
 

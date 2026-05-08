@@ -16,6 +16,23 @@ import {
 import { DEFAULT_DISPLAY_TZ } from "@/lib/dates";
 import { organizerFirstName } from "@/lib/organizer-display";
 
+/**
+ * Resend's free-tier API rate limit is 2 requests per second. The
+ * train cron's slot loop has always been sequential (one slot at a
+ * time, await between sends), but with HTTP round-trips ~80-150ms it
+ * was effectively running at ~6-10 req/s — comfortably tripping
+ * Resend's 2/s ceiling. The May 8 2026 Resend export confirmed: 8
+ * eligible slots → 5 sent → 3 silent rate-limit drops, with audit
+ * fields falsely advanced for all 8. PR #52 closed the audit-side
+ * silence (helper now returns EmailDispatchResult so the cron skips
+ * the audit write on failure); this delay closes the underlying
+ * cause so the failures don't happen in the first place.
+ *
+ * Mirrors RESEND_RATE_LIMIT_DELAY_MS in chain-reminders/route.ts.
+ */
+const RESEND_RATE_LIMIT_DELAY_MS = 600;
+const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
+
 // Vercel Cron hits this endpoint daily at 11:00 UTC.
 // Schedule is in vercel.json. Authorization is the standard Vercel
 // pattern: Bearer ${CRON_SECRET} — see
@@ -118,6 +135,12 @@ export async function GET(request: Request) {
       slotId: slot.id,
     });
 
+    // Pace the sequential loop under Resend's 2/s rate limit. The
+    // delay must come AFTER the await — Resend counts the moment a
+    // request is accepted, so spacing out requests-per-second means
+    // pausing between them (not before the next). Putting it after
+    // the result-check so a hard error path also throttles before
+    // the next call.
     if (!result.ok) {
       console.error("[cron] reminder send failed", {
         slotId: slot.id,
@@ -127,6 +150,7 @@ export async function GET(request: Request) {
         reason: String(result.error),
       });
       errors++;
+      await sleep(RESEND_RATE_LIMIT_DELAY_MS);
       continue;
     }
 
@@ -153,6 +177,7 @@ export async function GET(request: Request) {
       // tradeoff.
     }
     sent++;
+    await sleep(RESEND_RATE_LIMIT_DELAY_MS);
   }
 
   // ─── Train end-of-life passes ────────────────────────────────

@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { timingSafeEqual } from "node:crypto";
 import { prisma } from "@/lib/db";
+import type { EmailDispatchResult } from "@/lib/email";
 import {
   sendChainBouquetReady,
   sendChainClosingPrompt,
@@ -16,6 +17,29 @@ import {
 import { DEFAULT_DISPLAY_TZ } from "@/lib/dates";
 import { organizerFirstName } from "@/lib/organizer-display";
 import { reflectionForDay } from "@/lib/daily-reflections";
+
+/**
+ * Resend's free-tier API rate limit is 2 requests per second. Sequential
+ * sends with this delay keep the cron under that ceiling with safety
+ * margin (~1.4 req/s effective once HTTP round-trip is factored in).
+ *
+ * History: pre-PR-#53 the cron fired all member sends in parallel via
+ * Promise.allSettled. With chains of 25+ members, the parallel fan-out
+ * blew through Resend's 2/s limit and ~80% of sends came back as
+ * `{ data: null, error: { name: 'rate_limit_exceeded' } }` in the
+ * response body. The legacy try/catch swallowed those (PR #52 fixed
+ * the swallow but not the cause); the audit trail wrote phantom
+ * successes. May 8 2026 Resend export confirmed: 25-member Surrender
+ * Novena chain got exactly 5 sends per firing across May 6/7/8 — the
+ * other 20 hit the rate limit invisibly.
+ *
+ * 600ms is conservative on purpose: Resend says they may apply
+ * different limits per endpoint and we'd rather a slightly slower
+ * cron than another silent-drop regression. For a 30-recipient day
+ * the cron takes ~18 seconds, well inside Vercel's 30s default.
+ */
+const RESEND_RATE_LIMIT_DELAY_MS = 600;
+const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
 /**
  * Vercel Cron hits this endpoint daily at 11:05 UTC — five minutes after the
@@ -121,33 +145,54 @@ export async function GET(request: Request) {
     );
     skippedAlreadySent += chain.members.length - eligibleMembers.length;
 
-    // Fire all member emails in parallel so a large chain doesn't exhaust
-    // the 30s Vercel function timeout through sequential awaits.
-    const results = await Promise.allSettled(
-      eligibleMembers.map((member) => {
-        const otherCount = chain.members.length - 1;
-        // Tokenized one-click completion URL. Points at the
-        // /chain/[slug]/complete handler which verifies the HMAC before
-        // calling markChainDayCompleteByToken. Default 14-day TTL — a
-        // member who reads the reminder a few days late can still mark
-        // complete; ancient archived reminders can't be replayed.
-        //
-        // The token signs the (memberId, day) tuple so the day number
-        // is cryptographically bound — a member can't tamper with
-        // ?day= in the URL to claim credit for a day other than the
-        // one this reminder was for.
-        const completionToken = signCompletionToken(
-          "chain-day",
-          chainDayTokenId(member.id, dayNum),
-        );
-        const markCompleteUrl = `${baseUrl}/chain/${
-          chain.slug
-        }/complete?day=${dayNum}&memberId=${encodeURIComponent(
-          member.id,
-        )}&token=${encodeURIComponent(completionToken)}`;
-        const unsubscribeUrl = `${baseUrl}/api/chain/unsubscribe?id=${member.id}`;
+    // Sequential dispatch with rate-limit delay between sends. Pre-
+    // PR-#53 this used Promise.allSettled — pleasant in theory but the
+    // parallel fan-out routinely tripped Resend's 2/s rate limit on
+    // chains larger than ~5 members, and the rate-limit responses
+    // came back as `{data:null, error}` in the body (not thrown).
+    // PR #52 added the dispatchEmail check that surfaces those
+    // errors, but checking after the fact still leaves the recipients
+    // empty-inboxed. The right fix is to not hit the limit at all.
+    //
+    // We collect EmailDispatchResult per member and process the
+    // success/failure split AFTER the loop, mirroring the original
+    // Promise.allSettled-style two-phase shape — the audit-trail
+    // updateMany still happens in a single batched write to keep
+    // round-trip count low.
+    const results: EmailDispatchResult[] = [];
+    for (const member of eligibleMembers) {
+      // Tokenized one-click completion URL. Points at the
+      // /chain/[slug]/complete handler which verifies the HMAC before
+      // calling markChainDayCompleteByToken. Default 14-day TTL — a
+      // member who reads the reminder a few days late can still mark
+      // complete; ancient archived reminders can't be replayed.
+      //
+      // The token signs the (memberId, day) tuple so the day number
+      // is cryptographically bound — a member can't tamper with
+      // ?day= in the URL to claim credit for a day other than the
+      // one this reminder was for.
+      const completionToken = signCompletionToken(
+        "chain-day",
+        chainDayTokenId(member.id, dayNum),
+      );
+      const markCompleteUrl = `${baseUrl}/chain/${
+        chain.slug
+      }/complete?day=${dayNum}&memberId=${encodeURIComponent(
+        member.id,
+      )}&token=${encodeURIComponent(completionToken)}`;
+      const unsubscribeUrl = `${baseUrl}/api/chain/unsubscribe?id=${member.id}`;
+      const otherCount = chain.members.length - 1;
 
-        return sendChainDailyReminder({
+      // Defensive try/catch: post-PR-#52 sendChainDailyReminder
+      // returns EmailDispatchResult and never throws on its own.
+      // But sequential awaits don't get the implicit rejection
+      // capture that Promise.allSettled provides — if some future
+      // change reintroduces a throw, we want to log + continue
+      // rather than crash the entire cron mid-loop and leave the
+      // remaining chains undispatched.
+      let result: EmailDispatchResult;
+      try {
+        result = await sendChainDailyReminder({
           to: member.email,
           memberName: member.name,
           // Pass null when the chain is anonymous OR User.name is unset.
@@ -177,37 +222,27 @@ export async function GET(request: Request) {
           unsubscribeUrl,
           otherMembersCount: otherCount,
         });
-      }),
-    );
+      } catch (thrown) {
+        result = { ok: false, error: thrown };
+      }
+      results.push(result);
+      await sleep(RESEND_RATE_LIMIT_DELAY_MS);
+    }
 
-    // Pair settled results back with the member we sent for. Write-
-    // back happens in a second pass so a slow Prisma update can't
-    // stall the parallel send fan-out above.
-    //
-    // Two paths to failure are checked here, both must be treated as
-    // "do NOT write the audit field":
-    //
-    //   1. settled.status === "rejected" — sendChainDailyReminder threw
-    //      (network outage, programmer error, etc.)
-    //   2. settled.status === "fulfilled" but settled.value.ok === false
-    //      — sendChainDailyReminder returned an EmailDispatchResult
-    //      indicating Resend's API rejected the message, OR the SDK
-    //      threw and the helper caught it. Both cases get logged
-    //      inside dispatchEmail; we just need to NOT advance
-    //      lastReminderSentForDay so the next cron firing retries.
-    //
-    // Pre-PR-#52 the cron treated all "fulfilled" as success, which
-    // hid Resend API rejections (the SDK returns `{data: null, error}`
-    // in the response body — never thrown — so the legacy try/catch
-    // never saw them). The May 8 2026 priscilla-jhg4 audit-field-says-
-    // sent-but-inbox-empty regression came from exactly that gap.
+    // Audit-trail write-back: only members whose Resend dispatch
+    // verifiably succeeded. Pre-PR-#52 the cron treated any non-
+    // throwing settle as success, which hid Resend API rejections
+    // (the SDK returns `{data: null, error}` in the response body
+    // — never thrown — so the legacy try/catch never saw them).
+    // PR #52 introduced the EmailDispatchResult discriminated
+    // return; this loop checks `result.ok`. A failed send leaves
+    // lastReminderSentForDay unchanged so the next cron firing
+    // retries.
     const successfulMemberIds: string[] = [];
     for (let i = 0; i < results.length; i++) {
       const member = eligibleMembers[i];
-      const settled = results[i];
-      const isSuccess =
-        settled.status === "fulfilled" && settled.value?.ok === true;
-      if (isSuccess) {
+      const result = results[i];
+      if (result.ok) {
         sent++;
         successfulMemberIds.push(member.id);
       } else {
@@ -216,16 +251,12 @@ export async function GET(request: Request) {
         // out of Vercel logs. Previously the message interpolated
         // chain id + member id only, with the reason as a separate
         // serialized object — harder to grep across log entries.
-        const reason =
-          settled.status === "rejected"
-            ? settled.reason
-            : (settled.value as { ok: false; error: unknown }).error;
         console.error("[chain-cron] reminder send failed", {
           chainId: chain.id,
           memberId: member.id,
           email: member.email,
           day: dayNum,
-          reason: String(reason),
+          reason: String(result.error),
         });
         errors++;
       }

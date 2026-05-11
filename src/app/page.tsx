@@ -161,8 +161,8 @@ export default function HomePage() {
             />
             <FeatureCard
               icon={<DoveIcon className="w-5 h-5 text-gold-500" />}
-              title="Smart Suggestions"
-              description="Select a situation and we recommend the most appropriate prayers. Illness? Try the Novena to the Sacred Heart. Finances? St. Joseph has you covered."
+              title="Help Picking a Prayer"
+              description="Select a situation and we suggest the most appropriate prayers. Illness? Try the Novena to the Sacred Heart. Finances? St. Joseph has you covered."
             />
             <FeatureCard
               icon={<PrayingHandsIcon className="w-5 h-5 text-gold-500" />}

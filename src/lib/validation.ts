@@ -27,6 +27,36 @@ const optionalTrimmed = (max: number) =>
     .optional()
     .or(z.literal("").transform(() => undefined));
 
+/**
+ * FormData-aware boolean coercion.
+ *
+ * `z.coerce.boolean()` was a footgun: it uses JavaScript's `Boolean()`
+ * primitive, which treats any non-empty string as truthy — including
+ * the literal string "false". Server actions in this app receive
+ * checkbox-ish values through FormData (strings only), and several
+ * client wizards used to set `formData.set("isPublic", isPublic ? "true" : "false")`,
+ * which silently coerced to `true` regardless of intent. The
+ * default-public ↔ default-private flip from the May 2026 audit
+ * exposed this — new private trains were still creating public.
+ *
+ * This helper treats only the canonical truthy strings as `true`
+ * ("true", "on", "1") and everything else (including "false",
+ * "0", empty string, or absent → undefined → default()) as `false`.
+ * Accepts a literal boolean too, for direct programmatic callers.
+ */
+const formBoolean = () =>
+  z
+    .union([z.boolean(), z.string()])
+    .optional()
+    .transform((v) => {
+      if (typeof v === "boolean") return v;
+      if (typeof v === "string") {
+        const norm = v.trim().toLowerCase();
+        return norm === "true" || norm === "on" || norm === "1";
+      }
+      return false;
+    });
+
 // ─── Create PrayerTrain ─────────────────────────────────────
 
 const situationValues = Object.values(SituationCategory) as [
@@ -49,13 +79,13 @@ export const createTrainSchema = z
     customPrayerText: optionalTrimmed(4000),
     durationDays: z.coerce.number().int().min(1).max(365).default(30),
     slotsPerDay: z.coerce.number().int().min(1).max(24).default(3),
-    isPublic: z.coerce.boolean().default(false),
+    isPublic: formBoolean(),
     // Organizer's display name. Required unless they opt into anonymity
     // (refinement below). Stored on User.name when set, so it appears on
     // every train this user organizes — anonymity per train is the
     // override, not the default.
     organizerName: optionalTrimmed(80),
-    organizerAnonymous: z.coerce.boolean().default(false),
+    organizerAnonymous: formBoolean(),
     prayerTypeIds: z
       .string()
       .max(2000)
@@ -107,7 +137,7 @@ export const updateTrainSchema = z
     // OR anonymous required. Updating User.name from this path
     // propagates to every train + chain this user organizes.
     organizerName: optionalTrimmed(80),
-    organizerAnonymous: z.coerce.boolean().default(false),
+    organizerAnonymous: formBoolean(),
   })
   .refine(
     (data) =>
@@ -203,7 +233,7 @@ export type ReactivatePrayerChainInput = z.infer<
 export const submitSlotNoteSchema = z.object({
   slotId: trimmedString(1, 60),
   note: optionalTrimmed(200),
-  shareWall: z.coerce.boolean().default(false),
+  shareWall: formBoolean(),
 });
 
 export type SubmitSlotNoteInput = z.infer<typeof submitSlotNoteSchema>;
@@ -214,7 +244,7 @@ export const submitSlotNoteByTokenSchema = z.object({
   slotId: trimmedString(1, 60),
   token: trimmedString(1, 200),
   note: optionalTrimmed(200),
-  shareWall: z.coerce.boolean().default(false),
+  shareWall: formBoolean(),
 });
 
 export type SubmitSlotNoteByTokenInput = z.infer<
@@ -263,11 +293,11 @@ export const createChainSchema = z
     customPrayerText: optionalTrimmed(4000),
     // Optional override; if omitted, we use the prayer's default daysRequired.
     durationDays: z.coerce.number().int().min(1).max(365).optional(),
-    isPublic: z.coerce.boolean().default(false),
+    isPublic: formBoolean(),
     // Organizer-name capture mirrors createTrainSchema. See the
     // refinement there for the contract.
     organizerName: optionalTrimmed(80),
-    organizerAnonymous: z.coerce.boolean().default(false),
+    organizerAnonymous: formBoolean(),
   })
   .refine(
     (data) =>
@@ -298,7 +328,7 @@ export const updateChainSchema = z
     // Mirrors the create-flow organizer-identity capture. See
     // updateTrainSchema for the full rationale.
     organizerName: optionalTrimmed(80),
-    organizerAnonymous: z.coerce.boolean().default(false),
+    organizerAnonymous: formBoolean(),
   })
   .refine(
     (data) =>

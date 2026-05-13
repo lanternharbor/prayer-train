@@ -127,10 +127,15 @@ export function ClaimModal({
           </p>
           <p className="text-xs text-muted-foreground">
             {slot.prayerType.duration} min &bull;{" "}
+            {/* slot.date is a UTC-pinned calendar day (midnight UTC of
+                the intended day). Format with timeZone: "UTC" so a viewer
+                in America/New_York doesn't see "Tue May 12" when the slot
+                is for Wed May 13 — Codex caught this on PR #56. */}
             {formatDateLocale(new Date(slot.date), {
               weekday: "long",
               month: "long",
               day: "numeric",
+              timeZone: "UTC",
             })}
           </p>
           {isNovena && (

@@ -141,6 +141,54 @@ describe("createTrainSchema", () => {
     expect(result.success).toBe(true);
   });
 
+  // Regression for the May 2026 z.coerce.boolean() footgun. The
+  // create-train wizard's FormData unconditionally sets isPublic to
+  // the literal string "true" or "false". Before the fix to a
+  // FormData-aware formBoolean(), `z.coerce.boolean()` called
+  // `Boolean("false")` → true, silently overriding the user's intent.
+  // Codex caught this on PR #56. These tests pin the corrected
+  // behavior so it cannot regress.
+  describe("isPublic / organizerAnonymous boolean coercion", () => {
+    it('treats the literal string "false" as false (NOT JS-truthy)', () => {
+      const result = createTrainSchema.safeParse({
+        ...validBase,
+        isPublic: "false",
+        organizerAnonymous: "false",
+      });
+      expect(result.success).toBe(true);
+      if (result.success) {
+        expect(result.data.isPublic).toBe(false);
+        expect(result.data.organizerAnonymous).toBe(false);
+      }
+    });
+
+    it('treats "true", "on", and "1" as true', () => {
+      for (const truthy of ["true", "on", "1"]) {
+        const result = createTrainSchema.safeParse({
+          ...validBase,
+          isPublic: truthy,
+        });
+        expect(result.success).toBe(true);
+        if (result.success) expect(result.data.isPublic).toBe(true);
+      }
+    });
+
+    it("treats an omitted isPublic as the default (false)", () => {
+      const result = createTrainSchema.safeParse(validBase);
+      expect(result.success).toBe(true);
+      if (result.success) expect(result.data.isPublic).toBe(false);
+    });
+
+    it("accepts a literal boolean true / false", () => {
+      const result = createTrainSchema.safeParse({
+        ...validBase,
+        isPublic: true,
+      });
+      expect(result.success).toBe(true);
+      if (result.success) expect(result.data.isPublic).toBe(true);
+    });
+  });
+
   it("accepts a payload with organizerAnonymous=true and no name", () => {
     const { organizerName: _ignored, ...withoutName } = validBase;
     void _ignored;

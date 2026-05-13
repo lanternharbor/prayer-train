@@ -12,6 +12,9 @@ import {
   formatDate,
   calculateFillRate,
 } from "@/lib/utils";
+import { getLocale } from "@/i18n/get-locale";
+import { getDictionary } from "@/i18n/dictionaries";
+import { t as interpolate } from "@/i18n/format";
 import {
   CalendarDays,
   Users,
@@ -168,6 +171,10 @@ export async function generateMetadata({
   };
 }
 
+// Cookie-driven locale forces dynamic rendering. Phase 1b restores
+// per-locale SSG.
+export const dynamic = "force-dynamic";
+
 export default async function PrayerTrainPage({
   params,
 }: {
@@ -175,6 +182,9 @@ export default async function PrayerTrainPage({
 }) {
   const { slug } = await params;
   const session = await auth();
+  const locale = await getLocale();
+  const dict = await getDictionary(locale);
+  const t = dict.publicTrain;
 
   const train = await prisma.prayerTrain.findUnique({
     where: { slug },
@@ -331,9 +341,7 @@ export default async function PrayerTrainPage({
             organizer's choice rather than a failure. */}
         {train.status === "CANCELLED" && (
           <p className="mt-4 text-sm text-muted-foreground bg-cream-50 rounded-lg p-3 border border-cream-300">
-            This prayer train has been cancelled by the organizer. The
-            prayer history below is preserved as a record of what was
-            offered before it ended.
+            {t.cancelledNotice}
           </p>
         )}
 
@@ -342,7 +350,7 @@ export default async function PrayerTrainPage({
             chips). At sm+ we keep the original wrapping inline row. */}
         <div className="flex flex-col sm:flex-row sm:flex-wrap sm:items-center gap-2 sm:gap-4 mt-4">
           <span className="text-sm text-muted-foreground">
-            Organized by{" "}
+            {t.organizedBy}{" "}
             <span className="font-medium text-navy-700">
               {organizerDisplayName(train)}
             </span>
@@ -369,7 +377,7 @@ export default async function PrayerTrainPage({
               className="inline-flex items-center gap-1.5 text-sm text-gold-700 hover:text-gold-800 font-medium"
             >
               <Settings className="w-3.5 h-3.5" />
-              Manage
+              {t.manage}
             </Link>
           )}
         </div>
@@ -398,11 +406,13 @@ export default async function PrayerTrainPage({
           <h2 className="font-heading text-xl font-semibold text-navy-800 mb-3 flex items-center gap-2">
             <HandHeart className="w-5 h-5 text-gold-500" />
             {organizerFirstNameOrNull(train)
-              ? `A prayer from ${organizerFirstNameOrNull(train)}`
-              : "A personal prayer"}
+              ? interpolate(t.personalPrayerFromOrganizer, {
+                  organizerName: organizerFirstNameOrNull(train) ?? "",
+                })
+              : t.personalPrayerAnonymous}
           </h2>
           <p className="text-sm text-muted-foreground mb-3">
-            Pray this alongside the prayers below.
+            {t.personalPrayerLead}
           </p>
           <div className="bg-white border border-cream-300 rounded-lg p-5">
             <ExpandableText
@@ -417,10 +427,10 @@ export default async function PrayerTrainPage({
       <div className="prayer-card mb-8">
         <div className="flex items-center justify-between mb-2">
           <h2 className="font-heading text-lg font-semibold text-navy-800">
-            Prayer Coverage
+            {t.coverageHeading}
           </h2>
           <span className="text-sm font-medium text-gold-700">
-            {fillRate}% covered
+            {interpolate(t.coverageCovered, { pct: fillRate })}
           </span>
         </div>
         <div className="w-full h-3 bg-cream-200 rounded-full overflow-hidden">
@@ -441,19 +451,21 @@ export default async function PrayerTrainPage({
         <div className="flex flex-wrap items-center gap-x-4 gap-y-2 mt-3 text-sm text-muted-foreground">
           <span className="flex items-center gap-1.5">
             <div className="w-2.5 h-2.5 rounded-full bg-slot-open-border" />
-            {totalSlots - claimedSlots - completedSlots} open
+            {interpolate(t.statOpen, {
+              count: totalSlots - claimedSlots - completedSlots,
+            })}
           </span>
           <span className="flex items-center gap-1.5">
             <div className="w-2.5 h-2.5 rounded-full bg-slot-claimed-border" />
-            {claimedSlots} claimed
+            {interpolate(t.statClaimed, { count: claimedSlots })}
           </span>
           <span className="flex items-center gap-1.5">
             <div className="w-2.5 h-2.5 rounded-full bg-slot-completed-border" />
-            {completedSlots} completed
+            {interpolate(t.statCompleted, { count: completedSlots })}
           </span>
           <span className="flex items-center gap-1.5">
             <Users className="w-3.5 h-3.5" />
-            {warriors.size} prayer warriors
+            {interpolate(t.statWarriors, { count: warriors.size })}
           </span>
         </div>
       </div>
@@ -469,12 +481,10 @@ export default async function PrayerTrainPage({
         <div className="prayer-card mt-6 mb-2 bg-gold-50 border-gold-300 text-center">
           <HandHeart className="w-8 h-8 text-gold-600 mx-auto mb-2" />
           <h2 className="font-heading text-xl font-semibold text-navy-800 mb-1">
-            Every slot is filled — and you can still join.
+            {t.fullyCoveredHeading}
           </h2>
           <p className="text-sm text-muted-foreground mb-4 max-w-md mx-auto">
-            The calendar is fully covered, but {train.recipientName} can never
-            have too many people praying. Add yourself as a prayer warrior —
-            pledge to pray, no specific slot.
+            {interpolate(t.fullyCoveredBody, { recipientName: train.recipientName })}
           </p>
           <AddWarriorButton
             trainId={train.id}
@@ -489,12 +499,15 @@ export default async function PrayerTrainPage({
       <div id="calendar" className="mb-10 scroll-mt-32">
         <h2 className="font-heading text-2xl font-semibold text-navy-800 mb-4 flex items-center gap-2">
           <CrossIcon className="w-5 h-5 text-gold-400" />
-          Prayer Calendar
+          {t.calendarHeading}
         </h2>
         <PrayerCalendar
           slotsByDate={slotsByDate}
           trainStatus={train.status}
           currentUserId={session?.user?.id ?? null}
+          publicTrainT={t}
+          claimModalT={dict.claimModal}
+          completionModalT={dict.completionModal}
         />
       </div>
 
@@ -505,7 +518,7 @@ export default async function PrayerTrainPage({
         <div id="prayer-warriors" className="mb-10 scroll-mt-32">
           <h2 className="font-heading text-2xl font-semibold text-navy-800 mb-4 flex items-center gap-2">
             <HandHeart className="w-5 h-5 text-gold-500" />
-            Also praying alongside ({train.warriors.length})
+            {interpolate(t.warriorsHeading, { count: train.warriors.length })}
           </h2>
           <div className="prayer-card">
             <div className="flex flex-wrap gap-2">

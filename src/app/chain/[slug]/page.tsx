@@ -15,6 +15,9 @@ import { reflectionForDay } from "@/lib/daily-reflections";
 import { JoinChainButton } from "./join-button";
 import { ChainShareButton } from "./share-button";
 import { BookOpen, CalendarDays, HandHeart, Settings, Users } from "lucide-react";
+import { getLocale } from "@/i18n/get-locale";
+import { getDictionary } from "@/i18n/dictionaries";
+import { t as interpolate } from "@/i18n/format";
 
 function recipientPhrase(
   recipientName: string | null,
@@ -104,6 +107,10 @@ export async function generateMetadata({
   };
 }
 
+// Cookie-driven locale forces dynamic rendering. Phase 1b restores
+// per-locale SSG.
+export const dynamic = "force-dynamic";
+
 export default async function ChainDetailPage({
   params,
 }: {
@@ -111,6 +118,9 @@ export default async function ChainDetailPage({
 }) {
   const { slug } = await params;
   const session = await auth();
+  const locale = await getLocale();
+  const dict = await getDictionary(locale);
+  const t = dict.publicChain;
 
   const chain = await prisma.prayerChain.findUnique({
     where: { slug },
@@ -183,13 +193,18 @@ export default async function ChainDetailPage({
   // "X people praying with [name]" reads well when a name is present
   // and stiff when it would fall back to "the organizer". Drop the
   // attribution entirely in the latter case so the line stays clean.
+  const personOrPeople =
+    chain.members.length === 1 ? t.person : t.people;
   const prayingWithLabel = orgFirstOrNull
-    ? `${chain.members.length} ${
-        chain.members.length === 1 ? "person" : "people"
-      } praying with ${orgFirstOrNull}`
-    : `${chain.members.length} ${
-        chain.members.length === 1 ? "person" : "people"
-      } praying along`;
+    ? interpolate(t.prayingWithOrganizer, {
+        count: chain.members.length,
+        personOrPeople,
+        organizerName: orgFirstOrNull,
+      })
+    : interpolate(t.prayingAlong, {
+        count: chain.members.length,
+        personOrPeople,
+      });
 
   return (
     <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
@@ -204,7 +219,7 @@ export default async function ChainDetailPage({
           className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors"
         >
           <BookOpen className="w-4 h-4" />
-          About this prayer
+          {t.aboutPrayer}
         </Link>
         {isOrganizer && (
           <Link
@@ -212,7 +227,7 @@ export default async function ChainDetailPage({
             className="inline-flex items-center gap-1.5 text-sm text-gold-700 hover:text-gold-800 transition-colors"
           >
             <Settings className="w-4 h-4" />
-            Manage
+            {t.manage}
           </Link>
         )}
       </div>
@@ -229,20 +244,23 @@ export default async function ChainDetailPage({
             {chain.durationDays === 1 ? (
               chain.status === "COMPLETED" ? (
                 <p className="text-xs uppercase tracking-widest text-gold-700 mb-2">
-                  Complete
+                  {t.complete}
                 </p>
               ) : chain.status === "CANCELLED" ? (
                 <p className="text-xs uppercase tracking-widest text-gold-700 mb-2">
-                  Cancelled
+                  {t.cancelled}
                 </p>
               ) : null
             ) : (
               <p className="text-xs uppercase tracking-widest text-gold-700 mb-2">
-                Day {day} of {chain.durationDays}
+                {interpolate(t.dayOfDuration, {
+                  day,
+                  total: chain.durationDays,
+                })}
                 {chain.status === "COMPLETED"
-                  ? " · Complete"
+                  ? ` · ${t.complete}`
                   : chain.status === "CANCELLED"
-                  ? " · Cancelled"
+                  ? ` · ${t.cancelled}`
                   : ""}
               </p>
             )}
@@ -274,9 +292,7 @@ export default async function ChainDetailPage({
                 from a shared link. */}
             {chain.status === "CANCELLED" && (
               <p className="mt-4 text-sm text-muted-foreground bg-cream-50 rounded-lg p-3 border border-cream-300">
-                This shared prayer has been cancelled by the organizer.
-                The prayer history below is preserved as a record of
-                what was offered before it ended.
+                {t.cancelledNotice}
               </p>
             )}
           </div>
@@ -307,11 +323,13 @@ export default async function ChainDetailPage({
           <h2 className="font-heading text-xl font-semibold text-navy-800 mb-3 flex items-center gap-2">
             <HandHeart className="w-5 h-5 text-gold-500" />
             {orgFirstOrNull
-              ? `A prayer from ${orgFirstOrNull}`
-              : "A personal prayer"}
+              ? interpolate(t.personalPrayerFromOrganizer, {
+                  organizerName: orgFirstOrNull,
+                })
+              : t.personalPrayerAnonymous}
           </h2>
           <p className="text-sm text-muted-foreground mb-3">
-            Pray this alongside today&apos;s prayer below.
+            {t.personalPrayerLead}
           </p>
           <div className="bg-white border border-cream-300 rounded-lg p-5">
             <p className="font-heading text-base sm:text-lg leading-relaxed text-navy-700 italic whitespace-pre-line">
@@ -349,7 +367,7 @@ export default async function ChainDetailPage({
           <div className="prayer-card mb-8">
             <h2 className="font-heading text-xl font-semibold text-navy-800 mb-3 flex items-center gap-2">
               <CalendarDays className="w-5 h-5 text-gold-500" />
-              Today&apos;s prayer
+              {t.todaysPrayer}
             </h2>
             {chain.prayerType.instructions && (
               <div className="text-sm text-muted-foreground mb-4 leading-relaxed whitespace-pre-line">
@@ -359,7 +377,7 @@ export default async function ChainDetailPage({
             {todaysReflection && (
               <div className="bg-gold-50 border border-gold-200 rounded-lg p-5 mb-4">
                 <p className="text-xs uppercase tracking-widest text-gold-700 mb-2">
-                  Day {day} reflection
+                  {interpolate(t.dayReflection, { day })}
                 </p>
                 <p className="text-base leading-relaxed text-navy-700 whitespace-pre-line">
                   {todaysReflection}
@@ -374,14 +392,12 @@ export default async function ChainDetailPage({
               </div>
             ) : (
               <p className="text-sm text-muted-foreground italic">
-                See{" "}
                 <Link
                   href={`/prayers/${chain.prayerType.slug}`}
                   className="text-gold-700 hover:underline underline-offset-2"
                 >
-                  the prayer&apos;s page
-                </Link>{" "}
-                for the full text and instructions.
+                  {t.seePrayerPage}
+                </Link>
               </p>
             )}
           </div>
@@ -393,8 +409,10 @@ export default async function ChainDetailPage({
         <div className="prayer-card mb-8 bg-cream-50 border-cream-300">
           <p className="text-xs uppercase tracking-widest text-gold-700 mb-2">
             {orgFirstOrNull
-              ? `A note from ${orgFirstOrNull}`
-              : "A note from the organizer"}
+              ? interpolate(t.closingNoteFromOrganizer, {
+                  organizerName: orgFirstOrNull,
+                })
+              : t.closingNoteAnonymous}
           </p>
           <p className="text-navy-700 leading-relaxed italic whitespace-pre-line">
             {chain.closingNote}
@@ -415,6 +433,7 @@ export default async function ChainDetailPage({
             recipientPhrase={phrase}
             durationDays={chain.durationDays}
             isAnonymous={!orgFirstOrNull}
+            t={dict.joinModal}
           />
         </div>
       )}

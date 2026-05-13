@@ -4,6 +4,8 @@ import { useEffect, useState } from "react";
 import { claimPrayerSlot } from "@/lib/actions";
 import { X, Heart, Loader2, CalendarDays } from "lucide-react";
 import { formatDateLocale } from "@/lib/utils";
+import { t as interpolate } from "@/i18n/format";
+import type { Dictionary } from "@/i18n/dictionaries";
 
 type Slot = {
   id: string;
@@ -21,9 +23,11 @@ type Slot = {
 export function ClaimModal({
   slot,
   onClose,
+  t,
 }: {
   slot: Slot;
   onClose: () => void;
+  t: Dictionary["claimModal"];
 }) {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -70,6 +74,11 @@ export function ClaimModal({
   };
 
   if (success) {
+    // Split the body sentence around the {prayerName} placeholder so we
+    // can wrap the prayer name in <strong> while keeping the dictionary
+    // string a plain sentence.
+    const bodyParts = t.successBody.split("{prayerName}");
+    const reminderParts = t.successReminderNote.split("{email}");
     return (
       <div className="fixed inset-0 z-50 flex items-center justify-center bg-navy-900/40 backdrop-blur-sm px-4">
         <div className="bg-card rounded-2xl shadow-xl max-w-md w-full p-8 text-center">
@@ -77,28 +86,25 @@ export function ClaimModal({
             <Heart className="w-7 h-7 text-gold-600 fill-gold-600" />
           </div>
           <h2 className="font-heading text-2xl font-bold text-navy-800 mb-2">
-            Thank you, {name}!
+            {interpolate(t.successTitle, { name })}
           </h2>
           <p className="text-muted-foreground mb-2">
-            You&apos;ve committed to pray the{" "}
-            <strong>{slot.prayerType.name}</strong>.
+            {bodyParts[0]}<strong>{slot.prayerType.name}</strong>{bodyParts[1]}
           </p>
           {isNovena && (
             <p className="text-sm text-gold-800 bg-gold-50 rounded-lg p-3 mb-4">
               <CalendarDays className="w-4 h-4 inline mr-1" />
-              Since this is a {slot.prayerType.daysRequired}-day devotion,
-              you&apos;re committed for all {slot.prayerType.daysRequired} days.
+              {interpolate(t.successNovenaNote, { days: slot.prayerType.daysRequired })}
             </p>
           )}
           <p className="text-sm text-muted-foreground mb-6">
-            We&apos;ll send reminders to <strong>{email}</strong> on your
-            committed days.
+            {reminderParts[0]}<strong>{email}</strong>{reminderParts[1]}
           </p>
           <button
             onClick={onClose}
             className="px-6 py-2.5 bg-primary text-primary-foreground font-medium rounded-lg hover:bg-navy-700 transition-colors"
           >
-            Done
+            {t.successDone}
           </button>
         </div>
       </div>
@@ -110,12 +116,12 @@ export function ClaimModal({
       <div className="bg-card rounded-2xl shadow-xl max-w-md w-full p-6">
         <div className="flex items-center justify-between mb-4">
           <h2 id="claim-dialog-title" className="font-heading text-xl font-semibold text-navy-800">
-            Sign Up to Pray
+            {t.title}
           </h2>
           <button
             onClick={onClose}
             className="p-1 text-muted-foreground hover:text-foreground"
-            aria-label="Close sign-up dialog"
+            aria-label={t.closeAria}
           >
             <X className="w-5 h-5" />
           </button>
@@ -140,9 +146,7 @@ export function ClaimModal({
           </p>
           {isNovena && (
             <p className="text-xs text-gold-700 mt-1">
-              This is a {slot.prayerType.daysRequired}-day commitment &mdash;
-              claiming Day 1 commits you to all {slot.prayerType.daysRequired}{" "}
-              days.
+              {interpolate(t.novenaCommitment, { days: slot.prayerType.daysRequired })}
             </p>
           )}
         </div>
@@ -150,7 +154,7 @@ export function ClaimModal({
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label htmlFor="claim-name" className="block text-sm font-medium text-navy-700 mb-1.5">
-              Your name
+              {t.nameLabel}
             </label>
             <input
               id="claim-name"
@@ -158,13 +162,13 @@ export function ClaimModal({
               required
               value={name}
               onChange={(e) => setName(e.target.value)}
-              placeholder="First & last name"
+              placeholder={t.namePlaceholder}
               className="w-full px-4 py-2.5 border border-border rounded-lg bg-cream-50 focus:outline-none focus:ring-2 focus:ring-gold-400/50 focus:border-gold-400 transition"
             />
           </div>
           <div>
             <label htmlFor="claim-email" className="block text-sm font-medium text-navy-700 mb-1.5">
-              Email (for reminders)
+              {t.emailLabel}
             </label>
             <input
               id="claim-email"
@@ -172,7 +176,7 @@ export function ClaimModal({
               required
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              placeholder="you@example.com"
+              placeholder={t.emailPlaceholder}
               className="w-full px-4 py-2.5 border border-border rounded-lg bg-cream-50 focus:outline-none focus:ring-2 focus:ring-gold-400/50 focus:border-gold-400 transition"
             />
           </div>
@@ -194,7 +198,7 @@ export function ClaimModal({
             ) : (
               <Heart className="w-4 h-4" />
             )}
-            {loading ? "Claiming..." : "I'll Pray"}
+            {loading ? t.submitting : t.submit}
           </button>
         </form>
       </div>

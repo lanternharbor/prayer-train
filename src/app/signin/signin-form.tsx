@@ -3,15 +3,18 @@
 import { useState } from "react";
 import { signIn } from "next-auth/react";
 import { Mail, Loader2 } from "lucide-react";
+import type { Dictionary } from "@/i18n/dictionaries";
 
 export function SignInForm({
   callbackUrl,
   googleEnabled = false,
   appleEnabled = false,
+  t,
 }: {
   callbackUrl?: string;
   googleEnabled?: boolean;
   appleEnabled?: boolean;
+  t: Dictionary["signin"];
 }) {
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
@@ -30,16 +33,18 @@ export function SignInForm({
   };
 
   if (sent) {
+    // Replace {email} placeholder with the actual email
+    const sentBody = t.sentBody.split("{email}");
     return (
       <div className="text-center py-6">
         <div className="w-12 h-12 rounded-full bg-gold-100 flex items-center justify-center mx-auto mb-4">
           <Mail className="w-6 h-6 text-gold-600" />
         </div>
         <h2 className="font-heading text-xl font-semibold text-navy-800 mb-2">
-          Check your email
+          {t.sentTitle}
         </h2>
         <p className="text-sm text-muted-foreground">
-          We sent a magic link to <strong>{email}</strong>. Click it to sign in.
+          {sentBody[0]}<strong>{email}</strong>{sentBody[1]}
         </p>
       </div>
     );
@@ -54,7 +59,7 @@ export function SignInForm({
             htmlFor="email"
             className="block text-sm font-medium text-navy-700 mb-1.5"
           >
-            Email address
+            {t.emailLabel}
           </label>
           <input
             id="email"
@@ -62,7 +67,7 @@ export function SignInForm({
             required
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            placeholder="you@example.com"
+            placeholder={t.emailPlaceholder}
             className="w-full px-4 py-2.5 border border-border rounded-lg bg-cream-50 text-foreground placeholder:text-muted-foreground focus:ring-2 focus:ring-gold-400/50 focus:border-gold-400 transition"
           />
         </div>
@@ -76,7 +81,7 @@ export function SignInForm({
           ) : (
             <Mail className="w-4 h-4" />
           )}
-          {loading ? "Sending link..." : "Sign in with email"}
+          {loading ? t.emailSubmitting : t.emailSubmit}
         </button>
       </form>
 
@@ -89,7 +94,7 @@ export function SignInForm({
             </div>
             <div className="relative flex justify-center text-xs">
               <span className="px-3 bg-card text-muted-foreground">
-                or continue with
+                {t.orContinueWith}
               </span>
             </div>
           </div>
@@ -121,7 +126,7 @@ export function SignInForm({
                     d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
                   />
                 </svg>
-                Continue with Google
+                {t.google}
               </button>
             )}
 
@@ -135,7 +140,7 @@ export function SignInForm({
                 <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
                   <path d="M17.05 20.28c-.98.95-2.05.88-3.08.4-1.09-.5-2.08-.48-3.24 0-1.44.62-2.2.44-3.06-.4C2.79 15.25 3.51 7.59 9.05 7.31c1.35.07 2.29.74 3.08.8 1.18-.24 2.31-.93 3.57-.84 1.51.12 2.65.72 3.4 1.8-3.12 1.87-2.38 5.98.48 7.13-.57 1.5-1.31 2.99-2.54 4.09zM12.03 7.25c-.15-2.23 1.66-4.07 3.74-4.25.29 2.58-2.34 4.5-3.74 4.25z" />
                 </svg>
-                Continue with Apple
+                {t.apple}
               </button>
             )}
           </div>

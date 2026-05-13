@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import { SignInForm } from "./signin-form";
+import { getLocale } from "@/i18n/get-locale";
+import { getDictionary } from "@/i18n/dictionaries";
 
 export const metadata: Metadata = {
   title: "Sign In",
@@ -10,12 +12,19 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
 };
 
+// Cookie-driven locale forces dynamic rendering. Phase 1b's URL-based
+// routing will restore static rendering per-locale.
+export const dynamic = "force-dynamic";
+
 export default async function SignInPage({
   searchParams,
 }: {
   searchParams: Promise<{ callbackUrl?: string; error?: string }>;
 }) {
   const { callbackUrl, error } = await searchParams;
+  const locale = await getLocale();
+  const dict = await getDictionary(locale);
+  const t = dict.signin;
 
   return (
     <div className="min-h-[80vh] flex items-center justify-center px-4">
@@ -29,16 +38,16 @@ export default async function SignInPage({
             className="w-40 h-auto object-contain mx-auto mb-6"
           />
           <h1 className="font-heading text-3xl font-bold text-navy-800 mb-2">
-            Welcome to PrayerTrain
+            {t.welcome}
           </h1>
           <p className="text-muted-foreground">
-            Sign in to create prayer trains and manage your commitments
+            {t.subheading}
           </p>
         </div>
 
         {error && (
           <div className="mb-6 p-4 rounded-lg bg-red-50 border border-red-200 text-red-700 text-sm">
-            There was an error signing in. Please try again.
+            {t.errorBanner}
           </div>
         )}
 
@@ -51,12 +60,12 @@ export default async function SignInPage({
             // fails in a way we can't observe. See src/lib/auth.ts for
             // the full notes.
             appleEnabled={false}
+            t={t}
           />
         </div>
 
         <p className="text-center text-xs text-muted-foreground mt-6">
-          No account needed for claiming prayer slots &mdash; you can sign up
-          for prayers with just your name and email.
+          {t.noAccountNeeded}
         </p>
       </div>
     </div>

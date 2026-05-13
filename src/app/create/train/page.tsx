@@ -3,6 +3,8 @@ import { redirect } from "next/navigation";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import { CreateWizard } from "./create-wizard";
+import { getLocale } from "@/i18n/get-locale";
+import { getDictionary } from "@/i18n/dictionaries";
 
 export const metadata: Metadata = {
   title: "Start a PrayerTrain",
@@ -10,6 +12,8 @@ export const metadata: Metadata = {
     "Create a PrayerTrain for someone in need. Choose their situation, select prayers, and invite your community.",
   alternates: { canonical: "/create/train" },
 };
+
+export const dynamic = "force-dynamic";
 
 export default async function CreatePage() {
   // Redirect to signin if not authenticated. The edge proxy also gates
@@ -19,6 +23,10 @@ export default async function CreatePage() {
   if (!session?.user?.id) {
     redirect("/signin?callbackUrl=/create/train");
   }
+  const locale = await getLocale();
+  const dict = await getDictionary(locale);
+  const t = dict.wizard;
+
   const prayerTypes = await prisma.prayerType.findMany({
     orderBy: [{ category: "asc" }, { name: "asc" }],
     select: {
@@ -39,17 +47,19 @@ export default async function CreatePage() {
     <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
       <div className="mb-8">
         <h1 className="font-heading text-3xl sm:text-4xl font-bold text-navy-800 mb-3 gold-accent">
-          Start a PrayerTrain
+          {t.pageTitle}
         </h1>
         <p className="text-muted-foreground text-lg">
-          Create organized prayer coverage for someone in need. We&apos;ll
-          generate a calendar that friends and family can sign up for.
+          {t.pageSubtitle}
         </p>
       </div>
 
       <CreateWizard
         prayerTypes={prayerTypes}
         currentUserName={session.user.name ?? ""}
+        t={t}
+        situationLabels={dict.situationLabels}
+        prayerCategoryLabels={dict.prayerCategoryLabels}
       />
     </div>
   );

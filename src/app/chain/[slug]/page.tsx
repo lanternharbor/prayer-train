@@ -131,15 +131,34 @@ export default async function ChainDetailPage({
           dailyReflections: true,
         },
       },
+      // Public roster query — never selects member.email. The roster
+      // is serialized into the RSC payload sent to the browser, so
+      // even fields the UI doesn't render leak to the client. Keep
+      // this shape minimal: id + name + joinedAt. The `isMember`
+      // check below runs as a separate server-side count so the
+      // viewer's email never needs to travel back from the client.
       members: {
         where: { unsubscribedAt: null },
         orderBy: { joinedAt: "asc" },
-        select: { id: true, name: true, email: true, joinedAt: true },
+        select: { id: true, name: true, joinedAt: true },
       },
     },
   });
 
   if (!chain) notFound();
+
+  // isMember check runs server-side against a focused count query so
+  // we never have to pull member emails into the public payload. Only
+  // when there's an authenticated session with an email to compare.
+  const isMember = session?.user?.email
+    ? (await prisma.prayerChainMember.count({
+        where: {
+          chainId: chain.id,
+          email: session.user.email,
+          unsubscribedAt: null,
+        },
+      })) > 0
+    : false;
 
   const orgFirst = organizerFirstName(chain);
   const orgFirstOrNull = organizerFirstNameOrNull(chain);
@@ -157,9 +176,6 @@ export default async function ChainDetailPage({
     : titleSuffix;
   const day = dayNumberFor(chain.startDate, chain.durationDays);
   const isOrganizer = session?.user?.id === chain.organizerId;
-  const isMember = !!chain.members.find(
-    (m) => session?.user && m.email === session.user.email,
-  );
   const progressPct = Math.min(
     100,
     Math.round((day / chain.durationDays) * 100),

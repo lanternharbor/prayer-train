@@ -179,9 +179,29 @@ export default async function PrayerTrainPage({
   const train = await prisma.prayerTrain.findUnique({
     where: { slug },
     include: {
-      organizer: { select: { name: true, email: true } },
+      organizer: { select: { name: true } },
       slots: {
-        include: { prayerType: true },
+        select: {
+          id: true,
+          date: true,
+          slotIndex: true,
+          status: true,
+          claimedById: true,
+          claimerName: true,
+          completedAt: true,
+          completionNote: true,
+          completionNoteShareWall: true,
+          completionNoteHiddenAt: true,
+          prayerType: {
+            select: {
+              id: true,
+              name: true,
+              duration: true,
+              daysRequired: true,
+              category: true,
+            },
+          },
+        },
         orderBy: [{ date: "asc" }, { slotIndex: "asc" }],
       },
       guestbook: {
@@ -227,16 +247,29 @@ export default async function PrayerTrainPage({
   const isFullyCovered = openSlots === 0 && totalSlots > 0;
   const showWarriorCTA = isFullyCovered && train.status === "ACTIVE";
 
-  // Group slots by date
-  const slotsByDate = train.slots.reduce(
-    (acc, slot) => {
-      const dateKey = slot.date.toISOString().split("T")[0];
-      if (!acc[dateKey]) acc[dateKey] = [];
-      acc[dateKey].push(slot);
-      return acc;
-    },
-    {} as Record<string, typeof train.slots>
-  );
+  // Group slots by date, passing only the fields the client calendar
+  // needs. In particular, never serialize claimer emails into the
+  // public page payload.
+  type PrayerCalendarProps = Parameters<typeof PrayerCalendar>[0];
+  const slotsByDate: PrayerCalendarProps["slotsByDate"] = {};
+  train.slots.forEach((slot) => {
+    const dateKey = slot.date.toISOString().split("T")[0];
+    if (!slotsByDate[dateKey]) slotsByDate[dateKey] = [];
+    slotsByDate[dateKey].push({
+      id: slot.id,
+      date: slot.date,
+      slotIndex: slot.slotIndex,
+      status: slot.status,
+      claimedById: slot.claimedById,
+      claimerName: slot.claimerName,
+      completedAt: slot.completedAt,
+      completionNote: slot.completionNoteHiddenAt
+        ? null
+        : slot.completionNote,
+      completionNoteShareWall: slot.completionNoteShareWall,
+      prayerType: slot.prayerType,
+    });
+  });
 
   // Unique prayer warriors
   const warriors = new Set<string>();
@@ -333,7 +366,7 @@ export default async function PrayerTrainPage({
           {isOrganizer && (
             <Link
               href={`/p/${slug}/manage`}
-              className="inline-flex items-center gap-1.5 text-sm text-gold-600 hover:text-gold-700 font-medium"
+              className="inline-flex items-center gap-1.5 text-sm text-gold-700 hover:text-gold-800 font-medium"
             >
               <Settings className="w-3.5 h-3.5" />
               Manage
@@ -386,7 +419,7 @@ export default async function PrayerTrainPage({
           <h2 className="font-heading text-lg font-semibold text-navy-800">
             Prayer Coverage
           </h2>
-          <span className="text-sm font-medium text-gold-600">
+          <span className="text-sm font-medium text-gold-700">
             {fillRate}% covered
           </span>
         </div>

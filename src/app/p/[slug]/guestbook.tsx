@@ -10,6 +10,7 @@ import {
   unhideGuestbookEntry,
   unhideSlotNote,
 } from "@/lib/actions";
+import { formatDateLocale } from "@/lib/utils";
 import {
   Eye,
   EyeOff,
@@ -202,7 +203,7 @@ function WallEntryRow({
           {entry.authorName}
         </span>
         <span className="text-xs text-muted-foreground">
-          {new Date(entry.createdAt).toLocaleDateString("en-US", {
+          {formatDateLocale(new Date(entry.createdAt), {
             month: "short",
             day: "numeric",
           })}

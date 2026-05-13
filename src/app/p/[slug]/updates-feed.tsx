@@ -1,4 +1,5 @@
 import { Newspaper } from "lucide-react";
+import { formatDateLocale } from "@/lib/utils";
 
 type Update = {
   id: string;
@@ -29,7 +30,7 @@ export function UpdatesFeed({ updates }: { updates: Update[] }) {
             </p>
             <p className="text-xs text-muted-foreground">
               {update.author.name || "Organizer"} &bull;{" "}
-              {new Date(update.createdAt).toLocaleDateString("en-US", {
+              {formatDateLocale(new Date(update.createdAt), {
                 month: "short",
                 day: "numeric",
                 year: "numeric",

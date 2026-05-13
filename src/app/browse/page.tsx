@@ -345,7 +345,7 @@ export default async function BrowsePage({
                     slot is claimed, the warmer "Pray alongside" pulls
                     visitors toward the train page's overflow CTA
                     instead of the dead-ended "Sign up to pray". */}
-                <div className="flex items-center gap-1.5 mt-3 text-sm font-medium text-gold-600 group-hover:text-gold-700">
+                <div className="flex items-center gap-1.5 mt-3 text-sm font-medium text-gold-700 group-hover:text-gold-800">
                   {open > 0 ? "Sign up to pray" : "Pray alongside"}
                   <ArrowRight className="w-4 h-4" />
                 </div>
@@ -474,7 +474,7 @@ export default async function BrowsePage({
                       praying
                     </span>
                   </div>
-                  <div className="flex items-center gap-1.5 mt-3 text-sm font-medium text-gold-600 group-hover:text-gold-700">
+                  <div className="flex items-center gap-1.5 mt-3 text-sm font-medium text-gold-700 group-hover:text-gold-800">
                     Pray along
                     <ArrowRight className="w-4 h-4" />
                   </div>

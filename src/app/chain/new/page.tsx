@@ -215,21 +215,27 @@ export default async function NewChainPage({
             />
           </div>
 
+          {/* Visibility opt-in. Default is PRIVATE (link-only) per the
+              May 2026 audit. Going public is an explicit informed
+              choice that lists this prayer on the public directory and
+              exposes the intention to search-engine indexing. */}
           <label className="flex items-start gap-3 cursor-pointer p-3 rounded-lg bg-cream-50 border border-cream-300">
             <input
               name="isPublic"
               type="checkbox"
               value="true"
-              defaultChecked
               className="mt-0.5"
             />
             <div>
               <p className="text-sm font-medium text-navy-700">
-                List on the public Find page
+                Make this shared prayer publicly discoverable
               </p>
               <p className="text-xs text-muted-foreground mt-0.5">
-                Listed by default so anyone in the parish can discover and
-                join. Uncheck to keep this private (link-only).
+                If checked: the recipient&apos;s name, intention, and
+                prayer will appear on the public <span className="font-medium">Find</span>{" "}
+                directory and may be indexed by search engines. If
+                unchecked (the default), only people with the link can
+                view this page. You can change this later from Manage.
               </p>
             </div>
           </label>

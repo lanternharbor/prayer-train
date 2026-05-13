@@ -52,7 +52,7 @@ export default function SituationsIndexPage() {
               <p className="text-sm text-foreground leading-relaxed line-clamp-3">
                 {content.lead}
               </p>
-              <div className="flex items-center gap-1.5 mt-3 text-sm font-medium text-gold-600 group-hover:text-gold-700">
+              <div className="flex items-center gap-1.5 mt-3 text-sm font-medium text-gold-700 group-hover:text-gold-800">
                 Read more
                 <ArrowRight className="w-4 h-4" />
               </div>

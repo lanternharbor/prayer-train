@@ -69,7 +69,7 @@ export default async function NovenasPage() {
               </span>
             </div>
             {novena.patronSaint && (
-              <p className="text-xs text-gold-600 mb-2">
+              <p className="text-xs text-gold-700 mb-2">
                 {novena.patronSaint}
               </p>
             )}

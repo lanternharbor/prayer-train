@@ -201,7 +201,7 @@ export default async function PrayersPage({
                   )}
                 </div>
                 {prayer.patronSaint && (
-                  <p className="text-xs text-gold-600 mt-3">
+                  <p className="text-xs text-gold-700 mt-3">
                     {prayer.patronSaint}
                   </p>
                 )}

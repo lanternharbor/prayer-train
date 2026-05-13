@@ -138,7 +138,7 @@ export default async function DashboardPage() {
                 <div className="flex items-center justify-between mt-3">
                   <Link
                     href={`/p/${slot.train.slug}`}
-                    className="text-xs text-gold-600 hover:text-gold-700"
+                    className="text-xs text-gold-700 hover:text-gold-800"
                   >
                     View train &rarr;
                   </Link>
@@ -253,7 +253,7 @@ export default async function DashboardPage() {
                   </div>
                   <Link
                     href={`/p/${slot.train.slug}`}
-                    className="text-xs text-gold-600 hover:text-gold-700 flex items-center gap-1"
+                    className="text-xs text-gold-700 hover:text-gold-800 flex items-center gap-1"
                   >
                     View
                     <ArrowRight className="w-3 h-3" />

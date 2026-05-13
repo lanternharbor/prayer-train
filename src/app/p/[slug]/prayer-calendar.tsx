@@ -13,6 +13,7 @@ import {
 import { ClaimModal } from "./claim-modal";
 import { CompletionModal } from "./completion-modal";
 import { dateKeyInTimezone, groupByWeek } from "@/lib/dates";
+import { formatDateLocale } from "@/lib/utils";
 
 type Slot = {
   id: string;
@@ -147,7 +148,7 @@ export function PrayerCalendar({
             }`}
           >
             <div className="text-xs font-medium uppercase">
-              {date.toLocaleDateString("en-US", { weekday: "short" })}
+              {formatDateLocale(date, { weekday: "short" })}
             </div>
             <div className="text-lg font-bold leading-tight">
               {date.getDate()}
@@ -155,13 +156,13 @@ export function PrayerCalendar({
           </div>
           <div>
             <p className="text-sm font-medium text-navy-700">
-              {date.toLocaleDateString("en-US", {
+              {formatDateLocale(date, {
                 month: "long",
                 day: "numeric",
               })}
             </p>
             {isToday && (
-              <span className="text-xs text-gold-600 font-medium">Today</span>
+              <span className="text-xs text-gold-700 font-medium">Today</span>
             )}
           </div>
         </div>
@@ -244,10 +245,10 @@ export function PrayerCalendar({
           // Friendly week label like "Week of May 11 — May 17"
           const weekStart = new Date(week.weekStart + "T12:00:00");
           const weekEnd = new Date(week.weekEnd + "T12:00:00");
-          const weekLabel = `Week of ${weekStart.toLocaleDateString(
-            "en-US",
-            { month: "short", day: "numeric" },
-          )} – ${weekEnd.toLocaleDateString("en-US", {
+          const weekLabel = `Week of ${formatDateLocale(weekStart, {
+            month: "short",
+            day: "numeric",
+          })} – ${formatDateLocale(weekEnd, {
             month: "short",
             day: "numeric",
           })}`;

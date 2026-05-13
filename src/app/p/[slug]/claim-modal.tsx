@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { claimPrayerSlot } from "@/lib/actions";
 import { X, Heart, Loader2, CalendarDays } from "lucide-react";
+import { formatDateLocale } from "@/lib/utils";
 
 type Slot = {
   id: string;
@@ -83,7 +84,7 @@ export function ClaimModal({
             <strong>{slot.prayerType.name}</strong>.
           </p>
           {isNovena && (
-            <p className="text-sm text-gold-600 bg-gold-50 rounded-lg p-3 mb-4">
+            <p className="text-sm text-gold-800 bg-gold-50 rounded-lg p-3 mb-4">
               <CalendarDays className="w-4 h-4 inline mr-1" />
               Since this is a {slot.prayerType.daysRequired}-day devotion,
               you&apos;re committed for all {slot.prayerType.daysRequired} days.
@@ -126,14 +127,14 @@ export function ClaimModal({
           </p>
           <p className="text-xs text-muted-foreground">
             {slot.prayerType.duration} min &bull;{" "}
-            {new Date(slot.date).toLocaleDateString("en-US", {
+            {formatDateLocale(new Date(slot.date), {
               weekday: "long",
               month: "long",
               day: "numeric",
             })}
           </p>
           {isNovena && (
-            <p className="text-xs text-gold-600 mt-1">
+            <p className="text-xs text-gold-700 mt-1">
               This is a {slot.prayerType.daysRequired}-day commitment &mdash;
               claiming Day 1 commits you to all {slot.prayerType.daysRequired}{" "}
               days.

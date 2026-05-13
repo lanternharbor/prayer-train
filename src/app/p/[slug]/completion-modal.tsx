@@ -5,6 +5,8 @@ import { useRouter } from "next/navigation";
 import { Check, Loader2, X } from "lucide-react";
 import { submitSlotNote } from "@/lib/actions";
 import { NOTE_MAX_LENGTH } from "@/lib/notes";
+import { t as interpolate } from "@/i18n/format";
+import type { Dictionary } from "@/i18n/dictionaries";
 
 /**
  * Modal that opens when an authenticated slot owner clicks "I prayed"
@@ -27,6 +29,7 @@ export function CompletionModal({
   initialShareWall,
   isEdit,
   onClose,
+  t,
 }: {
   slotId: string;
   prayerName: string;
@@ -34,6 +37,7 @@ export function CompletionModal({
   initialShareWall: boolean;
   isEdit: boolean;
   onClose: () => void;
+  t: Dictionary["completionModal"];
 }) {
   const router = useRouter();
   const [note, setNote] = useState(initialNote);
@@ -74,7 +78,7 @@ export function CompletionModal({
       const msg =
         err instanceof Error && err.message
           ? err.message
-          : "Something went wrong. Please try again.";
+          : t.errorFallback;
       setError(msg);
       setSubmitting(false);
     }
@@ -95,7 +99,7 @@ export function CompletionModal({
       const msg =
         err instanceof Error && err.message
           ? err.message
-          : "Something went wrong deleting the note.";
+          : t.errorDeleteFallback;
       setError(msg);
       setDeleting(false);
     }
@@ -118,33 +122,32 @@ export function CompletionModal({
             id="completion-dialog-title"
             className="font-heading text-xl font-semibold text-navy-800"
           >
-            {isEdit ? "Edit your note" : "Mark this prayer complete"}
+            {isEdit ? t.titleEdit : t.titleCreate}
           </h2>
           <button
             type="button"
             onClick={onClose}
             className="p-1 text-muted-foreground hover:text-foreground"
-            aria-label="Close completion dialog"
+            aria-label={t.closeAria}
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
         <p className="text-sm text-muted-foreground mb-5">
-          {isEdit ? (
-            <>
-              Update or remove the note you left when you marked the{" "}
-              <strong className="text-navy-700">{prayerName}</strong> as
-              prayed.
-            </>
-          ) : (
-            <>
-              You&apos;ve prayed the{" "}
-              <strong className="text-navy-700">{prayerName}</strong>. If
-              you&apos;d like, leave a short note for the family — or just
-              hit &ldquo;Mark complete&rdquo; below.
-            </>
-          )}
+          {(() => {
+            // Split the leadEdit / leadCreate templates around the
+            // {prayerName} placeholder so we can render the prayer name
+            // in <strong> while keeping the dictionary string plain.
+            const parts = (isEdit ? t.leadEdit : t.leadCreate).split("{prayerName}");
+            return (
+              <>
+                {parts[0]}
+                <strong className="text-navy-700">{prayerName}</strong>
+                {parts[1]}
+              </>
+            );
+          })()}
         </p>
 
         <form onSubmit={handleSubmit} className="space-y-4">
@@ -153,16 +156,13 @@ export function CompletionModal({
               htmlFor="completion-note"
               className="block text-sm font-medium text-navy-700 mb-1.5"
             >
-              Leave a note{" "}
-              <span className="text-xs text-muted-foreground font-normal">
-                (optional)
-              </span>
+              {t.noteLabel}
             </label>
             <textarea
               id="completion-note"
               value={note}
               onChange={(e) => setNote(e.target.value)}
-              placeholder="A short word of encouragement, a verse, anything you want to share..."
+              placeholder={t.notePlaceholder}
               rows={3}
               maxLength={NOTE_MAX_LENGTH + 50 /* allow paste-overflow; server caps */}
               className="w-full px-3 py-2 border border-border rounded-lg bg-cream-50 text-sm focus:outline-none focus:ring-2 focus:ring-gold-400/50 focus:border-gold-400 transition resize-none"
@@ -173,8 +173,8 @@ export function CompletionModal({
               }`}
             >
               {overCap
-                ? `${-remaining} over the ${NOTE_MAX_LENGTH}-character limit`
-                : `${remaining} characters left`}
+                ? interpolate(t.noteOverCap, { over: -remaining, max: NOTE_MAX_LENGTH })
+                : interpolate(t.noteRemaining, { remaining })}
             </p>
           </div>
 
@@ -187,10 +187,9 @@ export function CompletionModal({
               className="mt-0.5"
             />
             <span className="text-sm text-navy-700">
-              Share this note on the encouragement wall
+              {t.shareWall}
               <span className="block text-xs text-muted-foreground font-normal">
-                Off by default; the note still appears in the spiritual
-                bouquet either way.
+                {t.shareWallHelp}
               </span>
             </span>
           </label>
@@ -212,7 +211,7 @@ export function CompletionModal({
                 disabled={busy}
                 className="text-sm text-red-600 hover:text-red-700 disabled:opacity-50 transition-colors"
               >
-                {deleting ? "Deleting..." : "Delete note"}
+                {deleting ? t.deletingNote : t.deleteNote}
               </button>
             ) : (
               <span />
@@ -228,10 +227,10 @@ export function CompletionModal({
                 <Check className="w-4 h-4" />
               )}
               {submitting
-                ? "Saving..."
+                ? t.saving
                 : isEdit
-                  ? "Save changes"
-                  : "Mark complete"}
+                  ? t.saveChanges
+                  : t.markComplete}
             </button>
           </div>
         </form>

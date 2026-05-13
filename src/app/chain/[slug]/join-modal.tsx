@@ -3,6 +3,8 @@
 import { useEffect, useState } from "react";
 import { joinPrayerChain } from "@/lib/actions";
 import { X, Heart, Loader2 } from "lucide-react";
+import { t as interpolate } from "@/i18n/format";
+import type { Dictionary } from "@/i18n/dictionaries";
 
 export function JoinChainModal({
   chainId,
@@ -11,6 +13,7 @@ export function JoinChainModal({
   durationDays,
   isAnonymous = false,
   onClose,
+  t,
 }: {
   chainId: string;
   organizerFirstName: string;
@@ -20,6 +23,7 @@ export function JoinChainModal({
    *  so anonymous chains don't render literal "with the organizer." */
   isAnonymous?: boolean;
   onClose: () => void;
+  t: Dictionary["joinModal"];
 }) {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -55,7 +59,7 @@ export function JoinChainModal({
       const msg =
         err instanceof Error && err.message
           ? err.message
-          : "Something went wrong. Please try again.";
+          : t.errorFallback;
       setError(msg);
     } finally {
       setLoading(false);
@@ -63,6 +67,7 @@ export function JoinChainModal({
   };
 
   if (success) {
+    const reminderParts = t.successReminderNote.split("{email}");
     return (
       <div
         className="fixed inset-0 z-50 flex items-center justify-center bg-navy-900/40 backdrop-blur-sm px-4"
@@ -78,22 +83,25 @@ export function JoinChainModal({
             id="chain-join-success-title"
             className="font-heading text-2xl font-bold text-navy-800 mb-2"
           >
-            Welcome, {name}.
+            {interpolate(t.successTitle, { name })}
           </h2>
           <p className="text-muted-foreground mb-2">
             {isAnonymous
-              ? `You're praying ${recipientPhrase}.`
-              : `You're praying with ${organizerFirstName} ${recipientPhrase}.`}
+              ? interpolate(t.successAnonymous, { recipientPhrase })
+              : interpolate(t.successWithOrganizer, {
+                  organizerName: organizerFirstName,
+                  recipientPhrase,
+                })}
           </p>
           <p className="text-sm text-muted-foreground mb-6">
-            We&apos;ll send a daily reminder to <strong>{email}</strong> for the
-            next {durationDays} days.
+            {reminderParts[0]}<strong>{email}</strong>
+            {interpolate(reminderParts[1] ?? "", { days: durationDays })}
           </p>
           <button
             onClick={onClose}
             className="px-6 py-2.5 bg-primary text-primary-foreground font-medium rounded-lg hover:bg-navy-700 transition-colors"
           >
-            Done
+            {t.successDone}
           </button>
         </div>
       </div>
@@ -114,21 +122,22 @@ export function JoinChainModal({
             className="font-heading text-xl font-semibold text-navy-800"
           >
             {isAnonymous
-              ? "Pray along"
-              : `Pray along with ${organizerFirstName}`}
+              ? t.titleAnonymous
+              : interpolate(t.titleWithOrganizer, {
+                  organizerName: organizerFirstName,
+                })}
           </h2>
           <button
             onClick={onClose}
             className="p-1 text-muted-foreground hover:text-foreground"
-            aria-label="Close join dialog"
+            aria-label={t.closeAria}
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
         <p className="text-sm text-muted-foreground mb-5">
-          {durationDays} days, starting today. We&apos;ll send a daily email
-          with the prayer text. You can unsubscribe anytime.
+          {interpolate(t.lead, { days: durationDays })}
         </p>
 
         <form onSubmit={handleSubmit} className="space-y-4">
@@ -137,7 +146,7 @@ export function JoinChainModal({
               htmlFor="join-name"
               className="block text-sm font-medium text-navy-700 mb-1.5"
             >
-              Your name
+              {t.nameLabel}
             </label>
             <input
               id="join-name"
@@ -146,7 +155,7 @@ export function JoinChainModal({
               value={name}
               onChange={(e) => setName(e.target.value)}
               maxLength={80}
-              placeholder="First & last name"
+              placeholder={t.namePlaceholder}
               className="w-full px-4 py-2.5 border border-border rounded-lg bg-cream-50 focus:ring-2 focus:ring-gold-400/50 focus:border-gold-400 transition"
             />
           </div>
@@ -155,7 +164,7 @@ export function JoinChainModal({
               htmlFor="join-email"
               className="block text-sm font-medium text-navy-700 mb-1.5"
             >
-              Email (for daily reminders)
+              {t.emailLabel}
             </label>
             <input
               id="join-email"
@@ -164,7 +173,7 @@ export function JoinChainModal({
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               maxLength={254}
-              placeholder="you@example.com"
+              placeholder={t.emailPlaceholder}
               className="w-full px-4 py-2.5 border border-border rounded-lg bg-cream-50 focus:ring-2 focus:ring-gold-400/50 focus:border-gold-400 transition"
             />
           </div>
@@ -186,7 +195,7 @@ export function JoinChainModal({
             ) : (
               <Heart className="w-4 h-4" />
             )}
-            {loading ? "Joining..." : "I'll pray"}
+            {loading ? t.submitting : t.submit}
           </button>
         </form>
       </div>

@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { createPrayerTrain } from "@/lib/actions";
-import { formatSituation, formatPrayerCategory } from "@/lib/utils";
 import {
   ArrowRight,
   ArrowLeft,
@@ -17,6 +16,7 @@ import {
 } from "lucide-react";
 import { ParishAutocomplete } from "@/components/ui/parish-autocomplete";
 import type { PrayerCategory, SituationCategory, DifficultyLevel } from "@/generated/prisma/client";
+import type { Dictionary } from "@/i18n/dictionaries";
 
 type PrayerTypeSelect = {
   id: string;
@@ -48,21 +48,29 @@ const SITUATIONS: SituationCategory[] = [
   "OTHER",
 ];
 
-const DURATIONS = [
-  { value: 9, label: "9 days", description: "One novena cycle" },
-  { value: 30, label: "30 days", description: "One month of prayer" },
-  { value: 54, label: "54 days", description: "54-day Rosary novena" },
-];
-
 export function CreateWizard({
   prayerTypes,
   currentUserName,
+  t,
+  situationLabels,
+  prayerCategoryLabels,
 }: {
   prayerTypes: PrayerTypeSelect[];
   /** session.user.name if known — pre-fills "Your name" so users with
    *  a name on file (Google sign-in, prior submission) don't retype. */
   currentUserName?: string;
+  t: Dictionary["wizard"];
+  situationLabels: Dictionary["situationLabels"];
+  prayerCategoryLabels: Dictionary["prayerCategoryLabels"];
 }) {
+  // Locale-aware duration labels. Built inside the component so they
+  // can reference the dict the server resolved. Three canonical
+  // durations + a custom day input shown below; same options as before.
+  const DURATIONS = [
+    { value: 9, label: t.duration9, description: t.duration9desc },
+    { value: 30, label: t.duration30, description: t.duration30desc },
+    { value: 54, label: t.duration54, description: t.duration54desc },
+  ];
   const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
 
@@ -201,10 +209,10 @@ export function CreateWizard({
             </div>
             <div>
               <h2 className="font-heading text-xl font-semibold text-navy-800">
-                Who is this prayer train for?
+                {t.step1Heading}
               </h2>
               <p className="text-sm text-muted-foreground">
-                Tell us about the person who needs prayers
+                {t.step1Subheading}
               </p>
             </div>
           </div>
@@ -217,7 +225,7 @@ export function CreateWizard({
           <div className="rounded-lg border border-cream-300 bg-cream-50 p-4 space-y-3">
             <div>
               <label className="block text-sm font-medium text-navy-700 mb-1.5">
-                Your name{" "}
+                {t.organizerNameLabel}{" "}
                 {!organizerAnonymous && (
                   <span className="text-red-400">*</span>
                 )}
@@ -227,13 +235,13 @@ export function CreateWizard({
                 value={organizerName}
                 onChange={(e) => setOrganizerName(e.target.value)}
                 disabled={organizerAnonymous}
-                placeholder="How you'd like to appear on the prayer page"
+                placeholder={t.organizerNamePlaceholder}
                 className="w-full px-4 py-2.5 border border-border rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-gold-400/50 focus:border-gold-400 transition disabled:opacity-50 disabled:cursor-not-allowed"
               />
               <p className="text-xs text-muted-foreground mt-1.5">
                 {organizerAnonymous
-                  ? "Your name will be hidden from the public prayer page."
-                  : "Shown as “Organized by [your name]” on the public page."}
+                  ? t.organizerNameHelpHidden
+                  : t.organizerNameHelpShown}
               </p>
             </div>
             <label className="flex items-start gap-2 cursor-pointer">
@@ -244,36 +252,36 @@ export function CreateWizard({
                 className="mt-0.5"
               />
               <span className="text-sm text-navy-700">
-                Show me as &ldquo;Anonymous&rdquo; on the public page
+                {t.anonymousLabel}
               </span>
             </label>
           </div>
 
           <div>
             <label className="block text-sm font-medium text-navy-700 mb-1.5">
-              Their name <span className="text-red-400">*</span>
+              {t.recipientNameLabel} <span className="text-red-400">*</span>
             </label>
             <input
               type="text"
               value={recipientName}
               onChange={(e) => setRecipientName(e.target.value)}
-              placeholder="e.g., John Smith"
+              placeholder={t.recipientNamePlaceholder}
               className="w-full px-4 py-2.5 border border-border rounded-lg bg-cream-50 focus:outline-none focus:ring-2 focus:ring-gold-400/50 focus:border-gold-400 transition"
             />
             <p className="text-xs text-muted-foreground mt-1.5">
-              First name is plenty if the recipient prefers privacy.
+              {t.recipientNameHelp}
             </p>
           </div>
 
           <div>
             <label className="block text-sm font-medium text-navy-700 mb-1.5">
-              Your relationship
+              {t.relationLabel}
             </label>
             <input
               type="text"
               value={recipientRelation}
               onChange={(e) => setRecipientRelation(e.target.value)}
-              placeholder="e.g., My father, Our parishioner, A friend"
+              placeholder={t.relationPlaceholder}
               className="w-full px-4 py-2.5 border border-border rounded-lg bg-cream-50 focus:outline-none focus:ring-2 focus:ring-gold-400/50 focus:border-gold-400 transition"
             />
           </div>
@@ -282,7 +290,7 @@ export function CreateWizard({
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-navy-700 mb-1.5">
-                Parish <span className="text-xs text-muted-foreground font-normal">(optional)</span>
+                {t.parishLabel} <span className="text-xs text-muted-foreground font-normal">{t.optional}</span>
               </label>
               <ParishAutocomplete
                 value={parish}
@@ -297,18 +305,17 @@ export function CreateWizard({
             </div>
             <div>
               <label className="block text-sm font-medium text-navy-700 mb-1.5">
-                Location <span className="text-xs text-muted-foreground font-normal">(optional)</span>
+                {t.locationLabel} <span className="text-xs text-muted-foreground font-normal">{t.optional}</span>
               </label>
               <input
                 type="text"
                 value={location}
                 onChange={(e) => setLocation(e.target.value)}
-                placeholder="e.g., South Shore, MA"
+                placeholder={t.locationPlaceholder}
                 className="w-full px-4 py-2.5 border border-border rounded-lg bg-cream-50 focus:outline-none focus:ring-2 focus:ring-gold-400/50 focus:border-gold-400 transition"
               />
               <p className="text-xs text-muted-foreground mt-1.5">
-                Less specific is usually fine. &ldquo;Massachusetts&rdquo; or
-                &ldquo;New England&rdquo; works just as well.
+                {t.locationHelp}
               </p>
             </div>
           </div>
@@ -316,10 +323,10 @@ export function CreateWizard({
           {/* Photo upload */}
           <div>
             <label className="block text-sm font-medium text-navy-700 mb-1.5">
-              Photo <span className="text-xs text-muted-foreground font-normal">(optional)</span>
+              {t.photoLabel} <span className="text-xs text-muted-foreground font-normal">{t.optional}</span>
             </label>
             <p className="text-xs text-muted-foreground mb-3">
-              A photo helps prayer warriors feel connected to the person they&apos;re praying for
+              {t.photoHelp}
             </p>
             <div className="flex items-center gap-4">
               <label className="photo-upload w-20 h-20 rounded-full bg-cream-100 border-2 border-dashed border-cream-400 flex items-center justify-center overflow-hidden hover:border-gold-400 transition-colors cursor-pointer">
@@ -327,7 +334,7 @@ export function CreateWizard({
                   // eslint-disable-next-line @next/next/no-img-element -- local blob URL preview
                   <img
                     src={photoPreview}
-                    alt="Photo preview of the prayer recipient"
+                    alt={t.photoPreviewAlt}
                     className="w-full h-full object-cover"
                   />
                 ) : (
@@ -337,7 +344,7 @@ export function CreateWizard({
                   type="file"
                   accept="image/jpeg,image/png,image/webp"
                   className="sr-only"
-                  aria-label="Upload a photo of the prayer recipient"
+                  aria-label={t.photoUploadAriaLabel}
                   onChange={(e) => {
                     const file = e.target.files?.[0];
                     if (file) {
@@ -345,7 +352,7 @@ export function CreateWizard({
                         // Inline-error pattern instead of alert() — keeps the
                         // wizard flow uninterrupted and avoids the jarring
                         // browser dialog the rest of the app stopped using.
-                        setPhotoError("Photo must be under 5MB.");
+                        setPhotoError(t.photoTooBig);
                         return;
                       }
                       setPhotoError(null);
@@ -366,10 +373,10 @@ export function CreateWizard({
                     }}
                     className="text-red-500 hover:text-red-600 font-medium"
                   >
-                    Remove photo
+                    {t.photoRemove}
                   </button>
                 ) : (
-                  <span>JPG, PNG, or WebP. Max 5MB.</span>
+                  <span>{t.photoSpec}</span>
                 )}
               </div>
             </div>
@@ -385,12 +392,12 @@ export function CreateWizard({
 
           <div>
             <label className="block text-sm font-medium text-navy-700 mb-1.5">
-              Prayer intention <span className="text-red-400">*</span>
+              {t.intentionLabel} <span className="text-red-400">*</span>
             </label>
             <textarea
               value={intention}
               onChange={(e) => setIntention(e.target.value)}
-              placeholder="What would you like people to pray for? e.g., Complete healing from cancer, peace during a difficult surgery, guidance in a career change..."
+              placeholder={t.intentionPlaceholder}
               rows={3}
               className="w-full px-4 py-2.5 border border-border rounded-lg bg-cream-50 focus:outline-none focus:ring-2 focus:ring-gold-400/50 focus:border-gold-400 transition resize-none"
             />
@@ -407,10 +414,10 @@ export function CreateWizard({
             </div>
             <div>
               <h2 className="font-heading text-xl font-semibold text-navy-800">
-                What&apos;s the situation?
+                {t.step2Heading}
               </h2>
               <p className="text-sm text-muted-foreground">
-                We&apos;ll suggest prayers tailored to this need
+                {t.step2Subheading}
               </p>
             </div>
           </div>
@@ -427,27 +434,24 @@ export function CreateWizard({
                     : "bg-cream-50 text-navy-700 border-border hover:border-navy-300"
                 }`}
               >
-                {formatSituation(sit)}
+                {situationLabels[sit]}
               </button>
             ))}
           </div>
 
           <div>
             <label className="block text-sm font-medium text-navy-700 mb-1.5">
-              Additional details (optional)
+              {t.detailsLabel}
             </label>
             <textarea
               value={situationDetail}
               onChange={(e) => setSituationDetail(e.target.value)}
-              placeholder="Any additional context you'd like prayer warriors to know..."
+              placeholder={t.detailsPlaceholder}
               rows={2}
               className="w-full px-4 py-2.5 border border-border rounded-lg bg-cream-50 focus:outline-none focus:ring-2 focus:ring-gold-400/50 focus:border-gold-400 transition resize-none"
             />
             <p className="text-xs text-muted-foreground mt-1.5">
-              Share only what the recipient is comfortable having public.
-              General framing like &ldquo;heart surgery&rdquo; or &ldquo;recovery
-              from a fall&rdquo; is usually plenty; specific diagnoses or
-              hospital names are not needed.
+              {t.detailsHelp}
             </p>
           </div>
         </div>
@@ -462,10 +466,10 @@ export function CreateWizard({
             </div>
             <div>
               <h2 className="font-heading text-xl font-semibold text-navy-800">
-                How long should the prayer train run?
+                {t.step3Heading}
               </h2>
               <p className="text-sm text-muted-foreground">
-                Choose a duration and number of prayer slots per day
+                {t.step3Subheading}
               </p>
             </div>
           </div>
@@ -496,21 +500,21 @@ export function CreateWizard({
             <div className="flex items-center gap-3">
               <input
                 type="number"
-                placeholder="Custom days"
-                aria-label="Custom duration in days"
+                placeholder={t.customDaysPlaceholder}
+                aria-label={t.customDaysAria}
                 value={customDuration}
                 onChange={(e) => setCustomDuration(e.target.value)}
                 min={1}
                 max={365}
                 className="w-40 px-4 py-2.5 border border-border rounded-lg bg-cream-50 focus:outline-none focus:ring-2 focus:ring-gold-400/50 focus:border-gold-400 transition"
               />
-              <span className="text-sm text-muted-foreground">days</span>
+              <span className="text-sm text-muted-foreground">{t.daysSuffix}</span>
             </div>
           </div>
 
           <div>
             <label className="block text-sm font-medium text-navy-700 mb-2">
-              Prayer slots per day
+              {t.slotsLabel}
             </label>
             <div className="flex gap-3">
               {[1, 2, 3, 5].map((n) => (
@@ -529,7 +533,7 @@ export function CreateWizard({
               ))}
             </div>
             <p className="text-xs text-muted-foreground mt-2">
-              More slots = more people can participate each day
+              {t.slotsHelp}
             </p>
           </div>
 
@@ -543,7 +547,7 @@ export function CreateWizard({
               type="button"
               role="switch"
               aria-checked={isPublic}
-              aria-label="Make this prayer train publicly discoverable"
+              aria-label={t.visibilityToggleAria}
               onClick={() => setIsPublic(!isPublic)}
               className={`relative inline-flex h-7 w-12 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors ${
                 isPublic ? "bg-gold-400" : "bg-cream-400"
@@ -557,29 +561,21 @@ export function CreateWizard({
             </button>
             <div>
               <p className="text-sm font-medium text-navy-700">
-                {isPublic ? "Publicly discoverable" : "Private link only (recommended)"}
+                {isPublic ? t.visibilityPublic : t.visibilityPrivate}
               </p>
               {isPublic ? (
                 <div className="text-xs text-muted-foreground mt-1 space-y-1">
-                  <p>
-                    The recipient&apos;s name, intention, photo, and parish
-                    will be visible to anyone who finds this page, including:
-                  </p>
+                  <p>{t.visibilityPublicWarning}</p>
                   <ul className="list-disc list-outside pl-4 space-y-0.5">
-                    <li>The public <span className="font-medium">Find a PrayerTrain</span> directory</li>
-                    <li>Google and other search engines (sitemap + indexing)</li>
-                    <li>Situation-topic landing pages (e.g. illness, grief)</li>
+                    <li>{t.visibilityList1}</li>
+                    <li>{t.visibilityList2}</li>
+                    <li>{t.visibilityList3}</li>
                   </ul>
-                  <p className="pt-1">
-                    Only choose this if the family is comfortable with the
-                    intention being shared widely.
-                  </p>
+                  <p className="pt-1">{t.visibilityCaveat}</p>
                 </div>
               ) : (
                 <p className="text-xs text-muted-foreground mt-0.5">
-                  Only people with the link can view this page. It will not
-                  appear in the directory, search engines, or topic pages.
-                  You can change this later from the Manage page.
+                  {t.visibilityPrivateBody}
                 </p>
               )}
             </div>
@@ -596,12 +592,12 @@ export function CreateWizard({
             </div>
             <div>
               <h2 className="font-heading text-xl font-semibold text-navy-800">
-                Choose prayers for the calendar
+                {t.step4Heading}
               </h2>
               <p className="text-sm text-muted-foreground">
                 {situation
-                  ? "We've highlighted prayers recommended for this situation."
-                  : "Select prayers, or leave blank for auto-selection."}
+                  ? t.step4SubheadingWithSituation
+                  : t.step4SubheadingNoSituation}
               </p>
             </div>
           </div>
@@ -625,7 +621,7 @@ export function CreateWizard({
                         {prayer.name}
                       </span>
                       <span className="px-1.5 py-0.5 rounded text-xs bg-cream-200 text-cream-600">
-                        {formatPrayerCategory(prayer.category)}
+                        {prayerCategoryLabels[prayer.category]}
                       </span>
                     </div>
                     <p className="text-xs text-muted-foreground line-clamp-2">
@@ -634,12 +630,12 @@ export function CreateWizard({
                     <div className="flex items-center gap-3 mt-1.5 text-xs text-muted-foreground">
                       <span className="flex items-center gap-1">
                         <Clock className="w-3 h-3" />
-                        {prayer.duration} min
+                        {prayer.duration} {t.minutesShort}
                       </span>
                       {prayer.daysRequired > 1 && (
                         <span className="flex items-center gap-1">
                           <CalendarDays className="w-3 h-3" />
-                          {prayer.daysRequired} days
+                          {prayer.daysRequired} {t.daysSuffix}
                         </span>
                       )}
                     </div>
@@ -662,8 +658,7 @@ export function CreateWizard({
 
           {selectedPrayerIds.length === 0 && (
             <p className="text-sm text-muted-foreground bg-cream-50 rounded-lg p-3">
-              No prayers selected &mdash; we&apos;ll automatically choose prayers
-              matching the situation.
+              {t.noneSelected}
             </p>
           )}
 
@@ -677,21 +672,19 @@ export function CreateWizard({
               htmlFor="customPrayerText"
               className="block text-sm font-medium text-navy-700 mb-1.5"
             >
-              A personal prayer to include{" "}
+              {t.customPrayerLabel}{" "}
               <span className="text-xs text-muted-foreground font-normal">
-                (optional)
+                {t.optional}
               </span>
             </label>
             <p className="text-xs text-muted-foreground mb-2">
-              Have a specific prayer you&apos;d like everyone to pray alongside
-              the prayers above? Paste it here. We&apos;ll show it on the train
-              page and include it in the daily reminder emails.
+              {t.customPrayerHelp}
             </p>
             <textarea
               id="customPrayerText"
               value={customPrayerText}
               onChange={(e) => setCustomPrayerText(e.target.value)}
-              placeholder="e.g., a family prayer, a prayer a friend wrote, words from your heart…"
+              placeholder={t.customPrayerPlaceholder}
               rows={4}
               maxLength={4000}
               className="w-full px-4 py-2.5 border border-border rounded-lg bg-cream-50 focus:outline-none focus:ring-2 focus:ring-gold-400/50 focus:border-gold-400 transition resize-none"
@@ -709,7 +702,7 @@ export function CreateWizard({
             className="flex items-center gap-2 px-5 py-2.5 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
           >
             <ArrowLeft className="w-4 h-4" />
-            Back
+            {t.navBack}
           </button>
         ) : (
           <div />
@@ -722,7 +715,7 @@ export function CreateWizard({
             disabled={!canProceed()}
             className="flex items-center gap-2 px-6 py-2.5 bg-primary text-primary-foreground font-medium rounded-lg hover:bg-navy-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
           >
-            Next
+            {t.navNext}
             <ArrowRight className="w-4 h-4" />
           </button>
         ) : (
@@ -737,7 +730,7 @@ export function CreateWizard({
             ) : (
               <Heart className="w-4 h-4" />
             )}
-            {loading ? "Creating..." : "Create PrayerTrain"}
+            {loading ? t.navCreating : t.navCreate}
           </button>
         )}
       </div>

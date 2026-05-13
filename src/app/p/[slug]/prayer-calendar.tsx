@@ -14,6 +14,7 @@ import { ClaimModal } from "./claim-modal";
 import { CompletionModal } from "./completion-modal";
 import { dateKeyInTimezone, groupByWeek } from "@/lib/dates";
 import { formatDateLocale } from "@/lib/utils";
+import type { Dictionary } from "@/i18n/dictionaries";
 
 type Slot = {
   id: string;
@@ -54,6 +55,9 @@ export function PrayerCalendar({
   slotsByDate,
   trainStatus,
   currentUserId,
+  publicTrainT,
+  claimModalT,
+  completionModalT,
 }: {
   slotsByDate: Record<string, Slot[]>;
   trainStatus: string;
@@ -63,6 +67,9 @@ export function PrayerCalendar({
    * button for slots claimed by an authenticated user.
    */
   currentUserId: string | null;
+  publicTrainT: Dictionary["publicTrain"];
+  claimModalT: Dictionary["claimModal"];
+  completionModalT: Dictionary["completionModal"];
 }) {
   const [claimingSlot, setClaimingSlot] = useState<Slot | null>(null);
   // Past days are collapsed by default so an organizer or volunteer
@@ -162,7 +169,7 @@ export function PrayerCalendar({
               })}
             </p>
             {isToday && (
-              <span className="text-xs text-gold-700 font-medium">Today</span>
+              <span className="text-xs text-gold-700 font-medium">{publicTrainT.calendarToday}</span>
             )}
           </div>
         </div>
@@ -177,6 +184,8 @@ export function PrayerCalendar({
               trainFrozen={trainStatus === "COMPLETED"}
               currentUserId={currentUserId}
               onClaim={() => setClaimingSlot(slot)}
+              publicTrainT={publicTrainT}
+              completionModalT={completionModalT}
             />
           ))}
         </div>
@@ -199,9 +208,11 @@ export function PrayerCalendar({
               className="w-full flex items-center justify-between gap-2 px-4 py-3 rounded-lg border border-cream-300 bg-cream-50 text-sm text-muted-foreground hover:bg-cream-100 transition-colors"
             >
               <span>
-                {pastExpanded ? "Hide" : "View"} {pastDates.length} past
-                {" "}
-                {pastDates.length === 1 ? "day" : "days"}
+                {pastExpanded ? publicTrainT.calendarPastHide : publicTrainT.calendarPastView}{" "}
+                {pastDates.length} {publicTrainT.calendarPastSuffix}{" "}
+                {pastDates.length === 1
+                  ? publicTrainT.calendarPastDay
+                  : publicTrainT.calendarPastDays}
               </span>
               {pastExpanded ? (
                 <ChevronUp className="w-4 h-4" />
@@ -245,7 +256,7 @@ export function PrayerCalendar({
           // Friendly week label like "Week of May 11 — May 17"
           const weekStart = new Date(week.weekStart + "T12:00:00");
           const weekEnd = new Date(week.weekEnd + "T12:00:00");
-          const weekLabel = `Week of ${formatDateLocale(weekStart, {
+          const weekLabel = `${publicTrainT.calendarWeekOf} ${formatDateLocale(weekStart, {
             month: "short",
             day: "numeric",
           })} – ${formatDateLocale(weekEnd, {
@@ -269,14 +280,17 @@ export function PrayerCalendar({
                   <span className="font-medium">{weekLabel}</span>
                   {isCurrent && (
                     <span className="text-xs uppercase tracking-wider text-gold-700 font-semibold">
-                      This week
+                      {publicTrainT.calendarThisWeek}
                     </span>
                   )}
                 </span>
                 <span className="flex items-center gap-2">
                   <span className="text-xs whitespace-nowrap">
-                    {openSlots} of {totalSlots}{" "}
-                    {totalSlots === 1 ? "slot" : "slots"} open
+                    {openSlots} / {totalSlots}{" "}
+                    {totalSlots === 1
+                      ? publicTrainT.calendarSlotsSingular
+                      : publicTrainT.calendarSlotsPlural}{" "}
+                    {publicTrainT.calendarSlotsOpen}
                   </span>
                   {isExpanded ? (
                     <ChevronUp className="w-4 h-4" />
@@ -302,6 +316,7 @@ export function PrayerCalendar({
         <ClaimModal
           slot={claimingSlot}
           onClose={() => setClaimingSlot(null)}
+          t={claimModalT}
         />
       )}
     </>
@@ -315,6 +330,8 @@ function SlotCard({
   trainFrozen,
   currentUserId,
   onClaim,
+  publicTrainT,
+  completionModalT,
 }: {
   slot: Slot;
   isPast: boolean;
@@ -323,6 +340,8 @@ function SlotCard({
   trainFrozen: boolean;
   currentUserId: string | null;
   onClaim: () => void;
+  publicTrainT: Dictionary["publicTrain"];
+  completionModalT: Dictionary["completionModal"];
 }) {
   const [showModal, setShowModal] = useState(false);
   const [noteExpanded, setNoteExpanded] = useState(false);
@@ -359,7 +378,7 @@ function SlotCard({
       </div>
       <div className="flex items-center gap-2 text-xs text-muted-foreground">
         <Clock className="w-3 h-3" />
-        {slot.prayerType.duration} min
+        {slot.prayerType.duration} {publicTrainT.slotMinutesShort}
       </div>
 
       {isOpen && trainActive && !isPast ? (
@@ -367,7 +386,7 @@ function SlotCard({
           onClick={onClaim}
           className="mt-2 w-full py-1.5 text-xs font-medium bg-white/80 hover:bg-white border border-slot-open-border rounded text-green-700 transition-colors"
         >
-          Sign up to pray
+          {publicTrainT.slotSignUp}
         </button>
       ) : isClaimed && slot.claimerName ? (
         <div className="mt-2 space-y-1.5">
@@ -381,7 +400,7 @@ function SlotCard({
               className="w-full py-1.5 text-xs font-medium bg-white/80 hover:bg-white border border-gold-300 rounded text-gold-700 hover:text-gold-800 transition-colors flex items-center justify-center gap-1"
             >
               <Check className="w-3 h-3" />
-              I prayed
+              {publicTrainT.slotIPrayed}
             </button>
           )}
         </div>
@@ -389,14 +408,18 @@ function SlotCard({
         <div className="mt-2">
           <div className="flex items-center gap-1.5 text-xs text-blue-600">
             <Check className="w-3 h-3" />
-            <span className="flex-1">{slot.claimerName} — prayed</span>
+            <span className="flex-1">
+              {slot.claimerName} — {publicTrainT.slotPrayedSuffix}
+            </span>
             {hasNote && (
               <button
                 type="button"
                 onClick={() => setNoteExpanded((v) => !v)}
                 aria-expanded={noteExpanded}
                 aria-label={
-                  noteExpanded ? "Hide note" : "Show note from prayer"
+                  noteExpanded
+                    ? publicTrainT.slotHideNote
+                    : publicTrainT.slotShowNote
                 }
                 className="text-blue-600 hover:text-blue-700 transition-colors"
               >
@@ -409,7 +432,7 @@ function SlotCard({
                 onClick={() => setShowModal(true)}
                 className="text-blue-600 hover:text-blue-700 text-xs underline-offset-2 hover:underline"
               >
-                Add note
+                {publicTrainT.slotAddNote}
               </button>
             )}
           </div>
@@ -423,7 +446,7 @@ function SlotCard({
                   className="mt-2 inline-flex items-center gap-1 text-blue-600 hover:text-blue-700 not-italic text-[11px] underline-offset-2 hover:underline"
                 >
                   <Pencil className="w-3 h-3" />
-                  Edit
+                  {publicTrainT.slotEdit}
                 </button>
               )}
             </div>
@@ -439,6 +462,7 @@ function SlotCard({
           initialShareWall={slot.completionNoteShareWall}
           isEdit={completed && hasNote}
           onClose={() => setShowModal(false)}
+          t={completionModalT}
         />
       )}
     </div>

@@ -7,6 +7,9 @@ import { createPrayerChain } from "@/lib/actions";
 import { Users, Heart } from "lucide-react";
 import { SaintPortrait } from "@/components/saint-portrait";
 import { PhotoUploadField } from "@/components/photo-upload-field";
+import { getLocale } from "@/i18n/get-locale";
+import { getDictionary } from "@/i18n/dictionaries";
+import { t as interpolate } from "@/i18n/format";
 
 export const metadata: Metadata = {
   title: "Pray Together",
@@ -16,11 +19,16 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
 };
 
+export const dynamic = "force-dynamic";
+
 export default async function NewChainPage({
   searchParams,
 }: {
   searchParams: Promise<{ prayerType?: string }>;
 }) {
+  const locale = await getLocale();
+  const dict = await getDictionary(locale);
+  const t = dict.chainNew;
   // Require sign-in to create a chain. Mirrors /create gating.
   const session = await auth();
   if (!session?.user?.id) {
@@ -54,13 +62,16 @@ export default async function NewChainPage({
         <Users className="w-10 h-10 text-gold-500 mx-auto mb-3" />
         <h1 className="font-heading text-3xl font-bold text-navy-800 mb-2">
           {prayerType
-            ? `Pray the ${prayerType.name} together`
-            : "Pray together"}
+            ? interpolate(t.headingWithPrayer, { prayerName: prayerType.name })
+            : t.headingNoPrayer}
         </h1>
         <p className="text-muted-foreground">
           {prayerType
-            ? `Invite friends to pray with you for ${prayerType.daysRequired} day${prayerType.daysRequired === 1 ? "" : "s"}.`
-            : "Invite friends to pray the same prayer together for someone you love."}
+            ? interpolate(t.subheadingWithPrayer, {
+                days: prayerType.daysRequired,
+                plural: prayerType.daysRequired === 1 ? "" : "s",
+              })
+            : t.subheadingNoPrayer}
         </p>
       </div>
 
@@ -83,15 +94,15 @@ export default async function NewChainPage({
       {!prayerType && (
         <div className="prayer-card mb-6 bg-cream-50 border-cream-300">
           <p className="text-sm text-muted-foreground">
-            Choose a prayer first.{" "}
+            {t.chooseFirstTitle}{" "}
             <Link
               href="/prayers"
               className="text-gold-700 hover:underline underline-offset-2"
             >
-              Browse the prayer library
+              {t.chooseFirstBrowse}
             </Link>{" "}
-            and click <strong>Pray with friends</strong> on a prayer&apos;s page to
-            come back here with it pre-filled.
+            {t.chooseFirstSuffix} <strong>{t.chooseFirstCTAName}</strong>{" "}
+            {t.chooseFirstSuffix2}
           </p>
         </div>
       )}
@@ -112,7 +123,7 @@ export default async function NewChainPage({
                 htmlFor="organizerName"
                 className="block text-sm font-medium text-navy-700 mb-1.5"
               >
-                Your name
+                {t.yourNameLabel}
               </label>
               <input
                 id="organizerName"
@@ -120,12 +131,11 @@ export default async function NewChainPage({
                 type="text"
                 maxLength={80}
                 defaultValue={session.user.name ?? ""}
-                placeholder="How you'd like to appear on the prayer page"
+                placeholder={t.yourNamePlaceholder}
                 className="w-full px-4 py-2.5 border border-border rounded-lg bg-white focus:ring-2 focus:ring-gold-400/50 focus:border-gold-400 transition"
               />
               <p className="text-xs text-muted-foreground mt-1.5">
-                Shown as &ldquo;Organized by [your name]&rdquo; on the public
-                page. Leave blank and check the box below to stay anonymous.
+                {t.yourNameHelp}
               </p>
             </div>
             <label className="flex items-start gap-2 cursor-pointer">
@@ -136,7 +146,7 @@ export default async function NewChainPage({
                 className="mt-0.5"
               />
               <span className="text-sm text-navy-700">
-                Show me as &ldquo;Anonymous&rdquo; on the public page
+                {t.anonymousLabel}
               </span>
             </label>
           </div>
@@ -146,9 +156,9 @@ export default async function NewChainPage({
               htmlFor="recipientName"
               className="block text-sm font-medium text-navy-700 mb-1.5"
             >
-              Who is this for?{" "}
+              {t.recipientLabel}{" "}
               <span className="text-xs text-muted-foreground font-normal">
-                (optional)
+                {dict.wizard.optional}
               </span>
             </label>
             <input
@@ -156,12 +166,11 @@ export default async function NewChainPage({
               name="recipientName"
               type="text"
               maxLength={80}
-              placeholder="e.g., Benji, my sister, the unborn"
+              placeholder={t.recipientPlaceholder}
               className="w-full px-4 py-2.5 border border-border rounded-lg bg-cream-50 focus:ring-2 focus:ring-gold-400/50 focus:border-gold-400 transition"
             />
             <p className="text-xs text-muted-foreground mt-1.5">
-              Skip if this is for an intention rather than a person
-              (discernment, the Church, etc.).
+              {t.recipientHelp}
             </p>
           </div>
 
@@ -170,7 +179,7 @@ export default async function NewChainPage({
               htmlFor="intention"
               className="block text-sm font-medium text-navy-700 mb-1.5"
             >
-              What&apos;s the intention?{" "}
+              {t.intentionLabel}{" "}
               <span className="text-red-400">*</span>
             </label>
             <textarea
@@ -179,7 +188,7 @@ export default async function NewChainPage({
               required
               maxLength={2000}
               rows={3}
-              placeholder="e.g., Full healing of his throat and vocal cords"
+              placeholder={t.intentionPlaceholder}
               className="w-full px-4 py-2.5 border border-border rounded-lg bg-cream-50 focus:ring-2 focus:ring-gold-400/50 focus:border-gold-400 transition resize-none"
             />
           </div>
@@ -195,22 +204,20 @@ export default async function NewChainPage({
               htmlFor="customPrayerText"
               className="block text-sm font-medium text-navy-700 mb-1.5"
             >
-              A personal prayer to include{" "}
+              {t.customPrayerLabel}{" "}
               <span className="text-xs text-muted-foreground font-normal">
-                (optional)
+                {dict.wizard.optional}
               </span>
             </label>
             <p className="text-xs text-muted-foreground mb-2">
-              Have a specific prayer you&apos;d like everyone to pray alongside
-              the {prayerType.name}? Paste it here. We&apos;ll show it on the
-              prayer page and include it in the daily reminder emails.
+              {interpolate(t.customPrayerHelp, { prayerName: prayerType.name })}
             </p>
             <textarea
               id="customPrayerText"
               name="customPrayerText"
               maxLength={4000}
               rows={4}
-              placeholder="e.g., a family prayer, a prayer a friend wrote, words from your heart…"
+              placeholder={t.customPrayerPlaceholder}
               className="w-full px-4 py-2.5 border border-border rounded-lg bg-cream-50 focus:ring-2 focus:ring-gold-400/50 focus:border-gold-400 transition resize-none"
             />
           </div>
@@ -228,14 +235,10 @@ export default async function NewChainPage({
             />
             <div>
               <p className="text-sm font-medium text-navy-700">
-                Make this shared prayer publicly discoverable
+                {t.visibilityToggleTitle}
               </p>
               <p className="text-xs text-muted-foreground mt-0.5">
-                If checked: the recipient&apos;s name, intention, and
-                prayer will appear on the public <span className="font-medium">Find</span>{" "}
-                directory and may be indexed by search engines. If
-                unchecked (the default), only people with the link can
-                view this page. You can change this later from Manage.
+                {t.visibilityHelp}
               </p>
             </div>
           </label>
@@ -245,7 +248,7 @@ export default async function NewChainPage({
             className="w-full flex items-center justify-center gap-2 px-6 py-3 bg-primary text-primary-foreground font-semibold rounded-lg hover:bg-navy-700 transition-colors"
           >
             <Heart className="w-4 h-4" />
-            Start praying together
+            {t.submit}
           </button>
         </form>
       )}

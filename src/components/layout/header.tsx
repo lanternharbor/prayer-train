@@ -23,14 +23,29 @@
  * the initial loading window — we render the signed-out variant
  * during loading + signed-out and switch to the signed-in variant
  * only when status === "authenticated".
+ *
+ * Localization: receives `locale`, `nav`, and `common` from the
+ * server-component layout. The component itself stays a client
+ * component (needed for useSession and the LocaleSwitcher's
+ * useTransition), but all rendered strings come from the dictionary
+ * the server resolved.
  */
 
 import Link from "next/link";
 import { useSession } from "next-auth/react";
 import { CrossIcon } from "@/components/ui/catholic-icons";
 import { MobileNav } from "./mobile-nav";
+import { LocaleSwitcher } from "./locale-switcher";
+import type { Locale } from "@/i18n/config";
+import type { Dictionary } from "@/i18n/dictionaries";
 
-export function Header() {
+type Props = {
+  locale: Locale;
+  nav: Dictionary["nav"];
+  common: Dictionary["common"];
+};
+
+export function Header({ locale, nav, common }: Props) {
   const { status } = useSession();
   const isSignedIn = status === "authenticated";
 
@@ -45,23 +60,23 @@ export function Header() {
           <Link href="/" className="flex items-center gap-2 group">
             <CrossIcon className="w-5 h-5 text-gold-500" />
             <span className="font-heading text-xl font-semibold text-navy-700 group-hover:text-navy-500 transition-colors">
-              PrayerTrain
+              {common.appName}
             </span>
           </Link>
 
           {/* Desktop Nav */}
-          <div className="hidden md:flex items-center gap-8">
+          <div className="hidden md:flex items-center gap-6">
             <Link
               href="/browse"
               className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
             >
-              Find a PrayerTrain
+              {nav.findATrain}
             </Link>
             <Link
               href="/prayers"
               className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
             >
-              Prayer Library
+              {nav.prayerLibrary}
             </Link>
             {isSignedIn ? (
               <>
@@ -69,13 +84,14 @@ export function Header() {
                   href="/dashboard"
                   className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
                 >
-                  Dashboard
+                  {common.dashboard}
                 </Link>
+                <LocaleSwitcher currentLocale={locale} />
                 <Link
                   href="/create"
                   className="inline-flex items-center px-4 py-2 text-sm font-medium text-primary-foreground bg-primary rounded-lg hover:bg-navy-700 transition-colors"
                 >
-                  Get Started
+                  {common.getStarted}
                 </Link>
               </>
             ) : (
@@ -84,20 +100,21 @@ export function Header() {
                   href="/signin"
                   className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
                 >
-                  Sign In
+                  {common.signIn}
                 </Link>
+                <LocaleSwitcher currentLocale={locale} />
                 <Link
                   href="/create"
                   className="inline-flex items-center px-4 py-2 text-sm font-medium text-primary-foreground bg-primary rounded-lg hover:bg-navy-700 transition-colors"
                 >
-                  Get Started
+                  {common.getStarted}
                 </Link>
               </>
             )}
           </div>
 
           {/* Mobile Nav Toggle */}
-          <MobileNav isSignedIn={isSignedIn} />
+          <MobileNav isSignedIn={isSignedIn} locale={locale} nav={nav} common={common} />
         </div>
       </nav>
     </header>

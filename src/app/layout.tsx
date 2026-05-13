@@ -6,6 +6,8 @@ import { Footer } from "@/components/layout/footer";
 import { Providers } from "@/components/providers";
 import { getBaseUrl } from "@/lib/url";
 import { organizationSchema, websiteSchema } from "@/lib/schema";
+import { getLocale } from "@/i18n/get-locale";
+import { getDictionary } from "@/i18n/dictionaries";
 
 const heading = EB_Garamond({
   variable: "--font-heading",
@@ -48,14 +50,24 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  // Resolve the active locale once per request. The dictionary is
+  // passed down to Header and Footer (which need translated strings);
+  // page-level translations are fetched per-page so each route can
+  // tree-shake the parts of the dictionary it doesn't use. The locale
+  // itself flows down so client components can render in the right
+  // language without a useEffect/re-render cycle. See
+  // docs/internationalization-roadmap.md Phase 1a.
+  const locale = await getLocale();
+  const dict = await getDictionary(locale);
+
   return (
     <html
-      lang="en"
+      lang={locale}
       className={`${heading.variable} ${body.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col bg-background text-foreground font-body">
@@ -64,7 +76,7 @@ export default function RootLayout({
           href="#main"
           className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-50 focus:bg-navy-700 focus:text-white focus:px-3 focus:py-2 focus:rounded"
         >
-          Skip to main content
+          {dict.common.skipToMain}
         </a>
         {/* JSON-LD structured data for search engines. Server-rendered. */}
         <script
@@ -88,11 +100,11 @@ export default function RootLayout({
             `export const revalidate = 300`. See providers.tsx + the
             header.tsx comment for the full rationale. */}
         <Providers>
-          <Header />
+          <Header locale={locale} nav={dict.nav} common={dict.common} />
           <main id="main" className="flex-1">
             {children}
           </main>
-          <Footer />
+          <Footer footer={dict.footer} prayers={dict.nav} common={dict.common} />
         </Providers>
       </body>
     </html>

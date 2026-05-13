@@ -3,8 +3,18 @@
 import { useState } from "react";
 import Link from "next/link";
 import { Menu, X } from "lucide-react";
+import { LocaleSwitcher } from "./locale-switcher";
+import type { Locale } from "@/i18n/config";
+import type { Dictionary } from "@/i18n/dictionaries";
 
-export function MobileNav({ isSignedIn }: { isSignedIn: boolean }) {
+type Props = {
+  isSignedIn: boolean;
+  locale: Locale;
+  nav: Dictionary["nav"];
+  common: Dictionary["common"];
+};
+
+export function MobileNav({ isSignedIn, locale, nav, common }: Props) {
   const [open, setOpen] = useState(false);
 
   return (
@@ -25,14 +35,14 @@ export function MobileNav({ isSignedIn }: { isSignedIn: boolean }) {
               className="block px-3 py-2 text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted rounded-lg transition-colors"
               onClick={() => setOpen(false)}
             >
-              Find a PrayerTrain
+              {nav.findATrain}
             </Link>
             <Link
               href="/prayers"
               className="block px-3 py-2 text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted rounded-lg transition-colors"
               onClick={() => setOpen(false)}
             >
-              Prayer Library
+              {nav.prayerLibrary}
             </Link>
             {isSignedIn ? (
               <>
@@ -41,14 +51,14 @@ export function MobileNav({ isSignedIn }: { isSignedIn: boolean }) {
                   className="block px-3 py-2 text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted rounded-lg transition-colors"
                   onClick={() => setOpen(false)}
                 >
-                  Dashboard
+                  {common.dashboard}
                 </Link>
                 <Link
                   href="/create"
                   className="block px-3 py-2 text-sm font-medium text-primary-foreground bg-primary rounded-lg text-center"
                   onClick={() => setOpen(false)}
                 >
-                  Get Started
+                  {common.getStarted}
                 </Link>
               </>
             ) : (
@@ -58,17 +68,21 @@ export function MobileNav({ isSignedIn }: { isSignedIn: boolean }) {
                   className="block px-3 py-2 text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted rounded-lg transition-colors"
                   onClick={() => setOpen(false)}
                 >
-                  Sign In
+                  {common.signIn}
                 </Link>
                 <Link
                   href="/create"
                   className="block px-3 py-2 text-sm font-medium text-primary-foreground bg-primary rounded-lg text-center"
                   onClick={() => setOpen(false)}
                 >
-                  Get Started
+                  {common.getStarted}
                 </Link>
               </>
             )}
+            {/* Locale switcher lives at the bottom of the mobile menu */}
+            <div className="border-t border-border pt-3 mt-3">
+              <LocaleSwitcher currentLocale={locale} />
+            </div>
           </div>
         </div>
       )}

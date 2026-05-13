@@ -7,6 +7,8 @@ import {
   formatDate,
   calculateFillRate,
 } from "@/lib/utils";
+import { getLocale } from "@/i18n/get-locale";
+import { getDictionary } from "@/i18n/dictionaries";
 import {
   Search,
   Heart,
@@ -57,12 +59,20 @@ function computeChainProgress(
   };
 }
 
+// Cookie-driven locale forces dynamic rendering — leaving ISR on would
+// cache one locale and serve it to all visitors. See homepage for the
+// full rationale.
+export const dynamic = "force-dynamic";
+
 export default async function BrowsePage({
   searchParams,
 }: {
   searchParams: Promise<{ q?: string; situation?: string }>;
 }) {
   const { q, situation } = await searchParams;
+  const locale = await getLocale();
+  const dict = await getDictionary(locale);
+  const t = dict.browse;
 
   const where: Record<string, unknown> = {
     isPublic: true,
@@ -164,11 +174,10 @@ export default async function BrowsePage({
       {/* Header */}
       <div className="mb-8">
         <h1 className="font-heading text-3xl sm:text-4xl font-bold text-navy-800 mb-3 gold-accent">
-          Find a PrayerTrain
+          {t.heading}
         </h1>
         <p className="text-muted-foreground text-lg max-w-2xl">
-          Browse active prayer trains and sign up to pray for someone in need.
-          No account required &mdash; just your name and a willing heart.
+          {t.subheading}
         </p>
       </div>
 
@@ -369,12 +378,12 @@ export default async function BrowsePage({
           <h2 className="font-heading text-2xl font-semibold text-navy-700 mb-3">
             {q || situation
               ? "No prayers match your search"
-              : "No public prayer trains yet"}
+              : t.emptyTitle}
           </h2>
           <p className="text-muted-foreground mb-6 max-w-md mx-auto">
             {q || situation
               ? "Try a different search or clear your filters."
-              : "Be the first to create a prayer train and share it with your community."}
+              : t.emptyBody}
           </p>
           {!q && !situation && (
             <Link

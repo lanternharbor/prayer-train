@@ -7,6 +7,8 @@ import {
   ArrowRight,
   CheckCircle2,
 } from "lucide-react";
+import { getLocale } from "@/i18n/get-locale";
+import { getDictionary } from "@/i18n/dictionaries";
 
 export const metadata: Metadata = {
   title: "Start a PrayerTrain",
@@ -15,16 +17,23 @@ export const metadata: Metadata = {
   alternates: { canonical: "/create" },
 };
 
-export default function CreateChooserPage() {
+// Cookie-driven locale forces dynamic rendering.
+export const dynamic = "force-dynamic";
+
+export default async function CreateChooserPage() {
+  const locale = await getLocale();
+  const dict = await getDictionary(locale);
+  const t = dict.create;
+
   return (
     <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
       {/* Header */}
       <div className="text-center mb-12 sm:mb-16">
         <h1 className="font-heading text-3xl sm:text-4xl font-bold text-navy-800 mb-4">
-          How can we help you organize prayer?
+          {t.chooseHeading}
         </h1>
         <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-          Choose the format that fits how your community wants to pray.
+          {t.chooseBody}
         </p>
       </div>
 
@@ -39,45 +48,41 @@ export default function CreateChooserPage() {
               <CalendarDays className="w-6 h-6 text-navy-700" />
             </div>
             <h2 className="font-heading text-2xl font-bold text-navy-800">
-              Fill a prayer calendar
+              {t.calendarTitle}
             </h2>
           </div>
 
           <p className="text-sm font-medium text-gold-700 mb-3">
-            Distributed coverage
+            {t.calendarBadge}
           </p>
 
           <p className="text-foreground leading-relaxed mb-5">
-            A roster of different people each praying something on different
-            days. The &ldquo;meal train, but for prayers&rdquo; pattern. You
-            pick a duration, a number of slots per day, and your community
-            fills the calendar.
+            {t.calendarBody}
           </p>
 
           <div className="space-y-2 mb-6">
             <div className="flex items-start gap-2 text-sm">
               <CheckCircle2 className="w-4 h-4 text-gold-500 shrink-0 mt-0.5" />
               <span className="text-muted-foreground">
-                Best for long durations (30, 54, 90 days)
+                {t.calendarBullet1}
               </span>
             </div>
             <div className="flex items-start gap-2 text-sm">
               <CheckCircle2 className="w-4 h-4 text-gold-500 shrink-0 mt-0.5" />
               <span className="text-muted-foreground">
-                Many volunteers, varied prayers
+                {t.calendarBullet2}
               </span>
             </div>
             <div className="flex items-start gap-2 text-sm">
               <CheckCircle2 className="w-4 h-4 text-gold-500 shrink-0 mt-0.5" />
               <span className="text-muted-foreground">
-                Each volunteer commits to one slot, one day
+                {t.calendarBullet3}
               </span>
             </div>
           </div>
 
           <p className="text-xs text-muted-foreground italic mb-6">
-            Example: a parish coordinating 30 days of prayer for a family in
-            crisis.
+            {t.calendarExample}
           </p>
 
           <Link
@@ -85,7 +90,7 @@ export default function CreateChooserPage() {
             className="mt-auto inline-flex items-center justify-center gap-2 px-5 py-3 bg-primary text-primary-foreground font-semibold rounded-lg hover:bg-navy-700 transition-colors"
           >
             <Heart className="w-4 h-4" />
-            Start a calendar
+            {t.calendarCTA}
             <ArrowRight className="w-4 h-4" />
           </Link>
         </div>
@@ -97,45 +102,41 @@ export default function CreateChooserPage() {
               <Users className="w-6 h-6 text-gold-700" />
             </div>
             <h2 className="font-heading text-2xl font-bold text-navy-800">
-              Pray a novena together
+              {t.novenaTitle}
             </h2>
           </div>
 
           <p className="text-sm font-medium text-gold-700 mb-3">
-            Synchronized novena
+            {t.novenaBadge}
           </p>
 
           <p className="text-foreground leading-relaxed mb-5">
-            A small group all praying the same prayer at the same time, every
-            day. The &ldquo;I&rsquo;m doing this novena, want to join me?&rdquo;
-            pattern. You pick a novena from the library, invite friends, and
-            everyone gets the same daily reminder.
+            {t.novenaBody}
           </p>
 
           <div className="space-y-2 mb-6">
             <div className="flex items-start gap-2 text-sm">
               <CheckCircle2 className="w-4 h-4 text-gold-500 shrink-0 mt-0.5" />
               <span className="text-muted-foreground">
-                Best for traditional novenas (9 days, 33 days)
+                {t.novenaBullet1}
               </span>
             </div>
             <div className="flex items-start gap-2 text-sm">
               <CheckCircle2 className="w-4 h-4 text-gold-500 shrink-0 mt-0.5" />
               <span className="text-muted-foreground">
-                Same prayer every day, in solidarity
+                {t.novenaBullet2}
               </span>
             </div>
             <div className="flex items-start gap-2 text-sm">
               <CheckCircle2 className="w-4 h-4 text-gold-500 shrink-0 mt-0.5" />
               <span className="text-muted-foreground">
-                Each member prays every day for the duration
+                {t.novenaBullet3}
               </span>
             </div>
           </div>
 
           <p className="text-xs text-muted-foreground italic mb-6">
-            Example: starting a St. Blaise novena for a loved one&rsquo;s
-            healing and inviting family to pray it with you.
+            {t.novenaExample}
           </p>
 
           <Link
@@ -143,7 +144,7 @@ export default function CreateChooserPage() {
             className="mt-auto inline-flex items-center justify-center gap-2 px-5 py-3 bg-gold-400 text-navy-900 font-semibold rounded-lg hover:bg-gold-300 transition-colors"
           >
             <Users className="w-4 h-4" />
-            Choose a novena
+            {t.novenaCTA}
             <ArrowRight className="w-4 h-4" />
           </Link>
         </div>
@@ -152,19 +153,19 @@ export default function CreateChooserPage() {
       {/* Subtle help text */}
       <div className="text-center max-w-2xl mx-auto">
         <p className="text-sm text-muted-foreground">
-          Not sure?{" "}
+          {t.notSure}{" "}
           <Link
             href="/our-story"
             className="text-gold-700 hover:text-gold-800 underline-offset-2 hover:underline"
           >
-            Read more about how PrayerTrain works
+            {t.notSureRead}
           </Link>
-          , or{" "}
+          ,{" "}
           <Link
             href="/browse"
             className="text-gold-700 hover:text-gold-800 underline-offset-2 hover:underline"
           >
-            see what other people are organizing right now
+            {t.notSureBrowse}
           </Link>
           .
         </p>

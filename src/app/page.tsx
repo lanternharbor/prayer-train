@@ -16,9 +16,17 @@ import {
   CrossDivider,
 } from "@/components/ui/catholic-icons";
 import { PrayerCounter } from "@/components/prayer-counter";
+import { getLocale } from "@/i18n/get-locale";
+import { getDictionary } from "@/i18n/dictionaries";
 
 // Use an absolute title so the homepage doesn't render as "Home | PrayerTrain"
 // via the root layout's "%s | PrayerTrain" template.
+//
+// Phase 1a leaves metadata in the default English locale. Phase 1b
+// (URL-based routing /es/) will swap to `generateMetadata` so each
+// locale gets its own title/description. For now SEO is English-only
+// regardless of the viewer's cookie, which matches the cookie-only
+// approach — search engines crawl the bare URLs without a cookie.
 export const metadata: Metadata = {
   title: {
     absolute: "PrayerTrain — Organized Prayer for Those in Need",
@@ -26,13 +34,20 @@ export const metadata: Metadata = {
   alternates: { canonical: "/" },
 };
 
-// ISR — revalidate every 5 minutes. The homepage is fully static
-// (no per-user content) but we leave a small revalidation window so
-// updates ship without a manual purge. Translates to a Vercel CDN
-// `Cache-Control: s-maxage=300, stale-while-revalidate=...` header.
-export const revalidate = 300;
+// Switched off ISR (was `revalidate = 300`) because the same URL now
+// renders different content per visitor cookie (NEXT_LOCALE). Leaving
+// ISR on would cache whichever locale rendered first and serve it to
+// all visitors. Next 16's per-request cookies() call forces dynamic
+// rendering anyway via the getLocale() chain; tagging explicit so
+// future readers don't try to put ISR back on without the URL-based
+// locale routing from Phase 1b.
+export const dynamic = "force-dynamic";
 
-export default function HomePage() {
+export default async function HomePage() {
+  const locale = await getLocale();
+  const dict = await getDictionary(locale);
+  const t = dict.home;
+
   return (
     <div>
       {/* Hero */}
@@ -47,25 +62,22 @@ export default function HomePage() {
             <div className="text-center lg:text-left">
               <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/10 border border-white/20 text-sm text-gold-200 mb-8">
                 <CrossIcon className="w-4 h-4" />
-                <span>Catholic Prayer Coordination</span>
+                <span>{t.heroBadge}</span>
               </div>
               <h1 className="font-heading text-4xl sm:text-5xl lg:text-6xl font-bold leading-tight mb-6">
-                Like a meal train,
+                {t.heroTitleLine1}
                 <br />
-                <span className="text-gold-300">but for prayers</span>
+                <span className="text-gold-300">{t.heroTitleLine2}</span>
               </h1>
               <p className="text-lg sm:text-xl text-navy-100 leading-relaxed mb-10 max-w-xl">
-                When someone you love is struggling, rally your parish and
-                community to provide continuous prayer coverage. Create a
-                prayer train, choose prayers, and invite others to sign up for
-                specific days.
+                {t.heroBody}
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
                 <Link
                   href="/create"
                   className="inline-flex items-center justify-center gap-2 px-8 py-3.5 bg-gold-400 text-navy-900 font-semibold rounded-lg hover:bg-gold-300 transition-colors text-lg"
                 >
-                  Start a PrayerTrain
+                  {t.heroPrimaryCTA}
                   <ArrowRight className="w-5 h-5" />
                 </Link>
                 <Link
@@ -73,7 +85,7 @@ export default function HomePage() {
                   className="inline-flex items-center justify-center gap-2 px-8 py-3.5 border-2 border-white/30 text-white font-semibold rounded-lg hover:bg-white/10 transition-colors text-lg"
                 >
                   <Search className="w-5 h-5" />
-                  Find a PrayerTrain
+                  {t.heroSecondaryCTA}
                 </Link>
               </div>
             </div>
@@ -84,7 +96,7 @@ export default function HomePage() {
                 <div className="absolute inset-0 bg-gold-400/20 rounded-full blur-[80px] scale-75" />
                 <Image
                   src="/logo.png"
-                  alt="PrayerTrain — a community united in prayer"
+                  alt={t.heroLogoAlt}
                   width={480}
                   height={480}
                   className="relative w-64 sm:w-80 lg:w-[420px] h-auto drop-shadow-2xl"
@@ -104,31 +116,30 @@ export default function HomePage() {
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="font-heading text-3xl sm:text-4xl font-bold text-navy-800 mb-4">
-              How PrayerTrain Works
+              {t.howItWorksHeading}
             </h2>
             <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-              Three simple steps to surround someone in organized, continuous
-              prayer.
+              {t.howItWorksBody}
             </p>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 lg:gap-12">
             <StepCard
               step={1}
               icon={<SacredHeartIcon className="w-7 h-7" />}
-              title="Create a PrayerTrain"
-              description="Tell us about the person and their situation. We'll suggest appropriate prayers and generate a calendar of prayer slots."
+              title={t.step1Title}
+              description={t.step1Body}
             />
             <StepCard
               step={2}
               icon={<PrayingHandsIcon className="w-7 h-7" />}
-              title="Share with Your Community"
-              description="Send the link to your parish, prayer group, family, and friends. They pick specific prayers on specific days to commit to."
+              title={t.step2Title}
+              description={t.step2Body}
             />
             <StepCard
               step={3}
               icon={<CandleIcon className="w-7 h-7" />}
-              title="Pray Together"
-              description="Volunteers receive daily reminders with their prayer instructions. The organizer can post updates and see the prayer wall fill up."
+              title={t.step3Title}
+              description={t.step3Body}
             />
           </div>
         </div>
@@ -141,43 +152,42 @@ export default function HomePage() {
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="font-heading text-3xl sm:text-4xl font-bold text-navy-800 mb-4">
-              Built for the Faithful
+              {t.featuresHeading}
             </h2>
             <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-              Rooted in Catholic prayer tradition with a curated library of
-              novenas, rosaries, chaplets, litanies, and more.
+              {t.featuresBody}
             </p>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             <FeatureCard
               icon={<RosaryIcon className="w-5 h-5 text-gold-500" />}
-              title="40+ Curated Prayers"
-              description="Novenas, rosaries, chaplets, litanies, short prayers, and scripture passages — all with full instructions."
+              title={t.feature1Title}
+              description={t.feature1Body}
             />
             <FeatureCard
               icon={<CalendarDays className="w-5 h-5 text-gold-500" />}
-              title="Visual Prayer Calendar"
-              description="See at a glance which days are covered and which need prayer warriors. Novena blocks span 9 days as connected units."
+              title={t.feature2Title}
+              description={t.feature2Body}
             />
             <FeatureCard
               icon={<DoveIcon className="w-5 h-5 text-gold-500" />}
-              title="Help Picking a Prayer"
-              description="Select a situation and we suggest the most appropriate prayers. Illness? Try the Novena to the Sacred Heart. Finances? St. Joseph has you covered."
+              title={t.feature3Title}
+              description={t.feature3Body}
             />
             <FeatureCard
               icon={<PrayingHandsIcon className="w-5 h-5 text-gold-500" />}
-              title="Easy Sign-Up"
-              description="Volunteers can claim prayer slots with just their name and email — no account required. Share one link and watch the calendar fill up."
+              title={t.feature4Title}
+              description={t.feature4Body}
             />
             <FeatureCard
               icon={<CandleIcon className="w-5 h-5 text-gold-500" />}
-              title="Daily Reminders"
-              description="Prayer warriors receive email reminders on their committed days with the full prayer text and instructions."
+              title={t.feature5Title}
+              description={t.feature5Body}
             />
             <FeatureCard
               icon={<SacredHeartIcon className="w-5 h-5 text-gold-500" />}
-              title="Encouragement Wall"
-              description="Friends and family can leave messages of encouragement and spiritual support on the prayer train's guestbook."
+              title={t.feature6Title}
+              description={t.feature6Body}
             />
           </div>
         </div>
@@ -198,29 +208,19 @@ export default function HomePage() {
             </div>
             <div>
               <h2 className="font-heading text-2xl sm:text-3xl font-bold mb-4 text-center md:text-left">
-                Why We Built This
+                {t.storyHeading}
               </h2>
               <p className="text-navy-100 leading-relaxed mb-4">
-                We&apos;re a faithful Catholic extended family in
-                Massachusetts. In late 2025 and early 2026, three children
-                across our family faced life-threatening crises: a premature
-                baby who spent 73 days in the NICU, a newborn needing open
-                heart surgery in her first week, and a child with a severe
-                respiratory crisis requiring intubation.
+                {t.storyParagraph1}
               </p>
               <p className="text-navy-100 leading-relaxed mb-6">
-                Through the grace of God, the care of Boston Children&apos;s
-                Hospital, and the village of aunties, uncles, grandmas, and
-                papas who never left our sides, our children came through.
-                All three. We also know that&apos;s not how every story ends.
-                We built PrayerTrain for both: for the road that turns toward
-                life on earth, and the road that turns toward life eternal.
+                {t.storyParagraph2}
               </p>
               <Link
                 href="/our-story"
                 className="inline-flex items-center gap-2 text-gold-300 hover:text-gold-200 font-medium transition-colors"
               >
-                Read the full story
+                {t.storyReadMore}
                 <ArrowRight className="w-4 h-4" />
               </Link>
             </div>
@@ -246,18 +246,16 @@ export default function HomePage() {
             <div className="text-center md:text-left">
               <CrossIcon className="w-7 h-7 text-gold-400 mb-4 mx-auto md:mx-0" />
               <h2 className="font-heading text-3xl sm:text-4xl font-bold text-navy-800 mb-4">
-                Someone needs your prayers
+                {t.finalCTAHeading}
               </h2>
               <p className="text-muted-foreground text-lg mb-8 leading-relaxed">
-                Whether it&apos;s a friend battling illness, a family in crisis,
-                or someone discerning their vocation, rally your community
-                to pray with purpose and consistency.
+                {t.finalCTABody}
               </p>
               <Link
                 href="/create"
                 className="inline-flex items-center gap-2 px-8 py-4 bg-primary text-primary-foreground font-semibold rounded-lg hover:bg-navy-700 transition-colors text-lg"
               >
-                Start a PrayerTrain Today
+                {t.finalCTAButton}
                 <ArrowRight className="w-5 h-5" />
               </Link>
             </div>

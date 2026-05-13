@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowRight, Heart } from "lucide-react";
 import { SITUATIONS, SITUATION_TOPICS } from "./[topic]/content";
+import { getLocale } from "@/i18n/get-locale";
+import { getDictionary } from "@/i18n/dictionaries";
 
 /**
  * /situations — index page that lists every situation page.
@@ -10,9 +12,18 @@ import { SITUATIONS, SITUATION_TOPICS } from "./[topic]/content";
  * pages. Exists primarily to give /situations/[topic] breadcrumbs a
  * real parent URL and to surface the cluster from the homepage / nav
  * if William wires that link in later.
+ *
+ * Phase 1a note: the chrome (heading, lead, CTA) localizes via the
+ * dictionary. The per-topic cards (title + lede + prayer
+ * recommendations) stay English for now — translating them properly
+ * needs a localized version of `./[topic]/content.ts` keyed by
+ * locale. Tracked in docs/internationalization-roadmap.md Phase 6
+ * (SEO and growth) since these are the highest-value SEO surfaces.
  */
 
-export const revalidate = 300;
+// Cookie-driven locale forces dynamic rendering — leaving ISR on would
+// cache one locale and serve it to all visitors.
+export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "Catholic prayers by situation",
@@ -21,19 +32,19 @@ export const metadata: Metadata = {
   alternates: { canonical: "/situations" },
 };
 
-export default function SituationsIndexPage() {
+export default async function SituationsIndexPage() {
+  const locale = await getLocale();
+  const dict = await getDictionary(locale);
+  const t = dict.situations;
+
   return (
     <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
       <header className="mb-10">
         <h1 className="font-heading text-3xl sm:text-4xl font-bold text-navy-800 leading-tight mb-5 gold-accent">
-          Catholic prayers by situation
+          {t.indexTitle}
         </h1>
         <p className="text-lg text-foreground leading-relaxed">
-          When someone you love is in a hard moment, the question is not
-          usually whether to pray. It is what to pray. Each page below
-          collects the prayers Catholic tradition has given us for one
-          specific situation, with a way to gather others and pray
-          together if you want to.
+          {t.indexLead}
         </p>
       </header>
 
@@ -53,7 +64,7 @@ export default function SituationsIndexPage() {
                 {content.lead}
               </p>
               <div className="flex items-center gap-1.5 mt-3 text-sm font-medium text-gold-700 group-hover:text-gold-800">
-                Read more
+                {t.readMore}
                 <ArrowRight className="w-4 h-4" />
               </div>
             </Link>
@@ -65,12 +76,10 @@ export default function SituationsIndexPage() {
       <div className="prayer-card bg-cream-50 border-cream-300 flex flex-col sm:flex-row sm:items-center gap-5">
         <div className="flex-1">
           <h2 className="font-heading text-lg font-semibold text-navy-800 mb-1">
-            Don&apos;t see your situation?
+            {t.ctaHeading}
           </h2>
           <p className="text-sm text-muted-foreground leading-relaxed">
-            Start a PrayerTrain anyway. The prayer library covers many
-            more situations than the cluster here, and the create flow
-            will recommend prayers based on the situation you describe.
+            {t.ctaBody}
           </p>
         </div>
         <Link
@@ -78,7 +87,7 @@ export default function SituationsIndexPage() {
           className="inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-primary text-primary-foreground font-medium rounded-lg hover:bg-navy-700 transition-colors shrink-0"
         >
           <Heart className="w-4 h-4" />
-          Start a PrayerTrain
+          {dict.nav.createTrain}
         </Link>
       </div>
     </div>

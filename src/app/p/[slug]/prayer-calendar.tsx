@@ -22,11 +22,13 @@ type Slot = {
   status: string;
   claimerName: string | null;
   /**
-   * The User.id of the authenticated claimer, if any. Null for guest
-   * claims. Used by SlotCard to gate the "I prayed" button so a viewer
-   * can't accidentally complete someone else's prayer.
+   * True when the current viewer is the authenticated claimer of this
+   * slot. Computed server-side from session + slot.claimedById so the
+   * claimer's User.id never ships to the client. Gates the "I prayed"
+   * button and the note add/edit affordances; false for guest claims
+   * (those complete via tokenized email link) and anonymous viewers.
    */
-  claimedById: string | null;
+  viewerIsClaimer: boolean;
   completedAt: Date | null;
   /**
    * Optional short note left by the claimer when marking complete.
@@ -53,16 +55,9 @@ type Slot = {
 export function PrayerCalendar({
   slotsByDate,
   trainStatus,
-  currentUserId,
 }: {
   slotsByDate: Record<string, Slot[]>;
   trainStatus: string;
-  /**
-   * The current viewer's User.id, or null if anonymous. Threaded down
-   * to SlotCard so it can decide whether to render the "I prayed"
-   * button for slots claimed by an authenticated user.
-   */
-  currentUserId: string | null;
 }) {
   const [claimingSlot, setClaimingSlot] = useState<Slot | null>(null);
   // Past days are collapsed by default so an organizer or volunteer
@@ -175,7 +170,6 @@ export function PrayerCalendar({
               isPast={isPast}
               trainActive={trainStatus === "ACTIVE"}
               trainFrozen={trainStatus === "COMPLETED"}
-              currentUserId={currentUserId}
               onClaim={() => setClaimingSlot(slot)}
             />
           ))}
@@ -313,7 +307,6 @@ function SlotCard({
   isPast,
   trainActive,
   trainFrozen,
-  currentUserId,
   onClaim,
 }: {
   slot: Slot;
@@ -321,7 +314,6 @@ function SlotCard({
   trainActive: boolean;
   /** train.status === COMPLETED — note edit/delete is locked. */
   trainFrozen: boolean;
-  currentUserId: string | null;
   onClaim: () => void;
 }) {
   const [showModal, setShowModal] = useState(false);
@@ -331,15 +323,15 @@ function SlotCard({
   const completed = slot.status === "COMPLETED";
   // Page-button completion is only for authenticated owners. Guest
   // claimers complete from the signed link in their reminder email.
-  const isOwner =
-    !!currentUserId && slot.claimedById === currentUserId;
+  // Ownership is decided server-side (see page.tsx) so claimer User
+  // IDs never appear in the public RSC payload.
   const hasNote =
     !!slot.completionNote && slot.completionNote.trim().length > 0;
 
   // Owner can open the modal (initial mark, or edit existing note)
   // while the train is still active. After the train ends, notes are
   // frozen but the icon-expand still works for read-only viewing.
-  const canEdit = isOwner && !trainFrozen;
+  const canEdit = slot.viewerIsClaimer && !trainFrozen;
 
   return (
     <div

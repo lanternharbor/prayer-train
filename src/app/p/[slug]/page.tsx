@@ -248,10 +248,14 @@ export default async function PrayerTrainPage({
   const showWarriorCTA = isFullyCovered && train.status === "ACTIVE";
 
   // Group slots by date, passing only the fields the client calendar
-  // needs. In particular, never serialize claimer emails into the
-  // public page payload.
+  // needs. In particular, never serialize claimer emails or User
+  // foreign keys into the public page payload. The claimer-vs-viewer
+  // comparison is done server-side here and shipped as a single
+  // boolean per slot, so a viewer's own User.id is the only ID that
+  // would ever leak — and only on slots they themselves claimed.
   type PrayerCalendarProps = Parameters<typeof PrayerCalendar>[0];
   const slotsByDate: PrayerCalendarProps["slotsByDate"] = {};
+  const viewerId = session?.user?.id ?? null;
   train.slots.forEach((slot) => {
     const dateKey = slot.date.toISOString().split("T")[0];
     if (!slotsByDate[dateKey]) slotsByDate[dateKey] = [];
@@ -260,7 +264,8 @@ export default async function PrayerTrainPage({
       date: slot.date,
       slotIndex: slot.slotIndex,
       status: slot.status,
-      claimedById: slot.claimedById,
+      viewerIsClaimer:
+        viewerId !== null && slot.claimedById === viewerId,
       claimerName: slot.claimerName,
       completedAt: slot.completedAt,
       completionNote: slot.completionNoteHiddenAt
@@ -494,7 +499,6 @@ export default async function PrayerTrainPage({
         <PrayerCalendar
           slotsByDate={slotsByDate}
           trainStatus={train.status}
-          currentUserId={session?.user?.id ?? null}
         />
       </div>
 

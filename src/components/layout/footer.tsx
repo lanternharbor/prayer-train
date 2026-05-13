@@ -46,6 +46,14 @@ export function Footer() {
               </li>
               <li>
                 <Link
+                  href="/situations"
+                  className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  Prayers by situation
+                </Link>
+              </li>
+              <li>
+                <Link
                   href="/create"
                   className="text-sm text-muted-foreground hover:text-foreground transition-colors"
                 >

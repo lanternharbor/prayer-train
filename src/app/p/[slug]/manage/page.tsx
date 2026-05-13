@@ -2,7 +2,12 @@ import type { Metadata } from "next";
 import { notFound, redirect } from "next/navigation";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
-import { formatDate, calculateFillRate, formatSituation } from "@/lib/utils";
+import {
+  formatDate,
+  formatDateLocale,
+  calculateFillRate,
+  formatSituation,
+} from "@/lib/utils";
 import Link from "next/link";
 import {
   ArrowLeft,
@@ -284,7 +289,7 @@ export default async function ManagePage({
                 </h3>
                 <p className="text-sm text-muted-foreground">{update.content}</p>
                 <p className="text-xs text-muted-foreground mt-2">
-                  {new Date(update.createdAt).toLocaleDateString("en-US", {
+                  {formatDateLocale(new Date(update.createdAt), {
                     month: "short",
                     day: "numeric",
                     year: "numeric",

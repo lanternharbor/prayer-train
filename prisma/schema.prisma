@@ -157,11 +157,16 @@ model PrayerTrain {
   // tradition, or words from the organizer's heart.
   customPrayerText String? @db.Text
 
-  // Privacy. Default-public matches the create-wizard's useState(true)
-  // and the product call to make trains discoverable on /browse so the
-  // parish network can find them. Privacy is still one click away on
-  // the wizard's "List on public directory" toggle.
-  isPublic  Boolean @default(true)
+  // Privacy. Default-PRIVATE (link-only) as of the May 2026 audit. New
+  // trains often carry sensitive medical, grief, or family context;
+  // showing them up on the public /browse directory and in search
+  // indexing should be an explicit informed opt-in, not the default.
+  // The create-wizard's toggle still surfaces the choice prominently
+  // and explains exactly what "public" entails (browse listing,
+  // sitemap, search indexing, /situations crawl). Existing rows are
+  // not touched by this default change — only new INSERTs that omit
+  // the column inherit `false`.
+  isPublic  Boolean @default(false)
   showNames Boolean @default(true)
 
   // Per-train organizer-anonymity opt-in. False by default so the
@@ -416,10 +421,15 @@ model PrayerChain {
   durationDays Int
   endDate      DateTime
 
-  // Visibility. Default-public matches /chain/new's defaultChecked
-  // toggle and the product call to make shared prayers discoverable
-  // on /browse. Privacy is still one click away.
-  isPublic Boolean @default(true)
+  // Visibility. Default-PRIVATE (link-only) as of the May 2026 audit.
+  // Mirrors PrayerTrain.isPublic — shared prayers often surface
+  // sensitive intentions (illness, grief, family context); listing
+  // them on the public /browse directory and exposing them to search
+  // indexing should be an explicit informed opt-in. The /chain/new
+  // form's toggle still surfaces the choice and explains what
+  // "public" entails. Existing rows are not touched by this default
+  // change — only new INSERTs that omit the column inherit `false`.
+  isPublic Boolean @default(false)
 
   // Per-chain organizer-anonymity opt-in. Mirrors PrayerTrain.
   // organizerAnonymous — false by default; true only when the

@@ -88,10 +88,13 @@ export function CreateWizard({
   const [durationDays, setDurationDays] = useState(30);
   const [customDuration, setCustomDuration] = useState("");
   const [slotsPerDay, setSlotsPerDay] = useState(3);
-  // Default to public. The toggle below lets organizers flip to
-  // link-only if they want privacy. Most train organizers want their
-  // train discoverable on /browse so the parish network can find it.
-  const [isPublic, setIsPublic] = useState(true);
+  // Default to PRIVATE (link-only) per the May 2026 audit. New trains
+  // often carry sensitive medical, grief, or family context; listing
+  // them on the public directory and exposing them to search
+  // indexing should be an explicit informed opt-in by the organizer.
+  // The toggle below makes the choice prominent and explains exactly
+  // what "public" entails (browse listing, sitemap, search indexing).
+  const [isPublic, setIsPublic] = useState(false);
   const [selectedPrayerIds, setSelectedPrayerIds] = useState<string[]>([]);
   // Optional free-form prayer the organizer wants every volunteer to also
   // pray. Renders as its own card on the detail page and gets appended to
@@ -530,13 +533,17 @@ export function CreateWizard({
             </p>
           </div>
 
-          {/* Public directory toggle */}
+          {/* Visibility toggle. Default is PRIVATE (link-only). Going
+              public is an explicit informed opt-in that makes the
+              recipient's name, intention, photo, and parish discoverable
+              via the public directory, search engines, and the
+              /situations topic pages. */}
           <div className="flex items-start gap-4 p-4 rounded-lg bg-cream-50 border border-cream-300">
             <button
               type="button"
               role="switch"
               aria-checked={isPublic}
-              aria-label="List publicly on Find a PrayerTrain"
+              aria-label="Make this prayer train publicly discoverable"
               onClick={() => setIsPublic(!isPublic)}
               className={`relative inline-flex h-7 w-12 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors ${
                 isPublic ? "bg-gold-400" : "bg-cream-400"
@@ -550,22 +557,31 @@ export function CreateWizard({
             </button>
             <div>
               <p className="text-sm font-medium text-navy-700">
-                {isPublic ? "Listed on public directory" : "Private link only"}
+                {isPublic ? "Publicly discoverable" : "Private link only (recommended)"}
               </p>
-              <p className="text-xs text-muted-foreground mt-0.5">
-                {isPublic ? (
-                  <>
-                    Anyone can find this prayer train on the{" "}
-                    <span className="font-medium">Find a PrayerTrain</span>{" "}
-                    page.
-                  </>
-                ) : (
-                  <>
-                    Only people with the link can view it. Choose this if the
-                    recipient should not be publicly listed.
-                  </>
-                )}
-              </p>
+              {isPublic ? (
+                <div className="text-xs text-muted-foreground mt-1 space-y-1">
+                  <p>
+                    The recipient&apos;s name, intention, photo, and parish
+                    will be visible to anyone who finds this page, including:
+                  </p>
+                  <ul className="list-disc list-outside pl-4 space-y-0.5">
+                    <li>The public <span className="font-medium">Find a PrayerTrain</span> directory</li>
+                    <li>Google and other search engines (sitemap + indexing)</li>
+                    <li>Situation-topic landing pages (e.g. illness, grief)</li>
+                  </ul>
+                  <p className="pt-1">
+                    Only choose this if the family is comfortable with the
+                    intention being shared widely.
+                  </p>
+                </div>
+              ) : (
+                <p className="text-xs text-muted-foreground mt-0.5">
+                  Only people with the link can view this page. It will not
+                  appear in the directory, search engines, or topic pages.
+                  You can change this later from the Manage page.
+                </p>
+              )}
             </div>
           </div>
         </div>

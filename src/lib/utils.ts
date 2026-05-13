@@ -67,15 +67,34 @@ export function calculateFillRate(
   return Math.round(((claimedSlots + completedSlots) / totalSlots) * 100);
 }
 
-// Format a date for display. Slot dates and train start/end dates are
-// stored as midnight UTC of the intended calendar day (see
-// createPrayerTrain), so we explicitly format in UTC to recover the
-// original calendar day regardless of where the runtime lives. Without
-// timeZone: "UTC" the runtime's local TZ leaks in — fine on Vercel
-// (also UTC) but fragile under any other runtime, and incorrect when
-// these helpers run on the client side.
-export function formatDate(date: Date): string {
-  return new Intl.DateTimeFormat("en-US", {
+/**
+ * Default UI locale.
+ *
+ * Centralized so a future i18n pass can swap this for a request-scoped
+ * value (from cookie / Accept-Language / train-language field) without
+ * a codebase-wide find-and-replace. See docs/internationalization-roadmap.md
+ * for the full plan. Today this is hardcoded en-US because the app is
+ * English-only; any new code that needs locale-aware formatting should
+ * import this constant rather than typing a literal "en-US" string.
+ */
+export const DEFAULT_LOCALE = "en-US";
+
+/**
+ * Format a date for display.
+ *
+ * Slot dates and train start/end dates are stored as midnight UTC of
+ * the intended calendar day (see createPrayerTrain), so we explicitly
+ * format in UTC to recover the original calendar day regardless of
+ * where the runtime lives. Without timeZone: "UTC" the runtime's local
+ * TZ leaks in — fine on Vercel (also UTC) but fragile under any other
+ * runtime, and incorrect when these helpers run on the client side.
+ *
+ * The optional `locale` argument exists so an upcoming train-level
+ * language field (or organizer locale) can override the default. When
+ * absent, falls back to DEFAULT_LOCALE.
+ */
+export function formatDate(date: Date, locale: string = DEFAULT_LOCALE): string {
+  return new Intl.DateTimeFormat(locale, {
     timeZone: "UTC",
     weekday: "short",
     month: "short",
@@ -83,14 +102,31 @@ export function formatDate(date: Date): string {
   }).format(date);
 }
 
-export function formatDateLong(date: Date): string {
-  return new Intl.DateTimeFormat("en-US", {
+export function formatDateLong(date: Date, locale: string = DEFAULT_LOCALE): string {
+  return new Intl.DateTimeFormat(locale, {
     timeZone: "UTC",
     weekday: "long",
     month: "long",
     day: "numeric",
     year: "numeric",
   }).format(date);
+}
+
+/**
+ * Locale-aware variant of `Date#toLocaleDateString` for client-side
+ * formatting where the existing UTC-pinned formatDate/formatDateLong
+ * don't apply (e.g. createdAt timestamps on guestbook entries, which
+ * are real wall-clock moments rather than calendar-day labels).
+ *
+ * Threads the same DEFAULT_LOCALE constant so a future i18n pass can
+ * swap one place. Callers pass their own Intl.DateTimeFormatOptions.
+ */
+export function formatDateLocale(
+  date: Date,
+  options: Intl.DateTimeFormatOptions,
+  locale: string = DEFAULT_LOCALE,
+): string {
+  return new Intl.DateTimeFormat(locale, options).format(date);
 }
 
 /**

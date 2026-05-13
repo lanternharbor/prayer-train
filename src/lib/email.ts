@@ -1,5 +1,7 @@
 import { Resend } from "resend";
 import { getBaseUrl } from "./url";
+import { getEmailDictionary } from "@/i18n/email";
+import { t as interpolate } from "@/i18n/format";
 
 const FROM = process.env.EMAIL_FROM || "PrayerTrain <noreply@ourfaithtrain.com>";
 
@@ -332,6 +334,7 @@ export async function sendDailyReminder({
   organizerFirstName,
   trainUrl,
   completeUrl,
+  language = "en",
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   slotId,
 }: {
@@ -355,7 +358,17 @@ export async function sendDailyReminder({
   completeUrl: string;
   /** Reserved for future per-slot tracking links */
   slotId: string;
+  /**
+   * ISO 639-1 language tag from `PrayerTrain.language` (set at create
+   * time from the organizer's UI locale). Falls back to "en" so any
+   * legacy caller without language plumbed through keeps working. The
+   * email dictionary loader itself falls back to English for any
+   * unsupported value, so a stale DB value can't crash the cron.
+   */
+  language?: string;
 }): Promise<EmailDispatchResult> {
+  const dict = getEmailDictionary(language);
+  const t = dict.trainDaily;
   // Pre-escape user-controlled fields for safe HTML injection.
   const eClaimerName = escapeHtml(claimerName);
   const eRecipientName = escapeHtml(recipientName);
@@ -373,15 +386,22 @@ export async function sendDailyReminder({
   // stiff "A prayer from the organizer" fallback.
   const eOrgFirst = organizerFirstName ? escapeHtml(organizerFirstName) : null;
   const customPrayerHeading = eOrgFirst
-    ? `A prayer from ${eOrgFirst}`
-    : `A personal prayer included`;
+    ? interpolate(t.customPrayerHeadingNamed, { organizerName: eOrgFirst })
+    : t.customPrayerHeadingAnon;
 
   // Inlined render → dispatch. Returns EmailDispatchResult so the
   // train daily-reminders cron can write its PrayerSlot.lastReminderSentAt
   // audit field only on verified Resend success. The legacy
   // try-catch-and-swallow shape silently dropped API-level rejections.
   // See sendChainDailyReminder for the parallel chain-side fix.
-  const subject = `Prayer reminder: ${prayerName} for ${recipientName}`;
+  const subject = interpolate(t.subject, {
+    prayerName,
+    recipientName,
+  });
+  const h1Rendered = interpolate(t.h1, { recipientName: eRecipientName });
+  const greetingRendered = interpolate(t.greeting, {
+    claimerName: eClaimerName,
+  });
   const html = `
         <div style="font-family: Georgia, serif; max-width: 600px; margin: 0 auto; padding: 32px;">
           <div style="text-align: center; margin-bottom: 24px;">
@@ -390,10 +410,10 @@ export async function sendDailyReminder({
             </div>
           </div>
           <h1 style="color: #11152c; font-size: 22px; text-align: center; margin-bottom: 8px;">
-            Today's Prayer for ${eRecipientName}
+            ${h1Rendered}
           </h1>
           <p style="color: #6e6150; text-align: center; margin-bottom: 24px;">
-            Hi ${eClaimerName}, here's your prayer commitment for today.
+            ${greetingRendered}
           </p>
           <div style="background: #faf8f5; border: 1px solid #e8e0d5; border-radius: 12px; padding: 20px; margin-bottom: 16px;">
             <h2 style="margin: 0 0 12px 0; color: #11152c; font-size: 18px;">
@@ -401,7 +421,7 @@ export async function sendDailyReminder({
             </h2>
             ${ePrayerInstructions ? `
               <p style="margin: 0 0 16px 0; color: #6e6150; font-size: 14px; line-height: 1.6;">
-                <strong>How to pray:</strong> ${ePrayerInstructions}
+                <strong>${t.howToPrayLabel}</strong> ${ePrayerInstructions}
               </p>
             ` : ""}
             ${ePrayerText ? `
@@ -424,21 +444,27 @@ export async function sendDailyReminder({
           ` : ""}
           <div style="text-align: center; margin-top: 24px;">
             <a href="${completeUrl}" style="display: inline-block; background: #d4a843; color: #0a0c1a; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: bold; font-size: 14px;">
-              I prayed
+              ${t.cta}
             </a>
           </div>
           <p style="text-align: center; color: #b8a994; font-size: 12px; margin-top: 8px;">
-            <a href="${trainUrl}" style="color: #b8a994; text-decoration: none;">View the prayer train</a>
+            <a href="${trainUrl}" style="color: #b8a994; text-decoration: none;">${t.viewLink}</a>
           </p>
           <p style="text-align: center; color: #b8a994; font-size: 12px; margin-top: 24px;">
-            PrayerTrain — Organized prayer for those in need
+            ${t.footer}
           </p>
         </div>
       `;
   // Plain-text fallback. Mirrors the chain reminder helper —
   // missing-text used to mean Resend served only HTML, which renders
-  // as "this email has no body" in some clients.
-  const text = `Today's prayer for ${recipientName}\n\nHi ${claimerName}, here's your prayer commitment for today.\n\n${prayerName}\n${prayerInstructions ? prayerInstructions + "\n" : ""}${prayerText ? "\n" + prayerText + "\n" : ""}${customPrayerText ? "\n" + customPrayerHeading + ":\n" + customPrayerText + "\n" : ""}\nI prayed: ${completeUrl}\nView the prayer train: ${trainUrl}`;
+  // as "this email has no body" in some clients. Unescaped values
+  // because this is plaintext.
+  const customPrayerHeadingPlain = organizerFirstName
+    ? interpolate(t.customPrayerHeadingNamed, { organizerName: organizerFirstName })
+    : t.customPrayerHeadingAnon;
+  const textGreetingLine = interpolate(t.textGreeting, { recipientName });
+  const textGreeting2 = interpolate(t.greeting, { claimerName });
+  const text = `${textGreetingLine}\n\n${textGreeting2}\n\n${prayerName}\n${prayerInstructions ? prayerInstructions + "\n" : ""}${prayerText ? "\n" + prayerText + "\n" : ""}${customPrayerText ? "\n" + customPrayerHeadingPlain + ":\n" + customPrayerText + "\n" : ""}\n${t.textCTA} ${completeUrl}\n${t.textViewLink} ${trainUrl}`;
   return dispatchEmail({
     to,
     subject,
@@ -516,11 +542,12 @@ export async function sendTrainCancellationNotice({
 function recipientPhrase(
   recipientName: string | null | undefined,
   intention: string,
+  prefix: string = "for",
 ): string {
-  if (recipientName?.trim()) return `for ${recipientName.trim()}`;
+  if (recipientName?.trim()) return `${prefix} ${recipientName.trim()}`;
   // Truncate the intention if it's long — never let it overflow the subject.
   const words = intention.trim().split(/\s+/).slice(0, 8).join(" ");
-  return `for ${words}${intention.trim().split(/\s+/).length > 8 ? "…" : ""}`;
+  return `${prefix} ${words}${intention.trim().split(/\s+/).length > 8 ? "…" : ""}`;
 }
 
 /**
@@ -652,6 +679,12 @@ export interface ChainDailyReminderInput {
   markCompleteUrl: string;
   unsubscribeUrl: string;
   otherMembersCount: number;
+  /**
+   * ISO 639-1 language tag from `PrayerChain.language`. Defaults to
+   * "en" so any legacy caller without language plumbed through keeps
+   * working. See PrayerChain.language in prisma/schema.prisma.
+   */
+  language?: string;
 }
 
 export function renderChainDailyReminder(input: ChainDailyReminderInput): {
@@ -659,15 +692,30 @@ export function renderChainDailyReminder(input: ChainDailyReminderInput): {
   html: string;
   text: string;
 } {
-  const phrase = recipientPhrase(input.recipientName, input.intention);
+  const dict = getEmailDictionary(input.language ?? "en");
+  const t = dict.chainDaily;
+  const phrase = recipientPhrase(
+    input.recipientName,
+    input.intention,
+    dict.recipientPhrasePrefix,
+  );
   const orgFirst = firstNameOrNull(input.organizerName);
   // Subject branches on name availability. Named uses the warm
   // "Day 5 of William's Surrender Novena for X" form. Anonymous
   // drops the possessive: "Day 5 of the Surrender Novena for X" —
   // grammatical and reads as a neutral description.
   const subject = orgFirst
-    ? `Day ${input.day} of ${orgFirst}'s ${input.prayerName} ${phrase}`
-    : `Day ${input.day} of the ${input.prayerName} ${phrase}`;
+    ? interpolate(t.subjectNamed, {
+        day: input.day,
+        orgFirst,
+        prayerName: input.prayerName,
+        phrase,
+      })
+    : interpolate(t.subjectAnon, {
+        day: input.day,
+        prayerName: input.prayerName,
+        phrase,
+      });
   // Pre-escape user-controlled fields for safe HTML injection.
   const eMemberName = escapeHtml(input.memberName);
   const eOrgFirst = orgFirst ? escapeHtml(orgFirst) : null;
@@ -686,30 +734,57 @@ export function renderChainDailyReminder(input: ChainDailyReminderInput): {
   // H1 mirrors the chain detail page (PR #30): drop possessive when
   // anonymous so the heading reads as a clean description.
   const h1 = eOrgFirst
-    ? `${eOrgFirst}'s ${ePrayerName} ${ePhrase}`
-    : `${ePrayerName} ${ePhrase}`;
+    ? interpolate(t.h1Named, {
+        orgFirst: eOrgFirst,
+        prayerName: ePrayerName,
+        phrase: ePhrase,
+      })
+    : interpolate(t.h1Anon, {
+        prayerName: ePrayerName,
+        phrase: ePhrase,
+      });
   // Custom-prayer attribution: drop the "from X" when anonymous.
   // "A personal prayer included" reads as a neutral label rather
   // than "A prayer from the organizer" (stiff) or worse.
   const customPrayerHeading = eOrgFirst
-    ? `A prayer from ${eOrgFirst}`
-    : `A personal prayer included`;
+    ? interpolate(t.customPrayerHeadingNamed, { orgFirst: eOrgFirst })
+    : t.customPrayerHeadingAnon;
   // "N other people are praying with William today" → "N other people
-  // are praying today" when anonymous.
-  const otherMembersLine = eOrgFirst
-    ? `${input.otherMembersCount} ${input.otherMembersCount === 1 ? "other person is" : "other people are"} praying with ${eOrgFirst} today.`
-    : `${input.otherMembersCount} ${input.otherMembersCount === 1 ? "other person is" : "other people are"} praying today.`;
+  // are praying today" when anonymous. Each branch has singular +
+  // plural so the count-aware template can drop the "is/are" English
+  // dependency that doesn't survive translation cleanly.
+  const otherMembersTemplate = eOrgFirst
+    ? input.otherMembersCount === 1
+      ? t.otherMembersNamedSingular
+      : t.otherMembersNamedPlural
+    : input.otherMembersCount === 1
+      ? t.otherMembersAnonSingular
+      : t.otherMembersAnonPlural;
+  const otherMembersLine = interpolate(otherMembersTemplate, {
+    count: input.otherMembersCount,
+    orgFirst: eOrgFirst ?? "",
+  });
+  // Day-label inside the upper-cased badge. Localized so Spanish gets
+  // "Día N de M" etc.
+  const dayBadge = interpolate(t.dayLabel, {
+    day: input.day,
+    total: input.durationDays,
+  });
+  const dayReflectionBadge = interpolate(t.dayReflectionLabel, {
+    day: input.day,
+  });
+  const greetingLine = interpolate(t.greeting, { memberName: eMemberName });
   const html = `
         <div style="font-family: Georgia, 'Times New Roman', serif; max-width: 600px; margin: 0 auto; padding: 32px 24px; background: #faf8f5;">
           <div style="background: #ffffff; border: 1px solid #e8e0d5; border-radius: 16px; padding: 28px 26px;">
             <p style="color: #947324; font-size: 11px; letter-spacing: 2px; text-transform: uppercase; margin: 0 0 6px;">
-              Day ${input.day} of ${input.durationDays}
+              ${dayBadge}
             </p>
             <h1 style="color: #11152c; font-size: 22px; font-weight: 700; margin: 0 0 16px; line-height: 1.3;">
               ${h1}
             </h1>
             <p style="color: #6e6150; font-size: 14px; line-height: 1.6; margin: 0 0 20px;">
-              Take a moment, ${eMemberName}. The prayer for today is below.
+              ${greetingLine}
             </p>
             ${
               ePrayerInstructions
@@ -721,7 +796,7 @@ export function renderChainDailyReminder(input: ChainDailyReminderInput): {
             ${
               eDailyReflection
                 ? `<div style="background: #fdf8ef; border: 1px solid #e8d5a8; border-radius: 12px; padding: 20px; margin: 0 0 22px;">
-                    <p style="color: #947324; font-size: 11px; letter-spacing: 2px; text-transform: uppercase; margin: 0 0 10px;">Day ${input.day} reflection</p>
+                    <p style="color: #947324; font-size: 11px; letter-spacing: 2px; text-transform: uppercase; margin: 0 0 10px;">${dayReflectionBadge}</p>
                     <p style="color: #11152c; font-size: 15px; line-height: 1.7; white-space: pre-line; margin: 0;">${eDailyReflection}</p>
                   </div>`
                 : ""
@@ -750,30 +825,46 @@ export function renderChainDailyReminder(input: ChainDailyReminderInput): {
             }
             <div style="text-align: center; margin: 24px 0 8px;">
               <a href="${input.markCompleteUrl}" style="display: inline-block; background: #d4a843; color: #0a0c1a; padding: 12px 28px; border-radius: 10px; text-decoration: none; font-weight: 600; font-size: 14px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;">
-                I prayed today
+                ${t.cta}
               </a>
             </div>
             <p style="text-align: center; color: #b8a994; font-size: 12px; margin: 18px 0 0;">
-              <a href="${input.chainUrl}" style="color: #947324; text-decoration: none;">Visit the prayer</a>
+              <a href="${input.chainUrl}" style="color: #947324; text-decoration: none;">${t.visitPrayer}</a>
               &nbsp;·&nbsp;
-              <a href="${input.unsubscribeUrl}" style="color: #b8a994; text-decoration: none;">Unsubscribe</a>
+              <a href="${input.unsubscribeUrl}" style="color: #b8a994; text-decoration: none;">${t.unsubscribe}</a>
             </p>
           </div>
           <p style="text-align: center; color: #b8a994; font-size: 12px; margin: 16px 0 0;">
-            PrayerTrain · A Lantern Harbor project
+            ${dict.brandFooter}
           </p>
         </div>
       `;
+  // Plain-text fallback — unescaped values, locale-aware via t.*.
   const textHeader = orgFirst
-    ? `Day ${input.day} of ${input.durationDays} — ${orgFirst}'s ${input.prayerName} ${phrase}`
-    : `Day ${input.day} of ${input.durationDays} — ${input.prayerName} ${phrase}`;
-  const customTextAttribution = orgFirst
-    ? `\n\nA prayer from ${orgFirst}:\n${input.customPrayerText}`
-    : `\n\nA personal prayer included:\n${input.customPrayerText}`;
-  const reflectionText = input.dailyReflection
-    ? `\n\nDay ${input.day} reflection:\n${input.dailyReflection}`
+    ? interpolate(t.textHeaderNamed, {
+        day: input.day,
+        total: input.durationDays,
+        orgFirst,
+        prayerName: input.prayerName,
+        phrase,
+      })
+    : interpolate(t.textHeaderAnon, {
+        day: input.day,
+        total: input.durationDays,
+        prayerName: input.prayerName,
+        phrase,
+      });
+  const customTextAttribution = input.customPrayerText
+    ? "\n\n" +
+      (orgFirst
+        ? interpolate(t.textCustomFromNamed, { orgFirst })
+        : t.textCustomFromAnon) +
+      `\n${input.customPrayerText}`
     : "";
-  const text = `${textHeader}\n\n${input.prayerInstructions ? input.prayerInstructions + "\n\n" : ""}${reflectionText ? reflectionText + "\n\n" : ""}${input.prayerText ?? ""}${input.customPrayerText ? customTextAttribution : ""}\n\nI prayed today: ${input.markCompleteUrl}\nVisit the prayer page: ${input.chainUrl}\nUnsubscribe: ${input.unsubscribeUrl}`;
+  const reflectionText = input.dailyReflection
+    ? `\n\n${interpolate(t.textReflectionLabel, { day: input.day })}\n${input.dailyReflection}`
+    : "";
+  const text = `${textHeader}\n\n${input.prayerInstructions ? input.prayerInstructions + "\n\n" : ""}${reflectionText ? reflectionText + "\n\n" : ""}${input.prayerText ?? ""}${customTextAttribution}\n\n${t.textCTA} ${input.markCompleteUrl}\n${t.textVisitPrayer} ${input.chainUrl}\n${t.textUnsubscribe} ${input.unsubscribeUrl}`;
   return { subject, html, text };
 }
 

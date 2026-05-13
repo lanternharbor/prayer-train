@@ -158,6 +158,10 @@ async function main() {
       trainUrl: `${baseUrl}/p/${slot.train.slug}`,
       completeUrl,
       slotId: slot.id,
+      // Honor the train's language so a catch-up dispatch matches
+      // what the cron would have sent. Defaults to "en" on rows
+      // created before PR B.
+      language: slot.train.language,
     });
 
     if (!result.ok) {

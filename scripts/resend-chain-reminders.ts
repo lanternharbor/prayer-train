@@ -176,6 +176,7 @@ async function main() {
       customPrayerText: true,
       recipientName: true,
       intention: true,
+      language: true,
       organizer: { select: { name: true } },
       prayerType: {
         select: {
@@ -302,6 +303,9 @@ async function main() {
         markCompleteUrl,
         unsubscribeUrl,
         otherMembersCount: otherCount,
+        // Honor chain.language for catch-up dispatch; mirrors the
+        // chain-reminders cron change in PR B.
+        language: chain.language,
       });
 
       // Critical: only advance audit field on verified Resend success.

@@ -133,6 +133,12 @@ export async function GET(request: Request) {
       trainUrl: `${baseUrl}/p/${slot.train.slug}`,
       completeUrl,
       slotId: slot.id,
+      // PrayerTrain.language was set from the organizer's UI locale at
+      // train-create time. Drives the email language so a Spanish-
+      // speaking organizer's family + warriors all receive Spanish
+      // reminders even when individual claimers' browsers are English.
+      // Defaults to "en" on existing rows (Prisma column default).
+      language: slot.train.language,
     });
 
     // Pace the sequential loop under Resend's 2/s rate limit. The

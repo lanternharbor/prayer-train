@@ -297,6 +297,92 @@ describe("renderChainDailyReminder", () => {
     expect(r.html).not.toContain("<script>alert");
     expect(r.html).toContain("&lt;script&gt;");
   });
+
+  // ─── Phase 2 locale plumbing (PR B) ───────────────────────────
+  //
+  // Pin the contract that `language` selects the correct email
+  // dictionary at render time. These tests cover the four critical
+  // paths: subject + H1 + body chrome + plaintext alternate.
+
+  it("renders Spanish chrome when language='es' is passed (named)", () => {
+    const r = renderChainDailyReminder({
+      ...base,
+      organizerName: "Jilu Chengat",
+      language: "es",
+    });
+    // Subject uses "Día N de la {prayer} de {orgFirst} para {name}"
+    expect(r.subject).toContain("Día 5");
+    expect(r.subject).toContain("de Jilu");
+    expect(r.subject).toContain("para Denis Wilson");
+    // "Day N of M" day-badge becomes "Día N de M"
+    expect(r.html).toContain("Día 5 de");
+    // Greeting line in Spanish
+    expect(r.html).toContain("Tómate un momento, Alice.");
+    // CTA + footer links
+    expect(r.html).toContain("Ya recé hoy");
+    expect(r.html).toContain("Cancelar suscripción");
+    // No English chrome leaked through
+    expect(r.html).not.toContain("Take a moment");
+    expect(r.html).not.toContain("Unsubscribe</a>");
+    expect(r.html).not.toContain("I prayed today</a>");
+  });
+
+  it("renders Spanish chrome when language='es' is passed (anonymous)", () => {
+    const r = renderChainDailyReminder({
+      ...base,
+      organizerName: null,
+      language: "es",
+    });
+    // Anonymous subject path. No "de {name}" possessive.
+    expect(r.subject).toMatch(/^Día 5 de la Surrender Novena para Denis Wilson$/);
+    // Plural Spanish for the "X others praying" line
+    expect(r.html).toContain("4 otras personas están rezando hoy.");
+    expect(r.html).not.toContain("praying today.");
+  });
+
+  it("falls back to English when language is omitted or unsupported", () => {
+    // Omitted → "en" default
+    const omitted = renderChainDailyReminder({ ...base, organizerName: "Jilu" });
+    expect(omitted.subject).toBe(
+      "Day 5 of Jilu's Surrender Novena for Denis Wilson",
+    );
+    // Unsupported locale → graceful fallback to English (the dict
+    // loader handles this so a stale DB value can't crash the cron).
+    const unsupported = renderChainDailyReminder({
+      ...base,
+      organizerName: "Jilu",
+      language: "klingon",
+    });
+    expect(unsupported.subject).toBe(
+      "Day 5 of Jilu's Surrender Novena for Denis Wilson",
+    );
+  });
+
+  it("uses the locale-aware recipient-phrase prefix (Spanish 'para')", () => {
+    const r = renderChainDailyReminder({
+      ...base,
+      organizerName: "Jilu",
+      language: "es",
+    });
+    // Subject + H1 must use "para Denis Wilson", not "for Denis Wilson"
+    expect(r.subject).toContain("para Denis Wilson");
+    expect(r.html).toContain("para Denis Wilson");
+    expect(r.html).not.toContain("for Denis Wilson");
+  });
+
+  it("Spanish plaintext fallback localizes CTA + reflection labels", () => {
+    const r = renderChainDailyReminder({
+      ...base,
+      organizerName: "Jilu",
+      dailyReflection: "Confía en Mí.",
+      language: "es",
+    });
+    expect(r.text).toContain("Reflexión del día 5:");
+    expect(r.text).toContain("Ya recé hoy:");
+    expect(r.text).toContain("Visitar la página de oración:");
+    expect(r.text).not.toContain("I prayed today:");
+    expect(r.text).not.toContain("Day 5 reflection:");
+  });
 });
 
 describe("renderChainClosingDayEmail", () => {

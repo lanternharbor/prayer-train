@@ -169,6 +169,16 @@ model PrayerTrain {
   isPublic  Boolean @default(false)
   showNames Boolean @default(true)
 
+  // Train language. ISO 639-1 macro tag (e.g. "en", "es"); region
+  // variants (es-MX vs es-ES) deferred to Phase 3. Set from the
+  // organizer's UI locale (cookie / Accept-Language) at create time
+  // via getLocale() in createPrayerTrain. Controls the language of
+  // daily-reminder emails sent to volunteers — the organizer chose
+  // this language for the family, so reminders go in their language
+  // even if the volunteer's browser is set differently. Defaults to
+  // "en" so existing rows behave exactly as before.
+  language String @default("en")
+
   // Per-train organizer-anonymity opt-in. False by default so the
   // organizer's name (from User.name) is shown on the public page;
   // true when the organizer explicitly checked "Show me as Anonymous"
@@ -430,6 +440,10 @@ model PrayerChain {
   // "public" entails. Existing rows are not touched by this default
   // change — only new INSERTs that omit the column inherit `false`.
   isPublic Boolean @default(false)
+
+  // Chain language. Mirrors PrayerTrain.language — see that field
+  // for the full rationale. Controls daily-reminder email language.
+  language String @default("en")
 
   // Per-chain organizer-anonymity opt-in. Mirrors PrayerTrain.
   // organizerAnonymous — false by default; true only when the

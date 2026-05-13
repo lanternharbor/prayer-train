@@ -7,6 +7,7 @@ import { getBaseUrl } from "@/lib/url";
 import { sendClaimConfirmation } from "@/lib/email";
 import { enforceRateLimit } from "@/lib/rate-limit";
 import { getRateLimitId } from "@/lib/request";
+import { getLocale } from "@/i18n/get-locale";
 import {
   addPrayerWarriorSchema,
   cancelPrayerChainSchema,
@@ -134,6 +135,14 @@ export async function createPrayerTrain(formData: FormData) {
     }
   }
 
+  // Capture the organizer's UI locale at create time. This drives the
+  // language of daily-reminder emails sent to volunteers for the life
+  // of the train — the organizer chose this language for the family,
+  // so reminders go in their language even if a particular volunteer's
+  // browser is set differently. See prisma/schema.prisma's
+  // PrayerTrain.language comment for the full contract.
+  const language = await getLocale();
+
   // Create the train
   const train = await prisma.prayerTrain.create({
     data: {
@@ -154,6 +163,7 @@ export async function createPrayerTrain(formData: FormData) {
       slotsPerDay,
       isPublic,
       organizerAnonymous,
+      language,
     },
   });
 
@@ -1559,6 +1569,11 @@ export async function createPrayerChain(formData: FormData) {
     select: { name: true, email: true },
   });
 
+  // Capture organizer's UI locale — drives daily-reminder language.
+  // See PrayerChain.language in prisma/schema.prisma + the parallel
+  // capture in createPrayerTrain above.
+  const language = await getLocale();
+
   const chain = await prisma.prayerChain.create({
     data: {
       slug,
@@ -1573,6 +1588,7 @@ export async function createPrayerChain(formData: FormData) {
       endDate,
       isPublic,
       organizerAnonymous,
+      language,
       members: {
         create: {
           userId: session.user.id,

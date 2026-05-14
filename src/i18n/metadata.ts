@@ -164,6 +164,12 @@ function localeToOgTag(locale: Locale): string {
       // launch market. Facebook/Twitter share-card previews honor this
       // for layout (RTL detection, font selection on some platforms).
       return "fil_PH";
+    case "pl":
+      // Polish ships under a macro-tag; OG locale convention pads to
+      // "pl_PL" (Poland). Chicago/NYC diaspora visitors still see this
+      // — there's no widely-used "pl_US" tag, and the language is the
+      // same anyway.
+      return "pl_PL";
     default:
       return locale;
   }

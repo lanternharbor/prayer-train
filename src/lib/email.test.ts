@@ -536,6 +536,78 @@ describe("renderChainDailyReminder", () => {
     expect(r.text).not.toContain("I prayed today:");
     expect(r.text).not.toContain("Já rezei hoje:");
   });
+
+  // ─── Phase δ locale plumbing (pl end-to-end) ─────────────────
+  //
+  // Polish Catholic register is liturgically formal — different
+  // tonal choice than the warm pt-BR / fil flow. Marian devotion +
+  // Divine Mercy + JP2 are the cultural anchors (deferred to Phase ε).
+
+  it("renders pl chrome when language='pl' is passed (named)", () => {
+    const r = renderChainDailyReminder({
+      ...base,
+      organizerName: "Anna Nowak",
+      language: "pl",
+    });
+    // "Dzień N: {prayerName} od {orgFirst} za {name}"
+    expect(r.subject).toContain("Dzień 5:");
+    expect(r.subject).toContain("od Anna");
+    expect(r.subject).toContain("za Denis Wilson");
+    // Day badge: "Dzień N z M"
+    expect(r.html).toContain("Dzień 5 z");
+    // Greeting line in Polish
+    expect(r.html).toContain("Poświęć chwilę, Alice.");
+    // CTA + footer
+    expect(r.html).toContain("Pomodliłem się dziś");
+    expect(r.html).toContain("Wypisz się");
+    // No English / Spanish / pt-BR / fil chrome leaked
+    expect(r.html).not.toContain("Take a moment");
+    expect(r.html).not.toContain("Tómate un momento");
+    expect(r.html).not.toContain("Reserve um momento");
+    expect(r.html).not.toContain("Magpaglaan ng sandali");
+  });
+
+  it("renders pl chrome when language='pl' is passed (anonymous)", () => {
+    const r = renderChainDailyReminder({
+      ...base,
+      organizerName: null,
+      language: "pl",
+    });
+    expect(r.subject).toMatch(/^Dzień 5: Surrender Novena za Denis Wilson$/);
+    // Polish "many" plural form ("osób") for the count phrase. A
+    // future Intl.PluralRules upgrade would split few/many; for now
+    // the helper is binary and we pick the most-common case.
+    expect(r.html).toContain("4 innych osób modli się dziś.");
+    expect(r.html).not.toContain("praying today.");
+  });
+
+  it("uses 'za' (Catholic devotional preposition) in pl recipient phrase", () => {
+    const r = renderChainDailyReminder({
+      ...base,
+      organizerName: "Anna",
+      language: "pl",
+    });
+    // "za" is the devotional preposition: "módlmy się za N". "Dla"
+    // would sound transactional ("for the benefit of").
+    expect(r.subject).toContain("za Denis Wilson");
+    expect(r.html).toContain("za Denis Wilson");
+    expect(r.html).not.toContain("for Denis Wilson");
+    expect(r.html).not.toContain("dla Denis Wilson");
+  });
+
+  it("pl plaintext fallback localizes CTA + reflection labels", () => {
+    const r = renderChainDailyReminder({
+      ...base,
+      organizerName: "Anna",
+      dailyReflection: "Zaufaj Mi.",
+      language: "pl",
+    });
+    expect(r.text).toContain("Refleksja dnia 5:");
+    expect(r.text).toContain("Pomodliłem się dziś:");
+    expect(r.text).toContain("Odwiedź stronę modlitwy:");
+    expect(r.text).not.toContain("I prayed today:");
+    expect(r.text).not.toContain("Já rezei hoje:");
+  });
 });
 
 // ─── Train daily reminder render coverage (Phase 2 / PR B cleanup) ────
@@ -775,6 +847,56 @@ describe("renderTrainDailyReminder", () => {
     expect(anon.html).toContain("May personal na panalanging kasama");
     expect(anon.html).not.toContain("Isang panalangin mula kay");
     expect(anon.text).toContain("May personal na panalanging kasama");
+  });
+
+  // ─── Phase δ locale plumbing (pl end-to-end) ─────────────────
+
+  it("renders pl chrome when language='pl' is passed", () => {
+    const r = renderTrainDailyReminder({ ...base, language: "pl" });
+    expect(r.subject).toBe(
+      "Przypomnienie modlitewne: Surrender Novena za Denis Wilson",
+    );
+    expect(r.html).toContain("Dzisiejsza modlitwa za Denis Wilson");
+    expect(r.html).toContain(
+      "Witaj Alice, oto twoje dzisiejsze zobowiązanie modlitewne.",
+    );
+    // CTA + view link
+    expect(r.html).toContain("Pomodliłem się");
+    expect(r.html).toContain("Zobacz PrayerTrain");
+    // pl footer
+    expect(r.html).toContain(
+      "PrayerTrain — Zorganizowana modlitwa za potrzebujących",
+    );
+    // Plaintext
+    expect(r.text).toContain("Dzisiejsza modlitwa za Denis Wilson");
+    expect(r.text).toContain("Pomodliłem się:");
+    expect(r.text).toContain("Zobacz PrayerTrain:");
+    // No English / es / pt-BR / fil chrome leaked
+    expect(r.html).not.toContain("Today's Prayer for");
+    expect(r.html).not.toContain("Hola Alice");
+    expect(r.html).not.toContain("Olá Alice");
+    expect(r.html).not.toContain("Kumusta Alice");
+  });
+
+  it("renders pl custom-prayer attribution (named + anonymous)", () => {
+    const named = renderTrainDailyReminder({
+      ...base,
+      organizerFirstName: "Anna",
+      customPrayerText: "Modlitwa, której nauczyła mnie matka.",
+      language: "pl",
+    });
+    expect(named.html).toContain("Modlitwa od Anna");
+    expect(named.text).toContain("Modlitwa od Anna");
+
+    const anon = renderTrainDailyReminder({
+      ...base,
+      organizerFirstName: null,
+      customPrayerText: "Modlitwa, której nauczyła mnie matka.",
+      language: "pl",
+    });
+    expect(anon.html).toContain("Dołączona osobista modlitwa");
+    expect(anon.html).not.toContain("Modlitwa od");
+    expect(anon.text).toContain("Dołączona osobista modlitwa");
   });
 });
 

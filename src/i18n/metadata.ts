@@ -152,7 +152,12 @@ function localeToOgTag(locale: Locale): string {
     case "en":
       return "en_US";
     case "es":
+      // Spanish ships under a macro-tag for now; "es_ES" is a defensible
+      // default for OG (Open Graph examples cite es_ES + es_LA). Once we
+      // split into es-MX/es-ES specifically, this becomes 1:1.
       return "es_ES";
+    case "pt-BR":
+      return "pt_BR";
     default:
       return locale;
   }

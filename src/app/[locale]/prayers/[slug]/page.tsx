@@ -107,37 +107,55 @@ export async function generateMetadata({
 export default async function PrayerDetailPage({
   params,
 }: {
-  params: Promise<{ slug: string }>;
+  params: Promise<{ locale: string; slug: string }>;
 }) {
-  const { slug } = await params;
+  const { locale: rawLocale, slug } = await params;
+  const locale = isLocale(rawLocale) ? rawLocale : defaultLocale;
   const prayer = await prisma.prayerType.findUnique({ where: { slug } });
 
   if (!prayer) notFound();
 
   const baseUrl = getBaseUrl();
-  const crumbs = breadcrumbSchema([
-    { name: "Home", url: baseUrl },
-    { name: "Prayer Library", url: `${baseUrl}/prayers` },
-    { name: prayer.name, url: `${baseUrl}/prayers/${prayer.slug}` },
-  ]);
-  const article = prayerArticleSchema({
-    name: prayer.name,
-    description: prayer.description,
-    slug: prayer.slug,
-    createdAt: prayer.createdAt,
-    situationTags: prayer.situationTags,
-  });
+  // Breadcrumb item URLs are locale-prefixed so Google's breadcrumb
+  // rich result lands on the active locale's pages, not the bare URLs.
+  const crumbs = breadcrumbSchema(
+    [
+      { name: "Home", url: `${baseUrl}${localizedHref(locale, "/")}` },
+      {
+        name: "Prayer Library",
+        url: `${baseUrl}${localizedHref(locale, "/prayers")}`,
+      },
+      {
+        name: prayer.name,
+        url: `${baseUrl}${localizedHref(locale, `/prayers/${prayer.slug}`)}`,
+      },
+    ],
+    locale,
+  );
+  const article = prayerArticleSchema(
+    {
+      name: prayer.name,
+      description: prayer.description,
+      slug: prayer.slug,
+      createdAt: prayer.createdAt,
+      situationTags: prayer.situationTags,
+    },
+    locale,
+  );
   // FAQPage schema. Three Q's per prayer derived from existing fields
   // — what is this, how to pray, who's the patron saint. Earns the
   // FAQ rich-result SERP feature on prayer-detail queries. Returns
   // null when no question has a non-empty answer; we skip rendering
   // in that case rather than emitting an empty FAQ block.
-  const faq = prayerFaqSchema({
-    name: prayer.name,
-    description: prayer.description,
-    instructions: prayer.instructions,
-    patronSaint: prayer.patronSaint,
-  });
+  const faq = prayerFaqSchema(
+    {
+      name: prayer.name,
+      description: prayer.description,
+      instructions: prayer.instructions,
+      patronSaint: prayer.patronSaint,
+    },
+    locale,
+  );
 
   // Related prayers — three other library entries that share at least
   // one situationTag with this prayer. Adds internal-linking depth

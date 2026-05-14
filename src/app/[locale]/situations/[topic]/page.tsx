@@ -104,9 +104,10 @@ function situationFaqSchema(content: SituationContent) {
 export default async function SituationPage({
   params,
 }: {
-  params: Promise<{ topic: string }>;
+  params: Promise<{ locale: string; topic: string }>;
 }) {
-  const { topic } = await params;
+  const { locale: rawLocale, topic } = await params;
+  const locale = isLocale(rawLocale) ? rawLocale : defaultLocale;
   const content = SITUATIONS[topic];
   if (!content) notFound();
 
@@ -127,14 +128,20 @@ export default async function SituationPage({
   const liveBySlug = new Map(livePrayers.map((p) => [p.slug, p]));
 
   const baseUrl = getBaseUrl();
-  const breadcrumbs = breadcrumbSchema([
-    { name: "Home", url: baseUrl },
-    { name: "Situations", url: `${baseUrl}/situations` },
-    {
-      name: content.title,
-      url: `${baseUrl}/situations/${content.topic}`,
-    },
-  ]);
+  const breadcrumbs = breadcrumbSchema(
+    [
+      { name: "Home", url: `${baseUrl}${localizedHref(locale, "/")}` },
+      {
+        name: "Situations",
+        url: `${baseUrl}${localizedHref(locale, "/situations")}`,
+      },
+      {
+        name: content.title,
+        url: `${baseUrl}${localizedHref(locale, `/situations/${content.topic}`)}`,
+      },
+    ],
+    locale,
+  );
   const faq = situationFaqSchema(content);
 
   return (

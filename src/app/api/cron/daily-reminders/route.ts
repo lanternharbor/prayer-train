@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { timingSafeEqual } from "node:crypto";
 import { prisma } from "@/lib/db";
+import { localizePrayer } from "@/lib/prayer-localization";
 import {
   sendDailyReminder,
   sendTrainBouquetReady,
@@ -88,7 +89,17 @@ export async function GET(request: Request) {
           organizer: { select: { name: true } },
         },
       },
-      prayerType: true,
+      // Pull all reviewed translations for this prayerType — we'll
+      // filter to slot.train.language at merge time below. Reviewed-
+      // only filter keeps the editorial gate intact (unreviewed
+      // translations don't go live even if they exist in the DB).
+      // Most prayers will have 0–4 rows here (one per launched
+      // locale's first-wave translations); payload is small.
+      prayerType: {
+        include: {
+          translations: { where: { reviewedAt: { not: null } } },
+        },
+      },
       claimedBy: { select: { email: true, name: true } },
     },
   });
@@ -112,6 +123,18 @@ export async function GET(request: Request) {
       slot.id
     }&token=${encodeURIComponent(completionToken)}`;
 
+    // Merge the reviewed translation (if any) for this train's
+    // language onto the prayer's base row. Falls back field-by-field
+    // to English when no reviewed translation exists for the
+    // train.language. The chrome (subject, CTA, footer) is already
+    // localized via the email dictionary; this localizes the prayer
+    // text + instructions + name embedded inside the body.
+    const localizedPrayer = localizePrayer(
+      slot.prayerType,
+      slot.prayerType.translations,
+      slot.train.language,
+    );
+
     // sendDailyReminder returns EmailDispatchResult so we can write
     // lastReminderSentAt only on verified Resend success. Pre-PR-#52
     // the helper had an internal try/catch that swallowed both API
@@ -123,9 +146,9 @@ export async function GET(request: Request) {
       to: email,
       claimerName: name,
       recipientName: slot.train.recipientName,
-      prayerName: slot.prayerType.name,
-      prayerText: slot.prayerType.prayerText,
-      prayerInstructions: slot.prayerType.instructions,
+      prayerName: localizedPrayer.name,
+      prayerText: localizedPrayer.prayerText,
+      prayerInstructions: localizedPrayer.instructions,
       customPrayerText: slot.train.customPrayerText,
       organizerFirstName: slot.train.organizerAnonymous
         ? null
@@ -134,9 +157,9 @@ export async function GET(request: Request) {
       completeUrl,
       slotId: slot.id,
       // PrayerTrain.language was set from the organizer's UI locale at
-      // train-create time. Drives the email language so a Spanish-
-      // speaking organizer's family + warriors all receive Spanish
-      // reminders even when individual claimers' browsers are English.
+      // train-create time. Drives the email chrome language. The
+      // prayer body itself comes from `localizedPrayer` above, which
+      // applies the same `language` against the translation table.
       // Defaults to "en" on existing rows (Prisma column default).
       language: slot.train.language,
     });

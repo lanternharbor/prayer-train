@@ -2,6 +2,10 @@ import type { Metadata } from "next";
 import { LocaleLink as Link } from "@/components/locale-link";
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/db";
+import {
+  getLocalizedPrayerBySlug,
+  getLocalizedPrayersMany,
+} from "@/lib/prayer-localization";
 import { getBaseUrl } from "@/lib/url";
 import { buildAlternates } from "@/i18n/metadata";
 import { localizedHref } from "@/i18n/links";
@@ -70,10 +74,11 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { locale: rawLocale, slug } = await params;
   const locale = isLocale(rawLocale) ? rawLocale : defaultLocale;
-  const prayer = await prisma.prayerType.findUnique({
-    where: { slug },
-    select: { slug: true, name: true, description: true, imageUrl: true },
-  });
+  // Localized fetch: pulls the base + reviewed translation (if any)
+  // and applies the field-by-field merge. Falls back to English when
+  // no reviewed translation exists, so this is safe to run on every
+  // locale's prerender path.
+  const prayer = await getLocalizedPrayerBySlug(slug, locale);
 
   if (!prayer) return { title: "Prayer Not Found" };
 
@@ -111,7 +116,7 @@ export default async function PrayerDetailPage({
 }) {
   const { locale: rawLocale, slug } = await params;
   const locale = isLocale(rawLocale) ? rawLocale : defaultLocale;
-  const prayer = await prisma.prayerType.findUnique({ where: { slug } });
+  const prayer = await getLocalizedPrayerBySlug(slug, locale);
 
   if (!prayer) notFound();
 
@@ -163,21 +168,21 @@ export default async function PrayerDetailPage({
   // "novenas of trust" find the Sacred Heart + Surrender Novena +
   // Divine Mercy together. Excludes self; ordered by daysRequired
   // proximity then alphabetical so the row reads cohesively.
+  //
+  // Localized fetch so the related-prayer names + patron saints
+  // render in the active locale when reviewed translations exist;
+  // English fallback otherwise.
   const relatedPrayers = prayer.situationTags.length > 0
-    ? await prisma.prayerType.findMany({
-        where: {
-          slug: { not: prayer.slug },
-          situationTags: { hasSome: prayer.situationTags },
+    ? await getLocalizedPrayersMany(
+        {
+          where: {
+            slug: { not: prayer.slug },
+            situationTags: { hasSome: prayer.situationTags },
+          },
+          take: 12,
         },
-        select: {
-          slug: true,
-          name: true,
-          patronSaint: true,
-          daysRequired: true,
-          category: true,
-        },
-        take: 12,
-      })
+        locale,
+      )
     : [];
   const relatedRanked = relatedPrayers
     .map((p) => ({

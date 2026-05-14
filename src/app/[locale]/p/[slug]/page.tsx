@@ -224,6 +224,19 @@ export default async function PrayerTrainPage({
               duration: true,
               daysRequired: true,
               category: true,
+              // Reviewed translation (if any) for the active locale.
+              // The slot-card UI only renders `name` from prayerType,
+              // so we only pull `name` from the translation row to
+              // keep the RSC payload tight. A miss (no reviewed
+              // translation) returns an empty array and the inline
+              // fallback below uses the English base.
+              translations: {
+                where: {
+                  locale: locale || "en",
+                  reviewedAt: { not: null },
+                },
+                select: { name: true },
+              },
             },
           },
         },
@@ -292,7 +305,18 @@ export default async function PrayerTrainPage({
         ? null
         : slot.completionNote,
       completionNoteShareWall: slot.completionNoteShareWall,
-      prayerType: slot.prayerType,
+      // Strip the translations array from the client payload — only
+      // the merged name field is needed downstream. Fall back to the
+      // English base when no reviewed translation exists for this
+      // locale (the most common case while Phase ε is still in its
+      // editorial cold-start).
+      prayerType: (() => {
+        const { translations, ...base } = slot.prayerType;
+        return {
+          ...base,
+          name: translations[0]?.name ?? base.name,
+        };
+      })(),
     });
   });
 

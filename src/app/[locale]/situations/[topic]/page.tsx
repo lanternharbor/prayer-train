@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { LocaleLink as Link } from "@/components/locale-link";
 import { notFound } from "next/navigation";
-import { prisma } from "@/lib/db";
+import { getLocalizedPrayersMany } from "@/lib/prayer-localization";
 import { getBaseUrl } from "@/lib/url";
 import { breadcrumbSchema } from "@/lib/schema";
 import { smartTruncate } from "@/lib/utils";
@@ -114,17 +114,17 @@ export default async function SituationPage({
   // Pull live data for the recommended prayers so a renamed prayer in
   // the library doesn't strand its recommendation here. Only fetch
   // the slugs the page actually references; preserve order.
+  //
+  // Localized fetch: prayer names + patron saints render in the
+  // active locale when a reviewed translation exists; English
+  // fallback otherwise. Topic-page content.ts copy remains English
+  // for now — translating the pastoral lead paragraph is Phase ζ
+  // editorial work, not Phase ε.
   const slugs = content.prayers.map((p) => p.slug);
-  const livePrayers = await prisma.prayerType.findMany({
-    where: { slug: { in: slugs } },
-    select: {
-      slug: true,
-      name: true,
-      patronSaint: true,
-      daysRequired: true,
-      category: true,
-    },
-  });
+  const livePrayers = await getLocalizedPrayersMany(
+    { where: { slug: { in: slugs } } },
+    locale,
+  );
   const liveBySlug = new Map(livePrayers.map((p) => [p.slug, p]));
 
   const baseUrl = getBaseUrl();

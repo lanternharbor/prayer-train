@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import { getEmailDictionary } from "./index";
 import { en } from "./en";
 import { es } from "./es";
+import { ptBR } from "./pt-BR";
 
 /**
  * Pin the dictionary loader's contract. The cron + scripts read
@@ -18,6 +19,10 @@ describe("getEmailDictionary", () => {
     expect(getEmailDictionary("es")).toBe(es);
   });
 
+  it("returns the Brazilian Portuguese dictionary for language='pt-BR'", () => {
+    expect(getEmailDictionary("pt-BR")).toBe(ptBR);
+  });
+
   it("falls back to English for an unsupported locale", () => {
     // A future language code (or a typo on a manual DB update) must
     // not crash the cron. The DB row stays unchanged; only the
@@ -26,7 +31,16 @@ describe("getEmailDictionary", () => {
     expect(getEmailDictionary("")).toBe(en);
   });
 
-  it("Spanish dictionary covers every key the English one declares", () => {
+  it("falls back to English on case-mismatch ('pt-br' vs canonical 'pt-BR')", () => {
+    // The dictionary key is the exact BCP 47 string written by the
+    // create flow ("pt-BR"). A lowercase variant from a hand-typed
+    // DB row or a stale cookie shouldn't crash; English is the safe
+    // fallback. The Accept-Language negotiator handles case
+    // normalization upstream so this path is hit rarely in practice.
+    expect(getEmailDictionary("pt-br")).toBe(en);
+  });
+
+  it("non-English dictionaries cover every key the English one declares", () => {
     // Belt-and-suspenders: TypeScript already enforces this via the
     // EnglishEmailDictionary structural type, but pinning at runtime
     // catches the case where a future contributor adds an optional
@@ -34,6 +48,7 @@ describe("getEmailDictionary", () => {
     const enKeys = Object.keys(en) as Array<keyof typeof en>;
     for (const k of enKeys) {
       expect(es[k]).toBeDefined();
+      expect(ptBR[k]).toBeDefined();
     }
     // Nested check on trainDaily + chainDaily.
     const trainKeys = Object.keys(en.trainDaily) as Array<
@@ -41,19 +56,24 @@ describe("getEmailDictionary", () => {
     >;
     for (const k of trainKeys) {
       expect(es.trainDaily[k]).toBeDefined();
+      expect(ptBR.trainDaily[k]).toBeDefined();
     }
     const chainKeys = Object.keys(en.chainDaily) as Array<
       keyof typeof en.chainDaily
     >;
     for (const k of chainKeys) {
       expect(es.chainDaily[k]).toBeDefined();
+      expect(ptBR.chainDaily[k]).toBeDefined();
     }
   });
 
-  it("Spanish dictionary uses the locale-aware recipient phrase prefix", () => {
-    // "por" reads more naturally than "para" in Catholic prayer
-    // contexts: "rezar POR alguien" / "una novena POR la salud de X".
+  it("non-English dictionaries use 'por' as the recipient phrase prefix", () => {
+    // Catholic register: "rezar POR alguien/alguém" reads as devotional
+    // prayer. "Para" would feel transactional/utilitarian. Both
+    // Spanish and Brazilian Portuguese ship with "por" — convergent
+    // editorial choice, not a happy accident.
     expect(es.recipientPhrasePrefix).toBe("por");
+    expect(ptBR.recipientPhrasePrefix).toBe("por");
     expect(en.recipientPhrasePrefix).toBe("for");
   });
 });

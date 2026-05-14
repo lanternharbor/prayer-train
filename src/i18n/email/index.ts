@@ -15,10 +15,14 @@
  */
 import { en, type EnglishEmailDictionary } from "./en";
 import { es } from "./es";
+import { ptBR } from "./pt-BR";
 
 const dictionaries: Record<string, EnglishEmailDictionary> = {
   en,
   es,
+  // BCP 47 string key — matches PrayerTrain.language / PrayerChain.language
+  // values written by the create flow ("pt-BR", not "ptBR").
+  "pt-BR": ptBR,
 };
 
 export type EmailDictionary = EnglishEmailDictionary;

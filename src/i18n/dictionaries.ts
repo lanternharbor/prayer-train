@@ -19,6 +19,7 @@ import {
 const dictionaries = {
   en: () => import("./messages/en.json").then((m) => m.default),
   es: () => import("./messages/es.json").then((m) => m.default),
+  "pt-BR": () => import("./messages/pt-BR.json").then((m) => m.default),
 } as const;
 
 /**

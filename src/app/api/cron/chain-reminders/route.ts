@@ -221,6 +221,10 @@ export async function GET(request: Request) {
           markCompleteUrl,
           unsubscribeUrl,
           otherMembersCount: otherCount,
+          // PrayerChain.language set at create time from the organizer's
+          // UI locale. See sendDailyReminder's parallel comment + the
+          // schema field.
+          language: chain.language,
         });
       } catch (thrown) {
         result = { ok: false, error: thrown };

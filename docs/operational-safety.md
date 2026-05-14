@@ -134,6 +134,35 @@ Practical signals that something has gone wrong:
 
 Default rollback: `git revert <bad-commit> && git push`. Vercel auto-redeploys.
 
+## Pending DB schema updates (run before deploy)
+
+This project has no Prisma migration files — `prisma/schema.prisma`
+is the source of truth and prod is synced via `prisma db push`. Any
+schema-affecting branch needs an explicit `db push` against the prod
+Neon connection string **before** the matching app code reaches prod
+traffic; otherwise the new columns / models referenced by the deploy
+don't exist yet and reads/writes fail at runtime.
+
+The current outstanding pushes, in merge order:
+
+| Branch / PR | Schema delta | DB op needed |
+|---|---|---|
+| **#56 audit pass** (merged) | `PrayerTrain.isPublic` and `PrayerChain.isPublic` defaults flipped from `true` → `false` (column type unchanged) | `DATABASE_URL=<prod> npx prisma db push` — safe; existing rows untouched, default only affects new INSERTs that omit the column |
+| **#60 i18n Phase 2** (open at time of writing) | New columns: `PrayerTrain.language String @default("en")` and `PrayerChain.language String @default("en")` | `DATABASE_URL=<prod> npx prisma db push` BEFORE merge lands traffic. Safe: column is non-null but has a default, so existing rows get `"en"` on push; new INSERTs from the server actions set it explicitly. |
+
+Steps for each:
+1. Confirm William is awake.
+2. Smoke test prod first: `./scripts/smoke.sh https://prayertrains.com` (or equivalent).
+3. Run `DATABASE_URL="<prod Neon URL>" npx prisma db push` from local.
+4. Smoke test again immediately after.
+5. Then merge the matching PR — Vercel auto-deploys the app code that uses the new column.
+
+If a deploy somehow lands BEFORE `db push`, app code that references
+the new column will fail with `Unknown column` errors at the Prisma
+level. Mitigation: `db push` immediately resolves it; no rollback
+needed.
+
 ## Changelog
 
 - **2026-04-26 — Initial version.** Smoke test + Healthchecks ping + workflow rules documented after the Spina family train demonstrated the product is now real.
+- **2026-05-13 — Pending DB schema updates section.** PR #60's `language` column addition (and PR #56's lingering default flip) require `prisma db push` against prod before the merge takes effect for new rows.

@@ -9,6 +9,7 @@ import {
   renderChainDailyReminder,
   renderChainJoinConfirmation,
   renderTrainBouquetReady,
+  renderTrainDailyReminder,
 } from "./email";
 
 /**
@@ -296,6 +297,230 @@ describe("renderChainDailyReminder", () => {
     });
     expect(r.html).not.toContain("<script>alert");
     expect(r.html).toContain("&lt;script&gt;");
+  });
+
+  // ─── Phase 2 locale plumbing (PR B) ───────────────────────────
+  //
+  // Pin the contract that `language` selects the correct email
+  // dictionary at render time. These tests cover the four critical
+  // paths: subject + H1 + body chrome + plaintext alternate.
+
+  it("renders Spanish chrome when language='es' is passed (named)", () => {
+    const r = renderChainDailyReminder({
+      ...base,
+      organizerName: "Jilu Chengat",
+      language: "es",
+    });
+    // Subject uses colon-separated "Día N: {prayer} de {orgFirst} por {name}"
+    // — colon avoids gendered article "de la" which doesn't agree with
+    // English prayer names (Phase 3 will translate the names).
+    expect(r.subject).toContain("Día 5:");
+    expect(r.subject).toContain("de Jilu");
+    expect(r.subject).toContain("por Denis Wilson");
+    // "Day N of M" day-badge becomes "Día N de M"
+    expect(r.html).toContain("Día 5 de");
+    // Greeting line in Spanish
+    expect(r.html).toContain("Tómate un momento, Alice.");
+    // CTA + footer links
+    expect(r.html).toContain("Ya recé hoy");
+    expect(r.html).toContain("Cancelar suscripción");
+    // No English chrome leaked through
+    expect(r.html).not.toContain("Take a moment");
+    expect(r.html).not.toContain("Unsubscribe</a>");
+    expect(r.html).not.toContain("I prayed today</a>");
+  });
+
+  it("renders Spanish chrome when language='es' is passed (anonymous)", () => {
+    const r = renderChainDailyReminder({
+      ...base,
+      organizerName: null,
+      language: "es",
+    });
+    // Anonymous subject path. No "de {name}" possessive; colon-separated.
+    expect(r.subject).toMatch(/^Día 5: Surrender Novena por Denis Wilson$/);
+    // Plural Spanish for the "X others praying" line
+    expect(r.html).toContain("4 otras personas están rezando hoy.");
+    expect(r.html).not.toContain("praying today.");
+  });
+
+  it("falls back to English when language is omitted or unsupported", () => {
+    // Omitted → "en" default
+    const omitted = renderChainDailyReminder({ ...base, organizerName: "Jilu" });
+    expect(omitted.subject).toBe(
+      "Day 5 of Jilu's Surrender Novena for Denis Wilson",
+    );
+    // Unsupported locale → graceful fallback to English (the dict
+    // loader handles this so a stale DB value can't crash the cron).
+    const unsupported = renderChainDailyReminder({
+      ...base,
+      organizerName: "Jilu",
+      language: "klingon",
+    });
+    expect(unsupported.subject).toBe(
+      "Day 5 of Jilu's Surrender Novena for Denis Wilson",
+    );
+  });
+
+  it("uses the locale-aware recipient-phrase prefix (Spanish 'por')", () => {
+    const r = renderChainDailyReminder({
+      ...base,
+      organizerName: "Jilu",
+      language: "es",
+    });
+    // Subject + H1 must use "por Denis Wilson" (Catholic prayer
+    // register), not "for Denis Wilson" or "para Denis Wilson".
+    expect(r.subject).toContain("por Denis Wilson");
+    expect(r.html).toContain("por Denis Wilson");
+    expect(r.html).not.toContain("for Denis Wilson");
+    expect(r.html).not.toContain("para Denis Wilson");
+  });
+
+  it("Spanish plaintext fallback localizes CTA + reflection labels", () => {
+    const r = renderChainDailyReminder({
+      ...base,
+      organizerName: "Jilu",
+      dailyReflection: "Confía en Mí.",
+      language: "es",
+    });
+    expect(r.text).toContain("Reflexión del día 5:");
+    expect(r.text).toContain("Ya recé hoy:");
+    expect(r.text).toContain("Visitar la página de oración:");
+    expect(r.text).not.toContain("I prayed today:");
+    expect(r.text).not.toContain("Day 5 reflection:");
+  });
+});
+
+// ─── Train daily reminder render coverage (Phase 2 / PR B cleanup) ────
+//
+// `sendDailyReminder` is now a thin wrapper over `renderTrainDailyReminder`,
+// which returns { subject, html, text } purely. These tests pin the
+// localization + escape contracts without touching Resend.
+
+describe("renderTrainDailyReminder", () => {
+  const base = {
+    to: "alice@example.com",
+    claimerName: "Alice",
+    recipientName: "Denis Wilson",
+    prayerName: "Surrender Novena",
+    prayerText: "O Jesus, I surrender myself to You.",
+    prayerInstructions: "Pray once daily.",
+    customPrayerText: null,
+    organizerFirstName: "Jilu",
+    trainUrl: "https://prayertrains.com/p/the-wilson-family-9ghj",
+    completeUrl:
+      "https://prayertrains.com/p/the-wilson-family-9ghj/complete?slot=abc&token=def",
+    slotId: "slot_abc",
+  };
+
+  it("renders English by default", () => {
+    const r = renderTrainDailyReminder(base);
+    expect(r.subject).toBe(
+      "Prayer reminder: Surrender Novena for Denis Wilson",
+    );
+    expect(r.html).toContain("Today's Prayer for Denis Wilson");
+    expect(r.html).toContain("Hi Alice, here's your prayer commitment for today.");
+    expect(r.html).toContain(">\n              I prayed\n            </a>");
+    expect(r.text).toContain("Today's prayer for Denis Wilson");
+    expect(r.text).toContain("I prayed:");
+  });
+
+  it("renders Spanish chrome when language='es' is passed", () => {
+    const r = renderTrainDailyReminder({ ...base, language: "es" });
+    // Subject + H1 + greeting all in Spanish, with "por" (not "for"
+    // and not "para") in the recipient phrase.
+    expect(r.subject).toBe(
+      "Recordatorio de oración: Surrender Novena por Denis Wilson",
+    );
+    expect(r.html).toContain("Oración de hoy por Denis Wilson");
+    expect(r.html).toContain(
+      "Hola Alice, este es tu compromiso de oración para hoy.",
+    );
+    // CTA + view link in Spanish
+    expect(r.html).toContain("Ya recé");
+    expect(r.html).toContain("Ver el PrayerTrain");
+    // Spanish footer (translates the marketing line)
+    expect(r.html).toContain(
+      "PrayerTrain — Oración organizada para quienes la necesitan",
+    );
+    // Plaintext localized too
+    expect(r.text).toContain("Oración de hoy por Denis Wilson");
+    expect(r.text).toContain("Ya recé:");
+    expect(r.text).toContain("Ver el PrayerTrain:");
+    // No English chrome leaked
+    expect(r.html).not.toContain("Today's Prayer for");
+    expect(r.html).not.toContain("Hi Alice");
+    expect(r.text).not.toContain("I prayed:");
+    expect(r.text).not.toContain("View the prayer train:");
+  });
+
+  it("falls back to English when language is omitted or unsupported", () => {
+    // Same fallback contract as renderChainDailyReminder.
+    const unsupported = renderTrainDailyReminder({
+      ...base,
+      language: "klingon",
+    });
+    expect(unsupported.subject).toBe(
+      "Prayer reminder: Surrender Novena for Denis Wilson",
+    );
+    expect(unsupported.html).toContain("Today's Prayer for Denis Wilson");
+
+    const empty = renderTrainDailyReminder({ ...base, language: "" });
+    expect(empty.subject).toBe(
+      "Prayer reminder: Surrender Novena for Denis Wilson",
+    );
+  });
+
+  it("escapes HTML special characters in user-controlled fields", () => {
+    // The recipient name, claimer name, prayer name, prayer text, prayer
+    // instructions, custom prayer, and organizer first name are all
+    // user-controlled. None of them should render unescaped in the
+    // HTML body. Plaintext alternate is intentionally NOT escaped
+    // (it's plain text).
+    const r = renderTrainDailyReminder({
+      ...base,
+      recipientName: "<script>alert(1)</script>",
+      claimerName: "Maria & José",
+      prayerName: "Novena to St. Joseph <em>",
+      prayerText: "O glorious St. Joseph & Patron",
+      prayerInstructions: "Pray <quietly>",
+      customPrayerText: "A family <prayer> & blessing",
+      organizerFirstName: "<b>Jilu</b>",
+    });
+    // Body HTML must never contain the raw script/em tags
+    expect(r.html).not.toContain("<script>alert");
+    expect(r.html).not.toContain("Novena to St. Joseph <em>");
+    expect(r.html).not.toContain("<quietly>");
+    expect(r.html).not.toContain("<b>Jilu</b>");
+    // Properly escaped substitutions appear instead
+    expect(r.html).toContain("&lt;script&gt;");
+    expect(r.html).toContain("Maria &amp; José");
+    expect(r.html).toContain("Novena to St. Joseph &lt;em&gt;");
+    expect(r.html).toContain("O glorious St. Joseph &amp; Patron");
+    expect(r.html).toContain("Pray &lt;quietly&gt;");
+    expect(r.html).toContain("A family &lt;prayer&gt; &amp; blessing");
+    expect(r.html).toContain("&lt;b&gt;Jilu&lt;/b&gt;");
+  });
+
+  it("renders custom-prayer attribution with named/anonymous variants in Spanish", () => {
+    const named = renderTrainDailyReminder({
+      ...base,
+      organizerFirstName: "Jilu",
+      customPrayerText: "A prayer my mother taught me.",
+      language: "es",
+    });
+    expect(named.html).toContain("Una oración de Jilu");
+    // Plaintext too
+    expect(named.text).toContain("Una oración de Jilu");
+
+    const anon = renderTrainDailyReminder({
+      ...base,
+      organizerFirstName: null,
+      customPrayerText: "A prayer my mother taught me.",
+      language: "es",
+    });
+    expect(anon.html).toContain("Una oración personal incluida");
+    expect(anon.html).not.toContain("Una oración de");
+    expect(anon.text).toContain("Una oración personal incluida");
   });
 });
 

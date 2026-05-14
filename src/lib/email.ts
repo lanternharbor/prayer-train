@@ -323,21 +323,7 @@ export async function sendClaimConfirmation({
   }
 }
 
-export async function sendDailyReminder({
-  to,
-  claimerName,
-  recipientName,
-  prayerName,
-  prayerText,
-  prayerInstructions,
-  customPrayerText,
-  organizerFirstName,
-  trainUrl,
-  completeUrl,
-  language = "en",
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  slotId,
-}: {
+export interface TrainDailyReminderInput {
   to: string;
   claimerName: string;
   recipientName: string;
@@ -366,37 +352,53 @@ export async function sendDailyReminder({
    * unsupported value, so a stale DB value can't crash the cron.
    */
   language?: string;
-}): Promise<EmailDispatchResult> {
-  const dict = getEmailDictionary(language);
+}
+
+/**
+ * Pure render helper for the train daily reminder. Returns the
+ * subject/html/text triple without dispatching to Resend, so unit
+ * tests can pin every locale + edge case without touching the network.
+ *
+ * Mirrors the renderChainDailyReminder shape (see below). The
+ * dispatching side-effect lives in `sendDailyReminder` so that
+ * cron + scripts still see the same EmailDispatchResult contract.
+ *
+ * All user-controlled fields are HTML-escaped before interpolation
+ * via escapeHtml(). The plaintext alternate uses the raw values
+ * directly (no escape) because it's plain text.
+ */
+export function renderTrainDailyReminder(input: TrainDailyReminderInput): {
+  subject: string;
+  html: string;
+  text: string;
+} {
+  const dict = getEmailDictionary(input.language ?? "en");
   const t = dict.trainDaily;
   // Pre-escape user-controlled fields for safe HTML injection.
-  const eClaimerName = escapeHtml(claimerName);
-  const eRecipientName = escapeHtml(recipientName);
-  const ePrayerName = escapeHtml(prayerName);
-  const ePrayerText = prayerText ? escapeHtml(prayerText) : null;
-  const ePrayerInstructions = prayerInstructions
-    ? escapeHtml(prayerInstructions)
+  const eClaimerName = escapeHtml(input.claimerName);
+  const eRecipientName = escapeHtml(input.recipientName);
+  const ePrayerName = escapeHtml(input.prayerName);
+  const ePrayerText = input.prayerText ? escapeHtml(input.prayerText) : null;
+  const ePrayerInstructions = input.prayerInstructions
+    ? escapeHtml(input.prayerInstructions)
     : null;
-  const eCustomPrayerText = customPrayerText
-    ? escapeHtml(customPrayerText)
+  const eCustomPrayerText = input.customPrayerText
+    ? escapeHtml(input.customPrayerText)
     : null;
   // Anonymous-aware attribution. When organizerFirstName is null or
   // empty, drop the "from X" attribution and use a generic neutral
   // label ("A personal prayer included") instead of the previous
   // stiff "A prayer from the organizer" fallback.
-  const eOrgFirst = organizerFirstName ? escapeHtml(organizerFirstName) : null;
+  const eOrgFirst = input.organizerFirstName
+    ? escapeHtml(input.organizerFirstName)
+    : null;
   const customPrayerHeading = eOrgFirst
     ? interpolate(t.customPrayerHeadingNamed, { organizerName: eOrgFirst })
     : t.customPrayerHeadingAnon;
 
-  // Inlined render → dispatch. Returns EmailDispatchResult so the
-  // train daily-reminders cron can write its PrayerSlot.lastReminderSentAt
-  // audit field only on verified Resend success. The legacy
-  // try-catch-and-swallow shape silently dropped API-level rejections.
-  // See sendChainDailyReminder for the parallel chain-side fix.
   const subject = interpolate(t.subject, {
-    prayerName,
-    recipientName,
+    prayerName: input.prayerName,
+    recipientName: input.recipientName,
   });
   const h1Rendered = interpolate(t.h1, { recipientName: eRecipientName });
   const greetingRendered = interpolate(t.greeting, {
@@ -443,12 +445,12 @@ export async function sendDailyReminder({
             </div>
           ` : ""}
           <div style="text-align: center; margin-top: 24px;">
-            <a href="${completeUrl}" style="display: inline-block; background: #d4a843; color: #0a0c1a; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: bold; font-size: 14px;">
+            <a href="${input.completeUrl}" style="display: inline-block; background: #d4a843; color: #0a0c1a; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: bold; font-size: 14px;">
               ${t.cta}
             </a>
           </div>
           <p style="text-align: center; color: #b8a994; font-size: 12px; margin-top: 8px;">
-            <a href="${trainUrl}" style="color: #b8a994; text-decoration: none;">${t.viewLink}</a>
+            <a href="${input.trainUrl}" style="color: #b8a994; text-decoration: none;">${t.viewLink}</a>
           </p>
           <p style="text-align: center; color: #b8a994; font-size: 12px; margin-top: 24px;">
             ${t.footer}
@@ -459,14 +461,32 @@ export async function sendDailyReminder({
   // missing-text used to mean Resend served only HTML, which renders
   // as "this email has no body" in some clients. Unescaped values
   // because this is plaintext.
-  const customPrayerHeadingPlain = organizerFirstName
-    ? interpolate(t.customPrayerHeadingNamed, { organizerName: organizerFirstName })
+  const customPrayerHeadingPlain = input.organizerFirstName
+    ? interpolate(t.customPrayerHeadingNamed, {
+        organizerName: input.organizerFirstName,
+      })
     : t.customPrayerHeadingAnon;
-  const textGreetingLine = interpolate(t.textGreeting, { recipientName });
-  const textGreeting2 = interpolate(t.greeting, { claimerName });
-  const text = `${textGreetingLine}\n\n${textGreeting2}\n\n${prayerName}\n${prayerInstructions ? prayerInstructions + "\n" : ""}${prayerText ? "\n" + prayerText + "\n" : ""}${customPrayerText ? "\n" + customPrayerHeadingPlain + ":\n" + customPrayerText + "\n" : ""}\n${t.textCTA} ${completeUrl}\n${t.textViewLink} ${trainUrl}`;
+  const textGreetingLine = interpolate(t.textGreeting, {
+    recipientName: input.recipientName,
+  });
+  const textGreeting2 = interpolate(t.greeting, {
+    claimerName: input.claimerName,
+  });
+  const text = `${textGreetingLine}\n\n${textGreeting2}\n\n${input.prayerName}\n${input.prayerInstructions ? input.prayerInstructions + "\n" : ""}${input.prayerText ? "\n" + input.prayerText + "\n" : ""}${input.customPrayerText ? "\n" + customPrayerHeadingPlain + ":\n" + input.customPrayerText + "\n" : ""}\n${t.textCTA} ${input.completeUrl}\n${t.textViewLink} ${input.trainUrl}`;
+  return { subject, html, text };
+}
+
+export async function sendDailyReminder(
+  input: TrainDailyReminderInput,
+): Promise<EmailDispatchResult> {
+  // Render → dispatch. Returns EmailDispatchResult so the train
+  // daily-reminders cron can write its PrayerSlot.lastReminderSentAt
+  // audit field only on verified Resend success. The legacy
+  // try-catch-and-swallow shape silently dropped API-level rejections.
+  // See sendChainDailyReminder for the parallel chain-side fix.
+  const { subject, html, text } = renderTrainDailyReminder(input);
   return dispatchEmail({
-    to,
+    to: input.to,
     subject,
     html,
     text,

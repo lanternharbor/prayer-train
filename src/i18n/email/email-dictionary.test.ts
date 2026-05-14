@@ -51,7 +51,9 @@ describe("getEmailDictionary", () => {
   });
 
   it("Spanish dictionary uses the locale-aware recipient phrase prefix", () => {
-    expect(es.recipientPhrasePrefix).toBe("para");
+    // "por" reads more naturally than "para" in Catholic prayer
+    // contexts: "rezar POR alguien" / "una novena POR la salud de X".
+    expect(es.recipientPhrasePrefix).toBe("por");
     expect(en.recipientPhrasePrefix).toBe("for");
   });
 });

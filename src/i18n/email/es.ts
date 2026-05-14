@@ -9,14 +9,21 @@ import type { EnglishEmailDictionary } from "./en";
  * build time.
  *
  * Editorial notes:
- *  - "guerrero/a de oración" for "prayer warrior" stays in the public
- *    UI dict; emails use the warmer "está orando" / "rezar" verbs.
- *  - "PrayerTrain" stays untranslated as a brand. The English-language
- *    descriptor "Organized prayer for those in need" footer is kept
- *    English-flavored in the brand footer line; only the marketing
- *    footer translates.
- *  - {orgFirst}'s possessive (Latin Spanish doesn't have this) renders
- *    as "de {orgFirst}" — e.g., "Día 5 de la Novena de María por X".
+ *  - "PrayerTrain" stays untranslated as a brand.
+ *  - "por" reads more naturally than "para" in Catholic prayer
+ *    contexts ("rezar POR alguien"). Used as the recipientPhrasePrefix
+ *    so subjects render "Día 5: Surrender Novena por Denis Wilson"
+ *    rather than "Día 5: Surrender Novena para Denis Wilson".
+ *  - Subject + H1 patterns deliberately avoid the gendered article
+ *    "de la {prayerName}" — at first launch the prayer names
+ *    themselves (e.g. "Surrender Novena", "Sacred Heart Novena") are
+ *    still English (Phase 3 / PR D translates them) and have no
+ *    Spanish grammatical gender to agree with. The colon-separated
+ *    "Día N: {prayerName}" pattern is grammatical in both directions:
+ *    works today with English prayer names and continues to work
+ *    once {prayerName} is translated.
+ *  - {orgFirst}'s possessive renders as "de {orgFirst}" (Spanish
+ *    has no apostrophe-S construction).
  */
 export const es: EnglishEmailDictionary = {
   brandFooter: "PrayerTrain · Un proyecto de Lantern Harbor",
@@ -37,8 +44,12 @@ export const es: EnglishEmailDictionary = {
   },
 
   chainDaily: {
-    subjectNamed: "Día {day} de la {prayerName} de {orgFirst} {phrase}",
-    subjectAnon: "Día {day} de la {prayerName} {phrase}",
+    // Colon-separated to avoid gendered article ("de la") that doesn't
+    // agree with English prayer names ("Surrender Novena", "Memorare").
+    // Once prayer names are translated (PR D), this pattern still
+    // reads naturally: "Día 5: Novena al Sagrado Corazón de María por X".
+    subjectNamed: "Día {day}: {prayerName} de {orgFirst} {phrase}",
+    subjectAnon: "Día {day}: {prayerName} {phrase}",
     dayLabel: "Día {day} de {total}",
     h1Named: "{prayerName} de {orgFirst} {phrase}",
     h1Anon: "{prayerName} {phrase}",
@@ -55,6 +66,8 @@ export const es: EnglishEmailDictionary = {
     cta: "Ya recé hoy",
     visitPrayer: "Visitar la oración",
     unsubscribe: "Cancelar suscripción",
+    // Plaintext headers mirror the HTML subject/H1 — colon-separated,
+    // gender-neutral. Same rationale as subjectNamed/subjectAnon above.
     textHeaderNamed:
       "Día {day} de {total} — {prayerName} de {orgFirst} {phrase}",
     textHeaderAnon: "Día {day} de {total} — {prayerName} {phrase}",
@@ -66,8 +79,9 @@ export const es: EnglishEmailDictionary = {
     textUnsubscribe: "Cancelar suscripción:",
   },
 
-  // "para" works in both subject ("Día 5 de la Novena al Sagrado Corazón
-  // para María") and headers. For an intention-only phrase, "para que la
-  // hermana se recupere" — same prefix.
-  recipientPhrasePrefix: "para",
+  // "por" reads more naturally than "para" in Catholic prayer
+  // contexts: "rezar POR alguien" / "una novena POR la salud de X".
+  // "Para" sounds like "for the benefit of" — less prayer-flavored.
+  // Renders inside subjects ("por María Wilson") and H1s.
+  recipientPhrasePrefix: "por",
 };

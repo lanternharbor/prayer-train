@@ -15,8 +15,8 @@ import {
  * renders the switcher with `undefined`).
  */
 describe("locales", () => {
-  it("includes en, es, pt-BR (priority order)", () => {
-    expect(locales).toEqual(["en", "es", "pt-BR"]);
+  it("includes en, es, pt-BR, fil (priority order)", () => {
+    expect(locales).toEqual(["en", "es", "pt-BR", "fil"]);
   });
 
   it("defaults to English (the brand's primary audience)", () => {
@@ -34,6 +34,7 @@ describe("locales", () => {
     expect(LOCALE_LABELS.en).toBe("English");
     expect(LOCALE_LABELS.es).toBe("Español");
     expect(LOCALE_LABELS["pt-BR"]).toBe("Português");
+    expect(LOCALE_LABELS.fil).toBe("Filipino");
   });
 });
 
@@ -42,6 +43,7 @@ describe("isLocale", () => {
     expect(isLocale("en")).toBe(true);
     expect(isLocale("es")).toBe(true);
     expect(isLocale("pt-BR")).toBe(true);
+    expect(isLocale("fil")).toBe(true);
   });
 
   it("returns false on case mismatch (URL routing is strict)", () => {
@@ -68,6 +70,7 @@ describe("findLocaleCaseInsensitive", () => {
     expect(findLocaleCaseInsensitive("en")).toBe("en");
     expect(findLocaleCaseInsensitive("es")).toBe("es");
     expect(findLocaleCaseInsensitive("pt-BR")).toBe("pt-BR");
+    expect(findLocaleCaseInsensitive("fil")).toBe("fil");
   });
 
   it("normalizes case differences to the canonical form", () => {
@@ -79,14 +82,16 @@ describe("findLocaleCaseInsensitive", () => {
     expect(findLocaleCaseInsensitive("Pt-Br")).toBe("pt-BR");
     expect(findLocaleCaseInsensitive("EN")).toBe("en");
     expect(findLocaleCaseInsensitive("ES")).toBe("es");
+    expect(findLocaleCaseInsensitive("FIL")).toBe("fil");
   });
 
   it("returns null for non-matching input", () => {
-    // Macro-tag matching ("pt" → "pt-BR") is NOT this helper's job;
-    // that's the Accept-Language negotiator's fallback step. Keep
-    // this helper a pure case-insensitive exact lookup so callers
-    // can reason about it independently.
+    // Macro-tag matching ("pt" → "pt-BR", "tl" → "fil") is NOT this
+    // helper's job; that's the Accept-Language negotiator's fallback
+    // step. Keep this helper a pure case-insensitive exact lookup so
+    // callers can reason about it independently.
     expect(findLocaleCaseInsensitive("pt")).toBe(null);
+    expect(findLocaleCaseInsensitive("tl")).toBe(null);
     expect(findLocaleCaseInsensitive("es-MX")).toBe(null);
     expect(findLocaleCaseInsensitive("klingon")).toBe(null);
     expect(findLocaleCaseInsensitive("")).toBe(null);

@@ -106,9 +106,36 @@ function negotiateFromAcceptLanguage(header: string): Locale | null {
     for (const l of locales) {
       if (l.toLowerCase().split("-")[0] === macro) return l;
     }
+
+    // 4. Language-family aliases. Browsers may send "tl" (Tagalog,
+    //    the ethnic language) when "fil" (Filipino, the standardized
+    //    national language based on Tagalog) is what we ship. They
+    //    cover effectively the same speaker population for our
+    //    purposes. Pin the mapping explicitly rather than letting
+    //    the user fall through to English.
+    const alias = LANGUAGE_FAMILY_ALIASES[macro];
+    if (alias) {
+      const aliased = findLocaleCaseInsensitive(alias);
+      if (aliased) return aliased;
+    }
   }
   return null;
 }
+
+/**
+ * Macro-tag-only aliases for browser language codes that don't match
+ * any supported locale's language subtag but cover effectively the
+ * same speaker population.
+ *
+ * Keep this list small and well-justified — a future graduation to
+ * @formatjs/intl-localematcher (or similar) handles this properly.
+ */
+const LANGUAGE_FAMILY_ALIASES: Record<string, string> = {
+  // Tagalog → Filipino. "fil" is the national-language standard based
+  // on Tagalog; "tl" is the ISO 639-1 code for the ethnic language.
+  // For UI/devotional copy our content reads identically in both.
+  tl: "fil",
+};
 
 
 // Re-export the list so callers can iterate without a second import.

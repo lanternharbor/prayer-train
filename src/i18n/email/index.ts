@@ -16,6 +16,7 @@
 import { en, type EnglishEmailDictionary } from "./en";
 import { es } from "./es";
 import { ptBR } from "./pt-BR";
+import { fil } from "./fil";
 
 const dictionaries: Record<string, EnglishEmailDictionary> = {
   en,
@@ -23,6 +24,7 @@ const dictionaries: Record<string, EnglishEmailDictionary> = {
   // BCP 47 string key — matches PrayerTrain.language / PrayerChain.language
   // values written by the create flow ("pt-BR", not "ptBR").
   "pt-BR": ptBR,
+  fil,
 };
 
 export type EmailDictionary = EnglishEmailDictionary;

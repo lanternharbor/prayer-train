@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
+import { LocaleLink as Link } from "@/components/locale-link";
 import { Menu, X } from "lucide-react";
 import { LocaleSwitcher } from "./locale-switcher";
 import type { Locale } from "@/i18n/config";

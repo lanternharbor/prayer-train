@@ -1,4 +1,4 @@
-import Link from "next/link";
+import { LocaleLink as Link } from "@/components/locale-link";
 import { Heart } from "lucide-react";
 import { CrossIcon } from "@/components/ui/catholic-icons";
 import type { Dictionary } from "@/i18n/dictionaries";

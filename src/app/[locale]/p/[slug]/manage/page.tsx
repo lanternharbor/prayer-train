@@ -8,7 +8,7 @@ import {
   calculateFillRate,
   formatSituation,
 } from "@/lib/utils";
-import Link from "next/link";
+import { LocaleLink as Link } from "@/components/locale-link";
 import {
   ArrowLeft,
   Users,

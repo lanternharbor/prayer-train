@@ -1,4 +1,4 @@
-import Link from "next/link";
+import { LocaleLink as Link } from "@/components/locale-link";
 import { CrossIcon } from "@/components/ui/catholic-icons";
 import { Home, Search } from "lucide-react";
 

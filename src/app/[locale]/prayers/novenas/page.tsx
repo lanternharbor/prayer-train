@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import Link from "next/link";
+import { LocaleLink as Link } from "@/components/locale-link";
 import { prisma } from "@/lib/db";
 import { formatDifficulty, formatSituation } from "@/lib/utils";
 import { Clock, Star, CalendarDays, ArrowLeft, BookOpen } from "lucide-react";

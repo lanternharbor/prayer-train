@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { notFound, redirect } from "next/navigation";
-import Link from "next/link";
+import { LocaleLink as Link } from "@/components/locale-link";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import { closePrayerChain } from "@/lib/actions";

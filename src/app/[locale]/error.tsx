@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
-import Link from "next/link";
+import { LocaleLink as Link } from "@/components/locale-link";
 import { CrossIcon } from "@/components/ui/catholic-icons";
 import { RefreshCw, Home } from "lucide-react";
 

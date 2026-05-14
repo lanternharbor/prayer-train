@@ -25,7 +25,7 @@ import {
   MapPin,
   HandHeart,
 } from "lucide-react";
-import Link from "next/link";
+import { LocaleLink as Link } from "@/components/locale-link";
 import { PrayerCalendar } from "./prayer-calendar";
 import { Guestbook } from "./guestbook";
 import { UpdatesFeed } from "./updates-feed";

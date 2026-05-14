@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import Link from "next/link";
+import { LocaleLink as Link } from "@/components/locale-link";
 import { organizerFirstName } from "@/lib/organizer-display";
 import { prisma } from "@/lib/db";
 import {

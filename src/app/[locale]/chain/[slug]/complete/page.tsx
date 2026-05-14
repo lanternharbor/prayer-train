@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import Link from "next/link";
+import { LocaleLink as Link } from "@/components/locale-link";
 import { notFound } from "next/navigation";
 import { Check, Heart, AlertCircle } from "lucide-react";
 import { prisma } from "@/lib/db";

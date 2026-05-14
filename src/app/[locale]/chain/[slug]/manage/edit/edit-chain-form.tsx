@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
+import { LocaleLink as Link } from "@/components/locale-link";
 import { updateChainDetails } from "@/lib/actions";
 import { PhotoUploadField } from "@/components/photo-upload-field";
 import { Heart, Loader2, X } from "lucide-react";

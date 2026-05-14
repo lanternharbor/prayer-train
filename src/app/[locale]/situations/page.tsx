@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import Link from "next/link";
+import { LocaleLink as Link } from "@/components/locale-link";
 import { ArrowRight, Heart } from "lucide-react";
 import { SITUATIONS, SITUATION_TOPICS } from "./[topic]/content";
 import { getDictionary } from "@/i18n/dictionaries";

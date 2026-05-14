@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import { redirect } from "next/navigation";
-import Link from "next/link";
+import { LocaleLink as Link } from "@/components/locale-link";
 import { formatDate, formatSituation, calculateFillRate } from "@/lib/utils";
 import {
   Heart,

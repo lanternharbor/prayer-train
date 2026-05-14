@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
+import { LocaleLink as Link } from "@/components/locale-link";
 import { updateTrainDetails } from "@/lib/actions";
 import { formatSituation } from "@/lib/utils";
 import { ParishAutocomplete } from "@/components/ui/parish-autocomplete";

@@ -15,7 +15,6 @@ import { reflectionForDay } from "@/lib/daily-reflections";
 import { JoinChainButton } from "./join-button";
 import { ChainShareButton } from "./share-button";
 import { BookOpen, CalendarDays, HandHeart, Settings, Users } from "lucide-react";
-import { getLocale } from "@/i18n/get-locale";
 import { getDictionary } from "@/i18n/dictionaries";
 import { t as interpolate } from "@/i18n/format";
 
@@ -51,7 +50,7 @@ function dayNumberFor(startDate: Date, durationDays: number): number {
 export async function generateMetadata({
   params,
 }: {
-  params: Promise<{ slug: string }>;
+  params: Promise<{ locale: string; slug: string }>;
 }): Promise<Metadata> {
   const { slug } = await params;
   const chain = await prisma.prayerChain.findUnique({
@@ -107,18 +106,15 @@ export async function generateMetadata({
   };
 }
 
-// Cookie-driven locale forces dynamic rendering. Phase 1b restores
-// per-locale SSG.
-export const dynamic = "force-dynamic";
-
+// Phase α: locale flows from `params.locale` (URL segment). Same
+// dynamic-on-purpose rationale as /p/[slug] — live DB state.
 export default async function ChainDetailPage({
   params,
 }: {
-  params: Promise<{ slug: string }>;
+  params: Promise<{ locale: string; slug: string }>;
 }) {
-  const { slug } = await params;
+  const { locale, slug } = await params;
   const session = await auth();
-  const locale = await getLocale();
   const dict = await getDictionary(locale);
   const t = dict.publicChain;
 

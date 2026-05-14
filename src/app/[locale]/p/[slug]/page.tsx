@@ -12,7 +12,6 @@ import {
   formatDate,
   calculateFillRate,
 } from "@/lib/utils";
-import { getLocale } from "@/i18n/get-locale";
 import { getDictionary } from "@/i18n/dictionaries";
 import { t as interpolate } from "@/i18n/format";
 import {
@@ -122,7 +121,7 @@ function buildWallEntries(
 export async function generateMetadata({
   params,
 }: {
-  params: Promise<{ slug: string }>;
+  params: Promise<{ locale: string; slug: string }>;
 }): Promise<Metadata> {
   const { slug } = await params;
   const train = await prisma.prayerTrain.findUnique({
@@ -171,18 +170,17 @@ export async function generateMetadata({
   };
 }
 
-// Cookie-driven locale forces dynamic rendering. Phase 1b restores
-// per-locale SSG.
-export const dynamic = "force-dynamic";
-
+// Phase α: locale flows from `params.locale` (URL segment). The page
+// itself is dynamic because it reads live DB state (slot status,
+// claimer names, train.status) on each request — that's not locale-
+// related, just normal SSR for fresh content.
 export default async function PrayerTrainPage({
   params,
 }: {
-  params: Promise<{ slug: string }>;
+  params: Promise<{ locale: string; slug: string }>;
 }) {
-  const { slug } = await params;
+  const { locale, slug } = await params;
   const session = await auth();
-  const locale = await getLocale();
   const dict = await getDictionary(locale);
   const t = dict.publicTrain;
 

@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowRight, Heart } from "lucide-react";
 import { SITUATIONS, SITUATION_TOPICS } from "./[topic]/content";
-import { getLocale } from "@/i18n/get-locale";
 import { getDictionary } from "@/i18n/dictionaries";
 
 /**
@@ -21,9 +20,10 @@ import { getDictionary } from "@/i18n/dictionaries";
  * (SEO and growth) since these are the highest-value SEO surfaces.
  */
 
-// Cookie-driven locale forces dynamic rendering — leaving ISR on would
-// cache one locale and serve it to all visitors.
-export const dynamic = "force-dynamic";
+// Phase α: locale flows from `params.locale` (URL segment) so each
+// locale's variant prerenders statically via the layout's
+// generateStaticParams. ISR window preserved.
+export const revalidate = 300;
 
 export const metadata: Metadata = {
   title: "Catholic prayers by situation",
@@ -32,8 +32,12 @@ export const metadata: Metadata = {
   alternates: { canonical: "/situations" },
 };
 
-export default async function SituationsIndexPage() {
-  const locale = await getLocale();
+export default async function SituationsIndexPage({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}) {
+  const { locale } = await params;
   const dict = await getDictionary(locale);
   const t = dict.situations;
 

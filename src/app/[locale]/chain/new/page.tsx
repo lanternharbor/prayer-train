@@ -7,7 +7,6 @@ import { createPrayerChain } from "@/lib/actions";
 import { Users, Heart } from "lucide-react";
 import { SaintPortrait } from "@/components/saint-portrait";
 import { PhotoUploadField } from "@/components/photo-upload-field";
-import { getLocale } from "@/i18n/get-locale";
 import { getDictionary } from "@/i18n/dictionaries";
 import { t as interpolate } from "@/i18n/format";
 
@@ -19,24 +18,26 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
 };
 
-export const dynamic = "force-dynamic";
-
 export default async function NewChainPage({
+  params,
   searchParams,
 }: {
+  params: Promise<{ locale: string }>;
   searchParams: Promise<{ prayerType?: string }>;
 }) {
-  const locale = await getLocale();
+  const { locale } = await params;
   const dict = await getDictionary(locale);
   const t = dict.chainNew;
   // Require sign-in to create a chain. Mirrors /create gating.
   const session = await auth();
   if (!session?.user?.id) {
-    const params = await searchParams;
-    const cb = params.prayerType
-      ? `/chain/new?prayerType=${encodeURIComponent(params.prayerType)}`
-      : "/chain/new";
-    redirect(`/signin?callbackUrl=${encodeURIComponent(cb)}`);
+    // Rename to `sp` to avoid shadowing the route `params` we
+    // destructured for the locale above.
+    const sp = await searchParams;
+    const cb = sp.prayerType
+      ? `/${locale}/chain/new?prayerType=${encodeURIComponent(sp.prayerType)}`
+      : `/${locale}/chain/new`;
+    redirect(`/${locale}/signin?callbackUrl=${encodeURIComponent(cb)}`);
   }
 
   const { prayerType: prayerTypeSlug } = await searchParams;

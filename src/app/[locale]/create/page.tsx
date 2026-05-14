@@ -7,7 +7,6 @@ import {
   ArrowRight,
   CheckCircle2,
 } from "lucide-react";
-import { getLocale } from "@/i18n/get-locale";
 import { getDictionary } from "@/i18n/dictionaries";
 
 export const metadata: Metadata = {
@@ -17,11 +16,14 @@ export const metadata: Metadata = {
   alternates: { canonical: "/create" },
 };
 
-// Cookie-driven locale forces dynamic rendering.
-export const dynamic = "force-dynamic";
+export const revalidate = 300;
 
-export default async function CreateChooserPage() {
-  const locale = await getLocale();
+export default async function CreateChooserPage({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}) {
+  const { locale } = await params;
   const dict = await getDictionary(locale);
   const t = dict.create;
 

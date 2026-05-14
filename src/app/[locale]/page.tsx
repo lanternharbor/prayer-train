@@ -16,17 +16,15 @@ import {
   CrossDivider,
 } from "@/components/ui/catholic-icons";
 import { PrayerCounter } from "@/components/prayer-counter";
-import { getLocale } from "@/i18n/get-locale";
 import { getDictionary } from "@/i18n/dictionaries";
 
 // Use an absolute title so the homepage doesn't render as "Home | PrayerTrain"
 // via the root layout's "%s | PrayerTrain" template.
 //
-// Phase 1a leaves metadata in the default English locale. Phase 1b
-// (URL-based routing /es/) will swap to `generateMetadata` so each
-// locale gets its own title/description. For now SEO is English-only
-// regardless of the viewer's cookie, which matches the cookie-only
-// approach — search engines crawl the bare URLs without a cookie.
+// Phase α: per-locale generateMetadata + hreflang alternates land in a
+// follow-up commit. For now the static metadata here is English-only
+// (Google crawlers hitting bare /en/ get this; /es/ crawlers also get
+// this until the generateMetadata refactor lands).
 export const metadata: Metadata = {
   title: {
     absolute: "PrayerTrain — Organized Prayer for Those in Need",
@@ -34,17 +32,19 @@ export const metadata: Metadata = {
   alternates: { canonical: "/" },
 };
 
-// Switched off ISR (was `revalidate = 300`) because the same URL now
-// renders different content per visitor cookie (NEXT_LOCALE). Leaving
-// ISR on would cache whichever locale rendered first and serve it to
-// all visitors. Next 16's per-request cookies() call forces dynamic
-// rendering anyway via the getLocale() chain; tagging explicit so
-// future readers don't try to put ISR back on without the URL-based
-// locale routing from Phase 1b.
-export const dynamic = "force-dynamic";
+// ISR restored: now that the locale comes from `params.locale` (the
+// URL segment, build-time known via generateStaticParams in the
+// layout) and not from a per-request cookie, every locale's homepage
+// is statically renderable again. The 5-minute revalidate window
+// stays so future content updates ship without a manual purge.
+export const revalidate = 300;
 
-export default async function HomePage() {
-  const locale = await getLocale();
+export default async function HomePage({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}) {
+  const { locale } = await params;
   const dict = await getDictionary(locale);
   const t = dict.home;
 

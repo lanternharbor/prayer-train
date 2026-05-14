@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import { SignInForm } from "./signin-form";
-import { getLocale } from "@/i18n/get-locale";
 import { getDictionary } from "@/i18n/dictionaries";
 
 export const metadata: Metadata = {
@@ -12,17 +11,15 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
 };
 
-// Cookie-driven locale forces dynamic rendering. Phase 1b's URL-based
-// routing will restore static rendering per-locale.
-export const dynamic = "force-dynamic";
-
 export default async function SignInPage({
+  params,
   searchParams,
 }: {
+  params: Promise<{ locale: string }>;
   searchParams: Promise<{ callbackUrl?: string; error?: string }>;
 }) {
   const { callbackUrl, error } = await searchParams;
-  const locale = await getLocale();
+  const { locale } = await params;
   const dict = await getDictionary(locale);
   const t = dict.signin;
 

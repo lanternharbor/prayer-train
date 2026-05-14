@@ -7,7 +7,6 @@ import {
   formatDate,
   calculateFillRate,
 } from "@/lib/utils";
-import { getLocale } from "@/i18n/get-locale";
 import { getDictionary } from "@/i18n/dictionaries";
 import {
   Search,
@@ -59,18 +58,19 @@ function computeChainProgress(
   };
 }
 
-// Cookie-driven locale forces dynamic rendering — leaving ISR on would
-// cache one locale and serve it to all visitors. See homepage for the
-// full rationale.
-export const dynamic = "force-dynamic";
-
+// /browse is dynamic on purpose: it lists live database state (which
+// trains/chains are public + ACTIVE right now). No ISR window; Vercel
+// CDN caches by URL automatically for short windows when responses
+// are large. Phase α: locale comes from params.locale.
 export default async function BrowsePage({
+  params,
   searchParams,
 }: {
+  params: Promise<{ locale: string }>;
   searchParams: Promise<{ q?: string; situation?: string }>;
 }) {
   const { q, situation } = await searchParams;
-  const locale = await getLocale();
+  const { locale } = await params;
   const dict = await getDictionary(locale);
   const t = dict.browse;
 

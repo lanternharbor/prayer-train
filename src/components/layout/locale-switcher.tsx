@@ -1,7 +1,7 @@
 "use client";
 
 import { useTransition } from "react";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { Languages } from "lucide-react";
 import { setLocale } from "@/lib/i18n-actions";
 import {
@@ -9,31 +9,46 @@ import {
   LOCALE_LABELS,
   type Locale,
 } from "@/i18n/config";
+import { localizedHref, stripLocale } from "@/i18n/links";
 
 /**
- * Locale switcher. Renders as a compact dropdown of the supported
- * locale labels. Clicking an entry calls the setLocale server action,
- * which writes the NEXT_LOCALE cookie and revalidates the current path
- * so all server components re-render with the new dictionary.
+ * Locale switcher.
  *
- * Receives the active locale from its server-component parent (the
- * Header) rather than reading the cookie itself, so the initial render
- * matches what the server rendered (no hydration flicker).
+ * Phase α: switches the URL (router.push) AND writes the cookie.
  *
- * Accessibility: the underlying control is a `<select>` for native
- * keyboard support + the most accessible default. The styling layer
- * matches the rest of the header nav so it doesn't look like a
- * native form control.
+ * - URL change is the SEO-correct primary action: a Spanish-cookie
+ *   visitor on /en/browse who clicks "Español" navigates to
+ *   /es/browse, where Spanish content is canonical for the URL.
+ * - Cookie write persists the choice so internal `<Link>` clicks
+ *   that consume `useLocale()` produce locale-prefixed hrefs on the
+ *   next visit too (without re-clicking the switcher).
+ * - We do NOT auto-redirect on first visit; Google guidelines treat
+ *   that as cloaking-adjacent. The cookie's job is to remember an
+ *   EXPLICIT choice for next time, not to override the URL.
  */
 export function LocaleSwitcher({ currentLocale }: { currentLocale: Locale }) {
   const pathname = usePathname();
+  const router = useRouter();
   const [isPending, startTransition] = useTransition();
 
   const onChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    const next = event.target.value;
+    const next = event.target.value as Locale;
     if (next === currentLocale) return;
+
+    // Build the target URL: strip the current locale prefix (if any)
+    // from the pathname, then re-apply the new locale. This keeps the
+    // user on the same logical page they were on (e.g. /en/browse →
+    // /es/browse, /en/p/the-spina-fam → /es/p/the-spina-fam).
+    const bare = stripLocale(pathname || "/");
+    const target = localizedHref(next, bare);
+
     startTransition(async () => {
-      await setLocale(next, pathname || "/");
+      // Write the cookie first so the next visit honors the choice
+      // even on bare URLs. The server action's revalidatePath is fine
+      // — Next will treat the upcoming navigation as the fresh render.
+      await setLocale(next, target);
+      router.push(target);
+      router.refresh();
     });
   };
 

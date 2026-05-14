@@ -3,7 +3,6 @@ import { redirect } from "next/navigation";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import { CreateWizard } from "./create-wizard";
-import { getLocale } from "@/i18n/get-locale";
 import { getDictionary } from "@/i18n/dictionaries";
 
 export const metadata: Metadata = {
@@ -13,17 +12,19 @@ export const metadata: Metadata = {
   alternates: { canonical: "/create/train" },
 };
 
-export const dynamic = "force-dynamic";
-
-export default async function CreatePage() {
+export default async function CreatePage({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}) {
+  const { locale } = await params;
   // Redirect to signin if not authenticated. The edge proxy also gates
   // this route, but it only checks cookie existence — a stale cookie
   // (e.g. session deleted from DB) passes the proxy but fails here.
   const session = await auth();
   if (!session?.user?.id) {
-    redirect("/signin?callbackUrl=/create/train");
+    redirect(`/${locale}/signin?callbackUrl=/${locale}/create/train`);
   }
-  const locale = await getLocale();
   const dict = await getDictionary(locale);
   const t = dict.wizard;
 

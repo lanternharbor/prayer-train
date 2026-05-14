@@ -1,6 +1,5 @@
 import { Mail } from "lucide-react";
 import type { Metadata } from "next";
-import { getLocale } from "@/i18n/get-locale";
 import { getDictionary } from "@/i18n/dictionaries";
 
 export const metadata: Metadata = {
@@ -9,10 +8,12 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
 };
 
-export const dynamic = "force-dynamic";
-
-export default async function VerifyPage() {
-  const locale = await getLocale();
+export default async function VerifyPage({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}) {
+  const { locale } = await params;
   const dict = await getDictionary(locale);
   const t = dict.signin;
 

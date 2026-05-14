@@ -11,7 +11,17 @@ import { formatSituation } from "@/lib/utils";
 
 const SCHEMA_CONTEXT = "https://schema.org";
 
-export function organizationSchema(): Record<string, unknown> {
+/**
+ * Each `*Schema` helper accepts an optional `locale` (BCP 47 tag) so
+ * the emitted JSON-LD declares its language via the `inLanguage`
+ * field. Falls back to "en" for backward compatibility with callers
+ * that haven't yet been updated. See
+ * docs/internationalization-roadmap.md Phase α (URL routing + SEO).
+ */
+
+export function organizationSchema(
+  locale: string = "en",
+): Record<string, unknown> {
   const baseUrl = getBaseUrl();
   return {
     "@context": SCHEMA_CONTEXT,
@@ -20,6 +30,7 @@ export function organizationSchema(): Record<string, unknown> {
     url: baseUrl,
     description: "Like a meal train, but for prayers.",
     logo: `${baseUrl}/logo.png`,
+    inLanguage: locale,
     contactPoint: {
       "@type": "ContactPoint",
       email: "hello@prayertrains.com",
@@ -33,13 +44,16 @@ export function organizationSchema(): Record<string, unknown> {
   };
 }
 
-export function websiteSchema(): Record<string, unknown> {
+export function websiteSchema(
+  locale: string = "en",
+): Record<string, unknown> {
   const baseUrl = getBaseUrl();
   return {
     "@context": SCHEMA_CONTEXT,
     "@type": "WebSite",
     name: "PrayerTrain",
     url: baseUrl,
+    inLanguage: locale,
     potentialAction: {
       "@type": "SearchAction",
       target: `${baseUrl}/prayers?q={search_term_string}`,

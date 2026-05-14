@@ -1,13 +1,15 @@
 import type { Metadata } from "next";
+import { notFound } from "next/navigation";
 import { EB_Garamond, DM_Sans } from "next/font/google";
-import "./globals.css";
+import "../globals.css";
 import { Header } from "@/components/layout/header";
 import { Footer } from "@/components/layout/footer";
 import { Providers } from "@/components/providers";
 import { getBaseUrl } from "@/lib/url";
 import { organizationSchema, websiteSchema } from "@/lib/schema";
-import { getLocale } from "@/i18n/get-locale";
 import { getDictionary } from "@/i18n/dictionaries";
+import { LocaleProvider } from "@/i18n/locale-context";
+import { isLocale, locales, defaultLocale } from "@/i18n/config";
 
 const heading = EB_Garamond({
   variable: "--font-heading",
@@ -20,6 +22,15 @@ const body = DM_Sans({
   subsets: ["latin"],
   display: "swap",
 });
+
+// Pre-render every supported locale's static surface at build time.
+// This is what restores per-locale SSG: Next 16 expands each entry
+// into a separate prerendered branch of the route tree, so /en/...
+// and /es/... pages are static again (no more cookie-driven dynamic
+// rendering from Phase 1a).
+export function generateStaticParams() {
+  return locales.map((locale) => ({ locale }));
+}
 
 export const metadata: Metadata = {
   // Resolves all relative image URLs in OG/Twitter metadata against the
@@ -52,17 +63,25 @@ export const metadata: Metadata = {
 
 export default async function RootLayout({
   children,
+  params,
 }: Readonly<{
   children: React.ReactNode;
+  params: Promise<{ locale: string }>;
 }>) {
-  // Resolve the active locale once per request. The dictionary is
-  // passed down to Header and Footer (which need translated strings);
-  // page-level translations are fetched per-page so each route can
-  // tree-shake the parts of the dictionary it doesn't use. The locale
-  // itself flows down so client components can render in the right
-  // language without a useEffect/re-render cycle. See
-  // docs/internationalization-roadmap.md Phase 1a.
-  const locale = await getLocale();
+  // Locale comes from the route segment, not the cookie. This is the
+  // SEO-critical change from Phase 1a: the URL is canonical. `/es/...`
+  // ALWAYS renders Spanish regardless of the cookie. The cookie's only
+  // job is to remember the user's choice for INTERNAL navigation (the
+  // LocaleSwitcher writes it; LocalizedLink reads it via context).
+  const { locale: rawLocale } = await params;
+  if (!isLocale(rawLocale)) {
+    // Unsupported locale code in the URL — bail. The proxy normally
+    // doesn't let this happen (it only rewrites bare paths or passes
+    // through already-prefixed locales we support), but defensive
+    // against direct URL typing or future locale removals.
+    notFound();
+  }
+  const locale = rawLocale;
   const dict = await getDictionary(locale);
 
   return (
@@ -78,35 +97,42 @@ export default async function RootLayout({
         >
           {dict.common.skipToMain}
         </a>
-        {/* JSON-LD structured data for search engines. Server-rendered. */}
+        {/* JSON-LD structured data for search engines. Server-rendered.
+            inLanguage is locale-aware so each locale's pages declare
+            their language to Google. */}
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
-            __html: JSON.stringify(organizationSchema()),
+            __html: JSON.stringify(organizationSchema(locale)),
           }}
         />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
-            __html: JSON.stringify(websiteSchema()),
+            __html: JSON.stringify(websiteSchema(locale)),
           }}
         />
         {/* SessionProvider context wraps the whole app so the
             client-side `<Header>` can read auth via useSession. The
-            layout itself stays a server component (Providers is the
-            only client boundary; children render through unchanged).
-            Moving auth off the server-side render path is what lets
-            public pages opt back into Vercel's CDN cache via
-            `export const revalidate = 300`. See providers.tsx + the
-            header.tsx comment for the full rationale. */}
+            LocaleProvider lets any descendant client component read
+            the active locale via `useLocale()` — used by the
+            LocalizedLink wrapper to prefix internal hrefs.
+            See providers.tsx + locale-context.tsx for the full setup. */}
         <Providers>
-          <Header locale={locale} nav={dict.nav} common={dict.common} />
-          <main id="main" className="flex-1">
-            {children}
-          </main>
-          <Footer footer={dict.footer} prayers={dict.nav} common={dict.common} />
+          <LocaleProvider value={locale}>
+            <Header locale={locale} nav={dict.nav} common={dict.common} />
+            <main id="main" className="flex-1">
+              {children}
+            </main>
+            <Footer footer={dict.footer} prayers={dict.nav} common={dict.common} />
+          </LocaleProvider>
         </Providers>
       </body>
     </html>
   );
 }
+
+// Re-export defaultLocale so callers that import this module have a
+// canonical fallback even if a future refactor changes the source of
+// truth. Currently src/i18n/config.ts is canonical.
+void defaultLocale;

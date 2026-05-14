@@ -1,7 +1,7 @@
 import type { MetadataRoute } from "next";
 import { prisma } from "@/lib/db";
 import { getBaseUrl } from "@/lib/url";
-import { SITUATION_TOPICS } from "./situations/[topic]/content";
+import { SITUATION_TOPICS } from "./[locale]/situations/[topic]/content";
 
 /**
  * Dynamic sitemap. Includes the static marketing pages plus every public

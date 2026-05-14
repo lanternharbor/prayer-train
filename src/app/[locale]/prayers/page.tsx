@@ -10,17 +10,29 @@ import {
   Search,
 } from "lucide-react";
 import { PrayerCategory, type Prisma } from "@/generated/prisma/client";
+import { getDictionary } from "@/i18n/dictionaries";
+import { localizedMetadata } from "@/i18n/metadata";
+import { isLocale, defaultLocale } from "@/i18n/config";
 
 // Static prayer list; revalidate every 5 minutes so seed updates ship
 // without a deploy. Vercel translates to s-maxage=300 SWR header.
 export const revalidate = 300;
 
-export const metadata: Metadata = {
-  title: "Prayer Library",
-  description:
-    "Browse our curated library of Catholic prayers — novenas, rosaries, chaplets, litanies, and more.",
-  alternates: { canonical: "/prayers" },
-};
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale: rawLocale } = await params;
+  const locale = isLocale(rawLocale) ? rawLocale : defaultLocale;
+  const dict = await getDictionary(locale);
+  return localizedMetadata({
+    locale,
+    path: "/prayers",
+    title: dict.meta.prayersTitle,
+    description: dict.meta.prayersDescription,
+  });
+}
 
 export default async function PrayersPage({
   searchParams,

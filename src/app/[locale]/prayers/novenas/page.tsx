@@ -3,13 +3,25 @@ import Link from "next/link";
 import { prisma } from "@/lib/db";
 import { formatDifficulty, formatSituation } from "@/lib/utils";
 import { Clock, Star, CalendarDays, ArrowLeft, BookOpen } from "lucide-react";
+import { getDictionary } from "@/i18n/dictionaries";
+import { localizedMetadata } from "@/i18n/metadata";
+import { isLocale, defaultLocale } from "@/i18n/config";
 
-export const metadata: Metadata = {
-  title: "Novenas",
-  description:
-    "Browse our collection of Catholic novenas — nine-day prayer devotions for powerful intercession.",
-  alternates: { canonical: "/prayers/novenas" },
-};
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale: rawLocale } = await params;
+  const locale = isLocale(rawLocale) ? rawLocale : defaultLocale;
+  const dict = await getDictionary(locale);
+  return localizedMetadata({
+    locale,
+    path: "/prayers/novenas",
+    title: dict.meta.novenasTitle,
+    description: dict.meta.novenasDescription,
+  });
+}
 
 export default async function NovenasPage() {
   const novenas = await prisma.prayerType.findMany({

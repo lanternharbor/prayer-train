@@ -4,13 +4,24 @@ import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import { CreateWizard } from "./create-wizard";
 import { getDictionary } from "@/i18n/dictionaries";
+import { localizedMetadata } from "@/i18n/metadata";
+import { isLocale, defaultLocale } from "@/i18n/config";
 
-export const metadata: Metadata = {
-  title: "Start a PrayerTrain",
-  description:
-    "Create a PrayerTrain for someone in need. Choose their situation, select prayers, and invite your community.",
-  alternates: { canonical: "/create/train" },
-};
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale: rawLocale } = await params;
+  const locale = isLocale(rawLocale) ? rawLocale : defaultLocale;
+  const dict = await getDictionary(locale);
+  return localizedMetadata({
+    locale,
+    path: "/create/train",
+    title: dict.meta.createTrainTitle,
+    description: dict.meta.createTrainDescription,
+  });
+}
 
 export default async function CreatePage({
   params,

@@ -3,6 +3,8 @@ import Link from "next/link";
 import { ArrowRight, Heart } from "lucide-react";
 import { SITUATIONS, SITUATION_TOPICS } from "./[topic]/content";
 import { getDictionary } from "@/i18n/dictionaries";
+import { localizedMetadata } from "@/i18n/metadata";
+import { isLocale, defaultLocale } from "@/i18n/config";
 
 /**
  * /situations — index page that lists every situation page.
@@ -25,12 +27,21 @@ import { getDictionary } from "@/i18n/dictionaries";
 // generateStaticParams. ISR window preserved.
 export const revalidate = 300;
 
-export const metadata: Metadata = {
-  title: "Catholic prayers by situation",
-  description:
-    "Catholic prayers and ways to organize community prayer when someone you love is facing illness, surgery, grief, or other hard moments.",
-  alternates: { canonical: "/situations" },
-};
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale: rawLocale } = await params;
+  const locale = isLocale(rawLocale) ? rawLocale : defaultLocale;
+  const dict = await getDictionary(locale);
+  return localizedMetadata({
+    locale,
+    path: "/situations",
+    title: dict.situations.indexTitle,
+    description: dict.situations.indexDescription,
+  });
+}
 
 export default async function SituationsIndexPage({
   params,

@@ -1,12 +1,24 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { getDictionary } from "@/i18n/dictionaries";
+import { localizedMetadata } from "@/i18n/metadata";
+import { isLocale, defaultLocale } from "@/i18n/config";
 
-export const metadata: Metadata = {
-  title: "Terms of Service",
-  description:
-    "The terms you agree to when you use PrayerTrain.",
-  alternates: { canonical: "/terms" },
-};
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale: rawLocale } = await params;
+  const locale = isLocale(rawLocale) ? rawLocale : defaultLocale;
+  const dict = await getDictionary(locale);
+  return localizedMetadata({
+    locale,
+    path: "/terms",
+    title: dict.meta.termsTitle,
+    description: dict.meta.termsDescription,
+  });
+}
 
 const LAST_UPDATED = "April 21, 2026";
 

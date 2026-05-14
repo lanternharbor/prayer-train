@@ -17,20 +17,28 @@ import {
 } from "@/components/ui/catholic-icons";
 import { PrayerCounter } from "@/components/prayer-counter";
 import { getDictionary } from "@/i18n/dictionaries";
+import { localizedMetadata } from "@/i18n/metadata";
+import { isLocale, defaultLocale } from "@/i18n/config";
 
-// Use an absolute title so the homepage doesn't render as "Home | PrayerTrain"
-// via the root layout's "%s | PrayerTrain" template.
-//
-// Phase α: per-locale generateMetadata + hreflang alternates land in a
-// follow-up commit. For now the static metadata here is English-only
-// (Google crawlers hitting bare /en/ get this; /es/ crawlers also get
-// this until the generateMetadata refactor lands).
-export const metadata: Metadata = {
-  title: {
-    absolute: "PrayerTrain — Organized Prayer for Those in Need",
-  },
-  alternates: { canonical: "/" },
-};
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale: rawLocale } = await params;
+  const locale = isLocale(rawLocale) ? rawLocale : defaultLocale;
+  const dict = await getDictionary(locale);
+  return localizedMetadata({
+    locale,
+    path: "/",
+    title: dict.home.metadataTitle,
+    description: dict.home.metadataDescription,
+    // Absolute title bypasses the layout's "%s | PrayerTrain" template
+    // so the homepage doesn't render as "PrayerTrain — Organized
+    // Prayer for Those in Need | PrayerTrain".
+    absoluteTitle: true,
+  });
+}
 
 // ISR restored: now that the locale comes from `params.locale` (the
 // URL segment, build-time known via generateStaticParams in the

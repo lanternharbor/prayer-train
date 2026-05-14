@@ -8,6 +8,9 @@ import { smartTruncate } from "@/lib/utils";
 import { Heart, Users, BookOpen, ArrowRight } from "lucide-react";
 import { SITUATIONS, SITUATION_TOPICS } from "./content";
 import type { SituationContent } from "./content";
+import { buildAlternates } from "@/i18n/metadata";
+import { localizedHref } from "@/i18n/links";
+import { isLocale, defaultLocale, locales } from "@/i18n/config";
 
 /**
  * /situations/[topic]
@@ -28,32 +31,41 @@ import type { SituationContent } from "./content";
 export const revalidate = 300;
 
 export async function generateStaticParams() {
-  return SITUATION_TOPICS.map((topic) => ({ topic }));
+  // Cross-product of every supported locale × every topic. With 2
+  // locales × 6 topics = 12 prerendered pages today; scales linearly
+  // as more locales come online. Topic content stays English (no
+  // per-locale variant of content.ts yet — Phase ζ work).
+  return locales.flatMap((locale) =>
+    SITUATION_TOPICS.map((topic) => ({ locale, topic })),
+  );
 }
 
 export async function generateMetadata({
   params,
 }: {
-  params: Promise<{ topic: string }>;
+  params: Promise<{ locale: string; topic: string }>;
 }): Promise<Metadata> {
-  const { topic } = await params;
+  const { locale: rawLocale, topic } = await params;
+  const locale = isLocale(rawLocale) ? rawLocale : defaultLocale;
   const content = SITUATIONS[topic];
   if (!content) return { title: "Not Found" };
-  const url = `${getBaseUrl()}/situations/${content.topic}`;
+  const path = `/situations/${content.topic}`;
+  const baseUrl = getBaseUrl();
   const description = smartTruncate(content.description, 160);
   return {
     title: content.title,
     description,
-    alternates: { canonical: url },
+    alternates: buildAlternates({ locale, path }),
     openGraph: {
       title: content.title,
       description,
-      url,
+      url: `${baseUrl}${localizedHref(locale, path)}`,
       type: "article",
       siteName: "PrayerTrain",
+      locale,
       images: [
         {
-          url: `${getBaseUrl()}/logo.png`,
+          url: `${baseUrl}/logo.png`,
           width: 1024,
           height: 1024,
           alt: content.title,

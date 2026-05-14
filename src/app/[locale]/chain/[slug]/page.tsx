@@ -17,6 +17,9 @@ import { ChainShareButton } from "./share-button";
 import { BookOpen, CalendarDays, HandHeart, Settings, Users } from "lucide-react";
 import { getDictionary } from "@/i18n/dictionaries";
 import { t as interpolate } from "@/i18n/format";
+import { buildAlternates } from "@/i18n/metadata";
+import { localizedHref } from "@/i18n/links";
+import { isLocale, defaultLocale } from "@/i18n/config";
 
 function recipientPhrase(
   recipientName: string | null,
@@ -52,7 +55,8 @@ export async function generateMetadata({
 }: {
   params: Promise<{ locale: string; slug: string }>;
 }): Promise<Metadata> {
-  const { slug } = await params;
+  const { locale: rawLocale, slug } = await params;
+  const locale = isLocale(rawLocale) ? rawLocale : defaultLocale;
   const chain = await prisma.prayerChain.findUnique({
     where: { slug },
     include: {
@@ -65,14 +69,15 @@ export async function generateMetadata({
   const orgFirstOrNull = organizerFirstNameOrNull(chain);
   const phrase = recipientPhrase(chain.recipientName, chain.intention);
   const day = dayNumberFor(chain.startDate, chain.durationDays);
-  const url = `${getBaseUrl()}/chain/${chain.slug}`;
+  const baseUrl = getBaseUrl();
+  const path = `/chain/${chain.slug}`;
   // Prefer the recipient's uploaded photo for the share preview — it
   // makes iMessage / link-unfurl cards feel personal. Falls back to the
   // prayer's own image, then the brand logo.
   const image =
     chain.recipientImageUrl ||
     chain.prayerType.imageUrl ||
-    `${getBaseUrl()}/logo.png`;
+    `${baseUrl}/logo.png`;
 
   // Drop the possessive prefix when no real organizer name is
   // available (anonymous chain OR User.name is null). Possessive form
@@ -87,14 +92,19 @@ export async function generateMetadata({
   return {
     title,
     description,
-    alternates: { canonical: url },
+    // Hreflang alternates only for public chains, same rule as
+    // /p/[slug] above.
+    alternates: chain.isPublic
+      ? buildAlternates({ locale, path })
+      : { canonical: `${baseUrl}${localizedHref(locale, path)}` },
     robots: chain.isPublic ? undefined : { index: false, follow: false },
     openGraph: {
       title,
       description,
-      url,
+      url: `${baseUrl}${localizedHref(locale, path)}`,
       type: "article",
       siteName: "PrayerTrain",
+      locale,
       images: [{ url: image, width: 1024, height: 1024, alt: title }],
     },
     twitter: {

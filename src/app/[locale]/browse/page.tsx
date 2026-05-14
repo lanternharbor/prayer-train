@@ -8,6 +8,8 @@ import {
   calculateFillRate,
 } from "@/lib/utils";
 import { getDictionary } from "@/i18n/dictionaries";
+import { localizedMetadata } from "@/i18n/metadata";
+import { isLocale, defaultLocale } from "@/i18n/config";
 import {
   Search,
   Heart,
@@ -25,12 +27,21 @@ import {
   DEFAULT_DISPLAY_TZ,
 } from "@/lib/dates";
 
-export const metadata: Metadata = {
-  title: "Find a PrayerTrain",
-  description:
-    "Browse active prayer trains and sign up to pray for someone in need. No account required.",
-  alternates: { canonical: "/browse" },
-};
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale: rawLocale } = await params;
+  const locale = isLocale(rawLocale) ? rawLocale : defaultLocale;
+  const dict = await getDictionary(locale);
+  return localizedMetadata({
+    locale,
+    path: "/browse",
+    title: dict.browse.metadataTitle,
+    description: dict.browse.metadataDescription,
+  });
+}
 
 const SITUATIONS = Object.values(SituationCategory);
 

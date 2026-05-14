@@ -3,6 +3,9 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/db";
 import { getBaseUrl } from "@/lib/url";
+import { buildAlternates } from "@/i18n/metadata";
+import { localizedHref } from "@/i18n/links";
+import { isLocale, defaultLocale, locales } from "@/i18n/config";
 import {
   breadcrumbSchema,
   prayerArticleSchema,
@@ -29,10 +32,18 @@ export const revalidate = 300;
  * the dynamicParams default of true). Either way no broken links.
  */
 export async function generateStaticParams() {
+  // Cross-product of every supported locale × every prayer slug. With
+  // 2 locales × ~50 prayer types = ~100 prerendered pages today;
+  // scales linearly as more locales come online. Prayer text stays
+  // English in all locales until Phase ε ships PrayerTypeTranslation;
+  // the per-locale prerender mostly carries hreflang signals + the
+  // localized layout chrome.
   const prayers = await prisma.prayerType.findMany({
     select: { slug: true },
   });
-  return prayers.map((p) => ({ slug: p.slug }));
+  return locales.flatMap((locale) =>
+    prayers.map((p) => ({ locale, slug: p.slug })),
+  );
 }
 import { SaintPortrait } from "@/components/saint-portrait";
 import {
@@ -55,9 +66,10 @@ import {
 export async function generateMetadata({
   params,
 }: {
-  params: Promise<{ slug: string }>;
+  params: Promise<{ locale: string; slug: string }>;
 }): Promise<Metadata> {
-  const { slug } = await params;
+  const { locale: rawLocale, slug } = await params;
+  const locale = isLocale(rawLocale) ? rawLocale : defaultLocale;
   const prayer = await prisma.prayerType.findUnique({
     where: { slug },
     select: { slug: true, name: true, description: true, imageUrl: true },
@@ -65,25 +77,28 @@ export async function generateMetadata({
 
   if (!prayer) return { title: "Prayer Not Found" };
 
-  const url = `${getBaseUrl()}/prayers/${prayer.slug}`;
-  const image = prayer.imageUrl || `${getBaseUrl()}/logo.png`;
+  const path = `/prayers/${prayer.slug}`;
+  const baseUrl = getBaseUrl();
+  const image = prayer.imageUrl || `${baseUrl}/logo.png`;
+  const description = smartTruncate(prayer.description, 160);
 
   return {
     title: prayer.name,
-    description: smartTruncate(prayer.description, 160),
-    alternates: { canonical: url },
+    description,
+    alternates: buildAlternates({ locale, path }),
     openGraph: {
       title: prayer.name,
-      description: smartTruncate(prayer.description, 160),
-      url,
+      description,
+      url: `${baseUrl}${localizedHref(locale, path)}`,
       type: "article",
       siteName: "PrayerTrain",
+      locale,
       images: [{ url: image, width: 1024, height: 1024, alt: prayer.name }],
     },
     twitter: {
       card: "summary_large_image",
       title: prayer.name,
-      description: smartTruncate(prayer.description, 160),
+      description,
       images: [image],
     },
   };

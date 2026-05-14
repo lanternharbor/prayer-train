@@ -1,12 +1,24 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { getDictionary } from "@/i18n/dictionaries";
+import { localizedMetadata } from "@/i18n/metadata";
+import { isLocale, defaultLocale } from "@/i18n/config";
 
-export const metadata: Metadata = {
-  title: "Privacy Policy",
-  description:
-    "How PrayerTrain collects, uses, and protects information about the people who use the site and the people they pray for.",
-  alternates: { canonical: "/privacy" },
-};
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale: rawLocale } = await params;
+  const locale = isLocale(rawLocale) ? rawLocale : defaultLocale;
+  const dict = await getDictionary(locale);
+  return localizedMetadata({
+    locale,
+    path: "/privacy",
+    title: dict.meta.privacyTitle,
+    description: dict.meta.privacyDescription,
+  });
+}
 
 const LAST_UPDATED = "April 21, 2026";
 

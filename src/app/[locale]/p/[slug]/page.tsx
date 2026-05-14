@@ -14,6 +14,9 @@ import {
 } from "@/lib/utils";
 import { getDictionary } from "@/i18n/dictionaries";
 import { t as interpolate } from "@/i18n/format";
+import { buildAlternates } from "@/i18n/metadata";
+import { localizedHref } from "@/i18n/links";
+import { isLocale, defaultLocale } from "@/i18n/config";
 import {
   CalendarDays,
   Users,
@@ -123,7 +126,8 @@ export async function generateMetadata({
 }: {
   params: Promise<{ locale: string; slug: string }>;
 }): Promise<Metadata> {
-  const { slug } = await params;
+  const { locale: rawLocale, slug } = await params;
+  const locale = isLocale(rawLocale) ? rawLocale : defaultLocale;
   const train = await prisma.prayerTrain.findUnique({
     where: { slug },
     select: {
@@ -137,17 +141,29 @@ export async function generateMetadata({
 
   if (!train) return { title: "Not Found" };
 
+  // Title stays tied to the recipient's name regardless of locale —
+  // it's the family's actual name, not a translatable noun. Phase 3
+  // (translated UI noun phrases) could prepend "Oraciones por X" /
+  // "Orações por X" instead of "Prayers for X" when the dict provides
+  // a per-locale "prayersFor" prefix; deferred for now.
   const title = `Prayers for ${train.recipientName}`;
   const description = train.intention.slice(0, 200);
-  const url = `${getBaseUrl()}/p/${train.slug}`;
+  const baseUrl = getBaseUrl();
+  const path = `/p/${train.slug}`;
   // Prefer the recipient photo for share previews; fall back to the
   // PrayerTrain logo so unfurls always have something to render.
-  const ogImage = train.recipientImageUrl || `${getBaseUrl()}/logo.png`;
+  const ogImage = train.recipientImageUrl || `${baseUrl}/logo.png`;
 
   return {
     title,
     description,
-    alternates: { canonical: url },
+    // Don't emit cross-locale alternates for private trains — they
+    // shouldn't be linked from any locale variant for SEO. Public
+    // trains get full hreflang treatment so a Spanish-speaking
+    // searcher can find the right /es/p/<slug> mirror.
+    alternates: train.isPublic
+      ? buildAlternates({ locale, path })
+      : { canonical: `${baseUrl}${localizedHref(locale, path)}` },
     // Don't index private trains. Search engines and most social previews
     // will respect this.
     robots: train.isPublic
@@ -156,9 +172,10 @@ export async function generateMetadata({
     openGraph: {
       title,
       description,
-      url,
+      url: `${baseUrl}${localizedHref(locale, path)}`,
       type: "website",
       siteName: "PrayerTrain",
+      locale,
       images: [{ url: ogImage, width: 1024, height: 1024, alt: title }],
     },
     twitter: {

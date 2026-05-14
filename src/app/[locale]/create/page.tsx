@@ -8,13 +8,24 @@ import {
   CheckCircle2,
 } from "lucide-react";
 import { getDictionary } from "@/i18n/dictionaries";
+import { localizedMetadata } from "@/i18n/metadata";
+import { isLocale, defaultLocale } from "@/i18n/config";
 
-export const metadata: Metadata = {
-  title: "Start a PrayerTrain",
-  description:
-    "Two ways to organize prayer for someone you love — pick the one that fits.",
-  alternates: { canonical: "/create" },
-};
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale: rawLocale } = await params;
+  const locale = isLocale(rawLocale) ? rawLocale : defaultLocale;
+  const dict = await getDictionary(locale);
+  return localizedMetadata({
+    locale,
+    path: "/create",
+    title: dict.meta.createTitle,
+    description: dict.meta.createDescription,
+  });
+}
 
 export const revalidate = 300;
 

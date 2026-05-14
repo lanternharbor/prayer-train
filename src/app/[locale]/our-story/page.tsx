@@ -8,37 +8,29 @@ import {
   SacredHeartIcon,
   CandleIcon,
 } from "@/components/ui/catholic-icons";
-
-const OUR_STORY_DESCRIPTION =
-  "PrayerTrain was born from one family's experience with three children facing life-threatening medical crises, and the community of prayer that surrounded them.";
+import { getDictionary } from "@/i18n/dictionaries";
+import { localizedMetadata } from "@/i18n/metadata";
+import { isLocale, defaultLocale } from "@/i18n/config";
 
 // Static page; revalidate every 5 minutes so a copy edit ships
 // without a deploy. Translates to Vercel CDN s-maxage=300.
 export const revalidate = 300;
 
-export const metadata: Metadata = {
-  // Keyword-anchored title — was "Our Story" (24 chars, brand-only).
-  // "Why we built PrayerTrain" lets the SERP snippet plant the brand
-  // and a soft hint at the use case, while the H1 in the body
-  // ("Why PrayerTrain Exists") keeps its existing voice.
-  title: "Why we built PrayerTrain",
-  description: OUR_STORY_DESCRIPTION,
-  alternates: { canonical: "/our-story" },
-  openGraph: {
-    title: "Why we built PrayerTrain",
-    description: OUR_STORY_DESCRIPTION,
-    url: "/our-story",
-    type: "article",
-    siteName: "PrayerTrain",
-    images: [{ url: "/logo.png", width: 1024, height: 1024, alt: "PrayerTrain" }],
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: "Our Story | PrayerTrain",
-    description: OUR_STORY_DESCRIPTION,
-    images: ["/logo.png"],
-  },
-};
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale: rawLocale } = await params;
+  const locale = isLocale(rawLocale) ? rawLocale : defaultLocale;
+  const dict = await getDictionary(locale);
+  return localizedMetadata({
+    locale,
+    path: "/our-story",
+    title: dict.meta.ourStoryTitle,
+    description: dict.meta.ourStoryDescription,
+  });
+}
 
 export default function OurStoryPage() {
   return (

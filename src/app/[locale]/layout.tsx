@@ -32,6 +32,38 @@ export function generateStaticParams() {
   return locales.map((locale) => ({ locale }));
 }
 
+/**
+ * Build the `verification` block lazily so env-var changes pick up on
+ * the next render without a redeploy edit. Each search-engine field
+ * is conditional — we only emit the meta tag when the corresponding
+ * env var is present, so an unset var produces no tag (vs an empty
+ * `content=""` that would look like a broken setup to crawlers).
+ *
+ * Recognized env vars:
+ *   GOOGLE_SITE_VERIFICATION  → <meta name="google-site-verification">
+ *   BING_SITE_VERIFICATION    → <meta name="msvalidate.01">
+ *   YANDEX_SITE_VERIFICATION  → <meta name="yandex-verification">
+ *
+ * Used to claim properties in Google Search Console + Bing Webmaster
+ * Tools per-locale-subdirectory. See docs/seo-international-ops.md
+ * for the full setup walkthrough.
+ */
+function buildVerificationMeta(): Metadata["verification"] | undefined {
+  const google = process.env.GOOGLE_SITE_VERIFICATION;
+  const bing = process.env.BING_SITE_VERIFICATION;
+  const yandex = process.env.YANDEX_SITE_VERIFICATION;
+  if (!google && !bing && !yandex) return undefined;
+  const out: NonNullable<Metadata["verification"]> = {};
+  if (google) out.google = google;
+  if (yandex) out.yandex = yandex;
+  if (bing) {
+    // Bing uses the "msvalidate.01" name — not in Next's typed fields,
+    // so it lands in `other`. Mirrors the pattern from the Next docs.
+    out.other = { "msvalidate.01": bing };
+  }
+  return out;
+}
+
 export const metadata: Metadata = {
   // Resolves all relative image URLs in OG/Twitter metadata against the
   // real public origin instead of falling back to localhost:3000.
@@ -59,6 +91,7 @@ export const metadata: Metadata = {
     type: "website",
     images: [{ url: "/logo.png", width: 1024, height: 1024 }],
   },
+  verification: buildVerificationMeta(),
 };
 
 export default async function RootLayout({

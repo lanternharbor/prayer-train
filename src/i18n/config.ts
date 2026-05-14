@@ -16,6 +16,12 @@
  *      big win is a localized brand presence + Catholic-vocabulary
  *      copy for Tagalog-speaking households + US Filipino diaspora
  *      parishes (CA/HI/NV/NY).
+ *   5. pl — Phase δ (May 2026). ~33M Catholics in Poland + ~10M
+ *      diaspora globally (~9M in US, concentrated in Chicago and
+ *      NYC). Strong devotional tradition: John Paul II legacy,
+ *      Częstochowa Marian piety, Divine Mercy chaplet (Polish
+ *      origin — St. Faustina). Liturgically formal register vs.
+ *      pt-BR/fil casual flow.
  *
  * Variant choice (es-MX vs es-ES, pt-PT vs pt-BR, tl vs fil) — macro-
  * tags first. pt-BR is shipped under its full BCP 47 tag rather than
@@ -47,7 +53,7 @@
  * shared links (`/p/<slug>`) continue working via the same rewrite.
  */
 
-export const locales = ["en", "es", "pt-BR", "fil"] as const;
+export const locales = ["en", "es", "pt-BR", "fil", "pl"] as const;
 export type Locale = (typeof locales)[number];
 
 export const defaultLocale: Locale = "en";
@@ -57,6 +63,7 @@ export const LOCALE_LABELS: Record<Locale, string> = {
   es: "Español",
   "pt-BR": "Português",
   fil: "Filipino",
+  pl: "Polski",
 };
 
 /**

@@ -17,6 +17,7 @@ import { en, type EnglishEmailDictionary } from "./en";
 import { es } from "./es";
 import { ptBR } from "./pt-BR";
 import { fil } from "./fil";
+import { pl } from "./pl";
 
 const dictionaries: Record<string, EnglishEmailDictionary> = {
   en,
@@ -25,6 +26,7 @@ const dictionaries: Record<string, EnglishEmailDictionary> = {
   // values written by the create flow ("pt-BR", not "ptBR").
   "pt-BR": ptBR,
   fil,
+  pl,
 };
 
 export type EmailDictionary = EnglishEmailDictionary;

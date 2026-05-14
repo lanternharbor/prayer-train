@@ -4,6 +4,7 @@ import { en } from "./en";
 import { es } from "./es";
 import { ptBR } from "./pt-BR";
 import { fil } from "./fil";
+import { pl } from "./pl";
 
 /**
  * Pin the dictionary loader's contract. The cron + scripts read
@@ -26,6 +27,10 @@ describe("getEmailDictionary", () => {
 
   it("returns the Filipino dictionary for language='fil'", () => {
     expect(getEmailDictionary("fil")).toBe(fil);
+  });
+
+  it("returns the Polish dictionary for language='pl'", () => {
+    expect(getEmailDictionary("pl")).toBe(pl);
   });
 
   it("falls back to English for an unsupported locale", () => {
@@ -55,6 +60,7 @@ describe("getEmailDictionary", () => {
       expect(es[k]).toBeDefined();
       expect(ptBR[k]).toBeDefined();
       expect(fil[k]).toBeDefined();
+      expect(pl[k]).toBeDefined();
     }
     // Nested check on trainDaily + chainDaily.
     const trainKeys = Object.keys(en.trainDaily) as Array<
@@ -64,6 +70,7 @@ describe("getEmailDictionary", () => {
       expect(es.trainDaily[k]).toBeDefined();
       expect(ptBR.trainDaily[k]).toBeDefined();
       expect(fil.trainDaily[k]).toBeDefined();
+      expect(pl.trainDaily[k]).toBeDefined();
     }
     const chainKeys = Object.keys(en.chainDaily) as Array<
       keyof typeof en.chainDaily
@@ -72,6 +79,7 @@ describe("getEmailDictionary", () => {
       expect(es.chainDaily[k]).toBeDefined();
       expect(ptBR.chainDaily[k]).toBeDefined();
       expect(fil.chainDaily[k]).toBeDefined();
+      expect(pl.chainDaily[k]).toBeDefined();
     }
   });
 
@@ -80,11 +88,14 @@ describe("getEmailDictionary", () => {
     //   - es: "por" — "rezar POR alguien"
     //   - pt-BR: "por" — "rezar POR alguém"
     //   - fil: "para kay" — "ipanalangin para kay [name]"
-    // All read as devotional prayer; "para" alone (Spanish/pt-BR) or
-    // "para sa" (Tagalog) would feel more transactional.
+    //   - pl: "za" — "módlmy się ZA N" (devotional preposition;
+    //          "dla" would sound transactional / for-the-benefit-of)
+    // All read as devotional prayer; the literal "for" / "para" /
+    // "dla" forms would feel transactional in each register.
     expect(es.recipientPhrasePrefix).toBe("por");
     expect(ptBR.recipientPhrasePrefix).toBe("por");
     expect(fil.recipientPhrasePrefix).toBe("para kay");
+    expect(pl.recipientPhrasePrefix).toBe("za");
     expect(en.recipientPhrasePrefix).toBe("for");
   });
 });

@@ -3,6 +3,10 @@ import { LocaleLink as Link } from "@/components/locale-link";
 import { notFound } from "next/navigation";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
+import {
+  localizedPrayerInclude,
+  localizePrayer,
+} from "@/lib/prayer-localization";
 import { getBaseUrl } from "@/lib/url";
 import { SaintPortrait } from "@/components/saint-portrait";
 import { RecipientAvatar } from "@/components/ui/catholic-icons";
@@ -57,14 +61,23 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { locale: rawLocale, slug } = await params;
   const locale = isLocale(rawLocale) ? rawLocale : defaultLocale;
+  // Localized prayer load — the chain's prayerType.name is what
+  // shows up in OG <title> / share-card preview, so it has to be
+  // in the visitor's language when a reviewed translation exists.
   const chain = await prisma.prayerChain.findUnique({
     where: { slug },
     include: {
       organizer: { select: { name: true } },
-      prayerType: { select: { name: true, imageUrl: true } },
+      prayerType: { include: localizedPrayerInclude(locale) },
     },
   });
   if (!chain) return { title: "Not Found" };
+
+  const localizedPrayer = localizePrayer(
+    chain.prayerType,
+    chain.prayerType.translations,
+    locale,
+  );
 
   const orgFirstOrNull = organizerFirstNameOrNull(chain);
   const phrase = recipientPhrase(chain.recipientName, chain.intention);
@@ -74,6 +87,9 @@ export async function generateMetadata({
   // Prefer the recipient's uploaded photo for the share preview — it
   // makes iMessage / link-unfurl cards feel personal. Falls back to the
   // prayer's own image, then the brand logo.
+  // imageUrl is intrinsic to the prayer (not translated), so read from
+  // base.imageUrl via the unmerged include — localizedPrayer.imageUrl
+  // is identical but we already have a ref so this avoids a re-lookup.
   const image =
     chain.recipientImageUrl ||
     chain.prayerType.imageUrl ||
@@ -85,8 +101,8 @@ export async function generateMetadata({
   // reads broken in <title> and OG metadata. With a real name, keep
   // the possessive. PR #36 fixed this same bug class in cron emails.
   const title = orgFirstOrNull
-    ? `${orgFirstOrNull}'s ${chain.prayerType.name} ${phrase}`
-    : `${chain.prayerType.name} ${phrase}`;
+    ? `${orgFirstOrNull}'s ${localizedPrayer.name} ${phrase}`
+    : `${localizedPrayer.name} ${phrase}`;
   const description = `Day ${day} of ${chain.durationDays}. Pray along.`;
 
   return {
@@ -132,21 +148,11 @@ export default async function ChainDetailPage({
     where: { slug },
     include: {
       organizer: { select: { name: true } },
-      prayerType: {
-        select: {
-          name: true,
-          slug: true,
-          patronSaint: true,
-          prayerText: true,
-          instructions: true,
-          duration: true,
-          // Per-day meditations for prayers like the Surrender Novena
-          // where each day has distinct content. Empty array on legacy
-          // rows; the render block below is empty-gated so chain pages
-          // for prayers without reflections fall through to prayerText.
-          dailyReflections: true,
-        },
-      },
+      // Full PrayerType row + reviewed translations for this locale.
+      // Switched from a narrow `select` to a full `include` because
+      // the localized merge needs the complete base row to fall back
+      // field-by-field. Payload cost: trivial (one prayer per chain).
+      prayerType: { include: localizedPrayerInclude(locale) },
       // Public roster query — never selects member.email. The roster
       // is serialized into the RSC payload sent to the browser, so
       // even fields the UI doesn't render leak to the client. Keep
@@ -162,6 +168,19 @@ export default async function ChainDetailPage({
   });
 
   if (!chain) notFound();
+
+  // Merge the reviewed translation (if any) onto the base PrayerType
+  // row. Returns a structurally-identical shape with a
+  // `_translationLocale` marker so QA can spot fallback-to-English
+  // cases. Use `prayer` instead of `chain.prayerType` for any field
+  // that's translatable (name, description, prayerText, instructions,
+  // dailyReflections, patronSaint, feastDay). Non-translatable fields
+  // (slug, duration, imageUrl) read through either shape identically.
+  const prayer = localizePrayer(
+    chain.prayerType,
+    chain.prayerType.translations,
+    locale,
+  );
 
   // isMember check runs server-side against a focused count query so
   // we never have to pull member emails into the public payload. Only
@@ -185,8 +204,8 @@ export default async function ChainDetailPage({
   // case. Mirrors the browse-card titlePrefix pattern from PR #27 and
   // the metadata-title fix above.
   const titleSuffix = chain.recipientName
-    ? `${chain.prayerType.name} for ${chain.recipientName}`
-    : chain.prayerType.name;
+    ? `${prayer.name} for ${chain.recipientName}`
+    : prayer.name;
   const displayTitle = orgFirstOrNull
     ? `${orgFirstOrNull}'s ${titleSuffix}`
     : titleSuffix;
@@ -221,7 +240,7 @@ export default async function ChainDetailPage({
           "go back to a page you've never visited." */}
       <div className="flex items-center justify-between mb-8">
         <Link
-          href={`/prayers/${chain.prayerType.slug}`}
+          href={`/prayers/${prayer.slug}`}
           className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors"
         >
           <BookOpen className="w-4 h-4" />
@@ -303,7 +322,7 @@ export default async function ChainDetailPage({
             )}
           </div>
           <div className="mt-6 sm:mt-1 flex justify-center sm:justify-end shrink-0">
-            <SaintPortrait patronSaint={chain.prayerType.patronSaint} />
+            <SaintPortrait patronSaint={prayer.patronSaint} />
           </div>
         </div>
 
@@ -366,7 +385,7 @@ export default async function ChainDetailPage({
        */}
       {chain.status === "ACTIVE" && (() => {
         const todaysReflection = reflectionForDay(
-          chain.prayerType.dailyReflections,
+          prayer.dailyReflections,
           day,
         );
         return (
@@ -375,9 +394,9 @@ export default async function ChainDetailPage({
               <CalendarDays className="w-5 h-5 text-gold-500" />
               {t.todaysPrayer}
             </h2>
-            {chain.prayerType.instructions && (
+            {prayer.instructions && (
               <div className="text-sm text-muted-foreground mb-4 leading-relaxed whitespace-pre-line">
-                {chain.prayerType.instructions}
+                {prayer.instructions}
               </div>
             )}
             {todaysReflection && (
@@ -390,16 +409,16 @@ export default async function ChainDetailPage({
                 </p>
               </div>
             )}
-            {chain.prayerType.prayerText ? (
+            {prayer.prayerText ? (
               <div className="bg-cream-50 border border-cream-300 rounded-lg p-5">
                 <p className="font-heading text-lg leading-relaxed text-navy-700 italic whitespace-pre-line">
-                  {chain.prayerType.prayerText}
+                  {prayer.prayerText}
                 </p>
               </div>
             ) : (
               <p className="text-sm text-muted-foreground italic">
                 <Link
-                  href={`/prayers/${chain.prayerType.slug}`}
+                  href={`/prayers/${prayer.slug}`}
                   className="text-gold-700 hover:underline underline-offset-2"
                 >
                   {t.seePrayerPage}

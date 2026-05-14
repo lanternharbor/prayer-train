@@ -210,13 +210,13 @@ model PrayerTrain {
 }
 
 model PrayerType {
-  id            String              @id @default(cuid())
-  slug          String              @unique
-  name          String
-  category      PrayerCategory
-  description   String              @db.Text
-  instructions  String?             @db.Text
-  prayerText    String?             @db.Text
+  id               String              @id @default(cuid())
+  slug             String              @unique
+  name             String
+  category         PrayerCategory
+  description      String              @db.Text
+  instructions     String?             @db.Text
+  prayerText       String?             @db.Text
   // Per-day meditations for prayers where each day has distinct
   // content (Surrender Novena most famously, plus Divine Mercy and
   // others). Postgres text[] keyed by day index: dailyReflections[0]
@@ -228,23 +228,94 @@ model PrayerType {
   // the equality check; the schema doesn't enforce it because
   // legacy rows ship empty and partial-fill (5 of 9 reflections)
   // is a reasonable in-progress state.
-  dailyReflections String[]         @default([])
-  duration      Int // minutes
-  difficulty    DifficultyLevel
-  daysRequired  Int                 @default(1) // 9 for novenas, 1 for most
-  patronSaint   String?
-  feastDay      String?
-  situationTags SituationCategory[]
-  imageUrl      String?
-  sourceUrl     String?
-  createdAt     DateTime            @default(now())
+  dailyReflections String[]            @default([])
+  duration         Int // minutes
+  difficulty       DifficultyLevel
+  daysRequired     Int                 @default(1) // 9 for novenas, 1 for most
+  patronSaint      String?
+  feastDay         String?
+  situationTags    SituationCategory[]
+  imageUrl         String?
+  sourceUrl        String?
+  createdAt        DateTime            @default(now())
 
   // Relations
-  slots  PrayerSlot[]
-  chains PrayerChain[]
+  slots        PrayerSlot[]
+  chains       PrayerChain[]
+  translations PrayerTypeTranslation[]
 
   @@index([category])
   @@index([slug])
+}
+
+/**
+ * Per-locale translations of a PrayerType. Added by Phase ε of the
+ * i18n roadmap (May 2026). One row per (prayerType, locale) — a unique
+ * constraint at the schema level prevents accidental duplicates from
+ * re-running a seed or a UI form.
+ * The translation has the same "translatable" fields as PrayerType,
+ * all nullable so a partial translation (e.g., name translated but
+ * prayerText pending) doesn't block the rest of the row from being
+ * useful. The helper in src/lib/prayer-localization.ts merges field-
+ * by-field: untranslated fields fall back to the English base.
+ * `reviewedAt` is the editorial gate. Until a bilingual Catholic
+ * reviewer signs off (sets reviewedAt to non-null), the helper FALLS
+ * BACK to English — unreviewed rows sit safely in the DB but don't
+ * go live. This lets a translator draft + commit + iterate without
+ * shipping unreviewed prayer text to real users.
+ * `source` and `reviewerNote` carry editorial provenance: a citation
+ * to the approved Catholic source (USCCB Spanish, CNBB pt-BR, CBCP fil,
+ * KEP pl, Vatican.va, etc.) and the reviewer's free-form note. Both
+ * stored to make audit easy.
+ */
+model PrayerTypeTranslation {
+  id           String     @id @default(cuid())
+  prayerType   PrayerType @relation(fields: [prayerTypeId], references: [id], onDelete: Cascade)
+  prayerTypeId String
+
+  // BCP 47 locale code matching the dictionary key. Strict case —
+  // canonical "pt-BR", not "pt-br". The helper does case-insensitive
+  // normalization at lookup time so a stale-cased value falls back to
+  // English rather than producing a duplicate row.
+  locale String
+
+  // Translatable PrayerType fields. All nullable so a partial
+  // translation doesn't block rendering. The helper falls back
+  // field-by-field: untranslated fields use the base English value.
+  name             String?  @db.Text
+  description      String?  @db.Text
+  prayerText       String?  @db.Text
+  instructions     String?  @db.Text
+  // Empty default mirrors PrayerType.dailyReflections. The helper
+  // treats length === 0 as "not translated" and falls back to the
+  // base array. Length matching the prayer's daysRequired is the
+  // signal that per-day content is fully translated.
+  dailyReflections String[] @default([])
+  patronSaint      String?
+  feastDay         String?
+
+  // Editorial provenance + review gate.
+  // - source: free-form citation (e.g.,
+  //     "USCCB Spanish materials, usccb.org/es/prayers/sacred-heart-novena,
+  //     retrieved 2026-05-14")
+  // - reviewerNote: bilingual Catholic reviewer's free-form note
+  // - reviewedAt: timestamp when reviewer signed off. Until non-null,
+  //     the helper FALLS BACK to English. Unreviewed rows are
+  //     persisted but invisible to the live app.
+  source       String?   @db.Text
+  reviewerNote String?   @db.Text
+  reviewedAt   DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // One translation per (prayerType, locale).
+  @@unique([prayerTypeId, locale])
+  @@index([prayerTypeId])
+  // Composite index on (locale, reviewedAt) speeds up the
+  // "all reviewed translations for locale X" query the helper
+  // runs when joining via Prisma include.
+  @@index([locale, reviewedAt])
 }
 
 model PrayerSlot {

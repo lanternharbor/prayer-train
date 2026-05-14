@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { LocaleLink as Link } from "@/components/locale-link";
-import { prisma } from "@/lib/db";
+import { getLocalizedPrayersMany } from "@/lib/prayer-localization";
 import { formatPrayerCategory, formatDifficulty } from "@/lib/utils";
 import {
   BookOpen,
@@ -35,10 +35,14 @@ export async function generateMetadata({
 }
 
 export default async function PrayersPage({
+  params,
   searchParams,
 }: {
+  params: Promise<{ locale: string }>;
   searchParams: Promise<{ category?: string; q?: string }>;
 }) {
+  const { locale: rawLocale } = await params;
+  const locale = isLocale(rawLocale) ? rawLocale : defaultLocale;
   const { category, q: rawQuery } = await searchParams;
   // Trim and cap the query string to defend against absurd inputs and
   // strip the surrounding whitespace users sometimes paste in.
@@ -48,6 +52,13 @@ export default async function PrayersPage({
   // across the human-facing fields when a query is given. Case-
   // insensitive `contains` on Postgres maps to ILIKE, which is fine
   // for a library of ~50 entries with no per-search index.
+  //
+  // Search is intentionally against the ENGLISH base columns even on
+  // non-English locales. Reasons: (1) the user's query is in their
+  // browser-input locale but our search index isn't multi-locale yet,
+  // (2) English remains the canonical source of truth for prayer
+  // identity. Phase ζ may revisit if a translated-prayer-search query
+  // pattern emerges in analytics.
   const where: Prisma.PrayerTypeWhereInput = {
     ...(category ? { category: category as PrayerCategory } : {}),
     ...(query
@@ -61,10 +72,13 @@ export default async function PrayersPage({
       : {}),
   };
 
-  const prayers = await prisma.prayerType.findMany({
-    where,
-    orderBy: [{ category: "asc" }, { name: "asc" }],
-  });
+  const prayers = await getLocalizedPrayersMany(
+    {
+      where,
+      orderBy: [{ category: "asc" }, { name: "asc" }],
+    },
+    locale,
+  );
 
   // Group by category
   const grouped = prayers.reduce(

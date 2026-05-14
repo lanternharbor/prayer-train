@@ -148,7 +148,8 @@ The current outstanding pushes, in merge order:
 | Branch / PR | Schema delta | DB op needed |
 |---|---|---|
 | **#56 audit pass** (merged) | `PrayerTrain.isPublic` and `PrayerChain.isPublic` defaults flipped from `true` → `false` (column type unchanged) | `DATABASE_URL=<prod> npx prisma db push` — safe; existing rows untouched, default only affects new INSERTs that omit the column |
-| **#60 i18n Phase 2** (open at time of writing) | New columns: `PrayerTrain.language String @default("en")` and `PrayerChain.language String @default("en")` | `DATABASE_URL=<prod> npx prisma db push` BEFORE merge lands traffic. Safe: column is non-null but has a default, so existing rows get `"en"` on push; new INSERTs from the server actions set it explicitly. |
+| **#60 i18n Phase 2** (merged) | New columns: `PrayerTrain.language String @default("en")` and `PrayerChain.language String @default("en")` | `DATABASE_URL=<prod> npx prisma db push` BEFORE merge lands traffic. Safe: column is non-null but has a default, so existing rows get `"en"` on push; new INSERTs from the server actions set it explicitly. |
+| **Phase ε i18n prayer translations** (this PR) | New table: `PrayerTypeTranslation`. One row per `(prayerTypeId, locale)`. All translatable fields nullable; `reviewedAt` is the editorial gate. Adds `translations PrayerTypeTranslation[]` back-reference to `PrayerType`. | `DATABASE_URL=<prod> npx prisma db push` BEFORE merge. **Build will fail until the push runs** — the read sites and crons reference the `translations` relation, which doesn't exist on prod until the push. Safe: pure additive (new table; no changes to existing columns or rows). |
 
 Steps for each:
 1. Confirm William is awake.
@@ -166,3 +167,4 @@ needed.
 
 - **2026-04-26 — Initial version.** Smoke test + Healthchecks ping + workflow rules documented after the Spina family train demonstrated the product is now real.
 - **2026-05-13 — Pending DB schema updates section.** PR #60's `language` column addition (and PR #56's lingering default flip) require `prisma db push` against prod before the merge takes effect for new rows.
+- **2026-05-14 — Phase ε `PrayerTypeTranslation` table.** New per-locale translation table for prayer content. Pure-additive schema; build fails until `prisma db push` runs against prod because the read sites + crons reference the `translations` relation.

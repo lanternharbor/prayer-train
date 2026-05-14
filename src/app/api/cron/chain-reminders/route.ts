@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { timingSafeEqual } from "node:crypto";
 import { prisma } from "@/lib/db";
+import { localizePrayer } from "@/lib/prayer-localization";
 import type { EmailDispatchResult } from "@/lib/email";
 import {
   sendChainBouquetReady,
@@ -89,16 +90,19 @@ export async function GET(request: Request) {
     include: {
       organizer: { select: { name: true } },
       prayerType: {
-        // dailyReflections is included so the cron can resolve the
+        // Pull full PrayerType row + reviewed translations for any
+        // locale. The localized merge below picks the one matching
+        // chain.language; others are discarded after merge. Switched
+        // from a narrow `select` to `include` so the merge has the
+        // complete base row for field-by-field fallback.
+        //
+        // dailyReflections is pulled so the cron can resolve the
         // day-N specific meditation (Surrender Novena, Divine Mercy,
         // etc.) for each member's reminder. Empty array on legacy
         // rows means reflectionForDay returns null and the email
         // template's empty-gate skips the reflection card entirely.
-        select: {
-          name: true,
-          prayerText: true,
-          instructions: true,
-          dailyReflections: true,
+        include: {
+          translations: { where: { reviewedAt: { not: null } } },
         },
       },
       members: {
@@ -130,6 +134,17 @@ export async function GET(request: Request) {
       ) + 1;
 
     const chainUrl = `${baseUrl}/chain/${chain.slug}`;
+
+    // Merge the reviewed translation (if any) for this chain's
+    // language onto the base PrayerType row. Done once per chain
+    // (not once per member) since every member of a chain receives
+    // the same prayer text + reflections. The chrome (subject, CTA,
+    // footer) is localized separately via the email dictionary.
+    const localizedPrayer = localizePrayer(
+      chain.prayerType,
+      chain.prayerType.translations,
+      chain.language,
+    );
 
     // Idempotency gate: drop members who already received this day's
     // reminder. Lets the route stay safe under retry / manual replay
@@ -203,13 +218,13 @@ export async function GET(request: Request) {
             chain.organizerAnonymous || !chain.organizer?.name
               ? null
               : chain.organizer.name,
-          prayerName: chain.prayerType.name,
-          prayerText: chain.prayerType.prayerText,
-          prayerInstructions: chain.prayerType.instructions,
+          prayerName: localizedPrayer.name,
+          prayerText: localizedPrayer.prayerText,
+          prayerInstructions: localizedPrayer.instructions,
           // Day-specific meditation when populated; null otherwise.
           // The email template's empty-gate skips the card when null.
           dailyReflection: reflectionForDay(
-            chain.prayerType.dailyReflections,
+            localizedPrayer.dailyReflections,
             dayNum,
           ),
           customPrayerText: chain.customPrayerText,
@@ -337,7 +352,15 @@ export async function GET(request: Request) {
       organizer: {
         select: { name: true, email: true },
       },
-      prayerType: { select: { name: true } },
+      // Pull reviewed translations alongside the base row so the
+      // closing-prompt email's prayer name renders in the chain's
+      // language. Most chains will have 0–1 rows here for the active
+      // locale; small payload.
+      prayerType: {
+        include: {
+          translations: { where: { reviewedAt: { not: null } } },
+        },
+      },
     },
   });
 
@@ -357,13 +380,18 @@ export async function GET(request: Request) {
       continue;
     }
     try {
+      const localizedPrayer = localizePrayer(
+        chain.prayerType,
+        chain.prayerType.translations,
+        chain.language,
+      );
       await sendChainClosingPrompt({
         to: chain.organizer!.email!,
         organizerFirstName: organizerFirstName({
           organizerAnonymous: chain.organizerAnonymous,
           organizer: { name: chain.organizer?.name ?? null },
         }),
-        prayerName: chain.prayerType.name,
+        prayerName: localizedPrayer.name,
         recipientName: chain.recipientName,
         chainManageUrl: `${baseUrl}/chain/${chain.slug}/manage`,
       });
@@ -409,8 +437,17 @@ export async function GET(request: Request) {
       slug: true,
       organizerAnonymous: true,
       recipientName: true,
+      language: true,
       organizer: { select: { name: true, email: true } },
-      prayerType: { select: { name: true } },
+      // Nested select-with-translations so the bouquet-ready email
+      // gets the locale-correct prayer name. The full row plus
+      // reviewed translations is the simplest shape for localizePrayer
+      // (it needs PrayerType, not a partial).
+      prayerType: {
+        include: {
+          translations: { where: { reviewedAt: { not: null } } },
+        },
+      },
     },
   });
 
@@ -437,13 +474,18 @@ export async function GET(request: Request) {
       // helper swallows errors so a single send failure doesn't stall
       // the rest of the auto-close loop.
       if (chain.organizer?.email) {
+        const localizedPrayer = localizePrayer(
+          chain.prayerType,
+          chain.prayerType.translations,
+          chain.language,
+        );
         await sendChainBouquetReady({
           to: chain.organizer.email,
           organizerName:
             chain.organizerAnonymous || !chain.organizer.name
               ? null
               : chain.organizer.name,
-          prayerName: chain.prayerType.name,
+          prayerName: localizedPrayer.name,
           recipientName: chain.recipientName,
           bouquetUrl: `${baseUrl}/api/bouquet/chain/${chain.slug}`,
           chainUrl: `${baseUrl}/chain/${chain.slug}`,

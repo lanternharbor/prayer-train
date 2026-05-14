@@ -3,6 +3,7 @@ import { getEmailDictionary } from "./index";
 import { en } from "./en";
 import { es } from "./es";
 import { ptBR } from "./pt-BR";
+import { fil } from "./fil";
 
 /**
  * Pin the dictionary loader's contract. The cron + scripts read
@@ -21,6 +22,10 @@ describe("getEmailDictionary", () => {
 
   it("returns the Brazilian Portuguese dictionary for language='pt-BR'", () => {
     expect(getEmailDictionary("pt-BR")).toBe(ptBR);
+  });
+
+  it("returns the Filipino dictionary for language='fil'", () => {
+    expect(getEmailDictionary("fil")).toBe(fil);
   });
 
   it("falls back to English for an unsupported locale", () => {
@@ -49,6 +54,7 @@ describe("getEmailDictionary", () => {
     for (const k of enKeys) {
       expect(es[k]).toBeDefined();
       expect(ptBR[k]).toBeDefined();
+      expect(fil[k]).toBeDefined();
     }
     // Nested check on trainDaily + chainDaily.
     const trainKeys = Object.keys(en.trainDaily) as Array<
@@ -57,6 +63,7 @@ describe("getEmailDictionary", () => {
     for (const k of trainKeys) {
       expect(es.trainDaily[k]).toBeDefined();
       expect(ptBR.trainDaily[k]).toBeDefined();
+      expect(fil.trainDaily[k]).toBeDefined();
     }
     const chainKeys = Object.keys(en.chainDaily) as Array<
       keyof typeof en.chainDaily
@@ -64,16 +71,20 @@ describe("getEmailDictionary", () => {
     for (const k of chainKeys) {
       expect(es.chainDaily[k]).toBeDefined();
       expect(ptBR.chainDaily[k]).toBeDefined();
+      expect(fil.chainDaily[k]).toBeDefined();
     }
   });
 
-  it("non-English dictionaries use 'por' as the recipient phrase prefix", () => {
-    // Catholic register: "rezar POR alguien/alguém" reads as devotional
-    // prayer. "Para" would feel transactional/utilitarian. Both
-    // Spanish and Brazilian Portuguese ship with "por" — convergent
-    // editorial choice, not a happy accident.
+  it("uses Catholic devotional register for recipient phrase prefix", () => {
+    // Convergent editorial choice across non-English locales:
+    //   - es: "por" — "rezar POR alguien"
+    //   - pt-BR: "por" — "rezar POR alguém"
+    //   - fil: "para kay" — "ipanalangin para kay [name]"
+    // All read as devotional prayer; "para" alone (Spanish/pt-BR) or
+    // "para sa" (Tagalog) would feel more transactional.
     expect(es.recipientPhrasePrefix).toBe("por");
     expect(ptBR.recipientPhrasePrefix).toBe("por");
+    expect(fil.recipientPhrasePrefix).toBe("para kay");
     expect(en.recipientPhrasePrefix).toBe("for");
   });
 });

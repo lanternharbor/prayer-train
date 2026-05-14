@@ -11,13 +11,24 @@
  *      population)
  *   3. pt-BR — Phase β (May 2026). Brazil is the world's largest
  *      Catholic country (~150M Catholics).
+ *   4. fil — Phase γ (May 2026). The Philippines has ~80M Catholics
+ *      and very high English literacy, so the UI lift is small; the
+ *      big win is a localized brand presence + Catholic-vocabulary
+ *      copy for Tagalog-speaking households + US Filipino diaspora
+ *      parishes (CA/HI/NV/NY).
  *
- * Variant choice (es-MX vs es-ES, pt-PT vs pt-BR) — macro-tags first.
- * pt-BR is shipped under its full BCP 47 tag rather than a bare "pt"
- * because Brazilian Portuguese and European Portuguese diverge enough
- * (vocabulary, devotional register, "você" vs "tu") that a single
- * "pt" copy would feel off in either market. pt-PT (Portugal) can
- * layer on top later without retro-coding pt-BR copy.
+ * Variant choice (es-MX vs es-ES, pt-PT vs pt-BR, tl vs fil) — macro-
+ * tags first. pt-BR is shipped under its full BCP 47 tag rather than
+ * a bare "pt" because Brazilian Portuguese and European Portuguese
+ * diverge enough (vocabulary, devotional register, "você" vs "tu")
+ * that a single "pt" copy would feel off in either market. pt-PT
+ * (Portugal) can layer on top later without retro-coding pt-BR copy.
+ *
+ * For Filipino, the modern BCP 47 macrolanguage tag is "fil"
+ * (Filipino, the standardized national language). "tl" (Tagalog)
+ * macro-falls to "fil" through the negotiator so a browser sending
+ * either lands on the same dictionary — they're effectively the same
+ * surface for our purposes. Bisaya / Cebuano / Ilocano are deferred.
  *
  * Adding a new locale:
  *   1. Add the BCP 47 code to `locales` below (lowercase language,
@@ -36,7 +47,7 @@
  * shared links (`/p/<slug>`) continue working via the same rewrite.
  */
 
-export const locales = ["en", "es", "pt-BR"] as const;
+export const locales = ["en", "es", "pt-BR", "fil"] as const;
 export type Locale = (typeof locales)[number];
 
 export const defaultLocale: Locale = "en";
@@ -45,6 +56,7 @@ export const LOCALE_LABELS: Record<Locale, string> = {
   en: "English",
   es: "Español",
   "pt-BR": "Português",
+  fil: "Filipino",
 };
 
 /**

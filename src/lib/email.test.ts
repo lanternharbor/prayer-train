@@ -464,6 +464,78 @@ describe("renderChainDailyReminder", () => {
     expect(r.text).not.toContain("I prayed today:");
     expect(r.text).not.toContain("Ya recé hoy:");
   });
+
+  // ─── Phase γ locale plumbing (fil end-to-end) ────────────────
+  //
+  // Parallel coverage to es / pt-BR. Filipino Catholic Tagalog
+  // naturally code-switches with English — "novena", "PrayerTrain",
+  // "rosary" stay English in everyday devotional speech. Asserts
+  // here pin the Tagalog chrome (greeting, CTA, reflection labels)
+  // without expecting over-translated technical terms.
+
+  it("renders fil chrome when language='fil' is passed (named)", () => {
+    const r = renderChainDailyReminder({
+      ...base,
+      organizerName: "Maria Reyes",
+      language: "fil",
+    });
+    // Colon-separated subject: "Araw N: {prayerName} ng {orgFirst} para kay {name}"
+    expect(r.subject).toContain("Araw 5:");
+    expect(r.subject).toContain("ng Maria");
+    expect(r.subject).toContain("para kay Denis Wilson");
+    // Day badge: "Araw N ng M"
+    expect(r.html).toContain("Araw 5 ng");
+    // Greeting line in Tagalog
+    expect(r.html).toContain("Magpaglaan ng sandali, Alice.");
+    // CTA + footer
+    expect(r.html).toContain("Naidasal ko na ngayon");
+    expect(r.html).toContain("Mag-unsubscribe");
+    // No English / Spanish / pt-BR chrome leaked
+    expect(r.html).not.toContain("Take a moment");
+    expect(r.html).not.toContain("Tómate un momento");
+    expect(r.html).not.toContain("Reserve um momento");
+  });
+
+  it("renders fil chrome when language='fil' is passed (anonymous)", () => {
+    const r = renderChainDailyReminder({
+      ...base,
+      organizerName: null,
+      language: "fil",
+    });
+    expect(r.subject).toMatch(/^Araw 5: Surrender Novena para kay Denis Wilson$/);
+    // Plural Tagalog: "X pang tao ang nagdadasal ngayon."
+    expect(r.html).toContain("4 pang tao ang nagdadasal ngayon.");
+    expect(r.html).not.toContain("praying today.");
+    expect(r.html).not.toContain("rezando hoy");
+  });
+
+  it("uses 'para kay' (Catholic prayer register) in fil recipient phrase", () => {
+    const r = renderChainDailyReminder({
+      ...base,
+      organizerName: "Maria",
+      language: "fil",
+    });
+    // "para kay" reads as devotional ("ipanalangin natin para kay X").
+    // The bare English "for" or Spanish "por" would not fit Tagalog.
+    expect(r.subject).toContain("para kay Denis Wilson");
+    expect(r.html).toContain("para kay Denis Wilson");
+    expect(r.html).not.toContain("for Denis Wilson");
+    expect(r.html).not.toContain("por Denis Wilson");
+  });
+
+  it("fil plaintext fallback localizes CTA + reflection labels", () => {
+    const r = renderChainDailyReminder({
+      ...base,
+      organizerName: "Maria",
+      dailyReflection: "Magtiwala ka sa Akin.",
+      language: "fil",
+    });
+    expect(r.text).toContain("Repleksyon ng araw 5:");
+    expect(r.text).toContain("Naidasal ko na ngayon:");
+    expect(r.text).toContain("Bisitahin ang pahina ng panalangin:");
+    expect(r.text).not.toContain("I prayed today:");
+    expect(r.text).not.toContain("Já rezei hoje:");
+  });
 });
 
 // ─── Train daily reminder render coverage (Phase 2 / PR B cleanup) ────
@@ -654,6 +726,55 @@ describe("renderTrainDailyReminder", () => {
     expect(anon.html).toContain("Uma oração pessoal incluída");
     expect(anon.html).not.toContain("Uma oração de");
     expect(anon.text).toContain("Uma oração pessoal incluída");
+  });
+
+  // ─── Phase γ locale plumbing (fil end-to-end) ────────────────
+
+  it("renders fil chrome when language='fil' is passed", () => {
+    const r = renderTrainDailyReminder({ ...base, language: "fil" });
+    expect(r.subject).toBe(
+      "Paalala sa panalangin: Surrender Novena para kay Denis Wilson",
+    );
+    expect(r.html).toContain("Panalangin para kay Denis Wilson ngayong araw");
+    expect(r.html).toContain(
+      "Kumusta Alice, narito ang iyong commitment sa panalangin para sa araw na ito.",
+    );
+    // CTA + view link
+    expect(r.html).toContain("Naidasal ko na");
+    expect(r.html).toContain("Tingnan ang PrayerTrain");
+    // fil footer
+    expect(r.html).toContain(
+      "PrayerTrain — Sama-samang panalangin para sa nangangailangan",
+    );
+    // Plaintext localized
+    expect(r.text).toContain("Panalangin para kay Denis Wilson ngayong araw");
+    expect(r.text).toContain("Naidasal ko na:");
+    expect(r.text).toContain("Tingnan ang PrayerTrain:");
+    // No English / Spanish / pt-BR chrome leaked
+    expect(r.html).not.toContain("Today's Prayer for");
+    expect(r.html).not.toContain("Hola Alice");
+    expect(r.html).not.toContain("Olá Alice");
+  });
+
+  it("renders fil custom-prayer attribution (named + anonymous)", () => {
+    const named = renderTrainDailyReminder({
+      ...base,
+      organizerFirstName: "Maria",
+      customPrayerText: "Isang panalanging itinuro sa akin ng aking ina.",
+      language: "fil",
+    });
+    expect(named.html).toContain("Isang panalangin mula kay Maria");
+    expect(named.text).toContain("Isang panalangin mula kay Maria");
+
+    const anon = renderTrainDailyReminder({
+      ...base,
+      organizerFirstName: null,
+      customPrayerText: "Isang panalanging itinuro sa akin ng aking ina.",
+      language: "fil",
+    });
+    expect(anon.html).toContain("May personal na panalanging kasama");
+    expect(anon.html).not.toContain("Isang panalangin mula kay");
+    expect(anon.text).toContain("May personal na panalanging kasama");
   });
 });
 

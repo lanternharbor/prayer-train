@@ -158,6 +158,12 @@ function localeToOgTag(locale: Locale): string {
       return "es_ES";
     case "pt-BR":
       return "pt_BR";
+    case "fil":
+      // OG locale uses BCP 47 with underscore. "fil_PH" pins the Filipino
+      // macrolanguage to the Philippines — the natural mapping for our
+      // launch market. Facebook/Twitter share-card previews honor this
+      // for layout (RTL detection, font selection on some platforms).
+      return "fil_PH";
     default:
       return locale;
   }

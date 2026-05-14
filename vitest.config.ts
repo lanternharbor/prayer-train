@@ -13,6 +13,11 @@ export default defineConfig({
   },
   test: {
     environment: "node",
-    include: ["src/**/*.test.ts"],
+    // `prisma/**` picks up unit tests for the seed scaffolding (pure
+    // helpers under prisma/seed/translations/). Anything under prisma/
+    // that's *.test.ts is included; DB-touching seed runners themselves
+    // are NOT *.test.ts, so this doesn't accidentally execute seed
+    // logic.
+    include: ["src/**/*.test.ts", "prisma/**/*.test.ts"],
   },
 });

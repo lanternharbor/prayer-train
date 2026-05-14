@@ -28,6 +28,7 @@
   },
   "home": {
     "metadataTitle": "PrayerTrain — Oración organizada para quienes la necesitan",
+    "metadataDescription": "Coordina oración por alguien que la necesita. Crea un PrayerTrain, elige novenas y devociones católicas, e invita a tu comunidad a orar.",
     "heroBadge": "Coordinación de oración católica",
     "heroTitleLine1": "Una red de oración",
     "heroTitleLine2": "para tu ser querido",
@@ -129,6 +130,24 @@
   "localeSwitcher": {
     "label": "Cambiar idioma",
     "current": "Idioma: {label}"
+  },
+  "meta": {
+    "ourStoryTitle": "Por qué construimos PrayerTrain",
+    "ourStoryDescription": "Somos una familia católica en Massachusetts. PrayerTrain nació de nuestros propios momentos de sanación — tres niños, tres crisis, tres caminos a casa. Esta es la historia.",
+    "prayersTitle": "Biblioteca de oraciones — Novenas, rosarios, chapeles, letanías católicas",
+    "prayersDescription": "Una biblioteca cuidadosamente seleccionada de oraciones católicas: novenas, rosarios, coronillas, letanías, oraciones basadas en la Escritura y devociones — cada una con texto completo e instrucciones.",
+    "novenasTitle": "Novenas católicas — Devociones de oración de 9 días",
+    "novenasDescription": "Explora las novenas católicas tradicionales. Cada novena abarca 9 días de oración intercesoria centrada en una intención específica.",
+    "createTitle": "Crear un PrayerTrain — Dos formas de organizar oración",
+    "createDescription": "Dos formas de organizar oración por alguien a quien amas. Un calendario de compromisos de oración, o una novena rezada en grupo. Elige la que mejor se ajuste.",
+    "createTrainTitle": "Crear un calendario de oración — Asistente de PrayerTrain",
+    "createTrainDescription": "Crea un PrayerTrain para alguien que la necesita. Elige su situación, selecciona oraciones e invita a tu comunidad a inscribirse en días específicos.",
+    "privacyTitle": "Política de privacidad",
+    "privacyDescription": "Cómo PrayerTrain gestiona tus datos. Explicación en lenguaje claro de qué recopilamos, por qué y cómo controlarlo.",
+    "termsTitle": "Términos de uso",
+    "termsDescription": "Términos en lenguaje claro para usar PrayerTrain.",
+    "dashboardTitle": "Tu panel",
+    "dashboardDescription": "Gestiona tus PrayerTrains y compromisos de oración."
   },
   "situationLabels": {
     "ILLNESS": "Enfermedad y salud",

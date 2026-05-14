@@ -28,6 +28,7 @@
   },
   "home": {
     "metadataTitle": "PrayerTrain — Organized Prayer for Those in Need",
+    "metadataDescription": "Coordinate prayer coverage for someone in need. Create a PrayerTrain, choose Catholic novenas and devotions, and invite your community to pray.",
     "heroBadge": "Catholic Prayer Coordination",
     "heroTitleLine1": "Like a meal train,",
     "heroTitleLine2": "but for prayers",
@@ -129,6 +130,24 @@
   "localeSwitcher": {
     "label": "Change language",
     "current": "Language: {label}"
+  },
+  "meta": {
+    "ourStoryTitle": "Why we built PrayerTrain",
+    "ourStoryDescription": "We're a Catholic family in Massachusetts. PrayerTrain came from our own healing seasons — three children, three crises, three roads home. This is the story.",
+    "prayersTitle": "Prayer Library — Catholic novenas, rosaries, chaplets, litanies",
+    "prayersDescription": "A curated library of Catholic prayers: novenas, rosaries, chaplets, litanies, scripture-based prayers, and devotions — each with full text and instructions.",
+    "novenasTitle": "Catholic Novenas — 9-day prayer devotions",
+    "novenasDescription": "Browse traditional Catholic novenas. Each novena spans 9 days of focused intercessory prayer for a specific intention.",
+    "createTitle": "Start a PrayerTrain — Two ways to organize prayer",
+    "createDescription": "Two ways to organize prayer for someone you love. A calendar of prayer commitments, or a novena prayed together. Pick the one that fits.",
+    "createTrainTitle": "Start a Prayer Calendar — PrayerTrain wizard",
+    "createTrainDescription": "Create a PrayerTrain for someone in need. Choose their situation, select prayers, and invite your community to sign up for specific days.",
+    "privacyTitle": "Privacy Policy",
+    "privacyDescription": "How PrayerTrain handles your data. Plain-language explanation of what we collect, why, and how to control it.",
+    "termsTitle": "Terms of Use",
+    "termsDescription": "Plain-language terms for using PrayerTrain.",
+    "dashboardTitle": "Your dashboard",
+    "dashboardDescription": "Manage your prayer trains and commitments."
   },
   "situationLabels": {
     "ILLNESS": "Illness & Health",

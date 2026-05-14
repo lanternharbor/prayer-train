@@ -1,12 +1,26 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { checkRateLimit } from "@/lib/rate-limit";
+import {
+  defaultLocale,
+  isLocale,
+  LOCALE_COOKIE,
+  locales,
+} from "@/i18n/config";
 
 /**
  * Edge proxy:
- *  1. Auth gate for /dashboard and /create — redirect to /signin
+ *  1. **Locale negotiation** — rewrites bare paths (`/browse`) to
+ *     locale-prefixed internal paths (`/en/browse` or `/es/browse`)
+ *     so the `app/[locale]/...` route tree resolves. The URL bar
+ *     stays clean for the default locale; non-default locales see
+ *     explicit prefixes (`/es/browse`) they can share. Internal
+ *     rewrite (not redirect) — Google guidelines treat the cookie/
+ *     Accept-Language → 3xx redirect pattern as cloaking-adjacent.
+ *     Rendered HTML matches the URL the user sees.
+ *  2. Auth gate for /dashboard and /create — redirect to /signin
  *     when no NextAuth session cookie is present.
- *  2. Rate limit the magic-link sign-in endpoint and /api/stats.
+ *  3. Rate limit the magic-link sign-in endpoint and /api/stats.
  *     Magic link is the most-abusable surface (it sends an email
  *     to any address an attacker types in), so it's the tightest
  *     bucket. /api/stats is public read-only and just needs basic
@@ -72,9 +86,16 @@ export async function proxy(request: NextRequest) {
   // before they understand the difference). Only the actual creation
   // flows are protected. /chain/new self-gates inside the page since
   // it accepts ?prayerType= and needs to round-trip the callback.
+  //
+  // Auth check is locale-aware: protected paths match with OR without
+  // a locale prefix, since the rewrite below may not have happened
+  // yet at this point in the request lifecycle (proxy runs once at
+  // the edge; rewrites are applied to the response routing).
+  const pathnameWithoutLocale = stripLocalePrefix(pathname);
   const protectedPaths = ["/dashboard", "/create/train"];
-  const isProtected = protectedPaths.some((path) =>
-    pathname === path || pathname.startsWith(`${path}/`)
+  const isProtected = protectedPaths.some(
+    (p) =>
+      pathnameWithoutLocale === p || pathnameWithoutLocale.startsWith(`${p}/`),
   );
 
   const hasSession =
@@ -82,12 +103,58 @@ export async function proxy(request: NextRequest) {
     request.cookies.get("__Secure-authjs.session-token");
 
   if (isProtected && !hasSession) {
-    const signInUrl = new URL("/signin", request.url);
+    // Preserve the user's locale on the redirect. If they were on
+    // /es/dashboard, send them to /es/signin?callbackUrl=/es/dashboard.
+    const localeFromPath = extractLocaleFromPath(pathname) ?? defaultLocale;
+    const signInUrl = new URL(`/${localeFromPath}/signin`, request.url);
     signInUrl.searchParams.set("callbackUrl", pathname);
     return NextResponse.redirect(signInUrl);
   }
 
-  return NextResponse.next();
+  // ── Locale rewrite ──
+  // Skip paths that should never be locale-prefixed:
+  //   - /api/* (API routes are locale-agnostic)
+  //   - Top-level files (sitemap.xml, robots.txt, manifest.json, favicon*)
+  //   - Next internals (_next, _vercel)
+  //
+  // The matcher in `config` below ALREADY excludes /api and /_next, so
+  // we only need to check the file-asset paths here as belt-and-suspenders.
+  if (
+    pathname.startsWith("/_next") ||
+    pathname.startsWith("/_vercel") ||
+    pathname === "/sitemap.xml" ||
+    pathname === "/robots.txt" ||
+    pathname === "/manifest.json" ||
+    pathname.startsWith("/favicon") ||
+    pathname.startsWith("/apple-touch-icon") ||
+    pathname === "/logo.png"
+  ) {
+    return NextResponse.next();
+  }
+
+  // If the path already starts with a known locale, pass through.
+  const firstSegment = pathname.split("/").filter(Boolean)[0];
+  if (firstSegment && isLocale(firstSegment)) {
+    return NextResponse.next();
+  }
+
+  // Otherwise: rewrite (NOT redirect) to add the default locale
+  // prefix internally. The URL bar stays clean for English visitors;
+  // the routing layer sees `/{defaultLocale}/...` and resolves the
+  // `app/[locale]/...` tree. A Spanish-cookie visitor's explicit
+  // `/es/...` paths pass through above; an internal `Link` rendered
+  // by a server component already uses `localizedHref(locale, path)`
+  // to emit the correctly-prefixed URL, so the rewrite path mostly
+  // catches first-visit bare-URL traffic + crawlers.
+  //
+  // The cookie is intentionally NOT honored here for choosing the
+  // rewrite target (Google guidelines: render the language the URL
+  // specifies). The cookie is consulted only INSIDE pages via the
+  // LocaleSwitcher's navigation handler — that's intra-app, not the
+  // first-request rewrite.
+  const url = request.nextUrl.clone();
+  url.pathname = `/${defaultLocale}${pathname}`;
+  return NextResponse.rewrite(url);
 }
 
 function clientIp(request: NextRequest): string {
@@ -98,11 +165,34 @@ function clientIp(request: NextRequest): string {
   return "unknown";
 }
 
+function extractLocaleFromPath(pathname: string): string | null {
+  const seg = pathname.split("/").filter(Boolean)[0];
+  return seg && isLocale(seg) ? seg : null;
+}
+
+function stripLocalePrefix(pathname: string): string {
+  const segments = pathname.split("/").filter(Boolean);
+  if (segments.length > 0 && isLocale(segments[0])) {
+    const rest = segments.slice(1).join("/");
+    return rest ? `/${rest}` : "/";
+  }
+  return pathname;
+}
+
+// The unused-but-helpful list of supported locales is exported so
+// downstream developers can sanity-check it matches src/i18n/config.ts.
+void locales;
+void LOCALE_COOKIE;
+
 export const config = {
+  // Run the proxy on every path EXCEPT:
+  //   - API routes (api/) — locale-agnostic
+  //   - Next internals (_next/*, _vercel/*)
+  //   - File extension lookups (sitemap.xml, robots.txt, *.png, etc.)
+  //     — though our explicit-skip logic above already short-circuits
+  //     these, the matcher exclusion saves an unnecessary edge function
+  //     invocation per request.
   matcher: [
-    "/dashboard/:path*",
-    "/create/:path*",
-    "/api/auth/signin/:path*",
-    "/api/stats",
+    "/((?!api/|_next/|_vercel/|.*\\.[\\w]+$).*)",
   ],
 };

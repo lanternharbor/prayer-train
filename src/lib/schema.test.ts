@@ -104,14 +104,28 @@ describe("prayerArticleSchema", () => {
   };
 
   it("declares the Article type with the right headline and URL", () => {
+    // Phase α: the helper now accepts a locale (defaults to "en") and
+    // emits a locale-prefixed URL so the JSON-LD's url field matches
+    // the actual locale-specific page that serves the content. The
+    // proxy rewrites bare /prayers/... → /en/prayers/... internally,
+    // but the canonical URL for Google is the explicit one.
     const s = prayerArticleSchema(fixture);
     expect(s["@type"]).toBe("Article");
     expect(s.headline).toBe(fixture.name);
+    expect(s.inLanguage).toBe("en");
     expect(s.url).toBe(
-      "https://test.example.com/prayers/novena-to-saint-joseph",
+      "https://test.example.com/en/prayers/novena-to-saint-joseph",
     );
     expect(s.mainEntityOfPage).toBe(
-      "https://test.example.com/prayers/novena-to-saint-joseph",
+      "https://test.example.com/en/prayers/novena-to-saint-joseph",
+    );
+  });
+
+  it("emits a locale-prefixed URL when called with locale='es'", () => {
+    const s = prayerArticleSchema(fixture, "es");
+    expect(s.inLanguage).toBe("es");
+    expect(s.url).toBe(
+      "https://test.example.com/es/prayers/novena-to-saint-joseph",
     );
   });
 

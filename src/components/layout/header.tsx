@@ -31,7 +31,7 @@
  * the server resolved.
  */
 
-import Link from "next/link";
+import { LocaleLink as Link } from "@/components/locale-link";
 import { useSession } from "next-auth/react";
 import { CrossIcon } from "@/components/ui/catholic-icons";
 import { MobileNav } from "./mobile-nav";

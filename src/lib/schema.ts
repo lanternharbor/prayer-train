@@ -11,7 +11,17 @@ import { formatSituation } from "@/lib/utils";
 
 const SCHEMA_CONTEXT = "https://schema.org";
 
-export function organizationSchema(): Record<string, unknown> {
+/**
+ * Each `*Schema` helper accepts an optional `locale` (BCP 47 tag) so
+ * the emitted JSON-LD declares its language via the `inLanguage`
+ * field. Falls back to "en" for backward compatibility with callers
+ * that haven't yet been updated. See
+ * docs/internationalization-roadmap.md Phase α (URL routing + SEO).
+ */
+
+export function organizationSchema(
+  locale: string = "en",
+): Record<string, unknown> {
   const baseUrl = getBaseUrl();
   return {
     "@context": SCHEMA_CONTEXT,
@@ -20,6 +30,7 @@ export function organizationSchema(): Record<string, unknown> {
     url: baseUrl,
     description: "Like a meal train, but for prayers.",
     logo: `${baseUrl}/logo.png`,
+    inLanguage: locale,
     contactPoint: {
       "@type": "ContactPoint",
       email: "hello@prayertrains.com",
@@ -33,13 +44,16 @@ export function organizationSchema(): Record<string, unknown> {
   };
 }
 
-export function websiteSchema(): Record<string, unknown> {
+export function websiteSchema(
+  locale: string = "en",
+): Record<string, unknown> {
   const baseUrl = getBaseUrl();
   return {
     "@context": SCHEMA_CONTEXT,
     "@type": "WebSite",
     name: "PrayerTrain",
     url: baseUrl,
+    inLanguage: locale,
     potentialAction: {
       "@type": "SearchAction",
       target: `${baseUrl}/prayers?q={search_term_string}`,
@@ -50,10 +64,12 @@ export function websiteSchema(): Record<string, unknown> {
 
 export function breadcrumbSchema(
   items: { name: string; url: string }[],
+  locale: string = "en",
 ): Record<string, unknown> {
   return {
     "@context": SCHEMA_CONTEXT,
     "@type": "BreadcrumbList",
+    inLanguage: locale,
     itemListElement: items.map((item, index) => ({
       "@type": "ListItem",
       position: index + 1,
@@ -63,20 +79,29 @@ export function breadcrumbSchema(
   };
 }
 
-export function prayerArticleSchema(prayer: {
-  name: string;
-  description: string;
-  slug: string;
-  createdAt: Date;
-  situationTags: string[];
-}): Record<string, unknown> {
+export function prayerArticleSchema(
+  prayer: {
+    name: string;
+    description: string;
+    slug: string;
+    createdAt: Date;
+    situationTags: string[];
+  },
+  locale: string = "en",
+): Record<string, unknown> {
   const baseUrl = getBaseUrl();
-  const url = `${baseUrl}/prayers/${prayer.slug}`;
+  // Self-locale URL — Google uses inLanguage + URL to figure out
+  // which locale this article belongs to. Build via raw template
+  // rather than importing localizedHref so this stays a pure
+  // schema helper without a circular dep on i18n/links.
+  const localePrefix = locale ? `/${locale}` : "";
+  const url = `${baseUrl}${localePrefix}/prayers/${prayer.slug}`;
   return {
     "@context": SCHEMA_CONTEXT,
     "@type": "Article",
     headline: prayer.name,
     description: prayer.description,
+    inLanguage: locale,
     datePublished: prayer.createdAt.toISOString(),
     mainEntityOfPage: url,
     url,
@@ -97,13 +122,21 @@ export function prayerArticleSchema(prayer: {
  * patronSaint won't render the third Q). Empty `mainEntity` arrays
  * are returned as null so callers can skip rendering altogether.
  */
-export function prayerFaqSchema(prayer: {
-  name: string;
-  description: string;
-  instructions: string | null;
-  patronSaint: string | null;
-}): Record<string, unknown> | null {
+export function prayerFaqSchema(
+  prayer: {
+    name: string;
+    description: string;
+    instructions: string | null;
+    patronSaint: string | null;
+  },
+  locale: string = "en",
+): Record<string, unknown> | null {
   type FaqEntry = { question: string; answer: string };
+  // Questions stay English for now — Phase 3 (translated prayer
+  // content + Q&A) will swap these to a locale-aware template. The
+  // SEO benefit of FAQ schema in non-English locales without
+  // translated questions is limited, so leaving as English-only
+  // entries doesn't hurt non-English search performance.
   const candidates: FaqEntry[] = [
     {
       question: `What is the ${prayer.name}?`,
@@ -129,6 +162,7 @@ export function prayerFaqSchema(prayer: {
   return {
     "@context": SCHEMA_CONTEXT,
     "@type": "FAQPage",
+    inLanguage: locale,
     mainEntity: entries.map((entry) => ({
       "@type": "Question",
       name: entry.question,
@@ -140,17 +174,29 @@ export function prayerFaqSchema(prayer: {
   };
 }
 
-export function prayerChainSchema(chain: {
-  slug: string;
-  prayerName: string;
-  organizerName: string;
-  recipientName: string | null;
-  intention: string;
-  startDate: Date;
-  endDate: Date;
-}): Record<string, unknown> {
+export function prayerChainSchema(
+  chain: {
+    slug: string;
+    prayerName: string;
+    organizerName: string;
+    recipientName: string | null;
+    intention: string;
+    startDate: Date;
+    endDate: Date;
+  },
+  locale: string = "en",
+): Record<string, unknown> {
   const baseUrl = getBaseUrl();
-  const url = `${baseUrl}/chain/${chain.slug}`;
+  const localePrefix = locale ? `/${locale}` : "";
+  const url = `${baseUrl}${localePrefix}/chain/${chain.slug}`;
+  // Headline stays in the active language's possessive idiom for now.
+  // English uses the apostrophe-s form ("Jilu's Surrender Novena");
+  // Spanish uses "Surrender Novena de Jilu". Caller resolves this
+  // higher up (the chain page builds headline + passes it through),
+  // so the schema helper just records whatever the caller built.
+  // Note: this helper builds its own headline today — Phase 3 work
+  // will move headline assembly to the caller so the schema can
+  // honor the active locale's grammar properly.
   const headline = chain.recipientName
     ? `${chain.organizerName}'s ${chain.prayerName} for ${chain.recipientName}`
     : `${chain.organizerName}'s ${chain.prayerName}`;
@@ -159,6 +205,7 @@ export function prayerChainSchema(chain: {
     "@type": "Event",
     name: headline,
     description: chain.intention,
+    inLanguage: locale,
     startDate: chain.startDate.toISOString(),
     endDate: chain.endDate.toISOString(),
     eventAttendanceMode: "https://schema.org/OnlineEventAttendanceMode",

@@ -23,11 +23,20 @@ type Slot = {
   status: string;
   claimerName: string | null;
   /**
-   * The User.id of the authenticated claimer, if any. Null for guest
-   * claims. Used by SlotCard to gate the "I prayed" button so a viewer
-   * can't accidentally complete someone else's prayer.
+   * Whether the current authenticated viewer owns this slot.
+   *
+   * Computed server-side from `session.user.id === slot.claimedById`
+   * so the raw User.id of the claimer never enters the public RSC
+   * payload. Used by SlotCard to gate the "I prayed" button — only
+   * the slot's owner sees it.
+   *
+   * False for OPEN slots (no claimer), false when no auth session,
+   * true only when the authenticated viewer is the exact claimer.
+   *
+   * Privacy hardening, May 2026 — see /p/[slug]/page.tsx for the
+   * server-side derivation + Codex audit context.
    */
-  claimedById: string | null;
+  isOwnedByCurrentUser: boolean;
   completedAt: Date | null;
   /**
    * Optional short note left by the claimer when marking complete.
@@ -54,19 +63,12 @@ type Slot = {
 export function PrayerCalendar({
   slotsByDate,
   trainStatus,
-  currentUserId,
   publicTrainT,
   claimModalT,
   completionModalT,
 }: {
   slotsByDate: Record<string, Slot[]>;
   trainStatus: string;
-  /**
-   * The current viewer's User.id, or null if anonymous. Threaded down
-   * to SlotCard so it can decide whether to render the "I prayed"
-   * button for slots claimed by an authenticated user.
-   */
-  currentUserId: string | null;
   publicTrainT: Dictionary["publicTrain"];
   claimModalT: Dictionary["claimModal"];
   completionModalT: Dictionary["completionModal"];
@@ -182,7 +184,6 @@ export function PrayerCalendar({
               isPast={isPast}
               trainActive={trainStatus === "ACTIVE"}
               trainFrozen={trainStatus === "COMPLETED"}
-              currentUserId={currentUserId}
               onClaim={() => setClaimingSlot(slot)}
               publicTrainT={publicTrainT}
               completionModalT={completionModalT}
@@ -328,7 +329,6 @@ function SlotCard({
   isPast,
   trainActive,
   trainFrozen,
-  currentUserId,
   onClaim,
   publicTrainT,
   completionModalT,
@@ -338,7 +338,6 @@ function SlotCard({
   trainActive: boolean;
   /** train.status === COMPLETED — note edit/delete is locked. */
   trainFrozen: boolean;
-  currentUserId: string | null;
   onClaim: () => void;
   publicTrainT: Dictionary["publicTrain"];
   completionModalT: Dictionary["completionModal"];
@@ -350,8 +349,10 @@ function SlotCard({
   const completed = slot.status === "COMPLETED";
   // Page-button completion is only for authenticated owners. Guest
   // claimers complete from the signed link in their reminder email.
-  const isOwner =
-    !!currentUserId && slot.claimedById === currentUserId;
+  // Ownership is derived server-side and arrives as a boolean — the
+  // raw User.id of the claimer never crosses the network (Codex
+  // audit follow-up, May 2026).
+  const isOwner = slot.isOwnedByCurrentUser;
   const hasNote =
     !!slot.completionNote && slot.completionNote.trim().length > 0;
 

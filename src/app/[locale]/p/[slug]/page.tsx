@@ -211,6 +211,12 @@ export default async function PrayerTrainPage({
           date: true,
           slotIndex: true,
           status: true,
+          // claimedById is read server-side to compute the per-slot
+          // `isOwnedByCurrentUser` boolean below — it is NEVER sent to
+          // the client. Sending the User.id of every claimer to every
+          // viewer of a public train page would leak identity across
+          // surfaces (e.g., correlating users between trains). See
+          // Codex audit PR #56 follow-up.
           claimedById: true,
           claimerName: true,
           completedAt: true,
@@ -286,8 +292,18 @@ export default async function PrayerTrainPage({
   const showWarriorCTA = isFullyCovered && train.status === "ACTIVE";
 
   // Group slots by date, passing only the fields the client calendar
-  // needs. In particular, never serialize claimer emails into the
-  // public page payload.
+  // needs.
+  //
+  // Privacy hardening (Codex audit follow-up, May 2026):
+  //   - Never serialize claimer emails into the public page payload.
+  //   - Never serialize `claimedById` (the User.id of the claimer)
+  //     into the public payload. Sending it would leak identity
+  //     across surfaces — anyone viewing a public train could
+  //     correlate which userId claimed slot N here vs slot M on
+  //     another train. Instead, compute `isOwnedByCurrentUser`
+  //     server-side and send just that boolean. The client uses it
+  //     only to gate the "I prayed" button for the slot's owner.
+  const currentUserId = session?.user?.id ?? null;
   type PrayerCalendarProps = Parameters<typeof PrayerCalendar>[0];
   const slotsByDate: PrayerCalendarProps["slotsByDate"] = {};
   train.slots.forEach((slot) => {
@@ -298,7 +314,12 @@ export default async function PrayerTrainPage({
       date: slot.date,
       slotIndex: slot.slotIndex,
       status: slot.status,
-      claimedById: slot.claimedById,
+      // Derived server-side from session + slot.claimedById; the raw
+      // claimedById never crosses the network. False for OPEN slots
+      // (claimedById is null), false when no auth session, true only
+      // when the authenticated viewer owns this exact slot.
+      isOwnedByCurrentUser:
+        currentUserId !== null && slot.claimedById === currentUserId,
       claimerName: slot.claimerName,
       completedAt: slot.completedAt,
       completionNote: slot.completionNoteHiddenAt
@@ -543,7 +564,6 @@ export default async function PrayerTrainPage({
         <PrayerCalendar
           slotsByDate={slotsByDate}
           trainStatus={train.status}
-          currentUserId={session?.user?.id ?? null}
           publicTrainT={t}
           claimModalT={dict.claimModal}
           completionModalT={dict.completionModal}

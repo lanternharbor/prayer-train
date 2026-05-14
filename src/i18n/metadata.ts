@@ -112,8 +112,25 @@ export function localizedMetadata({
   /** Auth-gated pages (signin, dashboard) should set this true. */
   noindex?: boolean;
 }): Metadata {
+  // Per-locale Open Graph share-card image. When the caller doesn't
+  // pass an explicit `ogImage`, default to the auto-generated image
+  // produced by `src/app/[locale]/opengraph-image.tsx` (navy-cream-
+  // gold brand palette, locale-aware tagline). The file convention
+  // auto-attaches only to the immediate-parent segment (the
+  // [locale]/page.tsx homepage); for deeper routes (/browse,
+  // /prayers, /situations, etc.) we explicitly point at the same
+  // generated URL so every locale-prefixed page gets a branded
+  // share card. Pages that DO pass `ogImage` (train + chain detail
+  // with recipient photo) override.
+  //
+  // Dimensions are 1200x630, matching `opengraph-image.tsx`'s
+  // `size` export and the canonical OG/Twitter aspect ratio.
   const baseUrl = getBaseUrl();
-  const image = ogImage ?? `${baseUrl}/logo.png`;
+  const defaultImage = `${baseUrl}/${locale}/opengraph-image`;
+  const image = ogImage ?? defaultImage;
+  const imageWidth = ogImage ? 1024 : 1200;
+  const imageHeight = ogImage ? 1024 : 630;
+
   return {
     title: absoluteTitle ? { absolute: title } : title,
     description,
@@ -125,7 +142,7 @@ export function localizedMetadata({
       type: "website",
       siteName: "PrayerTrain",
       locale: localeToOgTag(locale),
-      images: [{ url: image, width: 1024, height: 1024, alt: title }],
+      images: [{ url: image, width: imageWidth, height: imageHeight, alt: title }],
     },
     twitter: {
       card: "summary_large_image",

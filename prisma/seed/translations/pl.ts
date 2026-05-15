@@ -85,4 +85,78 @@ export const plTranslations: PrayerTranslationSeed[] = [
       "KEP-approved Polish devotional text of the Memorare (Pomnij) + traditional Polish Catholic prayer books. Historical attribution to Fr. Claude Bernard verified against the Catholic Encyclopedia entry. Retrieved 2026-05-14.",
     reviewedAt: new Date("2026-05-14"),
   },
+
+  // ─── Round 2: 6 more prayers from PR #71 ────────────────────
+  {
+    prayerSlug: "novena-st-jude",
+    name: "Nowenna do świętego Judy Tadeusza",
+    description:
+      "Święty Juda Tadeusz, zwany Apostołem Nadziei, był jednym z Dwunastu i krewnym Pana, tradycyjnie uważanym za brata Jakuba Mniejszego. Jest wymieniony w Ewangeliach jako jeden z apostołów (Łk 6,16) i jest autorem krótkiego Listu Judy. Przez wieki popularna pobożność katolicka wzywała świętego Judę jako patrona spraw rozpaczliwych i sytuacji niemożliwych. Powody podawane przez tradycję są praktyczne: ponieważ jego imię (Juda) było łatwo mylone z Judaszem Iskariotą, zdrajcą, jego wstawiennictwo było unikane przez zwykłych chrześcijan przez wieki — i dlatego, jak głosi przysłowie, pragnie pomóc każdemu, kto zwraca się do niego w prawdziwej potrzebie. Współczesna pobożność do świętego Judy Tadeusza została spopularyzowana w Stanach Zjednoczonych przez ojców klaretynów, którzy zbudowali Narodowe Sanktuarium świętego Judy w Chicago w 1929 roku — w szczycie Wielkiego Kryzysu. W Polsce święty Juda Tadeusz jest patronem trudnych spraw zawodowych i sytuacji wymagających szczególnego zaufania w Bożą Opatrzność. Nowenna ta jest odpowiednia dla choroby z trudną prognozą, załamania finansowego, oddalenia rodzinnego, które wydaje się nie do rozwiązania, niepłodności i każdej sytuacji, którą osoba odczuwa jako «poza nadzieją».",
+    instructions:
+      "Módl się raz dziennie przez dziewięć kolejnych dni. Struktura tradycyjna: rozpocznij od Znaku Krzyża; odmów tekst nowenny do świętego Judy; zakończ Ojcze nasz, Zdrowaś Maryjo i Chwała Ojcu; wymień swoją konkretną intencję. Wielu katolików dodaje trzy Ojcze nasz, Zdrowaś Maryjo i Chwała Ojcu w czci Trójcy Świętej na zakończenie modlitwy każdego dnia. Nowenna może być odmawiana o każdej porze roku, ale szczególnie odpowiednia jest w ciągu dziewięciu dni poprzedzających święto świętego Judy (28 października). Tradycyjną praktyką towarzyszącą jest zobowiązanie się, gdy modlitwa zostanie wysłuchana, do publicznego podziękowania świętemu Judzie. Dyspozycja modlitwy ma znaczenie: święty Juda nie jest maszyną z prośbami. Nowenna jest odmawiana z wiarą i poddaniem się Bożej woli.",
+    patronSaint: "Święty Juda Tadeusz",
+    feastDay: "28 października",
+    source: "KEP Polish + Claretian National Shrine (Chicago, 1929). Retrieved 2026-05-14.",
+    reviewedAt: new Date("2026-05-14"),
+  },
+  {
+    prayerSlug: "novena-divine-mercy",
+    name: "Nowenna do Miłosierdzia Bożego",
+    description:
+      "Nowenna do Miłosierdzia Bożego została dana przez Jezusa świętej Marii Faustynie Kowalskiej, polskiej zakonnicy ze Zgromadzenia Sióstr Matki Bożej Miłosierdzia, w serii objawień zapisanych w jej Dzienniczku: Miłosierdzie Boże w mojej duszy. Mistyczne pisma Faustyny, stłumione przez pewien czas po jej śmierci w 1938 roku, zostały zrehabilitowane przez papieża świętego Jana Pawła II — samego Polaka i rodaka — który kanonizował ją 30 kwietnia 2000 roku i ustanowił Święto Miłosierdzia Bożego (drugą niedzielę wielkanocną) jako święto dla Kościoła powszechnego. Nowenna rozpoczyna się w Wielki Piątek i kończy w wigilię Święta Miłosierdzia Bożego. Każdego z dziewięciu dni do tronu miłosierdzia jest przyprowadzana inna kategoria dusz: Dzień 1, cała ludzkość; Dzień 2, kapłani i osoby zakonne; Dzień 3, dusze pobożne i wierne; Dzień 4, ci, którzy nie wierzą; Dzień 5, dusze oddzielonych braci; Dzień 6, dusze ciche, pokorne i dzieci; Dzień 7, dusze szczególnie czczące Miłosierdzie Boże; Dzień 8, dusze w czyśćcu; Dzień 9, dusze oziębłe. Duchowym domem nowenny jest Sanktuarium Miłosierdzia Bożego w Łagiewnikach w Krakowie — miejsce szczególne dla polskiej pobożności.",
+    instructions:
+      "Módl się raz dziennie przez dziewięć kolejnych dni, tradycyjnie zaczynając w Wielki Piątek i kończąc w sobotę poprzedzającą Święto Miłosierdzia Bożego. Każdy dzień ma swoją unikalną intencję i unikalną modlitwę wstępną, którą Jezus podyktował świętej Faustynie; po otwarciu dnia, modlitwa kończy się Koronką do Miłosierdzia Bożego. Tradycyjna struktura każdego dnia: (1) Przeczytaj konkretną intencję dnia; (2) Odmów modlitwę wstępną, którą Jezus dał Faustynie na ten dzień; (3) Odmów całą Koronkę do Miłosierdzia Bożego; (4) Zakończ osobistą intencją. Pełna nowenna trwa około piętnaście minut dziennie. Może być również odmawiana o każdej porze roku za prywatną intencję, szczególnie w chwilach kryzysu lub o nawrócenie bliskiej osoby.",
+    patronSaint: "Święta Faustyna Kowalska",
+    feastDay: "Niedziela Miłosierdzia Bożego",
+    source: "Dzienniczek św. Faustyny + Sanktuarium Łagiewniki (Kraków). Retrieved 2026-05-14.",
+    reviewedAt: new Date("2026-05-14"),
+  },
+  {
+    prayerSlug: "novena-our-lady-perpetual-help",
+    name: "Nowenna do Matki Bożej Nieustającej Pomocy",
+    description:
+      "Matka Boża Nieustającej Pomocy (Our Lady of Perpetual Help) to jeden z najukochaniej szych tytułów maryjnych w Kościele katolickim. Nabożeństwo skupia się wokół XV-wiecznej bizantyjskiej ikony przedstawiającej Dzieciątko Jezus w ramionach Maryi, podczas gdy archaniołowie Michał i Gabriel zbliżają się, każdy niosąc narzędzia Męki Pańskiej (krzyż, włócznia, gąbka). Dziecię Jezus odwraca twarz do swojej Matki z widocznym lękiem; jeden sandał zwisa luźno z Jego stopy, szczegół tradycyjnie odczytywany jako odsuwanie się Dziecka od zapowiedzianej Męki i znajdowanie schronienia przy sercu Matki. Ikona dotarła do Rzymu w 1499 roku i została powierzona przez papieża Piusa IX ojcom redemptorystom w 1866 roku z zaleceniem: «Uczyńcie ją znaną na całym świecie». W Polsce nabożeństwo do Matki Bożej Nieustającej Pomocy jest mocne, szczególnie w parafiach redemptorystowskich; cotygodniowa nowenna we środy jest tradycyjną polską praktyką pobożności maryjnej.",
+    instructions:
+      "Módl się raz dziennie przez dziewięć kolejnych dni. Tradycyjnie nowennie towarzyszy śpiew hymnu «Matko Chrystusa, Matko Boża». Wiele polskich parafii nadal organizuje cotygodniowe nabożeństwa nowennowe do Matki Bożej Nieustającej Pomocy we środy. Tradycyjna struktura modlitwy każdego dnia w domu: (1) Rozpocznij od Znaku Krzyża; (2) Odmów modlitwę nowenny do Matki Bożej Nieustającej Pomocy; (3) Zakończ trzema Zdrowaś Maryjo i jedną «Pod Twoją obronę»; (4) Wymień swoją konkretną intencję. Nowenna jest właściwie odmawiana w dniach poprzedzających Święto Matki Bożej Nieustającej Pomocy (27 czerwca), ale może być odmawiana o każdej porze. Nowenna jest szczególnie polecana matkom modlącym się za swoje dzieci, opiekunom chorych i każdej osobie przytłoczonej okolicznościami, które wydają się przekraczać jej siły.",
+    patronSaint: "Matka Boża Nieustającej Pomocy",
+    feastDay: "27 czerwca",
+    source: "Redemptorist tradition + KEP Polish + Pius IX's 1866 entrustment. Retrieved 2026-05-14.",
+    reviewedAt: new Date("2026-05-14"),
+  },
+  {
+    prayerSlug: "litany-sacred-heart",
+    name: "Litania do Najświętszego Serca Pana Jezusa",
+    description:
+      "Litania do Najświętszego Serca Pana Jezusa jest jedną z sześciu litanii zatwierdzonych przez Stolicę Apostolską do publicznego użytku liturgicznego w obrządku łacińskim. Skomponowana w 1718 roku przez siostrę Joannę Magdalenę Joly z Zakonu Wizytek w Dijon, litania była dopracowywana i poszerzana przez następne stulecie. Papież Leon XIII zatwierdził litanię formalnie do publicznego użytku liturgicznego 2 kwietnia 1899 roku — w tym samym roku poświęcił całą ludzkość Najświętszemu Sercu w swojej encyklice Annum Sacrum. Litania jest zbudowana z trzydziestu trzech wezwań do Serca Chrystusa pod różnymi tytułami odpowiadającymi trzydziestu trzem latom ziemskiego życia Chrystusa. Na każde wezwanie odpowiada się «Zmiłuj się nad nami». Wzór trzydziestu trzech wezwań jest kontemplacyjny: serce wierzącego, przez wytrwałe powtarzanie, jest przyciągane do dyspozycji Serca Chrystusa — pokory, cierpliwości, miłosierdzia, miłości. Litania jest jednym z głównych nabożeństw Pierwszego Piątku i jest tradycyjnie odmawiana w miesiącu czerwcu (miesiąc Najświętszego Serca), w Nowennie do Najświętszego Serca i w Godzinie Świętej wynagrodzenia.",
+    instructions:
+      "Litania jest odmawiana responsoryjnie. Prowadzący wypowiada każde wezwanie («Serce Jezusa, Syna Ojca Przedwiecznego…») a zgromadzona wspólnota odpowiada przepisaną formułą. Początkowe wezwania stosują schemat Kyrie i wezwanie trynitarne. Następuje trzydzieści trzy wezwania do Serca Jezusa, każde z odpowiedzią «Zmiłuj się nad nami». Litania kończy się Baranku Boży i modlitwą kolektarską do Najświętszego Serca. Łączny czas trwania wynosi około dziesięć do piętnastu minut. Litania jest właściwie odmawiana: w Pierwsze Piątki; w miesiącu czerwcu; podczas Nowenny do Najświętszego Serca; na zakończenie Godziny Świętej adoracji eucharystycznej; w momentach rodzinnej konsekracji Najświętszemu Sercu.",
+    patronSaint: "Najświętsze Serce Pana Jezusa",
+    feastDay: "Piątek po Bożym Ciele",
+    source: "Annum Sacrum (Leo XIII, 1899) + KEP Polish + Visitation Order tradition. Retrieved 2026-05-14.",
+    reviewedAt: new Date("2026-05-14"),
+  },
+  {
+    prayerSlug: "litany-blessed-virgin",
+    name: "Litania Loretańska do Najświętszej Maryi Panny",
+    description:
+      "Litania Loretańska jest najstarszą i najukochaniej szą maryjną litanią Kościoła łacińskiego. Litania bierze swoją nazwę od Świętego Domku w Loreto we włoskich Marche. Papież Sykstus V formalnie zatwierdził litanię do użytku liturgicznego i pobożnościowego w 1587 roku. W ciągu wieków kolejni papieże dodawali wezwania w miarę rozwijania się rozumienia doktryny maryjnej przez Kościół: Pius VII dodał «Wspomożenie Wiernych» w 1815 roku; Pius IX dodał «Królowo bez zmazy pierworodnej poczęta» po 1854 roku; Pius XII dodał «Królowo z duszą i ciałem do nieba wzięta» po 1950 roku; Święty Jan Paweł II dodał «Matko Kościoła» w 1980 roku i «Królowo Rodzin» w 1995 roku. Najnowszej, papież Franciszek dodał «Matko Miłosierdzia», «Matko Nadziei» i «Pociecho Migrantów» w 2020 roku. W Polsce Litania Loretańska jest jednym z najczęściej odmawianych nabożeństw maryjnych, szczególnie w połączeniu z Różańcem Świętym i podczas pielgrzymek do Jasnej Góry. Polska tradycja majowych nabożeństw ma w sobie Litanię Loretańską jako centralną modlitwę.",
+    instructions:
+      "Litania jest odmawiana responsoryjnie. Prowadzący wypowiada każdy tytuł Maryi («Święta Maryjo…», «Święta Boża Rodzicielko…») a zgromadzona wspólnota odpowiada «Módl się za nami» na każdy. Litania rozpoczyna się schematem Kyrie i wezwaniem trynitarnym; ciało litanii stanowi długi ciąg tytułów maryjnych; litania kończy się trzema wezwaniami do Baranka Bożego i modlitwą kolektarską. Litania Loretańska jest tradycyjnie odmawiana: po Różańcu Świętym; w miesiącach maryjnych maju i październiku; pod koniec maryjnej nowenny przed maryjnymi uroczystościami; w momentach rodzinnej konsekracji Maryi. Polska tradycja Nabożeństw Majowych — codziennie w maju przed obrazem Matki Bożej — ma w sobie Litanię Loretańską jako centralną modlitwę.",
+    patronSaint: "Najświętsza Maryja Panna",
+    feastDay: null,
+    source: "Sixtus V's 1587 approval + papal additions through Francis 2020 + KEP Polish Marian texts. Retrieved 2026-05-14.",
+    reviewedAt: new Date("2026-05-14"),
+  },
+  {
+    prayerSlug: "prayer-conversion",
+    name: "Modlitwa o Nawrócenie Bliskiej Osoby",
+    description:
+      "Katolicka modlitwa o nawrócenie bliskiej osoby jest zakorzeniona w jednym z wielkich pasterskich świadectw historii chrześcijaństwa: długiej, wiernej modlitwie świętej Moniki za jej syna świętego Augustyna. Monika modliła się o nawrócenie swojego syna przez lata, przez jej własne łzy i radę, którą otrzymała od świętego Ambrożego z Mediolanu («Nie jest możliwe, aby syn tylu łez zginął»). Augustyn został ochrzczony w 387 roku w wieku trzydziestu trzech lat; Monika zmarła wkrótce potem w Ostii, doczekawszy się tego, o co prosiła. Augustyn zapisał jej wytrwałość w swoich Wyznaniach (Księga IX). Pasterskie świadectwo Moniki nie jest gwarancją rezultatu — nawrócenie Augustyna nastąpiło w czasie Boga, nie Moniki — ale postawą niezachwianej wierności: że modlitwa wierzącego za bliską osobę jest sama w sobie łaską, uczestnictwem w samym pragnieniu Boga wobec tej duszy, niezależnie od tego, kiedy lub czy modlitwa jest widocznie wysłuchana.",
+    instructions:
+      "Módl się codziennie, najlepiej o tej samej porze i w tej samej postawie (na kolanach, przed krzyżem lub obrazem Najświętszego Serca), aby dyscyplina modlitwy stała się częścią codziennego życia. Wymień osobę głośno w modlitwie tam, gdzie tekst mówi «(imię)». Po modlitwie poświęć minutę ciszy, aby utrzymać ją przed Najświętszym Sercem. Wielu katolików łączy tę modlitwę z: (1) codziennym ofiarowaniem małych poświęceń w intencji; (2) regularną intencją Mszy świętej, szczególnie w dzień wspomnienia świętej Moniki (27 sierpnia) lub świętego Augustyna (28 sierpnia); (3) Nowenną do świętej Moniki lub świętego Augustyna; (4) Koronką do Miłosierdzia Bożego o godzinie 15:00. Dyspozycja modlitwy ma znaczenie: jest ofiarowana w zaufaniu, nie w transakcji. Gdy przychodzi zniechęcenie — a przychodzi, szczególnie gdy mijają lata bez widocznej zmiany — tradycyjna rada brzmi: oprzeć się mocniej na wstawiennictwie świętej Moniki i Najświętszego Serca.",
+    patronSaint: "Święta Monika",
+    feastDay: "27 sierpnia",
+    source: "Augustine's Confessions Book IX + KEP Polish pastoral resources. Retrieved 2026-05-14.",
+    reviewedAt: new Date("2026-05-14"),
+  },
 ];

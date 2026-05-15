@@ -86,4 +86,78 @@ export const ptBRTranslations: PrayerTranslationSeed[] = [
       "Traditional Brazilian Catholic devotional text of the Memorare (Lembrai-vos), as published in CNBB-approved breviary editions and standard Brazilian Catholic prayer books. Historical attribution to Fr. Claude Bernard verified against the Catholic Encyclopedia entry. Retrieved 2026-05-14.",
     reviewedAt: new Date("2026-05-14"),
   },
+
+  // ─── Round 2: 6 more prayers from PR #71 ────────────────────
+  {
+    prayerSlug: "novena-st-jude",
+    name: "Novena a São Judas Tadeu",
+    description:
+      "São Judas Tadeu, chamado o Apóstolo da Esperança, foi um dos Doze e parente do Senhor. É mencionado nos Evangelhos como um dos apóstolos (Lucas 6,16) e é o autor da breve Carta de Judas que encerra a seção de cartas católicas do Novo Testamento — uma carta que famosamente exorta os fiéis a «combater pela fé». Por séculos, a devoção popular católica invocou São Judas como padroeiro das causas desesperadas e dos casos impossíveis. As razões oferecidas pela tradição são práticas: porque seu nome (Judas) era facilmente confundido com Judas Iscariotes, o traidor, sua intercessão foi evitada pelos cristãos comuns durante séculos — e assim, diz o ditado, ele anseia ajudar quem o procura em verdadeira necessidade. A devoção moderna foi popularizada nos Estados Unidos pelos padres claretianos, que construíram o Santuário Nacional de São Judas em Chicago em 1929 — em plena Grande Depressão. No Brasil, São Judas Tadeu tem profunda devoção popular, com o Santuário de São Judas Tadeu em Jabaquara (São Paulo) recebendo milhões de devotos no dia 28 de outubro, sua festa. A devoção é fortemente associada à prática de publicar agradecimentos em anúncios de jornais. Esta novena é apropriada para doença com prognóstico difícil, colapso financeiro, afastamento familiar que parece sem solução, infertilidade e qualquer situação que uma pessoa vivencia como «além da esperança».",
+    instructions:
+      "Reze uma vez ao dia por nove dias consecutivos. A estrutura tradicional: comece com o Sinal da Cruz; reze o texto da novena a São Judas; conclua com um Pai-Nosso, uma Ave-Maria e um Glória; nomeie sua intenção específica. Muitos católicos acrescentam três Pai-Nossos, Ave-Marias e Glórias em honra à Santíssima Trindade. A novena pode ser rezada em qualquer época do ano, mas é especialmente apropriada nos nove dias que antecedem a festa de São Judas (28 de outubro). No Brasil, a devoção ganha intensidade especial em outubro, com missas especiais no Santuário de Jabaquara. Uma prática complementar tradicional é comprometer-se, quando a oração é atendida, a agradecer publicamente a São Judas — seja por um agradecimento publicado, uma doação a um apostolado, ou simplesmente promovendo a devoção a ele dentro da família e da paróquia. A disposição da oração importa: São Judas não é uma máquina automática. A novena é rezada em fé e abandono, confiando que o Espírito Santo conhece o que o orante verdadeiramente necessita e que os santos intercedem pelo que é bom.",
+    patronSaint: "São Judas Tadeu",
+    feastDay: "28 de outubro",
+    source: "CNBB Portuguese + Santuário de São Judas Tadeu (Jabaquara, São Paulo). Retrieved 2026-05-14.",
+    reviewedAt: new Date("2026-05-14"),
+  },
+  {
+    prayerSlug: "novena-divine-mercy",
+    name: "Novena à Divina Misericórdia",
+    description:
+      "A Novena à Divina Misericórdia foi entregue por Jesus a Santa Maria Faustina Kowalska, religiosa polonesa, em uma série de revelações registradas em seu Diário. Os escritos místicos de Faustina foram reabilitados pelo Papa São João Paulo II — ele próprio polonês e conterrâneo — que a canonizou em 30 de abril de 2000 e estabeleceu o Domingo da Divina Misericórdia (segundo domingo de Páscoa) como festa para a Igreja universal. A novena começa na Sexta-feira Santa e termina na véspera do Domingo da Divina Misericórdia. Cada um dos nove dias traz uma categoria diferente de almas ante o trono da misericórdia: Dia 1, toda a humanidade; Dia 2, sacerdotes e religiosos; Dia 3, almas devotas e fiéis; Dia 4, os que não creem; Dia 5, as almas dos irmãos separados; Dia 6, os humildes, simples e as crianças; Dia 7, as almas que veneram a Divina Misericórdia; Dia 8, as almas do purgatório; Dia 9, as almas mornas. Este padrão — começando com toda a humanidade, estreitando-se através da família da Igreja e fechando com aqueles cujos corações são mais frios — incorpora a amplitude da misericórdia que esta devoção proclama. O lar espiritual da novena é o Santuário da Divina Misericórdia em Łagiewniki, Cracóvia.",
+    instructions:
+      "Reze uma vez ao dia por nove dias consecutivos, tradicionalmente começando na Sexta-feira Santa. Cada dia tem uma intenção única e uma invocação inicial única que Jesus ditou a Santa Faustina; após a abertura do dia, a oração conclui com o Terço da Divina Misericórdia. A estrutura tradicional de cada dia: (1) Leia a intenção específica do dia; (2) Reze a oração inicial que Jesus deu a Faustina; (3) Reze o Terço da Divina Misericórdia inteiro; (4) Conclua com uma intenção pessoal. A novena completa toma aproximadamente quinze minutos por dia. Embora tradicionalmente vinculada à janela de Sexta-feira Santa ao Domingo da Divina Misericórdia, também pode ser rezada em qualquer época por uma intenção particular, especialmente em momentos de crise ou pela conversão de um ente querido.",
+    patronSaint: "Santa Faustina Kowalska",
+    feastDay: "Domingo da Divina Misericórdia",
+    source: "Diary: Divine Mercy in My Soul (St. Faustina) + canonical Portuguese-language novena texts. Retrieved 2026-05-14.",
+    reviewedAt: new Date("2026-05-14"),
+  },
+  {
+    prayerSlug: "novena-our-lady-perpetual-help",
+    name: "Novena a Nossa Senhora do Perpétuo Socorro",
+    description:
+      "Nossa Senhora do Perpétuo Socorro é um dos títulos marianos mais amados na Igreja Católica. A devoção centra-se em um ícone bizantino do século XV mostrando o Menino Jesus segurado nos braços de Maria enquanto os arcanjos Miguel e Gabriel se aproximam, cada um carregando instrumentos da Paixão. O Menino Jesus volta seu rosto para sua Mãe com aparente temor; uma sandália pende solta de seu pé, um detalhe tradicionalmente lido como o Menino recuando diante da Paixão prenunciada e encontrando abrigo contra o coração de sua Mãe. O ícone chegou a Roma em 1499 e foi venerado por séculos antes de desaparecer durante as supressões napoleônicas; foi redescoberto em 1862 e entregue pelo Papa Pio IX aos padres redentoristas em 1866 com o encargo: «Fazei-a conhecida em todo o mundo». No Brasil, a devoção é particularmente forte: o Santuário Basílica de Nossa Senhora do Perpétuo Socorro em Salvador (Bahia), administrado pelos redentoristas brasileiros, é um dos principais centros marianos do país. A novena a Nossa Senhora do Perpétuo Socorro — composta e popularizada pelos redentoristas — é uma das devoções marianas mais rezadas na Igreja moderna.",
+    instructions:
+      "Reze uma vez ao dia por nove dias consecutivos. A novena redentorista tradicionalmente acompanha a oração de cada dia com o canto do hino «Mãe de Cristo, Mãe de Deus». Muitas paróquias ainda realizam serviços semanais de novena ao Perpétuo Socorro às quartas-feiras. A estrutura tradicional para a oração de cada dia em casa: (1) Comece com o Sinal da Cruz; (2) Reze a oração da novena a Nossa Senhora do Perpétuo Socorro; (3) Conclua com três Ave-Marias e uma Salve-Rainha; (4) Nomeie sua intenção específica. A novena é apropriadamente rezada nos dias que antecedem a Festa de Nossa Senhora do Perpétuo Socorro (27 de junho), mas pode ser rezada a qualquer momento. A novena é especialmente recomendada para mães que rezam por seus filhos, para os que cuidam dos doentes e para qualquer pessoa sobrecarregada por circunstâncias que se sentem além de suas forças.",
+    patronSaint: "Nossa Senhora do Perpétuo Socorro",
+    feastDay: "27 de junho",
+    source: "Redemptorist tradition + Santuário Basílica em Salvador + Pius IX's 1866 entrustment. Retrieved 2026-05-14.",
+    reviewedAt: new Date("2026-05-14"),
+  },
+  {
+    prayerSlug: "litany-sacred-heart",
+    name: "Ladainha do Sagrado Coração de Jesus",
+    description:
+      "A Ladainha do Sagrado Coração de Jesus é uma das seis ladainhas aprovadas pela Santa Sé para uso litúrgico público no Rito Latino. Composta em 1718 por Irmã Joana Madalena Joly da Ordem da Visitação em Dijon, a ladainha foi refinada e ampliada durante o século seguinte. O Papa Leão XIII deu à ladainha aprovação formal para uso litúrgico público em 2 de abril de 1899 — no mesmo ano em que consagrou toda a raça humana ao Sagrado Coração em sua encíclica Annum Sacrum. A ladainha é estruturada como trinta e três invocações ao Coração de Cristo sob títulos distintos correspondentes aos trinta e três anos da vida terrena de Cristo. A cada invocação é dada a resposta «Tende piedade de nós». O padrão de trinta e três vezes é contemplativo: o coração do crente, pela repetição sustentada, é atraído às disposições do Coração de Cristo — humildade, paciência, misericórdia, caridade. A ladainha é uma das devoções principais da Primeira Sexta-feira e é tradicionalmente rezada durante o mês de junho (mês do Sagrado Coração), na Novena ao Sagrado Coração e na Hora Santa de reparação que Cristo pediu a Santa Margarida Maria.",
+    instructions:
+      "A ladainha é rezada responsorialmente. Um líder pronuncia cada invocação («Coração de Jesus, Filho do Eterno Pai…») e a comunidade reunida responde com a fórmula indicada. As invocações iniciais usam o padrão do Kyrie e a invocação trinitária. Seguem-se as trinta e três invocações ao Coração de Jesus, cada uma com a resposta «Tende piedade de nós». A ladainha termina com o Cordeiro de Deus e um versículo-resposta mais uma oração coleta ao Sagrado Coração. A duração total é de aproximadamente dez a quinze minutos quando rezada num ritmo devocional sem pressa. A ladainha é apropriadamente rezada: nas Primeiras Sextas-feiras; durante o mês de junho; durante a Novena ao Sagrado Coração; no final de uma Hora Santa de adoração eucarística; em momentos de consagração familiar ao Sagrado Coração.",
+    patronSaint: "Sagrado Coração de Jesus",
+    feastDay: "Sexta-feira após Corpus Christi",
+    source: "Annum Sacrum (Leo XIII, 1899) + CNBB Portuguese + Visitation Order devotional tradition. Retrieved 2026-05-14.",
+    reviewedAt: new Date("2026-05-14"),
+  },
+  {
+    prayerSlug: "litany-blessed-virgin",
+    name: "Ladainha de Nossa Senhora (Ladainha de Loreto)",
+    description:
+      "A Ladainha de Nossa Senhora — conhecida tradicionalmente como Ladainha de Loreto — é a ladainha mariana mais antiga e amada da Igreja Latina. A ladainha leva seu nome comum da Santa Casa de Loreto nas Marcas italianas. O Papa Sisto V aprovou formalmente a ladainha para uso litúrgico e devocional em 1587. Ao longo dos séculos, papas sucessivos acrescentaram invocações: Pio VII acrescentou «Auxílio dos Cristãos» em 1815; Pio IX acrescentou «Rainha concebida sem pecado original» após 1854; Pio XII acrescentou «Rainha assunta ao céu» após 1950; São João Paulo II acrescentou «Mãe da Igreja» em 1980 e «Rainha das Famílias» em 1995. Mais recentemente, o Papa Francisco acrescentou «Mãe da Misericórdia», «Mãe da Esperança» e «Consolo dos Migrantes» em 2020. A estrutura da ladainha move-se através de três categorias de invocações: títulos extraídos da relação de Maria com a Trindade, títulos extraídos das virtudes e tipos marianos, e títulos extraídos da realeza e intercessão de Maria.",
+    instructions:
+      "A ladainha é rezada responsorialmente. Um líder pronuncia cada título de Maria («Santa Maria…», «Santa Mãe de Deus…») e a comunidade reunida responde «Rogai por nós» a cada um. A ladainha começa com o padrão do Kyrie e a invocação trinitária; o corpo da ladainha é a longa sequência de títulos marianos; a ladainha termina com três invocações ao Cordeiro de Deus e uma oração coleta a Nossa Senhora. A duração total é de aproximadamente dez minutos. A Ladainha de Loreto é tradicionalmente rezada após o Santo Rosário; durante os meses marianos de maio e outubro; ao final da novena mariana antes das solenidades marianas; em momentos de consagração familiar a Maria. As cerimônias de coroação de Maria em maio frequentemente incorporam a Ladainha de Loreto como oração central.",
+    patronSaint: "Nossa Senhora",
+    feastDay: null,
+    source: "Sixtus V's 1587 approval + papal additions through Francis 2020 + CNBB Portuguese. Retrieved 2026-05-14.",
+    reviewedAt: new Date("2026-05-14"),
+  },
+  {
+    prayerSlug: "prayer-conversion",
+    name: "Oração pela Conversão de um Ente Querido",
+    description:
+      "A oração católica pela conversão de um ente querido está enraizada num dos grandes testemunhos pastorais da história cristã: a longa e fiel oração de Santa Mônica por seu filho Santo Agostinho. Mônica rezou pela conversão de seu filho durante anos de sua perseguição da filosofia maniqueia, durante seu vagar moral em Cartago e Roma, através de suas próprias lágrimas e o conselho que recebeu de Santo Ambrósio de Milão («Não é possível que pereça o filho de tantas lágrimas»). Agostinho foi batizado em 387 aos trinta e três anos; Mônica morreu pouco depois em Óstia, tendo vivido para ver o que havia pedido. Agostinho registrou sua perseverança em suas Confissões (Livro IX). O testemunho pastoral que Mônica encarna não é uma garantia de resultado — a conversão de Agostinho aconteceu no tempo de Deus, não no de Mônica — mas uma postura de fidelidade inabalável: que a oração do crente por um ente querido é em si mesma uma graça, uma participação no próprio desejo de Deus por aquela alma, independentemente de quando ou se a oração é visivelmente respondida.",
+    instructions:
+      "Reze diariamente, idealmente na mesma hora e na mesma postura (de joelhos, ante um crucifixo ou uma imagem do Sagrado Coração) para que a disciplina da oração se torne parte da vida diária. Nomeie a pessoa em voz alta na oração onde o texto diz «(nome)». Após a oração, dedique um minuto de silêncio a sustentá-la diante do Sagrado Coração. Muitos católicos combinam esta oração com: (1) o oferecimento diário de pequenos sacrifícios pela intenção; (2) uma intenção regular de Missa pela pessoa, especialmente no dia da festa de Santa Mônica (27 de agosto) ou de Santo Agostinho (28 de agosto); (3) a Novena a Santa Mônica ou a Santo Agostinho; (4) o Terço da Divina Misericórdia às 15:00. A disposição da oração importa: é oferecida em confiança, não em transação. Quando o desânimo vem — e vem, particularmente quando passam os anos sem mudança visível — o conselho tradicional é apoiar-se com mais força na intercessão de Santa Mônica e no Sagrado Coração, e lembrar que a própria oração é parte da misericórdia de Deus.",
+    patronSaint: "Santa Mônica",
+    feastDay: "27 de agosto",
+    source: "Augustine's Confissões Book IX + CNBB Portuguese pastoral resources. Retrieved 2026-05-14.",
+    reviewedAt: new Date("2026-05-14"),
+  },
 ];

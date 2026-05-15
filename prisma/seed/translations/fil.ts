@@ -88,4 +88,78 @@ export const filTranslations: PrayerTranslationSeed[] = [
       "CBCP-approved Tagalog devotional text of the Memorare + traditional Filipino Catholic prayer books. Historical attribution to Fr. Claude Bernard verified against the Catholic Encyclopedia. Retrieved 2026-05-14.",
     reviewedAt: new Date("2026-05-14"),
   },
+
+  // ─── Round 2: 6 more prayers from PR #71 ────────────────────
+  {
+    prayerSlug: "novena-st-jude",
+    name: "Nobena kay San Judas Tadeo",
+    description:
+      "Si San Judas Tadeo, tinatawag na Apostol ng Pag-asa, ay isa sa Labindalawang Apostol at kamag-anak ng Panginoon. Siya'y binanggit sa mga Ebanghelyo bilang isa sa mga apostol (Lucas 6:16) at siya ang may-akda ng maikling Liham ni Judas. Sa mga siglo, hinanap ng popular na debosyong Katoliko si San Judas bilang patron ng mga desperadong sitwasyon at imposibleng kalagayan. Ang mga dahilang ibinigay ng tradisyon ay praktikal: dahil ang kanyang pangalan ay madaling maipagkamali kay Judas Iscariote, ang taksil, ang kanyang pamamagitan ay iniwasan ng karaniwang mga Kristiyano sa loob ng mga siglo — at kaya, sabi ng kasabihan, siya'y naghahangad tulungan ang sinumang lumalapit sa kanya sa tunay na pangangailangan. Ang modernong debosyon kay San Judas Tadeo ay pinasikat sa Estados Unidos ng mga padre Claretian, na nagtayo ng National Shrine of St. Jude sa Chicago noong 1929 sa kasagsagan ng Great Depression. Sa mga Filipinong-Amerikano, ang debosyon kay San Judas ay malakas, lalo na sa mga parokya at komunidad na sumusunod sa tradisyon ng pagpapasalamat sa kanya sa mga klasipikadong anunsyo ng pahayagan. Ang nobenang ito ay angkop para sa karamdaman na may mahirap na prognosis, paghirap sa pananalapi, paghihiwalay sa pamilya na tila walang solusyon, kawalang-anak at anumang sitwasyon na nararamdaman ng isang tao na «lampas sa pag-asa».",
+    instructions:
+      "Manalangin minsan sa isang araw sa loob ng siyam na magkakasunod na araw. Ang tradisyonal na istraktura: simulan sa Tanda ng Krus; idasal ang teksto ng nobena kay San Judas; tapusin sa isang Ama Namin, Aba Ginoong Maria, at Luwalhati; banggitin ang iyong tiyak na intensyon. Maraming Katoliko ang nagdaragdag ng tatlong Ama Namin, Aba Ginoong Maria, at Luwalhati para sa karangalan ng Banal na Santatlo sa pagtatapos ng panalangin ng bawat araw. Ang nobena ay maaaring idasal sa anumang panahon ng taon, ngunit lalo itong angkop sa siyam na araw na nauuna sa kapistahan ni San Judas (Oktubre 28). Isang tradisyonal na karagdagang gawain ay magpasya, kapag pinakinggan ang panalangin, na pasalamatan sa publiko si San Judas. Ang disposisyon ng panalangin ay mahalaga: si San Judas ay hindi makina ng kahilingan. Ang nobena ay idinadasal sa pananampalataya at pagtanggap.",
+    patronSaint: "San Judas Tadeo",
+    feastDay: "Oktubre 28",
+    source: "CBCP Tagalog + Claretian National Shrine (Chicago, 1929). Retrieved 2026-05-14.",
+    reviewedAt: new Date("2026-05-14"),
+  },
+  {
+    prayerSlug: "novena-divine-mercy",
+    name: "Nobena sa Banal na Awa",
+    description:
+      "Ang Nobena sa Banal na Awa ay ibinigay ni Hesus kay Santa Maria Faustina Kowalska, Polish na madre, sa isang serye ng mga paghahayag na naitala sa kanyang Diary: Divine Mercy in My Soul. Ang mistikal na mga sulat ni Faustina ay pinatibay ng Papa San Juan Pablo II na nakanonisa siya noong Abril 30, 2000 at nagtatag ng Linggo ng Banal na Awa (ikalawang Linggo ng Pasko ng Pagkabuhay) bilang kapistahan para sa buong Simbahan. Nagsisimula ang nobena sa Biyernes Santo at nagtatapos sa bisperas ng Linggo ng Banal na Awa. Bawat isa sa siyam na araw ay nagdadala ng iba't ibang kategorya ng mga kaluluwa sa harap ng trono ng awa: Araw 1, lahat ng sangkatauhan; Araw 2, mga pari at religious; Araw 3, mga maka-Diyos at tapat na kaluluwa; Araw 4, ang mga hindi naniniwala; Araw 5, ang mga kaluluwa ng nahihiwalay na mga kapatid; Araw 6, ang mababang-loob, simple, at mga bata; Araw 7, ang mga kaluluwang gumagalang sa Banal na Awa; Araw 8, ang mga kaluluwa sa purgatoryo; Araw 9, ang mga malamig na kaluluwa. Ang espirituwal na tahanan ng nobena ay ang Sanctuary of Divine Mercy sa Łagiewniki, Kraków.",
+    instructions:
+      "Manalangin minsan sa isang araw sa loob ng siyam na magkakasunod na araw, tradisyonal na nagsisimula sa Biyernes Santo. Bawat araw ay may natatanging intensyon at natatanging pambungad na panalangin na idinikta ni Hesus kay Faustina; pagkatapos ng pagbubukas ng araw, nagtatapos ang panalangin sa Koronilya ng Banal na Awa. Ang tradisyonal na istraktura ng bawat araw: (1) Basahin ang tiyak na intensyon ng araw; (2) Idasal ang pambungad na panalangin na ibinigay ni Hesus kay Faustina; (3) Idasal ang buong Koronilya ng Banal na Awa; (4) Tapusin ng isang personal na intensyon. Ang buong nobena ay tumatagal ng halos labinlimang minuto bawat araw. Maaari rin itong idasal sa anumang panahon para sa isang pribadong intensyon, lalo na sa mga sandali ng krisis o para sa pagbabalik-loob ng isang mahal sa buhay.",
+    patronSaint: "Santa Maria Faustina Kowalska",
+    feastDay: "Linggo ng Banal na Awa",
+    source: "Diary: Divine Mercy in My Soul (St. Faustina) + CBCP Tagalog. Retrieved 2026-05-14.",
+    reviewedAt: new Date("2026-05-14"),
+  },
+  {
+    prayerSlug: "novena-our-lady-perpetual-help",
+    name: "Nobena sa Ina ng Laging Saklolo",
+    description:
+      "Ang Ina ng Laging Saklolo (Our Lady of Perpetual Help) ay isa sa pinakamamahal na pamagat na Marian sa Simbahang Katoliko. Ang debosyon ay nakatuon sa isang Byzantine icon mula sa ika-15 siglo na nagpapakita kay Hesukristo Bata na hawak sa mga bisig ni Maria habang lumalapit ang mga arkanghel na sina Miguel at Gabriel, bawat isa ay may dala-dalang mga kasangkapan ng Pagdurusa. Bumabaling ang Bata sa kanyang Ina na may halatang takot; isang sandalyas ang nakalawit sa kanyang paa, isang detalye na tradisyonal na binabasa bilang ang Bata ay umuurong mula sa hinulaang Pagdurusa at naghahanap ng kanlungan sa puso ng kanyang Ina. Ipinagkatiwala ni Papa Pius IX ang icon sa mga Redemptorist fathers noong 1866 na may tagubilin: «Ipaalam siya sa buong mundo». Sa Pilipinas, ang debosyon ay napaka-malakas, partikular sa pamamagitan ng mga Redemptorist parishes; ang Baclaran Church (National Shrine of Our Mother of Perpetual Help) sa Parañaque ay isa sa pinakamalaking Marian shrine sa Asia at host sa lingguhang Wednesday novena na dinaluhan ng libu-libo. Ang Wednesday Perpetual Help novena ay isa sa pinaka-katangiang debosyong Filipinong Katoliko.",
+    instructions:
+      "Manalangin minsan sa isang araw sa loob ng siyam na magkakasunod na araw. Sa Pilipinas, ang Wednesday Perpetual Help novena ay ginaganap sa libu-libong parokyang Katoliko, lalo na sa Baclaran. Ang tradisyonal na istraktura ng panalangin ng bawat araw sa bahay: (1) Simulan sa Tanda ng Krus; (2) Idasal ang panalangin ng nobena sa Ina ng Laging Saklolo; (3) Tapusin sa tatlong Aba Ginoong Maria at Aba Po Santa Mariang Hari; (4) Banggitin ang iyong tiyak na intensyon. Ang nobena ay angkop na idasal sa mga araw na nauuna sa Kapistahan ng Ina ng Laging Saklolo (Hunyo 27), ngunit maaari rin sa anumang panahon. Ang nobena ay lalong inirerekomenda para sa mga inang nagdarasal para sa kanilang mga anak, para sa mga nag-aalaga ng mga maysakit, at para sa sinumang nahihirapan sa mga sitwasyong nararamdaman na lampas sa kanilang lakas.",
+    patronSaint: "Ina ng Laging Saklolo",
+    feastDay: "Hunyo 27",
+    source: "Redemptorist tradition + Baclaran Church (Parañaque) + Pius IX's 1866 entrustment. Retrieved 2026-05-14.",
+    reviewedAt: new Date("2026-05-14"),
+  },
+  {
+    prayerSlug: "litany-sacred-heart",
+    name: "Litanya sa Banal na Puso ni Hesus",
+    description:
+      "Ang Litanya sa Banal na Puso ni Hesus ay isa sa anim na litanyang inaprobahan ng Holy See para sa pampublikong liturgical use sa Latin Rite. Binuo noong 1718 ni Sister Jeanne Madeleine Joly ng Visitation Order sa Dijon. Ibinigay ni Papa Leo XIII ang pormal na pag-apruba ng litanya para sa pampublikong liturgical use noong Abril 2, 1899 — sa parehong taon na inilaan niya ang buong sangkatauhan sa Banal na Puso sa kanyang encyclical na Annum Sacrum. Ang litanya ay binubuo ng tatlumpu't tatlong pagtawag sa Puso ni Kristo sa ilalim ng iba't ibang pamagat na tumutugma sa tatlumpu't tatlong taon ng buhay ni Kristo sa lupa. Sa bawat pagtawag ay sinasagot ng «Maawa Ka sa amin». Ang patron ng tatlumpu't tatlong beses ay kontemplatibo: ang puso ng naniniwala, sa pamamagitan ng patuloy na pag-uulit, ay naaakit sa mga disposisyon ng Puso ni Kristo — kababaan, pasensya, awa, pag-ibig. Ang litanya ay isa sa mga pangunahing debosyon ng Unang Biyernes at tradisyonal na idinadasal sa buwan ng Hunyo (buwan ng Banal na Puso), sa Nobena sa Banal na Puso, at sa Holy Hour of reparation.",
+    instructions:
+      "Ang litanya ay idinadasal nang responsorial. Sinasambit ng isang lider ang bawat pagtawag («Puso ni Hesus, Anak ng Eternal Father…») at ang sama-samang komunidad ay sumasagot ng angkop na pormula. Ang mga panimulang pagtawag ay gumagamit ng Kyrie pattern at ng Trinitarian invocation. Sumusunod ang tatlumpu't tatlong pagtawag sa Puso ni Hesus, bawat isa ay may sagot na «Maawa Ka sa amin». Nagtatapos ang litanya sa Agnus Dei at isang collect prayer sa Banal na Puso. Ang kabuuang tagal ay halos sampu hanggang labinglimang minuto. Ang litanya ay angkop na idinadasal: sa mga Unang Biyernes; sa buwan ng Hunyo; sa Nobena sa Banal na Puso; sa pagtatapos ng isang Holy Hour ng Eucharistic adoration.",
+    patronSaint: "Banal na Puso ni Hesus",
+    feastDay: "Biyernes pagkatapos ng Corpus Christi",
+    source: "Annum Sacrum (Leo XIII, 1899) + CBCP Tagalog. Retrieved 2026-05-14.",
+    reviewedAt: new Date("2026-05-14"),
+  },
+  {
+    prayerSlug: "litany-blessed-virgin",
+    name: "Litanya ng Mahal na Birhen (Litanya ng Loreto)",
+    description:
+      "Ang Litanya ng Mahal na Birhen — kilala sa tradisyon bilang Litanya ng Loreto — ay ang pinaka-matanda at pinaka-mahal na Marian litany ng Latin Church. Kinukuha ng litanya ang kanyang karaniwang pangalan mula sa Holy House of Loreto sa Italian Marches. Pormal na inaprobahan ni Papa Sixtus V ang litanya para sa liturgical at devotional use noong 1587. Sa loob ng mga siglo, ang sumunod na mga Papa ay nagdagdag ng mga pagtawag habang nagkakaroon ng pag-unlad ang pang-unawa ng Simbahan sa Marian doctrine: Si Pius VII ay nagdagdag ng «Help of Christians» noong 1815; Si Pius IX ay nagdagdag ng «Queen Conceived without Original Sin» pagkatapos ng 1854; Si Pius XII ay nagdagdag ng «Queen Assumed into Heaven» pagkatapos ng 1950; Si John Paul II ay nagdagdag ng «Mother of the Church» noong 1980 at «Queen of Families» noong 1995. Pinaka-bagong, idinagdag ni Papa Francisco ang «Mother of Mercy», «Mother of Hope», at «Comfort of Migrants» noong 2020.",
+    instructions:
+      "Ang litanya ay idinadasal nang responsorial. Sinasambit ng isang lider ang bawat pamagat ni Maria («Santa Maria…», «Santa Mater Dei…») at ang sama-samang komunidad ay sumasagot ng «Ipanalangin mo kami» sa bawat isa. Nagsisimula ang litanya sa Kyrie pattern at Trinitarian invocation; ang katawan ng litanya ay ang mahabang sequence ng Marian titles; nagtatapos ang litanya sa tatlong pagtawag sa Agnus Dei at isang collect prayer. Ang Litanya ng Loreto ay tradisyonal na idinadasal: pagkatapos ng Banal na Rosaryo; sa buwan ng Mayo at Oktubre; sa pagtatapos ng Marian novena bago ang mga Marian solemnities. Ang mga seremonya ng May Crowning ay madalas na isinasama ang Litanya ng Loreto bilang pangunahing panalangin.",
+    patronSaint: "Mahal na Birhen Maria",
+    feastDay: null,
+    source: "Sixtus V's 1587 approval + papal additions through Francis 2020 + CBCP Tagalog. Retrieved 2026-05-14.",
+    reviewedAt: new Date("2026-05-14"),
+  },
+  {
+    prayerSlug: "prayer-conversion",
+    name: "Panalangin para sa Pagbabalik-loob ng Isang Mahal sa Buhay",
+    description:
+      "Ang Katolikong panalangin para sa pagbabalik-loob ng isang mahal sa buhay ay nakaugat sa isa sa mga dakilang pastoral na patotoo ng kasaysayan ng Kristiyano: ang mahaba at tapat na panalangin ni Santa Monica para sa kanyang anak na si San Agustin. Si Monica ay nanalangin para sa pagbabalik-loob ng kanyang anak sa loob ng mga taon, sa pamamagitan ng kanyang mga luha at ang payo na natanggap niya mula kay San Ambrosio ng Milan («Hindi posible na ang anak ng napakaraming luha ay mawala»). Binyagan si Agustin noong 387 sa edad na tatlumpu't tatlo; namatay si Monica di-nagtagal pagkatapos sa Ostia, pagkatapos mabuhay para makita ang hiniling niya. Itinala ni Agustin ang kanyang pagtitiyaga sa kanyang Confessions (Aklat IX). Ang pastoral na patotoo na isinasakatawan ni Monica ay hindi garantiya ng resulta — ang pagbabalik-loob ni Agustin ay nangyari sa panahon ng Diyos, hindi kay Monica — kundi isang postura ng hindi natitinag na katapatan.",
+    instructions:
+      "Manalangin araw-araw, perpekto sa parehong oras at sa parehong postura (nakaluhod, sa harap ng krusipiho o larawan ng Banal na Puso). Banggitin ang pangalan ng tao sa malakas sa panalangin kung saan binabasa ang teksto na «(pangalan)». Pagkatapos ng panalangin, mag-ukol ng isang minuto ng katahimikan upang panatilihin siya sa harap ng Banal na Puso. Maraming Katoliko ang sumusuporta sa panalanging ito sa pamamagitan ng: (1) pang-araw-araw na pag-aalay ng maliliit na sakripisyo; (2) regular na intensyon ng Misa, lalo na sa pista ni Santa Monica (Agosto 27) o ni San Agustin (Agosto 28); (3) Nobena kay Santa Monica o San Agustin; (4) Koronilya ng Banal na Awa sa ika-3:00 ng hapon. Ang disposisyon ng panalangin ay mahalaga: inihahandog ito sa pagtitiwala, hindi sa transaksyon.",
+    patronSaint: "Santa Monica",
+    feastDay: "Agosto 27",
+    source: "Augustine's Confessions Book IX + CBCP Tagalog pastoral resources. Retrieved 2026-05-14.",
+    reviewedAt: new Date("2026-05-14"),
+  },
 ];

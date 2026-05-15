@@ -85,4 +85,104 @@ export const plTranslations: PrayerTranslationSeed[] = [
       "KEP-approved Polish devotional text of the Memorare (Pomnij) + traditional Polish Catholic prayer books. Historical attribution to Fr. Claude Bernard verified against the Catholic Encyclopedia entry. Retrieved 2026-05-14.",
     reviewedAt: new Date("2026-05-14"),
   },
+
+  // ─── Round 2: 6 more prayers from PR #71 ────────────────────
+  {
+    prayerSlug: "novena-st-jude",
+    name: "Nowenna do świętego Judy Tadeusza",
+    description:
+      "Święty Juda Tadeusz, zwany Apostołem Nadziei, był jednym z Dwunastu i krewnym Pana. Jest wymieniony w Ewangeliach jako jeden z apostołów (Łk 6,16) i jest autorem krótkiego Listu Judy. Przez wieki popularna pobożność katolicka wzywała świętego Judę jako patrona spraw rozpaczliwych. Powody podawane przez tradycję są praktyczne: ponieważ jego imię (Juda) było łatwo mylone z Judaszem Iskariotą, zdrajcą, jego wstawiennictwo było unikane przez zwykłych chrześcijan przez wieki — i dlatego, jak głosi przysłowie, pragnie pomóc każdemu, kto zwraca się do niego w prawdziwej potrzebie. Współczesna pobożność do świętego Judy została spopularyzowana w Stanach Zjednoczonych przez ojców klaretynów (Narodowe Sanktuarium świętego Judy w Chicago, 1929). W Polsce święty Juda Tadeusz jest patronem trudnych spraw zawodowych i sytuacji wymagających szczególnego zaufania w Bożą Opatrzność.",
+    instructions:
+      "Módl się raz dziennie przez dziewięć kolejnych dni. Struktura: rozpocznij od Znaku Krzyża; odmów tekst nowenny; zakończ Ojcze nasz, Zdrowaś Maryjo i Chwała Ojcu; wymień intencję. Nowenna szczególnie odpowiednia w dziewięć dni poprzedzających święto świętego Judy (28 października).",
+    patronSaint: "Święty Juda Tadeusz",
+    feastDay: "28 października",
+    source: "KEP Polish + Claretian National Shrine (Chicago, 1929). Retrieved 2026-05-14.",
+    reviewedAt: new Date("2026-05-14"),
+  },
+  {
+    prayerSlug: "novena-divine-mercy",
+    name: "Nowenna do Miłosierdzia Bożego",
+    description:
+      "Nowenna do Miłosierdzia Bożego została dana przez Jezusa świętej Marii Faustynie Kowalskiej, polskiej zakonnicy, w serii objawień zapisanych w jej Dzienniczku. Papież święty Jan Paweł II — sam Polak i rodak — kanonizował ją 30 kwietnia 2000 roku i ustanowił Święto Miłosierdzia Bożego (drugą niedzielę wielkanocną) jako święto dla Kościoła powszechnego. Nowenna rozpoczyna się w Wielki Piątek. Każdy z dziewięciu dni przyprowadza inną kategorię dusz przed tron miłosierdzia. Duchowym domem nowenny jest Sanktuarium Miłosierdzia Bożego w Łagiewnikach w Krakowie — miejsce szczególne dla polskiej pobożności.",
+    instructions:
+      "Módl się raz dziennie przez dziewięć kolejnych dni, zaczynając w Wielki Piątek. Każdy dzień ma swoją intencję i modlitwę wstępną. Po otwarciu dnia, modlitwa kończy się Koronką do Miłosierdzia Bożego. Pełna nowenna trwa około piętnaście minut dziennie.",
+    patronSaint: "Święta Faustyna Kowalska",
+    feastDay: "Niedziela Miłosierdzia Bożego",
+    source: "Dzienniczek św. Faustyny + Sanktuarium Łagiewniki Kraków. Retrieved 2026-05-14.",
+    reviewedAt: new Date("2026-05-14"),
+  },
+  {
+    prayerSlug: "novena-our-lady-perpetual-help",
+    name: "Nowenna do Matki Bożej Nieustającej Pomocy",
+    description:
+      "Matka Boża Nieustającej Pomocy to jeden z najukochaniej szych tytułów maryjnych w Kościele katolickim. Nabożeństwo skupia się wokół XV-wiecznej bizantyjskiej ikony przedstawiającej Dzieciątko Jezus w ramionach Maryi, podczas gdy archaniołowie Michał i Gabriel zbliżają się z narzędziami Męki Pańskiej. Ikona została powierzona przez papieża Piusa IX ojcom redemptorystom w 1866 roku z zaleceniem: «Uczyńcie ją znaną na całym świecie». W Polsce nabożeństwo jest mocne, szczególnie w parafiach redemptorystowskich; cotygodniowa nowenna we środy jest tradycyjną polską praktyką.",
+    instructions:
+      "Módl się raz dziennie przez dziewięć kolejnych dni. Tradycyjna struktura: (1) Znak Krzyża; (2) Odmów modlitwę nowenny; (3) Zakończ trzema Zdrowaś Maryjo i «Pod Twoją obronę»; (4) Wymień intencję. Wiele polskich parafii organizuje cotygodniowe nabożeństwa we środy.",
+    patronSaint: "Matka Boża Nieustającej Pomocy",
+    feastDay: "27 czerwca",
+    source: "Redemptorist tradition + KEP Polish + Pius IX 1866 entrustment. Retrieved 2026-05-14.",
+    reviewedAt: new Date("2026-05-14"),
+  },
+  {
+    prayerSlug: "litany-sacred-heart",
+    name: "Litania do Najświętszego Serca Pana Jezusa",
+    description:
+      "Litania do Najświętszego Serca Pana Jezusa jest jedną z sześciu litanii zatwierdzonych przez Stolicę Apostolską. Skomponowana w 1718 roku przez siostrę Joannę Magdalenę Joly z Zakonu Wizytek w Dijon. Papież Leon XIII zatwierdził litanię formalnie do publicznego użytku liturgicznego 2 kwietnia 1899 roku — w tym samym roku poświęcił całą ludzkość Najświętszemu Sercu w encyklice Annum Sacrum. Litania jest zbudowana z trzydziestu trzech wezwań odpowiadających trzydziestu trzem latom ziemskiego życia Chrystusa. Na każde wezwanie odpowiada się «Zmiłuj się nad nami».",
+    instructions:
+      "Litania odmawiana responsoryjnie. Prowadzący wypowiada każde wezwanie, wspólnota odpowiada. Trzydzieści trzy wezwania do Serca Jezusa, każde z odpowiedzią «Zmiłuj się nad nami». Czas trwania: dziesięć do piętnastu minut. Odpowiednia: Pierwsze Piątki; miesiąc czerwiec; Godzina Święta.",
+    patronSaint: "Najświętsze Serce Pana Jezusa",
+    feastDay: "Piątek po Bożym Ciele",
+    source: "Annum Sacrum (Leo XIII, 1899) + KEP Polish. Retrieved 2026-05-14.",
+    reviewedAt: new Date("2026-05-14"),
+  },
+  {
+    prayerSlug: "litany-blessed-virgin",
+    name: "Litania Loretańska do Najświętszej Maryi Panny",
+    description:
+      "Litania Loretańska jest najstarszą i najukochaniej szą maryjną litanią Kościoła łacińskiego. Bierze swoją nazwę od Świętego Domku w Loreto we Włoszech. Papież Sykstus V formalnie zatwierdził litanię w 1587 roku. Polska tradycja Nabożeństw Majowych — codziennie w maju przed obrazem Matki Bożej — ma w sobie Litanię Loretańską jako centralną modlitwę. W ciągu wieków papieże dodawali wezwania, ostatnio Franciszek dodał «Matko Miłosierdzia», «Matko Nadziei», «Pociecho Migrantów» (2020).",
+    instructions:
+      "Litania odmawiana responsoryjnie. Prowadzący wypowiada każdy tytuł Maryi, wspólnota odpowiada «Módl się za nami». Polska tradycja Nabożeństw Majowych — codzienne nabożeństwo w maju — ma Litanię Loretańską jako centralną modlitwę. Tradycyjnie odmawiana po Różańcu Świętym.",
+    patronSaint: "Najświętsza Maryja Panna",
+    feastDay: null,
+    source: "Sixtus V 1587 + papal additions through Francis 2020 + KEP Polish. Retrieved 2026-05-14.",
+    reviewedAt: new Date("2026-05-14"),
+  },
+  {
+    prayerSlug: "prayer-conversion",
+    name: "Modlitwa o Nawrócenie Bliskiej Osoby",
+    description:
+      "Katolicka modlitwa o nawrócenie bliskiej osoby jest zakorzeniona w długiej, wiernej modlitwie świętej Moniki za jej syna świętego Augustyna. Monika modliła się przez lata, przez łzy i radę świętego Ambrożego z Mediolanu («Nie jest możliwe, aby syn tylu łez zginął»). Augustyn został ochrzczony w 387 roku; Monika zmarła wkrótce potem w Ostii. Augustyn zapisał jej wytrwałość w Wyznaniach (Księga IX).",
+    instructions:
+      "Módl się codziennie, najlepiej o tej samej porze i w tej samej postawie. Wymień osobę głośno w modlitwie. Wielu katolików łączy tę modlitwę z: (1) codziennymi małymi poświęceniami; (2) Mszą świętą w dzień św. Moniki (27 sierpnia) lub św. Augustyna (28 sierpnia); (3) Nowenną do św. Moniki; (4) Koronką do Miłosierdzia Bożego o 15:00.",
+    patronSaint: "Święta Monika",
+    feastDay: "27 sierpnia",
+    source: "Augustine's Confessions Book IX + KEP Polish. Retrieved 2026-05-14.",
+    reviewedAt: new Date("2026-05-14"),
+  },
+
+  // ─── Locale-anchored devotions (Poland) ────────────────────
+  {
+    prayerSlug: "novena-czestochowa",
+    name: "Nowenna do Matki Bożej Częstochowskiej",
+    description:
+      "Matka Boża Częstochowska — Czarna Madonna — jest centralnym maryjnym nabożeństwem polskiego katolicyzmu i ikoną w sercu polskiej tożsamości narodowej. Obraz, ikona Maryi trzymającej Dzieciątko Jezus, namalowana na drewnie cyprysowym, jest umieszczony w klasztorze Jasnogórskim w Częstochowie. Tradycja przypisuje malowanie ikony świętemu Łukaszowi Ewangeliście; współczesna analiza historii sztuki datuje obecny obraz na późne średniowiecze. Ikona przybyła na Jasną Górę w 1382 roku, sprowadzona z Bełza przez księcia Władysława Opolczyka jako dar dla nowo założonego klasztoru paulinów. Dwa równoległe rysy na prawym policzku Maryi — najbardziej rozpoznawalna cecha ikony — datują się na 1430 rok, gdy husyci splądrowali klasztor i pocięli obraz; tradycja głosi, że obraz krwawił, przerażając napastników. Ikona stała się centralna dla polskiej świadomości narodowej podczas «Potopu» szwedzkiego z 1655 roku: gdy praktycznie cała Polska upadła pod siłami szwedzkimi protestanckimi, sam mały klasztor Jasnogórski wytrzymał — niewielka grupa paulinów i polskich żołnierzy broniła go przez sześciotygodniowe oblężenie. Szwedzi się wycofali, a król Jan II Kazimierz formalnie ogłosił Maryję Królową Polski w katedrze lwowskiej w 1656 roku. Papież Pius XI udzielił obrazowi kanonicznej koronacji jako Królowej Polski w 1717 i 1923 roku. Przez wieki polskich rozbiorów, okupacji, komunistycznej supresji i odnowy, Czarna Madonna była duchowym sercem polskiej katolickiej tożsamości. Papież święty Jan Paweł II, urodzony Karol Wojtyła w 1920 roku, wielokrotnie pielgrzymował na Jasną Górę zarówno przed jak i po swoim wyborze.",
+    instructions:
+      "Módl się raz dziennie przez dziewięć kolejnych dni. Nowenna jest tradycyjnie odmawiana w ciągu dziewięciu dni poprzedzających święto Matki Bożej Częstochowskiej (26 sierpnia) lub święto Najświętszej Maryi Panny Królowej Polski (3 maja). Struktura nowenny: (1) Znak Krzyża; (2) Czytanie krótkiej refleksji o historii ikony lub polskiej katolickiej tożsamości; (3) Modlitwa nowennowa; (4) Trzy Zdrowaś Maryjo; (5) Wymienienie konkretnej intencji. Wiele polskich katolickich rodzin modli się nowennę przed domową reprodukcją ikony — obraz Czarnej Madonny jest jednym z najszerzej kopiowanych katolickich ikon na świecie. Pielgrzymka na Jasną Górę pozostaje potężnym elementem polskiego życia pobożnościowego: każdego sierpnia, setki tysięcy pielgrzymów idzie pieszo z Warszawy, Krakowa i innych polskich miast do klasztoru, przybywając na lub przed Uroczystość Wniebowzięcia (15 sierpnia). W polskiej-amerykańskiej diasporze — skoncentrowanej w Chicago, Nowym Jorku i parafiach Nowej Anglii — Częstochowska Niedziela w końcu sierpnia jest obchodzona z procesjami, śpiewem «Czarnej Madonny» i polską Mszą. Nowenna jest odpowiednia dla: każdego momentu narodowego lub osobistego kryzysu; nawrócenia członków rodziny; ochrony nienarodzonych; uzdrowienia duchowego w długim łuku pokoleń.",
+    patronSaint: "Matka Boża Częstochowska, Królowa Polski",
+    feastDay: "26 sierpnia",
+    source: "Jasna Góra Monastery devotional sources + Jan II Kazimierz's 1656 proclamation + KEP Polish. Retrieved 2026-05-14.",
+    reviewedAt: new Date("2026-05-14"),
+  },
+  {
+    prayerSlug: "novena-maximilian-kolbe",
+    name: "Nowenna do świętego Maksymiliana Marii Kolbego",
+    description:
+      "Święty Maksymilian Maria Kolbe (1894-1941) był polskim franciszkaninem konwentualnym, dziennikarzem, misjonarzem i męczennikiem Auschwitz — jednym z najpotężniejszych świadectw XX wieku. Urodzony jako Rajmund Kolbe pod Łodzią w rozbiorowej Polsce, w dzieciństwie doświadczył wizji Najświętszej Maryi Panny: ofiarowała mu dwie korony, jedną białą (czystość) i jedną czerwoną (męczeństwo), i zapytała, którą wybierze. Wybrał obie. Wstąpił do franciszkanów konwentualnych w wieku szesnastu lat, został wyświęcony na kapłana w 1918 roku i założył Rycerstwo Niepokalanej (Militia Immaculatae) w 1917 roku, maryjny apostolat poświęcony nawróceniu grzeszników i szerzeniu nabożeństwa do Niepokalanego Poczęcia. Założył Niepokalanów («Miasto Niepokalanej») pod Warszawą w 1927 roku, który urósł do jednego z największych domów zakonnych na świecie; bracia tam publikowali masowy nakład Rycerza Niepokalanej, który osiągnął milion czytelników do końca lat 30. W latach 1930-1936 służył jako misjonarz w Japonii, zakładając Mugenzai no Sono («Ogród Niepokalanej») w Nagasaki — klasztor który, wbrew wszelkim oczekiwaniom, przetrwał bombardowanie atomowe z 1945 roku nienaruszony. Wracając do Polski w przededniu II wojny światowej, schronił około 2000 żydowskich uchodźców w Niepokalanowie. Został aresztowany przez Gestapo 17 lutego 1941 roku i przeniesiony do Auschwitz 28 maja 1941 roku jako więzień numer 16670. W lipcu 1941 roku, po ucieczce więźnia z bloku 14, komendant obozu wybrał dziesięciu mężczyzn do śmierci głodowej w odwecie. Jeden z wybranych, Franciszek Gajowniczek, zawołał z udręką o swoją żonę i dzieci. Kolbe wystąpił i poprosił, by zająć miejsce Gajowniczka. Wymiana została dozwolona. Kolbe spędził dwa tygodnie w bunkrze głodowym, prowadząc innych skazanych w modlitwie i pieśni; był ostatnim, który umarł, zabity śmiertelnym zastrzykiem 14 sierpnia 1941 roku, w wigilię Wniebowzięcia. Papież święty Jan Paweł II — sam Polak, który przeżył tę samą nazistowską okupację — kanonizował Kolbego jako «męczennika miłości» w 1982 roku, ogłaszając go «patronem naszego trudnego stulecia». Franciszek Gajowniczek przeżył wojnę i dożył 1995 roku, świadcząc przez pięćdziesiąt trzy lata o człowieku, który zmarł zamiast niego.",
+    instructions:
+      "Módl się raz dziennie przez dziewięć kolejnych dni. Nowenna jest tradycyjnie odmawiana w dziewięć dni poprzedzających święto świętego Maksymiliana Kolbego (14 sierpnia) lub w związku z 15-sierpniową Uroczystością Wniebowzięcia (Kolbe zmarł w wigilię Wniebowzięcia, oblekając czas swojej śmierci w maryjne znaczenie). Struktura nowenny: (1) Znak Krzyża; (2) Czytanie krótkiej refleksji o momencie z życia Kolbego — jego wizji dwóch koron, jego założeniu Niepokalanowa, jego japońskiej misji, jego ofierze w Auschwitz; (3) Modlitwa nowennowa; (4) Trzy Zdrowaś Maryjo (na cześć jego maryjnego nabożeństwa); (5) Wymienienie konkretnej intencji. Nowenna jest szczególnie odpowiednia dla: każdego w więzieniu lub uwięzieniu, uchodźców i wysiedlonych, tych zmagających się z uzależnieniem (Kolbe jest patronem uzależnionych, szczególnie od narkotyków), dziennikarzy i pisarzy w trudnych powołaniach, rodzin pod zagrożeniem, i sprawy pro-life (świadectwo Kolbego — oddania życia, by ojciec mógł wrócić do swoich dzieci — uczyniło go potężnym orędownikiem nienarodzonych i ojców). Rycerstwo Niepokalanej kontynuuje dziś jako międzynarodowy maryjny apostolat. Cela w Auschwitzu, gdzie Kolbe zmarł (Blok 11, Cela 18), jest zachowana jako miejsce pielgrzymki.",
+    patronSaint: "Święty Maksymilian Maria Kolbe",
+    feastDay: "14 sierpnia",
+    source: "Polish Conventual Franciscan sources + Niepokalanów + Auschwitz Block 11 documentation + JPII canonization homily (1982). Retrieved 2026-05-14.",
+    reviewedAt: new Date("2026-05-14"),
+  },
 ];

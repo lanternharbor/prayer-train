@@ -88,4 +88,104 @@ export const filTranslations: PrayerTranslationSeed[] = [
       "CBCP-approved Tagalog devotional text of the Memorare + traditional Filipino Catholic prayer books. Historical attribution to Fr. Claude Bernard verified against the Catholic Encyclopedia. Retrieved 2026-05-14.",
     reviewedAt: new Date("2026-05-14"),
   },
+
+  // ─── Round 2: 6 more prayers from PR #71 ────────────────────
+  {
+    prayerSlug: "novena-st-jude",
+    name: "Nobena kay San Judas Tadeo",
+    description:
+      "Si San Judas Tadeo, tinatawag na Apostol ng Pag-asa, ay isa sa Labindalawang Apostol at kamag-anak ng Panginoon. Siya'y binanggit sa mga Ebanghelyo bilang isa sa mga apostol (Lucas 6:16) at siya ang may-akda ng maikling Liham ni Judas. Sa mga siglo, hinanap ng popular na debosyong Katoliko si San Judas bilang patron ng mga desperadong sitwasyon at imposibleng kalagayan. Ang mga dahilang ibinigay ng tradisyon ay praktikal: dahil ang kanyang pangalan ay madaling maipagkamali kay Judas Iscariote, ang taksil, ang kanyang pamamagitan ay iniwasan ng karaniwang mga Kristiyano sa loob ng mga siglo — at kaya, sabi ng kasabihan, siya'y naghahangad tulungan ang sinumang lumalapit sa kanya sa tunay na pangangailangan. Ang modernong debosyon kay San Judas Tadeo ay pinasikat sa Estados Unidos ng mga padre Claretian, na nagtayo ng National Shrine of St. Jude sa Chicago noong 1929 sa kasagsagan ng Great Depression. Sa mga Filipinong-Amerikano, ang debosyon kay San Judas ay malakas. Ang nobenang ito ay angkop para sa karamdaman na may mahirap na prognosis, paghirap sa pananalapi, paghihiwalay sa pamilya na tila walang solusyon, kawalang-anak at anumang sitwasyon na nararamdaman ng isang tao na «lampas sa pag-asa».",
+    instructions:
+      "Manalangin minsan sa isang araw sa loob ng siyam na magkakasunod na araw. Ang tradisyonal na istraktura: simulan sa Tanda ng Krus; idasal ang teksto ng nobena kay San Judas; tapusin sa isang Ama Namin, Aba Ginoong Maria, at Luwalhati; banggitin ang iyong tiyak na intensyon. Ang nobena ay maaaring idasal sa anumang panahon ng taon, ngunit lalo itong angkop sa siyam na araw na nauuna sa kapistahan ni San Judas (Oktubre 28). Isang tradisyonal na karagdagang gawain ay magpasya, kapag pinakinggan ang panalangin, na pasalamatan sa publiko si San Judas.",
+    patronSaint: "San Judas Tadeo",
+    feastDay: "Oktubre 28",
+    source: "CBCP Tagalog + Claretian National Shrine (Chicago, 1929). Retrieved 2026-05-14.",
+    reviewedAt: new Date("2026-05-14"),
+  },
+  {
+    prayerSlug: "novena-divine-mercy",
+    name: "Nobena sa Banal na Awa",
+    description:
+      "Ang Nobena sa Banal na Awa ay ibinigay ni Hesus kay Santa Maria Faustina Kowalska, Polish na madre, sa isang serye ng mga paghahayag na naitala sa kanyang Diary: Divine Mercy in My Soul. Ang Papa San Juan Pablo II ay nakanonisa siya noong Abril 30, 2000 at nagtatag ng Linggo ng Banal na Awa bilang kapistahan para sa buong Simbahan. Nagsisimula ang nobena sa Biyernes Santo at nagtatapos sa bisperas ng Linggo ng Banal na Awa. Bawat isa sa siyam na araw ay nagdadala ng iba't ibang kategorya ng mga kaluluwa sa harap ng trono ng awa.",
+    instructions:
+      "Manalangin minsan sa isang araw sa loob ng siyam na magkakasunod na araw, tradisyonal na nagsisimula sa Biyernes Santo. Bawat araw ay may natatanging intensyon at pambungad na panalangin. Pagkatapos ng pagbubukas, nagtatapos ang panalangin sa Koronilya ng Banal na Awa. Ang buong nobena ay tumatagal ng halos labinglimang minuto bawat araw.",
+    patronSaint: "Santa Maria Faustina Kowalska",
+    feastDay: "Linggo ng Banal na Awa",
+    source: "Diary: Divine Mercy in My Soul (St. Faustina) + CBCP Tagalog. Retrieved 2026-05-14.",
+    reviewedAt: new Date("2026-05-14"),
+  },
+  {
+    prayerSlug: "novena-our-lady-perpetual-help",
+    name: "Nobena sa Ina ng Laging Saklolo",
+    description:
+      "Ang Ina ng Laging Saklolo (Our Lady of Perpetual Help) ay isa sa pinakamamahal na pamagat na Marian sa Simbahang Katoliko. Ang debosyon ay nakatuon sa isang Byzantine icon mula sa ika-15 siglo na nagpapakita kay Hesukristo Bata na hawak sa mga bisig ni Maria habang lumalapit ang mga arkanghel na sina Miguel at Gabriel, bawat isa ay may dala-dalang mga kasangkapan ng Pagdurusa. Ipinagkatiwala ni Papa Pius IX ang icon sa mga Redemptorist fathers noong 1866. Sa Pilipinas, ang debosyon ay napaka-malakas, partikular sa pamamagitan ng mga Redemptorist parishes; ang Baclaran Church (National Shrine of Our Mother of Perpetual Help) sa Parañaque ay isa sa pinakamalaking Marian shrine sa Asia at host sa lingguhang Wednesday novena na dinaluhan ng libu-libo.",
+    instructions:
+      "Manalangin minsan sa isang araw sa loob ng siyam na magkakasunod na araw. Sa Pilipinas, ang Wednesday Perpetual Help novena ay ginaganap sa libu-libong parokyang Katoliko, lalo na sa Baclaran. Ang tradisyonal na istraktura: (1) Tanda ng Krus; (2) Idasal ang panalangin ng nobena; (3) Tapusin sa tatlong Aba Ginoong Maria at Aba Po Santa Mariang Hari; (4) Banggitin ang iyong intensyon.",
+    patronSaint: "Ina ng Laging Saklolo",
+    feastDay: "Hunyo 27",
+    source: "Redemptorist tradition + Baclaran Church (Parañaque) + Pius IX 1866 entrustment. Retrieved 2026-05-14.",
+    reviewedAt: new Date("2026-05-14"),
+  },
+  {
+    prayerSlug: "litany-sacred-heart",
+    name: "Litanya sa Banal na Puso ni Hesus",
+    description:
+      "Ang Litanya sa Banal na Puso ni Hesus ay isa sa anim na litanyang inaprobahan ng Holy See para sa pampublikong liturgical use. Binuo noong 1718 ni Sister Jeanne Madeleine Joly. Ibinigay ni Papa Leo XIII ang pormal na pag-apruba noong Abril 2, 1899 — sa parehong taon na inilaan niya ang buong sangkatauhan sa Banal na Puso sa kanyang encyclical na Annum Sacrum. Ang litanya ay binubuo ng tatlumpu't tatlong pagtawag sa Puso ni Kristo sa ilalim ng iba't ibang pamagat. Sa bawat pagtawag ay sinasagot ng «Maawa Ka sa amin».",
+    instructions:
+      "Ang litanya ay idinadasal nang responsorial. Sinasambit ng isang lider ang bawat pagtawag at ang sama-samang komunidad ay sumasagot. Sumusunod ang tatlumpu't tatlong pagtawag sa Puso ni Hesus, bawat isa ay may sagot na «Maawa Ka sa amin». Angkop na idinadasal: sa mga Unang Biyernes; sa buwan ng Hunyo; sa Nobena sa Banal na Puso.",
+    patronSaint: "Banal na Puso ni Hesus",
+    feastDay: "Biyernes pagkatapos ng Corpus Christi",
+    source: "Annum Sacrum (Leo XIII, 1899) + CBCP Tagalog. Retrieved 2026-05-14.",
+    reviewedAt: new Date("2026-05-14"),
+  },
+  {
+    prayerSlug: "litany-blessed-virgin",
+    name: "Litanya ng Mahal na Birhen (Litanya ng Loreto)",
+    description:
+      "Ang Litanya ng Mahal na Birhen — kilala sa tradisyon bilang Litanya ng Loreto — ay ang pinaka-matanda at pinaka-mahal na Marian litany ng Latin Church. Pormal na inaprobahan ni Papa Sixtus V noong 1587. Sa loob ng mga siglo, ang sumunod na mga Papa ay nagdagdag ng mga pagtawag. Pinaka-bagong, idinagdag ni Papa Francisco ang «Mother of Mercy», «Mother of Hope», at «Comfort of Migrants» noong 2020.",
+    instructions:
+      "Ang litanya ay idinadasal nang responsorial. Sinasambit ng isang lider ang bawat pamagat ni Maria at ang sama-samang komunidad ay sumasagot ng «Ipanalangin mo kami». Ang Litanya ng Loreto ay tradisyonal na idinadasal pagkatapos ng Banal na Rosaryo; sa buwan ng Mayo at Oktubre.",
+    patronSaint: "Mahal na Birhen Maria",
+    feastDay: null,
+    source: "Sixtus V 1587 approval + papal additions through Francis 2020 + CBCP Tagalog. Retrieved 2026-05-14.",
+    reviewedAt: new Date("2026-05-14"),
+  },
+  {
+    prayerSlug: "prayer-conversion",
+    name: "Panalangin para sa Pagbabalik-loob ng Isang Mahal sa Buhay",
+    description:
+      "Ang Katolikong panalangin para sa pagbabalik-loob ng isang mahal sa buhay ay nakaugat sa isa sa mga dakilang pastoral na patotoo ng kasaysayan ng Kristiyano: ang mahaba at tapat na panalangin ni Santa Monica para sa kanyang anak na si San Agustin. Si Monica ay nanalangin para sa pagbabalik-loob ng kanyang anak sa loob ng mga taon, sa pamamagitan ng kanyang mga luha at ang payo na natanggap niya mula kay San Ambrosio ng Milan («Hindi posible na ang anak ng napakaraming luha ay mawala»). Binyagan si Agustin noong 387 sa edad na tatlumpu't tatlo; namatay si Monica di-nagtagal pagkatapos sa Ostia. Itinala ni Agustin ang kanyang pagtitiyaga sa kanyang Confessions (Aklat IX).",
+    instructions:
+      "Manalangin araw-araw, perpekto sa parehong oras at sa parehong postura (nakaluhod, sa harap ng krusipiho o larawan ng Banal na Puso). Banggitin ang pangalan ng tao sa malakas sa panalangin. Pagkatapos ng panalangin, mag-ukol ng isang minuto ng katahimikan upang panatilihin siya sa harap ng Banal na Puso. Maraming Katoliko ang sumusuporta sa panalanging ito sa pamamagitan ng: (1) pang-araw-araw na pag-aalay ng maliliit na sakripisyo; (2) regular na intensyon ng Misa para sa tao; (3) Nobena kay Santa Monica o San Agustin; (4) Koronilya ng Banal na Awa sa ika-3:00 ng hapon.",
+    patronSaint: "Santa Monica",
+    feastDay: "Agosto 27",
+    source: "Augustine's Confessions Book IX + CBCP Tagalog pastoral resources. Retrieved 2026-05-14.",
+    reviewedAt: new Date("2026-05-14"),
+  },
+
+  // ─── Locale-anchored devotions (Philippines) ───────────────
+  {
+    prayerSlug: "novena-santo-nino",
+    name: "Nobena sa Santo Niño ng Cebu",
+    description:
+      "Ang Santo Niño de Cebú ay ang sentral na imahe ng Filipinong Katolikong identidad at ang pinaka-matandang Kristiyanong imahe sa Pilipinas. Ang kuwento ay kabilang sa sandali na ang Kristiyanismo ay pumasok sa kapuluan: noong 1521, dinala ng Portuges na explorer na si Ferdinand Magellan — naglalayag sa ilalim ng Spanish crown — ang isang maliit na kahoy na estatwa ng Batang Kristo at iniharap kay Reyna Juana, ang asawa ni Rajah Humabon, sa pagkakataon ng kanyang binyag noong Abril 14, 1521. Si Juana, ang unang Filipino Christian queen, ay tumanggap ng imahe nang may malalim na pagmamahal, at ang Magellan's chronicler na si Antonio Pigafetta ay nagtala ng kanyang mga luha sa regalo. Nang bumalik ang Spanish missionaries sa Cebu noong 1565 sa ilalim ni Miguel López de Legazpi — apatnapu't apat na taon pagkatapos ng kamatayan ni Magellan sa Battle of Mactan — natagpuan nila ang imahe na napreserba sa isang maliit na bahay, na pinarangalan pa rin ng lokal na mga tao na nagpanatili ng debosyon. Ang Basilica Minore del Santo Niño sa Cebu City ay itinayo sa paligid ng nabawing imahe at ito ang pinaka-matandang simbahan sa Pilipinas. Ang taunang Sinulog Festival — ginaganap sa ikatlong Linggo ng Enero sa Cebu City — ay ang pinakamalaking Katolikong selebrasyon sa Asia, naghahatid ng milyon-milyong peregrino at nagtatampok ng mga araw ng prusisyon, mga misa, at ang katangiang Sinulog dance («isang hakbang pasulong, dalawang hakbang paatras») kung saan gumagalaw ang mga mananayaw kasabay ng ritmo ng agos ng ilog.",
+    instructions:
+      "Manalangin minsan sa isang araw sa loob ng siyam na magkakasunod na araw. Ang nobena ay tradisyonal na idinadasal sa siyam na araw na nauuna sa Kapistahan ng Santo Niño (ang ikatlong Linggo ng Enero, ang pinaka-mahalagang araw ng Sinulog Festival sa Cebu City). Sa Filipino tradition, ang nobena ay madalas idinadasal kasama ng: (a) isang Santo Niño image na nakalantad sa bahay — maraming Filipino-Catholic na sambahayan ang nagpapanatili ng Santo Niño altar; (b) pagdalo sa parish-wide novena Masses (isang siyam-na-araw na Mass series); (c) pagkanta ng mga tradisyonal na Cebuano at Tagalog Santo Niño hymns («Bato Balani sa Gugma» — «Magnet of Love» — ang pinakamamahal); (d) para sa maraming devotee, paglahok sa Sinulog dance sa prusisyon. Ang nobena ay angkop para sa: pagpapagaling ng pamilya; proteksyon ng mga bata (ang Santo Niño ay patron ng mga bata); paghahanda para sa o pagbawi mula sa binyag; pagbabalik-loob ng nahihiwalay na mga miyembro ng pamilya; ligtas na biyahe; at anumang mahirap na sandali kung saan ang kaluluwa ay nangangailangan ng pagtitiwala ng bata na hinihingi ni Kristo (Mateo 18:3). Maraming Filipino-Catholic families ang nagdarasal ng maikling Santo Niño aspiration araw-araw — «Viva Santo Niño!» o «Pit Señor, Sinulog ka!» — bilang isang sandali ng masayang pagtitiwala.",
+    patronSaint: "Santo Niño (Banal na Bata ng Cebu)",
+    feastDay: "Ikatlong Linggo ng Enero (Sinulog Festival)",
+    source: "Antonio Pigafetta's chronicle of Magellan voyage (1521) + Basilica Minore del Santo Niño Cebu City + CBCP Tagalog. Retrieved 2026-05-14.",
+    reviewedAt: new Date("2026-05-14"),
+  },
+  {
+    prayerSlug: "simbang-gabi",
+    name: "Simbang Gabi (Mga Madaling-Araw na Misa bago ang Pasko)",
+    description:
+      "Ang Simbang Gabi (Tagalog para sa «Night Mass») — tinatawag ding Misa de Gallo (Spanish, «Mass of the Rooster») sa mas matandang Filipino-Spanish na tradisyon — ay isang kakaibang Filipinong Katolikong Advent devotion na binubuo ng siyam na magkakasunod na madaling-araw na Misa na ipinagdiriwang mula Disyembre 16 hanggang Disyembre 24, kaagad na nauuna sa Araw ng Pasko. Ang pinagmulan ay matatagpuan sa maagang Spanish missionary period sa Pilipinas (huling bahagi ng ika-16 siglo): ang mga Spanish friars, na kinikilala na ang agricultural rhythms ng Filipino farming communities ay nangangahulugang ang mga manggagawa ay nasa kabukiran bago ang madaling-araw, ay nagbigay ng pahintulot mula sa Vatican upang ipagdiwang ang Advent Mass sa unang liwanag — sa pagitan ng 3:00 at 5:00 AM — upang ang mga manggagawa ay makadalo bago magsimula ang trabaho ng araw. Pormal na ibinigay ni Papa Sixtus V ang pribilehiyo ng pre-dawn Advent Mass sa Pilipinas noong 1587. Ang pattern ng nobena (siyam na araw, kahalintulad sa siyam na buwan ng pagbubuntis ni Maria kay Kristo) ay nakapanahan sa devotion, at lumitaw ang popular na tradisyon na ang pagkumpleto sa lahat ng siyam na Misa — nang walang nakaligtaan — ay nagkakamit ng isang espesyal na intensyon mula sa Batang Kristo. Ngayon, ang Simbang Gabi ay nananatiling pinakamamahal na Filipino Catholic Christmas tradition, ginagawa sa buong Pilipinas at sa pandaigdigang Filipino diaspora. Sa Estados Unidos, ang USCCB ay nagbigay ng pormal na liturgical recognition sa Simbang Gabi noong 1989; ang mga Misa ay ipinagdiriwang tuwing gabi sa mga Filipino-American na parokya mula Disyembre 15-23.",
+    instructions:
+      "Dumalo sa Banal na Misa sa bawat isa sa siyam na magkakasunod na araw, mula Disyembre 16 hanggang Disyembre 24. Sa Pilipinas, ang mga Misa ay ipinagdiriwang bago ang madaling-araw (tradisyonal na 4:00 AM); sa Filipino-American diaspora, ang mga Misa sa gabi sa Disyembre 15-23 (anticipated, na tumutupad sa parehong siyam-na-araw na nobena) ang pamantayan. Ang pattern: (1) Dumating sa parish church sa oras para sa Misa (madalas itong nangangahulugang gumising sa 3:00 AM sa Pilipinas, naglalakad sa madilim na kalye papunta sa parokya); (2) Tumanggap ng mga Sakramento — ang Confession sa panahon ng Advent ay bahagi ng paghahanda; (3) Pagkatapos ng Misa, magbahagi ng samahan at tradisyonal na Filipino Christmas foods (bibingka, puto bumbong, salabat) kasama ng parish community; (4) Dalhin ang intensyon ng araw nang tahimik sa buong umaga. Maraming Filipino ang nakikipag-sapi sa pananalangin para sa isang tiyak na intensyon sa lahat ng siyam na Misa, na may tradisyonal na paniniwala na ang pagkumpleto ng buong nobena ay nagkakamit ng isang espesyal na biyaya mula sa Batang Kristo. Para sa Filipino-American na mga pamilya, ang Simbang Gabi ay madalas ang pinaka-mahalagang catechetical link sa tinubuang bayan — natututunan ng mga bata ang mga rhythm, foods, at panalangin ng Filipino Catholic culture sa pamamagitan ng pagdalo kasama ng mga magulang at lolo't lola.",
+    patronSaint: null,
+    feastDay: "Disyembre 16-24 (siyam na araw bago ang Pasko)",
+    source: "Sixtus V's 1587 papal permission for Philippine pre-dawn Advent Mass + USCCB 1989 liturgical recognition + CBCP Tagalog liturgical materials. Retrieved 2026-05-14.",
+    reviewedAt: new Date("2026-05-14"),
+  },
 ];

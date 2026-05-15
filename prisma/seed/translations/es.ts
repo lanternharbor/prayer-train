@@ -83,4 +83,92 @@ export const esTranslations: PrayerTranslationSeed[] = [
       "Traditional Spanish Catholic devotional text of the Memorare (Acordaos), as published in the Latin American breviary and major Spanish-language prayer books. Historical attribution to Fr. Claude Bernard verified against the Catholic Encyclopedia entry and the 19th-century printed editions of his prayer leaflets. Retrieved 2026-05-14.",
     reviewedAt: new Date("2026-05-14"),
   },
+
+  // ─── Round 2: 6 more prayers from PR #71 ────────────────────
+  {
+    prayerSlug: "novena-st-jude",
+    name: "Novena a San Judas Tadeo",
+    description:
+      "San Judas Tadeo, llamado el Apóstol de la Esperanza, fue uno de los Doce y pariente del Señor, tradicionalmente considerado hermano de Santiago el Menor y primo de Jesús. Es nombrado en los Evangelios como uno de los apóstoles (Lucas 6:16) y es el autor de la breve Epístola de Judas que cierra la sección de cartas católicas del Nuevo Testamento. Durante siglos, la devoción popular católica ha invocado a San Judas como patrono de las causas desesperadas y de los casos imposibles. Las razones que ofrece la tradición son prácticas: porque su nombre (Judas) se confundía fácilmente con Judas Iscariote, el traidor, su intercesión fue evitada por los cristianos ordinarios durante siglos — y así, dice el dicho, anhela ayudar a quien acude a él en verdadera necesidad. La devoción moderna a San Judas Tadeo fue popularizada en los Estados Unidos por los padres claretianos, quienes construyeron el Santuario Nacional de San Judas en Chicago en 1929 — en plena Gran Depresión — y el santuario sigue siendo uno de los sitios de peregrinación católica más visitados de Norteamérica. La devoción está fuertemente asociada con la práctica de publicar agradecimientos («Gracias, San Judas, por las oraciones respondidas») en los avisos clasificados de los periódicos, una costumbre que comenzó en la cultura católica estadounidense de mediados del siglo XX. Esta novena es apropiada para enfermedad con pronóstico difícil, colapso económico, alejamiento familiar que parece sin remedio, infertilidad y cualquier situación que una persona experimenta como «más allá de toda esperanza».",
+    instructions:
+      "Reza una vez al día durante nueve días consecutivos. La estructura tradicional: comienza con la Señal de la Cruz; reza el texto de la novena a San Judas; concluye con un Padrenuestro, un Avemaría y un Gloria; nombra tu intención específica en silencio o en voz alta. Muchos católicos añaden tres Padrenuestros, Avemarías y Glorias adicionales en honor a la Santísima Trinidad al cierre de la oración de cada día. La novena puede rezarse en cualquier época del año, pero es especialmente apropiada en los nueve días previos a la fiesta de San Judas (28 de octubre, compartida con San Simón el Zelote) o cuando alguien enfrenta una situación que se siente «imposible». Una práctica complementaria tradicional es comprometerse, cuando la oración es escuchada, a agradecer públicamente a San Judas. Si se omite un día de la novena, el consejo tradicional es comenzar de nuevo desde el día uno. La disposición de la oración importa: San Judas no es una máquina expendedora. La novena se reza en fe y abandono.",
+    patronSaint: "San Judas Tadeo",
+    feastDay: "28 de octubre",
+    source: "USCCB Spanish + Claretian National Shrine of St. Jude (Chicago, 1929). Retrieved 2026-05-14.",
+    reviewedAt: new Date("2026-05-14"),
+  },
+  {
+    prayerSlug: "novena-divine-mercy",
+    name: "Novena a la Divina Misericordia",
+    description:
+      "La Novena a la Divina Misericordia fue entregada por Jesús a Santa María Faustina Kowalska, religiosa polaca, en una serie de revelaciones recogidas en su Diario: La Divina Misericordia en mi alma. Los escritos místicos de Faustina, suprimidos por un tiempo después de su muerte en 1938, fueron reivindicados por el Papa San Juan Pablo II — él mismo polaco y compatriota — quien la canonizó el 30 de abril de 2000 y estableció el Domingo de la Divina Misericordia (segundo domingo de Pascua) como fiesta para toda la Iglesia universal. La novena comienza el Viernes Santo y concluye en la vigilia del Domingo de la Divina Misericordia. Cada uno de los nueve días, Jesús instruyó a Faustina, trae una categoría diferente de almas ante el trono de la misericordia: Día 1, toda la humanidad; Día 2, sacerdotes y religiosos; Día 3, almas devotas y fieles; Día 4, los que no creen; Día 5, las almas de los hermanos separados; Día 6, los humildes, sencillos y los niños; Día 7, las almas que veneran la Divina Misericordia; Día 8, las almas del purgatorio; Día 9, las almas tibias. El hogar espiritual de la novena es el Santuario de la Divina Misericordia en Łagiewniki, Cracovia.",
+    instructions:
+      "Reza una vez al día durante nueve días consecutivos, tradicionalmente comenzando el Viernes Santo. Cada día tiene una intención única y una invocación inicial única que Jesús dictó a Santa Faustina; después de la apertura del día, la oración concluye con la Coronilla de la Divina Misericordia. La estructura tradicional de cada día: (1) Lee la intención específica del día; (2) Reza la oración inicial que Jesús dio a Faustina; (3) Reza la Coronilla entera; (4) Concluye con una intención personal. La novena completa toma aproximadamente quince minutos por día. También puede rezarse en cualquier época del año para una intención privada.",
+    patronSaint: "Santa Faustina Kowalska",
+    feastDay: "Domingo de la Divina Misericordia",
+    source: "Diary: Divine Mercy in My Soul (St. Faustina) + Marian Fathers (Stockbridge, MA) Spanish texts. Retrieved 2026-05-14.",
+    reviewedAt: new Date("2026-05-14"),
+  },
+  {
+    prayerSlug: "novena-our-lady-perpetual-help",
+    name: "Novena a Nuestra Señora del Perpetuo Socorro",
+    description:
+      "Nuestra Señora del Perpetuo Socorro es uno de los títulos marianos más queridos en la Iglesia Católica. La devoción se centra en un icono bizantino del siglo XV — escrito, en la tradición iconográfica, sobre madera de ciprés y mostrando al Niño Jesús sostenido en los brazos de María mientras los arcángeles Miguel y Gabriel se acercan, cada uno portando instrumentos de la Pasión (la cruz, la lanza, la esponja). El Niño Jesús vuelve su rostro hacia su Madre con aparente temor; una sandalia cuelga suelta de su pie, un detalle tradicionalmente leído como el Niño recoiling ante la Pasión anunciada. El icono llegó a Roma en 1499 y fue venerado durante siglos antes de desaparecer durante las supresiones napoleónicas; fue redescubierto en 1862 y entregado por el Papa Pío IX a los padres redentoristas en 1866 con el encargo: «Hacedla conocida en todo el mundo». La novena a Nuestra Señora del Perpetuo Socorro — compuesta y popularizada por los redentoristas — es una de las devociones marianas más rezadas en la Iglesia moderna.",
+    instructions:
+      "Reza una vez al día durante nueve días consecutivos. La novena redentorista tradicionalmente acompaña la oración de cada día con el canto del himno «Oh Madre del Perpetuo Socorro» — muchas parroquias todavía celebran servicios semanales de novena al Perpetuo Socorro los miércoles. La estructura tradicional: (1) Señal de la Cruz; (2) Reza la oración de la novena; (3) Concluye con tres Avemarías y una Salve; (4) Nombra tu intención. La novena es apropiada en los días previos a la Fiesta (27 de junio), pero puede rezarse en cualquier momento. Especialmente recomendada para madres que rezan por sus hijos y para quienes cuidan a los enfermos.",
+    patronSaint: "Nuestra Señora del Perpetuo Socorro",
+    feastDay: "27 de junio",
+    source: "Redemptorist Spanish-language tradition + Pius IX's 1866 entrustment. Retrieved 2026-05-14.",
+    reviewedAt: new Date("2026-05-14"),
+  },
+  {
+    prayerSlug: "litany-sacred-heart",
+    name: "Letanías del Sagrado Corazón",
+    description:
+      "Las Letanías del Sagrado Corazón de Jesús son una de las seis letanías aprobadas por la Santa Sede para el uso litúrgico público en el Rito Latino. Compuestas en 1718 por sor Juana Magdalena Joly de la Orden de la Visitación en Dijon, las letanías fueron refinadas y amplificadas durante el siglo siguiente. El Papa León XIII dio a las letanías la aprobación formal para uso litúrgico público el 2 de abril de 1899 — el mismo año en que consagró toda la raza humana al Sagrado Corazón en su encíclica Annum Sacrum. Las letanías están estructuradas como treinta y tres invocaciones al Corazón de Cristo bajo distintos títulos — correspondientes a los treinta y tres años de la vida terrena de Cristo. A cada invocación se le da la respuesta «Ten piedad de nosotros». Las letanías son una de las devociones principales del Primer Viernes y se rezan tradicionalmente durante el mes de junio.",
+    instructions:
+      "Las letanías se rezan responsorialmente. Un líder pronuncia cada invocación y la compañía reunida responde «Ten piedad de nosotros». Las invocaciones iniciales utilizan el patrón del Kyrie y la invocación trinitaria. Siguen las treinta y tres invocaciones al Corazón de Jesús. Las letanías concluyen con el Cordero de Dios y una oración colecta al Sagrado Corazón. La duración total es de aproximadamente diez a quince minutos. Apropiadamente rezadas: en los Primeros Viernes; durante el mes de junio; durante la Novena al Sagrado Corazón; al final de una Hora Santa.",
+    patronSaint: "Sagrado Corazón de Jesús",
+    feastDay: "Viernes después del Corpus Christi",
+    source: "Annum Sacrum (Leo XIII, 1899) + USCCB Spanish. Retrieved 2026-05-14.",
+    reviewedAt: new Date("2026-05-14"),
+  },
+  {
+    prayerSlug: "litany-blessed-virgin",
+    name: "Letanías de la Santísima Virgen María (Letanías Lauretanas)",
+    description:
+      "Las Letanías de la Santísima Virgen María — conocidas tradicionalmente como Letanías Lauretanas — son las letanías marianas más antiguas y queridas de la Iglesia Latina. Las letanías toman su nombre común de la Santa Casa de Loreto en las Marcas italianas. El Papa Sixto V aprobó formalmente las letanías para uso litúrgico y devocional en 1587. A lo largo de los siglos, los papas sucesivos han añadido invocaciones: Pío VII añadió «Auxilio de los Cristianos» en 1815; Pío IX añadió «Reina concebida sin pecado original» después de 1854; Pío XII añadió «Reina asunta al cielo» después de 1950; San Juan Pablo II añadió «Madre de la Iglesia» en 1980 y «Reina de las Familias» en 1995. Más recientemente, el Papa Francisco añadió «Madre de la Misericordia», «Madre de la Esperanza» y «Consuelo de los Migrantes» en 2020. Los títulos acumulados forman un retrato del lugar de María en la economía de la salvación.",
+    instructions:
+      "Las letanías se rezan responsorialmente. Un líder pronuncia cada título de María y la compañía reunida responde «Ruega por nosotros». Las letanías comienzan con el patrón del Kyrie y la invocación trinitaria; el cuerpo de las letanías es la larga secuencia de títulos marianos; las letanías se cierran con tres invocaciones al Cordero de Dios y una oración colecta a la Santísima Virgen. Las Letanías Lauretanas se rezan tradicionalmente después del Santo Rosario; durante los meses marianos de mayo y octubre; al final de la novena mariana previa a las solemnidades marianas; en momentos de consagración familiar a María.",
+    patronSaint: "Santísima Virgen María",
+    feastDay: null,
+    source: "Sixtus V's 1587 approval + papal additions through Francis 2020 + USCCB Spanish. Retrieved 2026-05-14.",
+    reviewedAt: new Date("2026-05-14"),
+  },
+  {
+    prayerSlug: "prayer-conversion",
+    name: "Oración por la Conversión de un Ser Querido",
+    description:
+      "La oración católica por la conversión de un ser querido está arraigada en uno de los grandes testimonios pastorales de la historia cristiana: la larga y fiel oración de Santa Mónica por su hijo San Agustín. Mónica rezó por la conversión de su hijo a través de años de su persecución de la filosofía maniquea, a través de sus propias lágrimas y el consejo que recibió de San Ambrosio de Milán («No es posible que perezca el hijo de tantas lágrimas»). Agustín fue bautizado en 387 a la edad de treinta y tres años; Mónica murió poco después en Ostia, habiendo vivido para ver lo que había pedido. Agustín registró su perseverancia en sus Confesiones (Libro IX). El testimonio pastoral que Mónica encarna no es una garantía de resultado — la conversión de Agustín ocurrió en el tiempo de Dios, no en el de Mónica — sino una postura de fidelidad inquebrantable: que la oración del creyente por un ser querido es en sí misma una gracia, una participación en el propio deseo de Dios por esa alma.",
+    instructions:
+      "Reza diariamente, idealmente a la misma hora y en la misma postura (de rodillas, ante un crucifijo o una imagen del Sagrado Corazón). Nombra a la persona en voz alta en la oración donde el texto dice «(nombre)». Después de la oración, dedica un minuto de silencio a sostenerla ante el Sagrado Corazón. Muchos católicos combinan esta oración con: (1) el ofrecimiento diario de pequeños sacrificios por la intención; (2) una intención regular de Misa por la persona, especialmente el día de la fiesta de Santa Mónica (27 de agosto) o el día de la fiesta de San Agustín (28 de agosto); (3) la Coronilla de la Divina Misericordia a las 3:00 PM.",
+    patronSaint: "Santa Mónica",
+    feastDay: "27 de agosto",
+    source: "Augustine's Confessions Book IX + USCCB Spanish pastoral resources. Retrieved 2026-05-14.",
+    reviewedAt: new Date("2026-05-14"),
+  },
+
+  // ─── Locale-anchored devotion (Spanish) ────────────────────
+  {
+    prayerSlug: "novena-guadalupe",
+    name: "Novena a Nuestra Señora de Guadalupe",
+    description:
+      "Nuestra Señora de Guadalupe es la devoción mariana central del mundo católico de habla hispana y una de las apariciones marianas más poderosas en la historia de la Iglesia. El 9 de diciembre de 1531 — diez años después de la conquista española de México, en un momento de profundo trastorno cultural y espiritual — la Santísima Virgen María se apareció en el cerro del Tepeyac a San Juan Diego Cuauhtlatoatzin, un campesino nahua recién convertido. Hablando en su náhuatl nativo, María se identificó como «la perfecta siempre Virgen Santa María, Madre del verdaderísimo Dios» y pidió que se construyera una iglesia en el cerro. Después de que el obispo local, Juan de Zumárraga, solicitara una señal, María instruyó a Juan Diego el 12 de diciembre a recoger rosas del cerro helado y llevarlas en su tilma al obispo. Cuando Juan Diego abrió la tilma ante el obispo, las rosas cayeron y apareció milagrosamente una imagen de María impresa en la tela — una joven mujer embarazada con vestimenta indígena, vistiendo el cinturón de maternidad de costumbre nahua, rodeada de rayos solares y de pie sobre una luna creciente. Esta es la imagen preservada hasta el día de hoy en la Basílica de Nuestra Señora de Guadalupe en la Ciudad de México, uno de los santuarios católicos más visitados del mundo. La narrativa — conocida como el Nican Mopohua, registrada en náhuatl poco después de los eventos — ha sido estudiada por historiadores, científicos y peregrinos durante casi cinco siglos. El Papa San Juan Pablo II canonizó a Juan Diego en 2002 en la propia Basílica, convirtiéndolo en la primera canonización de un indígena americano. María es honrada como Emperatriz de las Américas, Patrona de los no nacidos, y la Estrella de la Nueva Evangelización.",
+    instructions:
+      "Reza una vez al día durante nueve días consecutivos. La novena se reza tradicionalmente en los nueve días previos a la Fiesta de Nuestra Señora de Guadalupe (12 de diciembre), comenzando el 3 de diciembre. Las Mañanitas — la tradicional serenata pre-amanecer con canto y oración — se cantan en parroquias de toda Latinoamérica y de la comunidad católica hispana de los EE. UU. la noche del 11 de diciembre hasta la mañana del 12 de diciembre. La estructura de la novena: (1) Señal de la Cruz; (2) Lee la reflexión breve del día del Nican Mopohua; (3) Reza el texto de la novena; (4) Reza tres Avemarías; (5) Nombra tu intención. Muchas familias se reúnen alrededor de una imagen doméstica de Nuestra Señora de Guadalupe (a menudo colocada en un pequeño altar doméstico). La novena es apropiada para el embarazo y la protección de los niños no nacidos (María se muestra embarazada en la tilma); la conversión de miembros de la familia; protección de inmigrantes y desplazados; sanación de heridas culturales o familiares; y cualquier momento de crisis personal o comunitaria. La Peregrinación a la Basílica de Guadalupe en la Ciudad de México, especialmente el 12 de diciembre, atrae a millones de peregrinos anualmente.",
+    patronSaint: "Nuestra Señora de Guadalupe, Emperatriz de las Américas",
+    feastDay: "12 de diciembre",
+    source: "Nican Mopohua + USCCB Spanish + Basílica de Guadalupe Ciudad de México devotional sources. Retrieved 2026-05-14.",
+    reviewedAt: new Date("2026-05-14"),
+  },
 ];

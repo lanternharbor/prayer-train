@@ -153,7 +153,13 @@ export default async function RootLayout({
             See providers.tsx + locale-context.tsx for the full setup. */}
         <Providers>
           <LocaleProvider value={locale}>
-            <Header locale={locale} nav={dict.nav} common={dict.common} />
+            <Header
+              locale={locale}
+              nav={dict.nav}
+              common={dict.common}
+              localeSwitcher={dict.localeSwitcher}
+              primaryNavLabel={dict.nav.primaryNavLabel}
+            />
             <main id="main" className="flex-1">
               {children}
             </main>

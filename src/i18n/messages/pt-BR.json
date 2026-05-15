@@ -24,7 +24,10 @@
     "bySituation": "Orações por situação",
     "ourStory": "Nossa história",
     "createTrain": "Criar um PrayerTrain",
-    "language": "Idioma"
+    "language": "Idioma",
+    "primaryNavLabel": "Navegação principal",
+    "openMenu": "Abrir menu",
+    "closeMenu": "Fechar menu"
   },
   "home": {
     "metadataTitle": "PrayerTrain — Oração organizada para quem precisa",

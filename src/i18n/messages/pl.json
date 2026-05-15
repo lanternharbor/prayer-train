@@ -24,7 +24,10 @@
     "bySituation": "Modlitwy według sytuacji",
     "ourStory": "Nasza historia",
     "createTrain": "Załóż PrayerTrain",
-    "language": "Język"
+    "language": "Język",
+    "primaryNavLabel": "Nawigacja główna",
+    "openMenu": "Otwórz menu",
+    "closeMenu": "Zamknij menu"
   },
   "home": {
     "metadataTitle": "PrayerTrain — Zorganizowana modlitwa za potrzebujących",

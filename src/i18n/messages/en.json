@@ -24,7 +24,10 @@
     "bySituation": "Prayers by situation",
     "ourStory": "Our Story",
     "createTrain": "Start a PrayerTrain",
-    "language": "Language"
+    "language": "Language",
+    "primaryNavLabel": "Primary navigation",
+    "openMenu": "Open menu",
+    "closeMenu": "Close menu"
   },
   "home": {
     "metadataTitle": "PrayerTrain — Organized Prayer for Those in Need",

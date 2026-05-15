@@ -7,7 +7,7 @@ import {
   getLocalizedPrayersMany,
 } from "@/lib/prayer-localization";
 import { getBaseUrl } from "@/lib/url";
-import { buildAlternates } from "@/i18n/metadata";
+import { localizedMetadata } from "@/i18n/metadata";
 import { localizedHref } from "@/i18n/links";
 import { isLocale, defaultLocale, locales } from "@/i18n/config";
 import {
@@ -82,31 +82,18 @@ export async function generateMetadata({
 
   if (!prayer) return { title: "Prayer Not Found" };
 
-  const path = `/prayers/${prayer.slug}`;
-  const baseUrl = getBaseUrl();
-  const image = prayer.imageUrl || `${baseUrl}/logo.png`;
-  const description = smartTruncate(prayer.description, 160);
-
-  return {
+  // Saint portraits (when present) override the per-locale OG share
+  // card with the prayer's own imagery (1024x1024). When no portrait
+  // is set, `localizedMetadata` falls back to the locale's auto-
+  // generated 1200x630 brand card from `[locale]/opengraph-image.tsx`.
+  return localizedMetadata({
+    locale,
+    path: `/prayers/${prayer.slug}`,
     title: prayer.name,
-    description,
-    alternates: buildAlternates({ locale, path }),
-    openGraph: {
-      title: prayer.name,
-      description,
-      url: `${baseUrl}${localizedHref(locale, path)}`,
-      type: "article",
-      siteName: "PrayerTrain",
-      locale,
-      images: [{ url: image, width: 1024, height: 1024, alt: prayer.name }],
-    },
-    twitter: {
-      card: "summary_large_image",
-      title: prayer.name,
-      description,
-      images: [image],
-    },
-  };
+    description: smartTruncate(prayer.description, 160),
+    ogImage: prayer.imageUrl || undefined,
+    ogType: "article",
+  });
 }
 
 export default async function PrayerDetailPage({

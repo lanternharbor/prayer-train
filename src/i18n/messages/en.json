@@ -103,6 +103,21 @@
     "difficultyIntermediate": "Intermediate",
     "difficultyAdvanced": "Advanced"
   },
+  "dashboard": {
+    "h1": "Dashboard",
+    "welcomeBack": "Welcome back",
+    "welcomeBackName": "Welcome back, {name}",
+    "ctaStartTrain": "Start a PrayerTrain",
+    "todaysPrayersHeading": "Today's Prayers",
+    "forRecipient": "For {recipientName}",
+    "viewTrain": "View train →",
+    "myTrainsHeading": "My PrayerTrains",
+    "emptyStateBody": "You haven't created any prayer trains yet.",
+    "emptyStateCTA": "Start Your First PrayerTrain",
+    "coverageFooter": "{pct}% covered · {filled}/{total} slots filled",
+    "upcomingHeading": "Upcoming Prayer Commitments",
+    "viewLink": "View"
+  },
   "prayerDetail": {
     "backToLibrary": "Prayer Library",
     "statDuration": "Duration",

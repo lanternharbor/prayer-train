@@ -17,16 +17,37 @@ import {
 import { MarkCompleteButton } from "./mark-complete-button";
 import { SignOutButton } from "./sign-out-button";
 import { SetNameCard } from "./set-name-card";
+import { getDictionary } from "@/i18n/dictionaries";
+import { t as interpolate } from "@/i18n/format";
+import { localizedMetadata } from "@/i18n/metadata";
+import { isLocale, defaultLocale } from "@/i18n/config";
 
-export const metadata: Metadata = {
-  title: "Dashboard",
-  description:
-    "View your prayer trains, today's prayer commitments, and upcoming prayer slots.",
-  alternates: { canonical: "/dashboard" },
-  robots: { index: false, follow: false },
-};
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale: rawLocale } = await params;
+  const locale = isLocale(rawLocale) ? rawLocale : defaultLocale;
+  const dict = await getDictionary(locale);
+  return localizedMetadata({
+    locale,
+    path: "/dashboard",
+    title: dict.meta.dashboardTitle,
+    description: dict.meta.dashboardDescription,
+    noindex: true,
+  });
+}
 
-export default async function DashboardPage() {
+export default async function DashboardPage({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}) {
+  const { locale: rawLocale } = await params;
+  const locale = isLocale(rawLocale) ? rawLocale : defaultLocale;
+  const dict = await getDictionary(locale);
+  const t = dict.dashboard;
   const session = await auth();
   if (!session?.user?.id) redirect("/signin");
 
@@ -76,12 +97,12 @@ export default async function DashboardPage() {
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
             <h1 className="font-heading text-3xl font-bold text-navy-800 mb-1">
-              Dashboard
+              {t.h1}
             </h1>
             <p className="text-muted-foreground">
               {session.user.name
-                ? `Welcome back, ${session.user.name}`
-                : "Welcome back"}
+                ? interpolate(t.welcomeBackName, { name: session.user.name })
+                : t.welcomeBack}
             </p>
           </div>
           <Link
@@ -89,7 +110,7 @@ export default async function DashboardPage() {
             className="inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-gold-400 text-navy-900 font-semibold rounded-lg hover:bg-gold-300 transition-colors text-sm self-start sm:self-auto"
           >
             <Plus className="w-4 h-4" />
-            Start a PrayerTrain
+            {t.ctaStartTrain}
           </Link>
         </div>
         <div className="mt-3">
@@ -108,7 +129,7 @@ export default async function DashboardPage() {
         <div className="mb-10">
           <h2 className="font-heading text-xl font-semibold text-navy-800 mb-4 flex items-center gap-2">
             <Heart className="w-5 h-5 text-gold-500" />
-            Today&apos;s Prayers
+            {t.todaysPrayersHeading}
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {todaySlots.map((slot) => (
@@ -126,7 +147,7 @@ export default async function DashboardPage() {
                       {slot.prayerType.name}
                     </p>
                     <p className="text-xs text-muted-foreground">
-                      For {slot.train.recipientName}
+                      {interpolate(t.forRecipient, { recipientName: slot.train.recipientName })}
                     </p>
                   </div>
                   {slot.status === "COMPLETED" ? (
@@ -140,7 +161,7 @@ export default async function DashboardPage() {
                     href={`/p/${slot.train.slug}`}
                     className="text-xs text-gold-700 hover:text-gold-800"
                   >
-                    View train &rarr;
+                    {t.viewTrain}
                   </Link>
                   {slot.status === "CLAIMED" && (
                     <MarkCompleteButton slotId={slot.id} />
@@ -156,7 +177,7 @@ export default async function DashboardPage() {
       <div className="mb-10">
         <h2 className="font-heading text-xl font-semibold text-navy-800 mb-4 flex items-center gap-2">
           <CalendarDays className="w-5 h-5 text-gold-500" />
-          My PrayerTrains
+          {t.myTrainsHeading}
         </h2>
         {organizedTrains.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -179,10 +200,10 @@ export default async function DashboardPage() {
                   <div className="flex items-start justify-between mb-2">
                     <div>
                       <h3 className="font-heading text-lg font-semibold text-navy-800 group-hover:text-navy-600 transition-colors">
-                        Prayers for {train.recipientName}
+                        {interpolate(dict.publicTrain.h1PrayersFor, { recipientName: train.recipientName })}
                       </h3>
                       <p className="text-xs text-muted-foreground">
-                        {formatSituation(train.situation)} &bull;{" "}
+                        {dict.situationLabels[train.situation] ?? formatSituation(train.situation)} &bull;{" "}
                         {formatDate(train.startDate)} &mdash;{" "}
                         {formatDate(train.endDate)}
                       </p>
@@ -194,7 +215,13 @@ export default async function DashboardPage() {
                           : "bg-gray-100 text-gray-600"
                       }`}
                     >
-                      {train.status}
+                      {train.status === "ACTIVE"
+                        ? dict.publicTrain.statusActive
+                        : train.status === "PAUSED"
+                        ? dict.publicTrain.statusPaused
+                        : train.status === "COMPLETED"
+                        ? dict.publicTrain.statusCompleted
+                        : dict.publicTrain.statusCancelled}
                     </span>
                   </div>
                   <div className="w-full h-2 bg-cream-200 rounded-full overflow-hidden mt-3">
@@ -204,8 +231,11 @@ export default async function DashboardPage() {
                     />
                   </div>
                   <p className="text-xs text-muted-foreground mt-1.5">
-                    {fill}% covered &bull; {claimed + completed}/{total} slots
-                    filled
+                    {interpolate(t.coverageFooter, {
+                      pct: fill,
+                      filled: claimed + completed,
+                      total,
+                    })}
                   </p>
                 </Link>
               );
@@ -215,14 +245,14 @@ export default async function DashboardPage() {
           <div className="prayer-card text-center py-10">
             <BookOpen className="w-10 h-10 text-muted-foreground/30 mx-auto mb-3" />
             <p className="text-muted-foreground mb-4">
-              You haven&apos;t created any prayer trains yet.
+              {t.emptyStateBody}
             </p>
             <Link
               href="/create"
               className="inline-flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground text-sm font-medium rounded-lg hover:bg-navy-700 transition-colors"
             >
               <Plus className="w-4 h-4" />
-              Start Your First PrayerTrain
+              {t.emptyStateCTA}
             </Link>
           </div>
         )}
@@ -233,7 +263,7 @@ export default async function DashboardPage() {
         <div>
           <h2 className="font-heading text-xl font-semibold text-navy-800 mb-4 flex items-center gap-2">
             <Users className="w-5 h-5 text-gold-500" />
-            Upcoming Prayer Commitments
+            {t.upcomingHeading}
           </h2>
           <div className="prayer-card">
             <div className="divide-y divide-border">
@@ -247,7 +277,7 @@ export default async function DashboardPage() {
                       {slot.prayerType.name}
                     </p>
                     <p className="text-xs text-muted-foreground">
-                      For {slot.train.recipientName} &bull;{" "}
+                      {interpolate(t.forRecipient, { recipientName: slot.train.recipientName })} &bull;{" "}
                       {formatDate(new Date(slot.date))}
                     </p>
                   </div>
@@ -255,7 +285,7 @@ export default async function DashboardPage() {
                     href={`/p/${slot.train.slug}`}
                     className="text-xs text-gold-700 hover:text-gold-800 flex items-center gap-1"
                   >
-                    View
+                    {t.viewLink}
                     <ArrowRight className="w-3 h-3" />
                   </Link>
                 </div>

@@ -457,6 +457,36 @@
     "verifyBody": "A sign-in link has been sent to your email address. Click the link to complete your sign in.",
     "verifyExpiry": "The link will expire in 24 hours. If you don't see it, check your spam folder."
   },
+  "guestbook": {
+    "heading": "Encouragement Wall",
+    "nameLabel": "Your name",
+    "namePlaceholder": "Your name",
+    "messageLabel": "Message of encouragement",
+    "messagePlaceholder": "Leave a message of encouragement…",
+    "submitButton": "Post",
+    "emptyState": "Be the first to leave an encouraging message!"
+  },
+  "addWarrior": {
+    "triggerButton": "Add yourself as a prayer warrior",
+    "modalTitle": "Add yourself as a prayer warrior",
+    "closeAria": "Close prayer-warrior dialog",
+    "pledgeBody": "Pledge to pray for {recipientName}. There's no specific time or commitment — pray however and whenever you can.",
+    "nameLabel": "Your name",
+    "namePlaceholder": "First & last name",
+    "emailLabel": "Email",
+    "emailPlaceholder": "you@example.com",
+    "emailHelp": "We'll send a confirmation now and a closing note when the prayer train ends. No daily reminders.",
+    "noteLabel": "A short prayer or note",
+    "noteOptional": "(optional)",
+    "notePlaceholder": "I'm praying that…",
+    "pledgingLoading": "Pledging…",
+    "submitButton": "I'll pray",
+    "successTitle": "Thank you, {name}.",
+    "successPraying": "You're praying for {recipientName}.",
+    "successEmail": "We've sent a confirmation to {email}. When the prayer train ends, we'll send a closing note with the full spiritual bouquet.",
+    "successDone": "Done",
+    "errorFallback": "Something went wrong. Please try again."
+  },
   "shareButton": {
     "heading": "Share this PrayerTrain",
     "description": "Invite friends, family, and your parish to sign up for prayer slots.",

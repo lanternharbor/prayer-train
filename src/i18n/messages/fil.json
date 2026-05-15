@@ -457,6 +457,36 @@
     "verifyBody": "Naipadala na ang sign-in link sa iyong email address. I-click ang link upang kumpletuhin ang pag-sign in.",
     "verifyExpiry": "Ang link ay mag-e-expire sa loob ng 24 na oras. Kung hindi mo ito nakita, tingnan ang spam folder mo."
   },
+  "guestbook": {
+    "heading": "Pader ng paghihikayat",
+    "nameLabel": "Iyong pangalan",
+    "namePlaceholder": "Iyong pangalan",
+    "messageLabel": "Mensahe ng paghihikayat",
+    "messagePlaceholder": "Mag-iwan ng mensahe ng paghihikayat…",
+    "submitButton": "I-post",
+    "emptyState": "Maging una na mag-iwan ng nakapagpapasiglang mensahe!"
+  },
+  "addWarrior": {
+    "triggerButton": "Sumali bilang prayer warrior",
+    "modalTitle": "Sumali bilang prayer warrior",
+    "closeAria": "Isara ang prayer-warrior dialog",
+    "pledgeBody": "Mangako kayong manalangin para kay {recipientName}. Walang partikular na oras o pangako — manalangin sa anumang paraan at kailanman ninyong kaya.",
+    "nameLabel": "Iyong pangalan",
+    "namePlaceholder": "Buong pangalan",
+    "emailLabel": "Email",
+    "emailPlaceholder": "ikaw@halimbawa.com",
+    "emailHelp": "Magpapadala kami ng kumpirmasyon ngayon at isang closing note kapag natapos ang prayer train. Walang pang-araw-araw na paalala.",
+    "noteLabel": "Isang maikling panalangin o tala",
+    "noteOptional": "(opsyonal)",
+    "notePlaceholder": "Nagdarasal ako na…",
+    "pledgingLoading": "Nangangako…",
+    "submitButton": "Magdarasal ako",
+    "successTitle": "Salamat, {name}.",
+    "successPraying": "Nagdarasal ka para kay {recipientName}.",
+    "successEmail": "Nagpadala kami ng kumpirmasyon sa {email}. Kapag natapos ang prayer train, magpapadala kami ng closing note kasama ang buong spiritual bouquet.",
+    "successDone": "Tapos na",
+    "errorFallback": "May nangyaring mali. Subukan muli."
+  },
   "shareButton": {
     "heading": "Ibahagi ang PrayerTrain na ito",
     "description": "Imbitahan ang mga kaibigan, pamilya, at inyong parokya na mag-sign up sa mga prayer slot.",

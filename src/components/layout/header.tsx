@@ -43,16 +43,27 @@ type Props = {
   locale: Locale;
   nav: Dictionary["nav"];
   common: Dictionary["common"];
+  localeSwitcher: Dictionary["localeSwitcher"];
+  /** Localized aria-label for the <nav> landmark. Resolved server-side
+   *  from dict so screen-reader users in non-English locales hear the
+   *  navigation label in their language. */
+  primaryNavLabel: string;
 };
 
-export function Header({ locale, nav, common }: Props) {
+export function Header({
+  locale,
+  nav,
+  common,
+  localeSwitcher,
+  primaryNavLabel,
+}: Props) {
   const { status } = useSession();
   const isSignedIn = status === "authenticated";
 
   return (
     <header className="sticky top-0 z-50 bg-card/95 backdrop-blur border-b border-border">
       <nav
-        aria-label="Primary navigation"
+        aria-label={primaryNavLabel}
         className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8"
       >
         <div className="flex items-center justify-between h-16">
@@ -86,7 +97,7 @@ export function Header({ locale, nav, common }: Props) {
                 >
                   {common.dashboard}
                 </Link>
-                <LocaleSwitcher currentLocale={locale} />
+                <LocaleSwitcher currentLocale={locale} label={localeSwitcher.label} />
                 <Link
                   href="/create"
                   className="inline-flex items-center px-4 py-2 text-sm font-medium text-primary-foreground bg-primary rounded-lg hover:bg-navy-700 transition-colors"
@@ -102,7 +113,7 @@ export function Header({ locale, nav, common }: Props) {
                 >
                   {common.signIn}
                 </Link>
-                <LocaleSwitcher currentLocale={locale} />
+                <LocaleSwitcher currentLocale={locale} label={localeSwitcher.label} />
                 <Link
                   href="/create"
                   className="inline-flex items-center px-4 py-2 text-sm font-medium text-primary-foreground bg-primary rounded-lg hover:bg-navy-700 transition-colors"
@@ -114,7 +125,13 @@ export function Header({ locale, nav, common }: Props) {
           </div>
 
           {/* Mobile Nav Toggle */}
-          <MobileNav isSignedIn={isSignedIn} locale={locale} nav={nav} common={common} />
+          <MobileNav
+            isSignedIn={isSignedIn}
+            locale={locale}
+            nav={nav}
+            common={common}
+            localeSwitcher={localeSwitcher}
+          />
         </div>
       </nav>
     </header>

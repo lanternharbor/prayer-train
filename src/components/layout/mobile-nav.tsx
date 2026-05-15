@@ -12,9 +12,16 @@ type Props = {
   locale: Locale;
   nav: Dictionary["nav"];
   common: Dictionary["common"];
+  localeSwitcher: Dictionary["localeSwitcher"];
 };
 
-export function MobileNav({ isSignedIn, locale, nav, common }: Props) {
+export function MobileNav({
+  isSignedIn,
+  locale,
+  nav,
+  common,
+  localeSwitcher,
+}: Props) {
   const [open, setOpen] = useState(false);
 
   return (
@@ -22,7 +29,7 @@ export function MobileNav({ isSignedIn, locale, nav, common }: Props) {
       <button
         onClick={() => setOpen(!open)}
         className="p-2 text-muted-foreground hover:text-foreground"
-        aria-label={open ? "Close menu" : "Open menu"}
+        aria-label={open ? nav.closeMenu : nav.openMenu}
       >
         {open ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
       </button>
@@ -81,7 +88,7 @@ export function MobileNav({ isSignedIn, locale, nav, common }: Props) {
             )}
             {/* Locale switcher lives at the bottom of the mobile menu */}
             <div className="border-t border-border pt-3 mt-3">
-              <LocaleSwitcher currentLocale={locale} />
+              <LocaleSwitcher currentLocale={locale} label={localeSwitcher.label} />
             </div>
           </div>
         </div>

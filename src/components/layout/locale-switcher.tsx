@@ -26,7 +26,16 @@ import { localizedHref, stripLocale } from "@/i18n/links";
  *   that as cloaking-adjacent. The cookie's job is to remember an
  *   EXPLICIT choice for next time, not to override the URL.
  */
-export function LocaleSwitcher({ currentLocale }: { currentLocale: Locale }) {
+export function LocaleSwitcher({
+  currentLocale,
+  label = "Change language",
+}: {
+  currentLocale: Locale;
+  /** Localized accessibility label (also used for the sr-only chip).
+   *  Defaults to English when the parent doesn't pass one — keeps the
+   *  component standalone-renderable in tests + storybook. */
+  label?: string;
+}) {
   const pathname = usePathname();
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
@@ -54,9 +63,7 @@ export function LocaleSwitcher({ currentLocale }: { currentLocale: Locale }) {
 
   return (
     <label className="relative inline-flex items-center gap-1.5 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
-      <span className="sr-only">
-        Change language / Cambiar idioma
-      </span>
+      <span className="sr-only">{label}</span>
       <Languages
         className="w-4 h-4 shrink-0"
         aria-hidden="true"
@@ -65,7 +72,7 @@ export function LocaleSwitcher({ currentLocale }: { currentLocale: Locale }) {
         value={currentLocale}
         onChange={onChange}
         disabled={isPending}
-        aria-label="Change language"
+        aria-label={label}
         className="appearance-none bg-transparent pr-5 pl-1 py-1 text-sm font-medium focus:outline-none focus-visible:ring-2 focus-visible:ring-gold-400 rounded cursor-pointer"
       >
         {locales.map((code) => (

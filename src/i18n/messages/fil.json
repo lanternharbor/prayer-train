@@ -24,7 +24,10 @@
     "bySituation": "Mga panalangin ayon sa sitwasyon",
     "ourStory": "Ang Aming Kwento",
     "createTrain": "Magsimula ng PrayerTrain",
-    "language": "Wika"
+    "language": "Wika",
+    "primaryNavLabel": "Pangunahing nabigasyon",
+    "openMenu": "Buksan ang menu",
+    "closeMenu": "Isara ang menu"
   },
   "home": {
     "metadataTitle": "PrayerTrain — Sama-samang panalangin para sa nangangailangan",

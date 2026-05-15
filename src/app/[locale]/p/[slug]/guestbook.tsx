@@ -50,14 +50,18 @@ export type WallEntry = {
   hidden: boolean;
 };
 
+import type { Dictionary } from "@/i18n/dictionaries";
+
 export function Guestbook({
   entries,
   trainId,
   isOrganizer,
+  t,
 }: {
   entries: WallEntry[];
   trainId: string;
   isOrganizer: boolean;
+  t: Dictionary["guestbook"];
 }) {
   const [name, setName] = useState("");
   const [message, setMessage] = useState("");
@@ -80,31 +84,31 @@ export function Guestbook({
     <div>
       <h2 className="font-heading text-xl font-semibold text-navy-800 mb-4 flex items-center gap-2">
         <MessageCircle className="w-5 h-5 text-gold-500" />
-        Encouragement Wall
+        {t.heading}
       </h2>
 
       {/* Post Form */}
       <form onSubmit={handleSubmit} className="prayer-card mb-4 space-y-3">
         <label htmlFor="guestbook-name" className="sr-only">
-          Your name
+          {t.nameLabel}
         </label>
         <input
           id="guestbook-name"
           type="text"
           value={name}
           onChange={(e) => setName(e.target.value)}
-          placeholder="Your name"
+          placeholder={t.namePlaceholder}
           required
           className="w-full px-3 py-2 border border-border rounded-lg bg-cream-50 text-sm focus:outline-none focus:ring-2 focus:ring-gold-400/50 focus:border-gold-400 transition"
         />
         <label htmlFor="guestbook-message" className="sr-only">
-          Message of encouragement
+          {t.messageLabel}
         </label>
         <textarea
           id="guestbook-message"
           value={message}
           onChange={(e) => setMessage(e.target.value)}
-          placeholder="Leave a message of encouragement..."
+          placeholder={t.messagePlaceholder}
           required
           rows={2}
           className="w-full px-3 py-2 border border-border rounded-lg bg-cream-50 text-sm focus:outline-none focus:ring-2 focus:ring-gold-400/50 focus:border-gold-400 transition resize-none"
@@ -119,7 +123,7 @@ export function Guestbook({
           ) : (
             <Send className="w-3.5 h-3.5" />
           )}
-          Post
+          {t.submitButton}
         </button>
       </form>
 
@@ -138,7 +142,7 @@ export function Guestbook({
         ))}
         {entries.length === 0 && (
           <p className="text-sm text-muted-foreground text-center py-6">
-            Be the first to leave an encouraging message!
+            {t.emptyState}
           </p>
         )}
       </div>

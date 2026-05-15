@@ -559,6 +559,7 @@ export default async function PrayerTrainPage({
           <AddWarriorButton
             trainId={train.id}
             recipientName={train.recipientName}
+            t={dict.addWarrior}
           />
         </div>
       )}
@@ -622,6 +623,7 @@ export default async function PrayerTrainPage({
             )}
             trainId={train.id}
             isOrganizer={isOrganizer}
+            t={dict.guestbook}
           />
         </div>
       </div>

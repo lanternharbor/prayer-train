@@ -457,6 +457,36 @@
     "verifyBody": "Link do logowania został wysłany na twój adres e-mail. Kliknij link, aby dokończyć logowanie.",
     "verifyExpiry": "Link wygaśnie za 24 godziny. Jeśli go nie widzisz, sprawdź folder spam."
   },
+  "guestbook": {
+    "heading": "Ściana wsparcia",
+    "nameLabel": "Twoje imię",
+    "namePlaceholder": "Twoje imię",
+    "messageLabel": "Wiadomość wsparcia",
+    "messagePlaceholder": "Zostaw wiadomość wsparcia…",
+    "submitButton": "Opublikuj",
+    "emptyState": "Bądź pierwszą osobą, która zostawi wiadomość wsparcia!"
+  },
+  "addWarrior": {
+    "triggerButton": "Dołącz jako wojownik modlitwy",
+    "modalTitle": "Dołącz jako wojownik modlitwy",
+    "closeAria": "Zamknij dialog wojownika modlitwy",
+    "pledgeBody": "Zobowiąż się modlić za {recipientName}. Nie ma konkretnego czasu ani zobowiązania — módl się jak i kiedy możesz.",
+    "nameLabel": "Twoje imię",
+    "namePlaceholder": "Imię i nazwisko",
+    "emailLabel": "E-mail",
+    "emailPlaceholder": "ty@przyklad.com",
+    "emailHelp": "Wyślemy potwierdzenie teraz i notatkę zamykającą, gdy train modlitewny się zakończy. Bez codziennych przypomnień.",
+    "noteLabel": "Krótka modlitwa lub notatka",
+    "noteOptional": "(opcjonalne)",
+    "notePlaceholder": "Modlę się o to, aby…",
+    "pledgingLoading": "Zobowiązuję się…",
+    "submitButton": "Będę się modlić",
+    "successTitle": "Dziękujemy, {name}.",
+    "successPraying": "Modlisz się za {recipientName}.",
+    "successEmail": "Wysłaliśmy potwierdzenie na {email}. Gdy train modlitewny się zakończy, wyślemy notatkę zamykającą z pełnym bukietem duchowym.",
+    "successDone": "Gotowe",
+    "errorFallback": "Coś poszło nie tak. Spróbuj ponownie."
+  },
   "shareButton": {
     "heading": "Udostępnij ten PrayerTrain",
     "description": "Zaproś przyjaciół, rodzinę i swoją parafię, by zapisali się na miejsca modlitewne.",

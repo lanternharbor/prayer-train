@@ -457,6 +457,36 @@
     "verifyBody": "Um link de acesso foi enviado para o seu e-mail. Clique nele para concluir a entrada.",
     "verifyExpiry": "O link expira em 24 horas. Se não encontrar, verifique a pasta de spam."
   },
+  "guestbook": {
+    "heading": "Mural de encorajamento",
+    "nameLabel": "Seu nome",
+    "namePlaceholder": "Seu nome",
+    "messageLabel": "Mensagem de encorajamento",
+    "messagePlaceholder": "Deixe uma mensagem de encorajamento…",
+    "submitButton": "Publicar",
+    "emptyState": "Seja o primeiro a deixar uma mensagem de encorajamento!"
+  },
+  "addWarrior": {
+    "triggerButton": "Junte-se como guerreiro de oração",
+    "modalTitle": "Junte-se como guerreiro de oração",
+    "closeAria": "Fechar diálogo de guerreiro de oração",
+    "pledgeBody": "Comprometa-se a rezar por {recipientName}. Não há tempo ou compromisso específico — reze como e quando puder.",
+    "nameLabel": "Seu nome",
+    "namePlaceholder": "Nome e sobrenome",
+    "emailLabel": "E-mail",
+    "emailPlaceholder": "voce@exemplo.com",
+    "emailHelp": "Enviaremos uma confirmação agora e uma nota de encerramento quando o train de oração terminar. Sem lembretes diários.",
+    "noteLabel": "Uma oração ou nota breve",
+    "noteOptional": "(opcional)",
+    "notePlaceholder": "Estou rezando para que…",
+    "pledgingLoading": "Comprometendo…",
+    "submitButton": "Vou rezar",
+    "successTitle": "Obrigado, {name}.",
+    "successPraying": "Você está rezando por {recipientName}.",
+    "successEmail": "Enviamos uma confirmação para {email}. Quando o train de oração terminar, enviaremos uma nota de encerramento com o ramalhete espiritual completo.",
+    "successDone": "Pronto",
+    "errorFallback": "Algo deu errado. Tente novamente."
+  },
   "shareButton": {
     "heading": "Compartilhe este PrayerTrain",
     "description": "Convide amigos, família e sua paróquia para se inscreverem em horários de oração.",

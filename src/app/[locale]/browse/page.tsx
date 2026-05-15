@@ -69,6 +69,20 @@ function computeChainProgress(
   };
 }
 
+// Tiny string-template helper. The dictionary stores placeholders as
+// `{name}` / `{n}` / etc.; this resolves them at render time so the
+// translated copy still composes with runtime values (counts, names,
+// durations). Missing variables collapse to "" rather than throwing
+// so a forgotten template key doesn't crash the page.
+function fmt(
+  template: string,
+  vars: Record<string, string | number>,
+): string {
+  return template.replace(/\{(\w+)\}/g, (_, k) =>
+    vars[k] === undefined ? "" : String(vars[k]),
+  );
+}
+
 // /browse is dynamic on purpose: it lists live database state (which
 // trains/chains are public + ACTIVE right now). No ISR window; Vercel
 // CDN caches by URL automatically for short windows when responses
@@ -201,8 +215,8 @@ export default async function BrowsePage({
               type="text"
               name="q"
               defaultValue={q || ""}
-              placeholder="Search by name or intention..."
-              aria-label="Search prayer trains by name or intention"
+              placeholder={t.searchPlaceholder}
+              aria-label={t.searchAriaLabel}
               className="w-full pl-12 pr-4 py-3.5 border border-border rounded-xl bg-card text-foreground text-lg placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-gold-400/50 focus:border-gold-400 transition"
             />
           </div>
@@ -211,7 +225,7 @@ export default async function BrowsePage({
             type="submit"
             className="px-6 py-3.5 bg-primary text-primary-foreground font-medium rounded-xl hover:bg-navy-700 transition-colors text-lg"
           >
-            Search
+            {t.searchButton}
           </button>
         </div>
       </form>
@@ -226,7 +240,7 @@ export default async function BrowsePage({
               : "bg-cream-200 text-muted-foreground hover:bg-cream-300"
           }`}
         >
-          All
+          {t.filterAll}
         </Link>
         {SITUATIONS.filter((s) => s !== "OTHER").map((sit) => (
           <Link
@@ -242,7 +256,7 @@ export default async function BrowsePage({
                 : "bg-cream-200 text-muted-foreground hover:bg-cream-300"
             }`}
           >
-            {formatSituation(sit)}
+            {dict.situationLabels[sit] ?? formatSituation(sit)}
           </Link>
         ))}
       </div>
@@ -287,11 +301,12 @@ export default async function BrowsePage({
                 {/* Situation badge */}
                 <div className="flex items-center gap-2 mb-3">
                   <span className="px-2.5 py-1 rounded-full text-xs font-medium bg-navy-100 text-navy-700">
-                    {formatSituation(train.situation)}
+                    {dict.situationLabels[train.situation] ??
+                      formatSituation(train.situation)}
                   </span>
                   {daysLeft <= 7 && (
                     <span className="px-2.5 py-1 rounded-full text-xs font-medium bg-gold-100 text-gold-700">
-                      {daysLeft} days left
+                      {fmt(t.daysLeftSuffix, { n: daysLeft })}
                     </span>
                   )}
                 </div>
@@ -304,7 +319,7 @@ export default async function BrowsePage({
                     size="sm"
                   />
                   <h2 className="font-heading text-xl font-semibold text-navy-800 group-hover:text-navy-600 transition-colors">
-                    Prayers for {train.recipientName}
+                    {fmt(t.prayersForName, { name: train.recipientName })}
                   </h2>
                 </div>
                 {(train.parish || train.location) && (
@@ -339,15 +354,15 @@ export default async function BrowsePage({
                 <div className="flex items-center justify-between text-xs text-muted-foreground">
                   <span className="flex items-center gap-1">
                     <Heart className="w-3.5 h-3.5 text-gold-400" />
-                    {fill}% covered
+                    {fmt(t.fillCovered, { fill })}
                   </span>
                   {open > 0 ? (
                     <span className="flex items-center gap-1 font-medium text-green-600">
-                      {open} slots open
+                      {fmt(t.slotsOpen, { n: open })}
                     </span>
                   ) : (
                     <span className="flex items-center gap-1 font-medium text-gold-700">
-                      Fully covered
+                      {t.fullyCovered}
                     </span>
                   )}
                 </div>
@@ -366,7 +381,7 @@ export default async function BrowsePage({
                     visitors toward the train page's overflow CTA
                     instead of the dead-ended "Sign up to pray". */}
                 <div className="flex items-center gap-1.5 mt-3 text-sm font-medium text-gold-700 group-hover:text-gold-800">
-                  {open > 0 ? "Sign up to pray" : "Pray alongside"}
+                  {open > 0 ? t.signUpToPray : t.prayAlongside}
                   <ArrowRight className="w-4 h-4" />
                 </div>
               </Link>
@@ -387,14 +402,10 @@ export default async function BrowsePage({
         <div className="text-center py-20">
           <PrayingHandsIcon className="w-14 h-14 text-gold-300 mx-auto mb-4" />
           <h2 className="font-heading text-2xl font-semibold text-navy-700 mb-3">
-            {q || situation
-              ? "No prayers match your search"
-              : t.emptyTitle}
+            {q || situation ? t.searchNoResultsTitle : t.emptyTitle}
           </h2>
           <p className="text-muted-foreground mb-6 max-w-md mx-auto">
-            {q || situation
-              ? "Try a different search or clear your filters."
-              : t.emptyBody}
+            {q || situation ? t.searchNoResultsBody : t.emptyBody}
           </p>
           {!q && !situation && (
             <Link
@@ -402,7 +413,7 @@ export default async function BrowsePage({
               className="inline-flex items-center gap-2 px-6 py-3 bg-primary text-primary-foreground font-medium rounded-lg hover:bg-navy-700 transition-colors"
             >
               <Heart className="w-4 h-4" />
-              Start a PrayerTrain
+              {t.emptyCTA}
             </Link>
           )}
         </div>
@@ -433,12 +444,11 @@ export default async function BrowsePage({
               <div className="flex items-center gap-2 mb-6">
                 <Users className="w-5 h-5 text-gold-500" />
                 <h2 className="font-heading text-2xl font-semibold text-navy-800">
-                  Praying together
+                  {t.prayTogetherHeading}
                 </h2>
               </div>
               <p className="text-muted-foreground mb-6 max-w-2xl">
-                Novenas and devotions a small group is praying together —
-                join them and pray every day.
+                {t.prayTogetherBody}
               </p>
             </>
           )}
@@ -466,16 +476,18 @@ export default async function BrowsePage({
                 >
                   <div className="flex items-center gap-2 mb-3">
                     <span className="px-2.5 py-1 rounded-full text-xs font-medium bg-gold-100 text-gold-700">
-                      Pray together
+                      {t.prayTogetherBadge}
                     </span>
                     <span className="px-2.5 py-1 rounded-full text-xs font-medium bg-cream-200 text-cream-700">
-                      Day {dayInRange} of {chain.durationDays}
+                      {fmt(t.dayOfTotal, { day: dayInRange, total: chain.durationDays })}
                     </span>
                   </div>
                   <h3 className="font-heading text-xl font-semibold text-navy-800 group-hover:text-navy-600 transition-colors mb-2">
                     {titlePrefix}
                     {chain.prayerType.name}
-                    {chain.recipientName ? ` for ${chain.recipientName}` : ""}
+                    {chain.recipientName
+                      ? fmt(t.chainTitleSuffix, { name: chain.recipientName })
+                      : ""}
                   </h3>
                   <p className="text-sm text-muted-foreground leading-relaxed mb-4 line-clamp-2 flex-1">
                     {chain.intention}
@@ -489,13 +501,16 @@ export default async function BrowsePage({
                   <div className="flex items-center justify-between text-xs text-muted-foreground">
                     <span className="flex items-center gap-1">
                       <Users className="w-3.5 h-3.5 text-gold-400" />
-                      {chain.members.length}{" "}
-                      {chain.members.length === 1 ? "person" : "people"}{" "}
-                      praying
+                      {fmt(
+                        chain.members.length === 1
+                          ? t.peoplePrayingOne
+                          : t.peoplePrayingMany,
+                        { n: chain.members.length },
+                      )}
                     </span>
                   </div>
                   <div className="flex items-center gap-1.5 mt-3 text-sm font-medium text-gold-700 group-hover:text-gold-800">
-                    Pray along
+                    {t.prayAlong}
                     <ArrowRight className="w-4 h-4" />
                   </div>
                 </Link>

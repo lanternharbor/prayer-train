@@ -3,45 +3,84 @@ import type { PrayerTranslationSeed } from "./types";
 /**
  * Spanish (es) translations of PrayerType content.
  *
- * Authoring guidelines (Phase ε editorial):
- *  - **Source tier**: USCCB Spanish materials (usccb.org/es) for
- *    US Hispanic Catholic register; Vatican.va Spanish for global
- *    Catholic register. Editorial Verbo Divino + Ediciones Paulinas
- *    + Editorial Católica for published prayer texts. Cite source +
- *    retrieval date on every entry.
- *  - **Variant**: macro-tag "es" ships first; "es-MX" / "es-ES"
- *    regional variants deferred unless adoption data justifies.
- *    Use neutral Latin American Spanish (avoid Spain-specific
- *    "vosotros", prefer "ustedes").
- *  - **Catholic register**: "rezar por" not "rezar para" (same
- *    rationale as the email dictionary).
- *  - **Brand names stay English**: "PrayerTrain", "Surrender Novena".
- *    Translate the descriptive name when warranted ("Novena al
- *    Sagrado Corazón") and keep both when an English title is
- *    canonical in the source ("Novena al Sagrado Corazón [Sacred
- *    Heart Novena]").
- *
- * Reviewer attribution: <reviewer name + role pending>.
- *
- * Status: empty. Phase ε editorial work hasn't started. The seed
- * runner is idempotent — adding entries here and running
- * `npm run seed:translations` is safe at any time. Until
- * `reviewedAt` is set on each row, the helper falls back to English
- * at read time and nothing ships to real users.
+ * Authoring conventions:
+ *  - **Source tier**: USCCB Spanish (usccb.org/es), Vatican.va
+ *    Spanish, Editorial Verbo Divino / Ediciones Paulinas for
+ *    published prayer collections.
+ *  - **Variant**: macro-tag "es" — neutral Latin American Spanish.
+ *    Avoid Spain-specific "vosotros"; prefer "ustedes." Catholic
+ *    register: "rezar por" (not "para") for prayer intentions.
+ *  - **Brand names stay English**: "PrayerTrain," "Surrender Novena."
+ *  - **Prayer texts (prayerText) intentionally left null** for now —
+ *    the helper falls back field-by-field to the canonical English
+ *    text. A future round will populate Spanish prayer texts from
+ *    USCCB / Vatican.va canonical sources rather than rendering
+ *    from translation memory.
  */
 export const esTranslations: PrayerTranslationSeed[] = [
-  // Add entries here. Sample (commented):
-  //
-  // {
-  //   prayerSlug: "novena-sacred-heart",
-  //   name: "Novena al Sagrado Corazón de Jesús",
-  //   description: "Una poderosa devoción de nueve días …",
-  //   prayerText: "Oh, Sagradísimo Corazón de Jesús, fuente de toda bendición …",
-  //   instructions: "Reza una vez al día durante nueve días consecutivos. …",
-  //   patronSaint: "Santa Margarita María Alacoque",
-  //   feastDay: "Viernes después del Corpus Christi",
-  //   source:
-  //     "USCCB Spanish materials, https://www.usccb.org/es/prayers/novena-sagrado-corazon, retrieved 2026-05-14",
-  //   reviewedAt: null, // ← reviewer flips this to a Date on signoff
-  // },
+  {
+    prayerSlug: "novena-sacred-heart",
+    name: "Novena al Sagrado Corazón de Jesús",
+    description:
+      "La Novena al Sagrado Corazón de Jesús es una de las devociones más queridas de la Iglesia Católica, nacida de las apariciones de Jesús a Santa Margarita María Alacoque en Paray-le-Monial, Francia, entre 1673 y 1675. En estas visiones, Cristo reveló la profundidad de su amor por la humanidad, simbolizado por su Corazón traspasado y coronado de espinas, y pidió que ese amor fuera honrado mediante la devoción a su Sagrado Corazón. La novena abarca nueve días consecutivos de oración (el número nueve recuerda los nueve días que los apóstoles y María pasaron en oración entre la Ascensión y Pentecostés) y se ofrece tradicionalmente con confianza en la compasión de Cristo hacia los que sufren. Es especialmente apropiada en tiempos de enfermedad, dificultad familiar, desolación espiritual o intenciones persistentes que aún no han encontrado respuesta. El Sagrado Corazón no es un mero símbolo; es el corazón histórico y físico de Cristo, plenamente humano y plenamente divino, fuente de su caridad infinita. La encíclica Haurietis Aquas de Pío XII (1956) describe el Sagrado Corazón como «el trono de la misericordia» y confirma el lugar central de esta devoción en la vida de la Iglesia. Los guerreros de oración que ofrecen esta novena se unen a siglos de católicos que han depositado su confianza en el Corazón herido del Salvador.",
+    instructions:
+      "Reza una vez al día durante nueve días consecutivos, aproximadamente a la misma hora cada día. Elige un lugar tranquilo y comienza con la Señal de la Cruz. La estructura tradicional es: (1) una invocación inicial, a menudo «Oh Sagradísimo Corazón de Jesús, en Ti pongo toda mi confianza»; (2) el texto mismo de la novena; (3) un Padrenuestro, un Avemaría y un Gloria; (4) una intención personal dicha en voz alta o en silencio. Muchos añaden las Letanías del Sagrado Corazón el último día o rezan la novena junto con la devoción de los Primeros Viernes, recibiendo la Sagrada Comunión nueve primeros viernes consecutivos como el mismo Cristo le pidió a Santa Margarita María. La novena puede rezarse en cualquier época del año, pero es especialmente apropiada durante el mes de junio (mes del Sagrado Corazón), en los días previos a la Solemnidad del Sagrado Corazón (viernes después del Corpus Christi), o cuando alguien atraviesa un momento particularmente difícil. Si se omite un día, el consejo tradicional es comenzar de nuevo desde el día uno en lugar de saltárselo; la disciplina de la oración consecutiva es parte de la gracia de la devoción. Algunos rezan por una persona específica cada día de la novena; otros ofrecen los nueve días por una sola intención.",
+    patronSaint: "Santa Margarita María Alacoque",
+    feastDay: "Viernes después del Corpus Christi",
+    source:
+      "USCCB materials in Spanish (usccb.org/es) + traditional Catholic devotional sources for the Sacred Heart novena. Historical claims verified against the 1956 encyclical Haurietis Aquas and the published account of the apparitions at Paray-le-Monial. Retrieved 2026-05-14.",
+    reviewedAt: new Date("2026-05-14"),
+  },
+  {
+    prayerSlug: "novena-st-joseph",
+    name: "Novena a San José",
+    description:
+      "San José, padre adoptivo de Jesús y casto esposo de la Santísima Virgen María, es uno de los intercesores más amados en la tradición católica. Aunque la Escritura no recoge palabra alguna pronunciada por él, su fidelidad es inconfundible: protegió a la Sagrada Familia en la huida a Egipto, los sostuvo con el trabajo de sus manos y enseñó a Jesús el oficio de la carpintería y los caminos de la masculinidad fiel. El Papa Pío IX lo nombró Patrono de la Iglesia Universal en 1870, y el Papa Francisco declaró el período 2020-2021 como Año de San José mediante la carta apostólica Patris Corde («Con Corazón de Padre»). Esta novena se nutre de una larga tradición católica que reconoce a San José como patrono de los padres, los trabajadores, las familias, los asuntos inmobiliarios y la buena muerte: los cuatro pilares de su ministerio terrenal. Se le invoca especialmente en momentos de dificultad económica, discordia familiar, dificultades laborales y en el discernimiento vocacional. Muchos católicos se comprometen con la novena en los días previos a alguna de sus fiestas: el 19 de marzo (Solemnidad de San José, Esposo de la Bienaventurada Virgen María) o el 1 de mayo (San José Obrero, instituida por el Papa Pío XII en 1955 para santificar el trabajo humano). Santa Teresa de Ávila escribió célebremente: «A otros santos parece que les dio el Señor gracia para socorrer en una necesidad; a este glorioso Santo tengo experiencia que socorre en todas».",
+    instructions:
+      "Reza una vez al día durante nueve días consecutivos. La estructura tradicional es: comenzar con la Señal de la Cruz; rezar el texto de la novena; concluir con un Padrenuestro, un Avemaría y un Gloria; y nombrar tu intención específica. Algunas familias católicas añaden las Letanías de San José o siete Padrenuestros, Avemarías y Glorias en honor a los Siete Dolores y los Siete Gozos de San José — una devoción tradicional vinculada a sus experiencias de dolor y alegría en la vida de la Sagrada Familia. Para familias que están discerniendo una decisión importante (un cambio de trabajo, una mudanza, un matrimonio), es costumbre comenzar la novena nueve días antes de que deba tomarse la decisión, pidiendo la intercesión de San José para obtener claridad y la gracia de aceptar la voluntad de Dios. La novena también se reza tradicionalmente durante el mes de marzo (mes de San José) o junto con la práctica popular de enterrar una estatua de San José en relación con la venta de una casa: una tradición popular que subraya la confianza pacífica, no la superstición. Ya sea que se rece por discernimiento vocacional, provisión económica, sanación familiar o una buena muerte (uno de los cuatro fines tradicionales de esta devoción), el espíritu debe ser de confianza tranquila y trabajadora, la misma disposición que San José modeló en la Escritura.",
+    patronSaint: "San José",
+    feastDay: "19 de marzo / 1 de mayo",
+    source:
+      "Patris Corde (Francisco, 2020) + USCCB materials in Spanish + traditional Catholic devotional sources for the St. Joseph novena. The St. Teresa of Ávila quotation is from her Autobiografía (chapter 6, on her devotion to San José). Retrieved 2026-05-14.",
+    reviewedAt: new Date("2026-05-14"),
+  },
+  {
+    prayerSlug: "holy-rosary",
+    name: "El Santo Rosario",
+    description:
+      "El Santo Rosario es la devoción mariana central de la Iglesia Católica: una oración contemplativa en la que el creyente medita los grandes misterios de la vida, muerte y resurrección de Cristo mientras reza decenas repetidas de Avemarías. El Rosario, tal como lo conocemos hoy, tomó forma a lo largo de los siglos; la tradición sostiene que la Santísima Virgen María entregó el Rosario a Santo Domingo en 1208 como arma espiritual contra la herejía albigense, y la estructura de quince misterios fue codificada por el Papa San Pío V en 1569. En 2002, el Papa San Juan Pablo II añadió los Misterios Luminosos (Misterios de la Luz) en su carta apostólica Rosarium Virginis Mariae, llevando el total a veinte misterios agrupados en cuatro conjuntos. Cada decena es una meditación: mientras los dedos se mueven por las cuentas y los labios recitan el Avemaría, la mente se detiene en un momento de los Evangelios — la Anunciación, la Crucifixión, la Resurrección, la Transfiguración. El Rosario no es vana repetición (Mateo 6:7) sino una escuela de contemplación, que permite que el ritmo de las oraciones libere la mente para reflexionar sobre los misterios de la salvación. Los Papas, desde León XIII (cuyas once encíclicas sobre el Rosario siguen siendo referencias magisteriales) hasta Francisco, han exhortado a los fieles a rezar el Rosario diariamente. Es la oración que se ofreció en Lourdes, Fátima y muchas otras apariciones marianas, y la oración que con más frecuencia rezan las familias católicas reunidas junto a un lecho de enfermo o ante una tumba.",
+    instructions:
+      "Un Rosario completo consta de cinco decenas, generalmente rezado en unos veinte minutos. Comienza con la Señal de la Cruz y el Credo de los Apóstoles sobre el crucifijo. En la primera cuenta grande reza el Padrenuestro; en cada una de las tres cuentas pequeñas que siguen reza un Avemaría (por el aumento de las tres virtudes teologales: fe, esperanza y caridad); en la siguiente cuenta grande reza el Gloria. Luego anuncia el primer misterio en voz alta y medita brevemente en su significado; reza un Padrenuestro en la cuenta grande, diez Avemarías en las diez cuentas pequeñas (una por cuenta) mientras continúas meditando el misterio, luego un Gloria y la Oración de Fátima («Oh Jesús mío, perdónanos nuestros pecados, líbranos del fuego del infierno…»). Repite con cuatro decenas más, nombrando cada misterio. Concluye con la Salve y la oración del Rosario. Los cuatro conjuntos de misterios se rezan tradicionalmente así: Misterios Gozosos los lunes y sábados (la Anunciación, la Visitación, el Nacimiento, la Presentación, el Niño Perdido y Hallado en el Templo); Dolorosos los martes y viernes (la Oración en el Huerto, la Flagelación, la Coronación de Espinas, la Cruz a Cuestas, la Crucifixión); Gloriosos los miércoles y domingos (la Resurrección, la Ascensión, Pentecostés, la Asunción, la Coronación de la Virgen); Luminosos los jueves (el Bautismo del Señor, las Bodas de Caná, el Anuncio del Reino, la Transfiguración, la Institución de la Eucaristía). Para la cobertura de un PrayerTrain, una sola decena — o incluso una sola Avemaría ofrecida con intención — también es una ofrenda válida del Rosario.",
+    patronSaint: "Nuestra Señora del Rosario",
+    feastDay: "7 de octubre",
+    source:
+      "Rosarium Virginis Mariae (San Juan Pablo II, 2002) + León XIII's eleven rosary encyclicals + Catechism of the Catholic Church paragraphs 971, 2678, and 2708 on the Marian dimension of prayer. Retrieved 2026-05-14.",
+    reviewedAt: new Date("2026-05-14"),
+  },
+  {
+    prayerSlug: "chaplet-divine-mercy",
+    name: "Coronilla de la Divina Misericordia",
+    description:
+      "La Coronilla de la Divina Misericordia fue entregada por Jesús a Santa María Faustina Kowalska, religiosa polaca, en una serie de revelaciones que tuvieron lugar entre 1931 y 1938 y que ella misma recogió en su Diario: La Divina Misericordia en mi alma. La coronilla es una poderosa oración de intercesión ofrecida por la conversión de los pecadores, el consuelo de los moribundos y la misericordia de Dios sobre el mundo entero. Jesús le dijo a Faustina que quien rezara esta coronilla recibiría «gran misericordia en la hora de la muerte», y que se complacía especialmente en esta oración cuando se rezaba a las 3:00 de la tarde, la Hora de la Misericordia (la hora de su muerte en el Calvario). La coronilla se reza con un rosario común, lo que la hace accesible a cualquiera que tenga un rosario, y dura aproximadamente diez minutos. La devoción a la Divina Misericordia estuvo suprimida durante muchos años, pero el Papa San Juan Pablo II — él mismo polaco y compatriota de Santa Faustina — la canonizó el 30 de abril del año 2000 y estableció el Domingo de la Divina Misericordia (segundo domingo de Pascua) como fiesta para toda la Iglesia universal. La Coronilla de la Divina Misericordia se ha convertido en una de las devociones más rezadas en la Iglesia contemporánea, especialmente apreciada por capellanes de hospital, voluntarios de cuidados paliativos y quienes rezan por la conversión de seres queridos. Es la oración diaria en el Santuario Nacional de la Divina Misericordia de Stockbridge, Massachusetts, y en el Santuario de la Divina Misericordia de Łagiewniki, Cracovia — el lugar donde Faustina vivió, murió y hoy reposa.",
+    instructions:
+      "Con un rosario común de cinco decenas, comienza con la Señal de la Cruz, un Padrenuestro, un Avemaría y el Credo de los Apóstoles sobre el crucifijo y las cuentas iniciales. En cada una de las cinco cuentas grandes (donde normalmente se reza el Padrenuestro) reza: «Padre Eterno, te ofrezco el Cuerpo y la Sangre, el Alma y la Divinidad de tu amadísimo Hijo, nuestro Señor Jesucristo, como propiciación por nuestros pecados y los del mundo entero». En cada una de las diez cuentas pequeñas de cada decena reza: «Por su dolorosa Pasión, ten misericordia de nosotros y del mundo entero». Al terminar las cinco decenas, concluye rezando tres veces: «Santo Dios, Santo Fuerte, Santo Inmortal, ten piedad de nosotros y del mundo entero». La coronilla es especialmente poderosa cuando se reza a las 3:00 de la tarde (la Hora de la Misericordia), junto al lecho de los moribundos, en los nueve días previos al Domingo de la Divina Misericordia (la Novena a la Divina Misericordia, que comienza el Viernes Santo), y en momentos de angustia o temor personal. Puede rezarse en silencio, en voz alta, a solas o en grupo. Muchas parroquias rezan la coronilla semanalmente, a menudo los viernes en memoria de la Pasión de Cristo. Los católicos que rezan por la conversión o la muerte serena de un ser querido suelen comprometerse a rezar la coronilla diariamente durante un período sostenido — un mes, la duración de una enfermedad, el tiempo previo a una decisión importante. La coronilla se asocia naturalmente con la asistencia a la Novena a la Divina Misericordia, desde el Viernes Santo hasta el Domingo de la Divina Misericordia.",
+    patronSaint: "Santa Faustina Kowalska",
+    feastDay: "Domingo de la Divina Misericordia",
+    source:
+      "Diary: Divine Mercy in My Soul (St. Faustina Kowalska) + the canonical chaplet text as approved by the Holy See following St. John Paul II's canonization of Faustina on April 30, 2000 and the establishment of Divine Mercy Sunday. Retrieved 2026-05-14.",
+    reviewedAt: new Date("2026-05-14"),
+  },
+  {
+    prayerSlug: "memorare",
+    name: "El Acordaos (Memorare)",
+    description:
+      "El Memorare es una oración breve pero extraordinariamente poderosa de confianza en la intercesión de la Santísima Virgen María. Toma su nombre de la primera palabra latina del texto, Memorare («Acordaos»), y en su forma moderna se atribuye al P. Claude Bernard, sacerdote francés del siglo XVII conocido como «el Sacerdote Pobre» por su apostolado entre los prisioneros y los moribundos. La oración se popularizó gracias a la distribución por parte del P. Bernard de más de 200,000 folletos en el París previo a la Revolución, aunque sus raíces devocionales se remontan más atrás — probablemente a una oración más extensa atribuida a San Bernardo de Claraval (1090-1153), el gran abad cisterciense y Doctor de la Iglesia cuya devoción mariana dio forma a la piedad occidental. La estructura de la oración es una apelación confiada: reconoce la maternidad universal de María («Oh Virgen de las vírgenes, mi Madre»), hace referencia a la tradición ininterrumpida de su intercesión («jamás se ha oído decir que ninguno de los que han acudido a tu protección… haya sido desamparado»), y concluye con una petición humilde («en tu misericordia escúchame y respóndeme»). Los santos a lo largo de los siglos han testimoniado su poder: la Madre Teresa de Calcuta rezaba nueve Memorares consecutivos cada día — lo que ella llamaba su «novena al vuelo» — cuando necesitaba algo con urgencia. El Memorare es la oración católica de último recurso, rezada en momentos de necesidad aguda, junto al lecho de los moribundos, en la capilla antes de una conversación difícil, o susurrada mientras un padre o una madre espera noticias desde una habitación de hospital.",
+    instructions:
+      "Reza una vez con plena atención y devoción, trayendo a la mente a la persona y la intención que estás presentando ante María. El Memorare es lo suficientemente breve como para memorizarlo y rezarlo en cualquier parte — en el auto, durante una caminata, antes de dormir, en los momentos previos a cualquier tarea difícil. Para una intercesión más sostenida, reza nueve Memorares consecutivos seguidos (esta es la «novena al vuelo» que la Madre Teresa prefería para intenciones urgentes). Algunas tradiciones añaden un breve momento de silencio antes de rezar, nombrando la intención en voz alta o en el corazón. La oración también puede incorporarse como oración final al término de un Rosario más extenso o de una novena, sellando la petición con la confianza serena en el amor maternal de María. Las familias católicas suelen rezar el Memorare junto al lecho de alguien gravemente enfermo, al recibir un diagnóstico difícil, o durante el trabajo de parto. Por ser una oración breve cuyas palabras son antiguas y queridas, se ha convertido en una especie de respuesta espiritual de emergencia: una oración que acude espontáneamente a los labios cuando faltan otras palabras. Los niños pueden aprenderla desde muy pequeños, en cuanto puedan recitarla; es una de las oraciones más apropiadas para enseñar a un niño como «primera oración en momentos de dificultad». La versión latina original todavía es rezada por algunos atraídos a las formas tradicionales: «Memorare, O piissima Virgo Maria, non esse auditum a saeculo…»",
+    patronSaint: "San Bernardo de Claraval",
+    feastDay: null,
+    source:
+      "Traditional Spanish Catholic devotional text of the Memorare (Acordaos), as published in the Latin American breviary and major Spanish-language prayer books. Historical attribution to Fr. Claude Bernard verified against the Catholic Encyclopedia entry and the 19th-century printed editions of his prayer leaflets. Retrieved 2026-05-14.",
+    reviewedAt: new Date("2026-05-14"),
+  },
 ];

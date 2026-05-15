@@ -6,8 +6,9 @@ import { getBaseUrl } from "@/lib/url";
 import { breadcrumbSchema } from "@/lib/schema";
 import { smartTruncate } from "@/lib/utils";
 import { Heart, Users, BookOpen, ArrowRight } from "lucide-react";
-import { SITUATIONS, SITUATION_TOPICS } from "./content";
+import { SITUATION_TOPICS } from "./content";
 import type { SituationContent } from "./content";
+import { getSituationContent } from "./content.translations";
 import { buildAlternates } from "@/i18n/metadata";
 import { localizedHref } from "@/i18n/links";
 import { isLocale, defaultLocale, locales } from "@/i18n/config";
@@ -47,7 +48,7 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { locale: rawLocale, topic } = await params;
   const locale = isLocale(rawLocale) ? rawLocale : defaultLocale;
-  const content = SITUATIONS[topic];
+  const content = getSituationContent(locale, topic);
   if (!content) return { title: "Not Found" };
   const path = `/situations/${content.topic}`;
   const baseUrl = getBaseUrl();
@@ -108,7 +109,7 @@ export default async function SituationPage({
 }) {
   const { locale: rawLocale, topic } = await params;
   const locale = isLocale(rawLocale) ? rawLocale : defaultLocale;
-  const content = SITUATIONS[topic];
+  const content = getSituationContent(locale, topic);
   if (!content) notFound();
 
   // Pull live data for the recommended prayers so a renamed prayer in
@@ -283,7 +284,8 @@ export default async function SituationPage({
         </h2>
         <div className="flex flex-wrap gap-2">
           {SITUATION_TOPICS.filter((t) => t !== content.topic).map((t) => {
-            const other = SITUATIONS[t];
+            const other = getSituationContent(locale, t);
+            if (!other) return null;
             return (
               <Link
                 key={t}

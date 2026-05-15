@@ -1,10 +1,11 @@
 import type { Metadata } from "next";
 import { LocaleLink as Link } from "@/components/locale-link";
 import { ArrowRight, Heart } from "lucide-react";
-import { SITUATIONS, SITUATION_TOPICS } from "./[topic]/content";
+import { SITUATION_TOPICS } from "./[topic]/content";
+import { getSituationContent } from "./[topic]/content.translations";
 import { getDictionary } from "@/i18n/dictionaries";
 import { localizedMetadata } from "@/i18n/metadata";
-import { isLocale, defaultLocale } from "@/i18n/config";
+import { isLocale, defaultLocale, type Locale } from "@/i18n/config";
 
 /**
  * /situations — index page that lists every situation page.
@@ -48,7 +49,8 @@ export default async function SituationsIndexPage({
 }: {
   params: Promise<{ locale: string }>;
 }) {
-  const { locale } = await params;
+  const { locale: rawLocale } = await params;
+  const locale: Locale = isLocale(rawLocale) ? rawLocale : defaultLocale;
   const dict = await getDictionary(locale);
   const t = dict.situations;
 
@@ -65,7 +67,8 @@ export default async function SituationsIndexPage({
 
       <div className="space-y-4 mb-12">
         {SITUATION_TOPICS.map((topic) => {
-          const content = SITUATIONS[topic];
+          const content = getSituationContent(locale, topic);
+          if (!content) return null;
           return (
             <Link
               key={topic}

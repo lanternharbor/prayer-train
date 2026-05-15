@@ -457,6 +457,21 @@
     "verifyBody": "Um link de acesso foi enviado para o seu e-mail. Clique nele para concluir a entrada.",
     "verifyExpiry": "O link expira em 24 horas. Se não encontrar, verifique a pasta de spam."
   },
+  "shareButton": {
+    "heading": "Compartilhe este PrayerTrain",
+    "description": "Convide amigos, família e sua paróquia para se inscreverem em horários de oração.",
+    "share": "Compartilhar",
+    "copyLink": "Copiar link",
+    "copied": "Copiado!",
+    "qrCode": "Código QR",
+    "qrCodeTitle": "Mostrar código QR",
+    "qrModalAriaLabel": "Código QR para compartilhar este train de oração",
+    "scanToPray": "Escaneie para rezar",
+    "scanToPrayBody": "Aponte a câmera do celular para este código para abrir o train de oração.",
+    "saveQR": "Salvar QR",
+    "close": "Fechar",
+    "nativeShareText": "Junte-se a mim em oração — inscreva-se num horário de oração:"
+  },
   "publicTrain": {
     "h1PrayersFor": "Orações por {recipientName}",
     "statusActive": "Ativo",

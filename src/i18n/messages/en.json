@@ -457,6 +457,21 @@
     "verifyBody": "A sign-in link has been sent to your email address. Click the link to complete your sign in.",
     "verifyExpiry": "The link will expire in 24 hours. If you don't see it, check your spam folder."
   },
+  "shareButton": {
+    "heading": "Share this PrayerTrain",
+    "description": "Invite friends, family, and your parish to sign up for prayer slots.",
+    "share": "Share",
+    "copyLink": "Copy Link",
+    "copied": "Copied!",
+    "qrCode": "QR Code",
+    "qrCodeTitle": "Show QR code",
+    "qrModalAriaLabel": "QR code for sharing this prayer train",
+    "scanToPray": "Scan to pray",
+    "scanToPrayBody": "Point a phone camera at this code to open the prayer train.",
+    "saveQR": "Save QR",
+    "close": "Close",
+    "nativeShareText": "Join me in prayer — sign up for a prayer slot:"
+  },
   "publicTrain": {
     "h1PrayersFor": "Prayers for {recipientName}",
     "statusActive": "Active",

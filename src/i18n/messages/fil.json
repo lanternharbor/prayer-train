@@ -457,6 +457,21 @@
     "verifyBody": "Naipadala na ang sign-in link sa iyong email address. I-click ang link upang kumpletuhin ang pag-sign in.",
     "verifyExpiry": "Ang link ay mag-e-expire sa loob ng 24 na oras. Kung hindi mo ito nakita, tingnan ang spam folder mo."
   },
+  "shareButton": {
+    "heading": "Ibahagi ang PrayerTrain na ito",
+    "description": "Imbitahan ang mga kaibigan, pamilya, at inyong parokya na mag-sign up sa mga prayer slot.",
+    "share": "Ibahagi",
+    "copyLink": "Kopyahin ang link",
+    "copied": "Nakopya na!",
+    "qrCode": "QR Code",
+    "qrCodeTitle": "Ipakita ang QR code",
+    "qrModalAriaLabel": "QR code para sa pagbabahagi ng prayer train na ito",
+    "scanToPray": "I-scan upang manalangin",
+    "scanToPrayBody": "Iturok ang camera ng telepono sa code na ito upang buksan ang prayer train.",
+    "saveQR": "I-save ang QR",
+    "close": "Isara",
+    "nativeShareText": "Sumama sa akin sa panalangin — mag-sign up sa isang prayer slot:"
+  },
   "publicTrain": {
     "h1PrayersFor": "Mga panalangin para kay {recipientName}",
     "statusActive": "Aktibo",

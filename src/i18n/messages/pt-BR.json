@@ -103,6 +103,21 @@
     "difficultyIntermediate": "Intermediária",
     "difficultyAdvanced": "Avançada"
   },
+  "dashboard": {
+    "h1": "Painel",
+    "welcomeBack": "Bem-vindo de volta",
+    "welcomeBackName": "Bem-vindo de volta, {name}",
+    "ctaStartTrain": "Criar um PrayerTrain",
+    "todaysPrayersHeading": "Orações de hoje",
+    "forRecipient": "Por {recipientName}",
+    "viewTrain": "Ver train →",
+    "myTrainsHeading": "Meus PrayerTrains",
+    "emptyStateBody": "Você ainda não criou nenhum PrayerTrain.",
+    "emptyStateCTA": "Crie seu primeiro PrayerTrain",
+    "coverageFooter": "{pct}% coberto · {filled}/{total} horários preenchidos",
+    "upcomingHeading": "Próximos compromissos de oração",
+    "viewLink": "Ver"
+  },
   "prayerDetail": {
     "backToLibrary": "Biblioteca de orações",
     "statDuration": "Duração",

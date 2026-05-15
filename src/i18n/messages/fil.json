@@ -103,6 +103,21 @@
     "difficultyIntermediate": "Katamtaman",
     "difficultyAdvanced": "Mahirap"
   },
+  "dashboard": {
+    "h1": "Dashboard",
+    "welcomeBack": "Maligayang pagbabalik",
+    "welcomeBackName": "Maligayang pagbabalik, {name}",
+    "ctaStartTrain": "Magsimula ng PrayerTrain",
+    "todaysPrayersHeading": "Mga panalangin ngayon",
+    "forRecipient": "Para kay {recipientName}",
+    "viewTrain": "Tingnan ang train →",
+    "myTrainsHeading": "Aking mga PrayerTrain",
+    "emptyStateBody": "Wala ka pa namang ginawang PrayerTrain.",
+    "emptyStateCTA": "Simulan ang iyong unang PrayerTrain",
+    "coverageFooter": "{pct}% sakop · {filled}/{total} puwang napuno",
+    "upcomingHeading": "Mga paparating na pangako sa panalangin",
+    "viewLink": "Tingnan"
+  },
   "prayerDetail": {
     "backToLibrary": "Aklatan ng panalangin",
     "statDuration": "Tagal",

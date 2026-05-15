@@ -103,6 +103,21 @@
     "difficultyIntermediate": "Średniozaawansowana",
     "difficultyAdvanced": "Zaawansowana"
   },
+  "dashboard": {
+    "h1": "Panel",
+    "welcomeBack": "Witaj ponownie",
+    "welcomeBackName": "Witaj ponownie, {name}",
+    "ctaStartTrain": "Załóż PrayerTrain",
+    "todaysPrayersHeading": "Dzisiejsze modlitwy",
+    "forRecipient": "Za {recipientName}",
+    "viewTrain": "Zobacz train →",
+    "myTrainsHeading": "Moje PrayerTrains",
+    "emptyStateBody": "Nie utworzyłeś jeszcze żadnego PrayerTrain.",
+    "emptyStateCTA": "Załóż swój pierwszy PrayerTrain",
+    "coverageFooter": "{pct}% pokryte · {filled}/{total} miejsc wypełnionych",
+    "upcomingHeading": "Nadchodzące zobowiązania modlitewne",
+    "viewLink": "Zobacz"
+  },
   "prayerDetail": {
     "backToLibrary": "Biblioteka modlitw",
     "statDuration": "Czas trwania",

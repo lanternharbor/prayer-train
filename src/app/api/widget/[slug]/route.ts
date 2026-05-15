@@ -1,9 +1,78 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 
-// Embeddable widget for parish websites
+// Embeddable widget for parish websites.
 // Usage: Add to any website with:
 // <iframe src="https://prayertrains.com/api/widget/[slug]" width="400" height="300" frameborder="0"></iframe>
+//
+// The widget renders in the train's `language` so a parish embedding a
+// Spanish-language prayer train sees the widget in Spanish. The language
+// follows the organizer's UI locale at create time (set by getLocale()
+// in createPrayerTrain), so the widget naturally matches the audience
+// the train was created for.
+
+type WidgetCopy = {
+  htmlLang: string;
+  prayersFor: (recipientName: string) => string;
+  covered: string;
+  slotsOpen: string;
+  signUp: string;
+  poweredBy: string;
+  notFound: string;
+};
+
+const COPY: Record<string, WidgetCopy> = {
+  en: {
+    htmlLang: "en",
+    prayersFor: (name) => `Prayers for ${name}`,
+    covered: "covered",
+    slotsOpen: "slots open",
+    signUp: "Sign Up to Pray",
+    poweredBy: "Powered by",
+    notFound: "Prayer train not found.",
+  },
+  es: {
+    htmlLang: "es",
+    prayersFor: (name) => `Oraciones por ${name}`,
+    covered: "cubierto",
+    slotsOpen: "horarios disponibles",
+    signUp: "Inscríbete para orar",
+    poweredBy: "Hecho con",
+    notFound: "Cadena de oración no encontrada.",
+  },
+  "pt-BR": {
+    htmlLang: "pt-BR",
+    prayersFor: (name) => `Orações por ${name}`,
+    covered: "coberto",
+    slotsOpen: "horários disponíveis",
+    signUp: "Inscreva-se para orar",
+    poweredBy: "Feito com",
+    notFound: "Corrente de oração não encontrada.",
+  },
+  fil: {
+    htmlLang: "fil",
+    prayersFor: (name) => `Mga panalangin para kay ${name}`,
+    covered: "natakpan",
+    slotsOpen: "bukas na slots",
+    signUp: "Mag-sign up upang manalangin",
+    poweredBy: "Pinapagana ng",
+    notFound: "Hindi nakita ang prayer train.",
+  },
+  pl: {
+    htmlLang: "pl",
+    prayersFor: (name) => `Modlitwy za ${name}`,
+    covered: "pokryte",
+    slotsOpen: "wolnych miejsc",
+    signUp: "Zapisz się do modlitwy",
+    poweredBy: "Działa dzięki",
+    notFound: "Nie znaleziono modlitewnej.",
+  },
+};
+
+function pickCopy(language: string | null | undefined): WidgetCopy {
+  if (language && language in COPY) return COPY[language];
+  return COPY.en;
+}
 
 export async function GET(
   request: Request,
@@ -19,11 +88,17 @@ export async function GET(
   });
 
   if (!train) {
-    return new NextResponse("<html><body><p>Prayer train not found.</p></body></html>", {
-      headers: { "Content-Type": "text/html" },
-      status: 404,
-    });
+    // 404 falls back to English — no train means no language to detect.
+    return new NextResponse(
+      `<html lang="en"><body><p>${COPY.en.notFound}</p></body></html>`,
+      {
+        headers: { "Content-Type": "text/html" },
+        status: 404,
+      },
+    );
   }
+
+  const t = pickCopy(train.language);
 
   const total = train.slots.length;
   const claimed = train.slots.filter((s) => s.status === "CLAIMED").length;
@@ -34,7 +109,7 @@ export async function GET(
   const baseUrl = process.env.NEXTAUTH_URL || "https://prayertrains.com";
 
   const html = `<!DOCTYPE html>
-<html>
+<html lang="${t.htmlLang}">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
@@ -60,19 +135,19 @@ export async function GET(
   <div class="card">
     <div class="header">
       <span class="cross">&#10013;</span>
-      <span class="title">Prayers for ${escapeHtml(train.recipientName)}</span>
+      <span class="title">${escapeHtml(t.prayersFor(train.recipientName))}</span>
     </div>
     <p class="intention">${escapeHtml(train.intention)}</p>
     <div class="bar-bg"><div class="bar-fill" style="width:${fill}%"></div></div>
     <div class="stats">
-      <span><span class="stat-value">${fill}%</span> covered</span>
-      <span><span class="stat-value">${open}</span> slots open</span>
+      <span><span class="stat-value">${fill}%</span> ${t.covered}</span>
+      <span><span class="stat-value">${open}</span> ${t.slotsOpen}</span>
     </div>
     <a class="btn" href="${baseUrl}/p/${slug}" target="_blank">
-      Sign Up to Pray
+      ${t.signUp}
     </a>
   </div>
-  <p class="footer">Powered by <a href="${baseUrl}" target="_blank">PrayerTrain</a></p>
+  <p class="footer">${t.poweredBy} <a href="${baseUrl}" target="_blank">PrayerTrain</a></p>
 </body>
 </html>`;
 

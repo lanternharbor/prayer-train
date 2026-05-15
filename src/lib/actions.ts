@@ -1908,15 +1908,22 @@ export async function closePrayerChain(formData: FormData) {
 
 // ─── Unsubscribe from a PrayerChain (token-gated link in emails) ────────
 
-export async function unsubscribeFromChain(memberId: string) {
+export async function unsubscribeFromChain(
+  memberId: string,
+): Promise<{ chainLanguage: string | null }> {
   // No auth required — the unsubscribe URL is treated as the proof of
   // identity. Membership IDs are cuids (effectively unguessable) so this
   // is acceptable for a low-stakes "stop sending me reminders" action.
+  //
+  // Returns the chain's `language` so the route handler can render the
+  // confirmation HTML in the member's own language. Returns
+  // `chainLanguage: null` for an unknown member id — the route falls
+  // back to English in that case.
   const member = await prisma.prayerChainMember.findUnique({
     where: { id: memberId },
-    include: { chain: { select: { slug: true } } },
+    include: { chain: { select: { slug: true, language: true } } },
   });
-  if (!member) return; // Treat as success — already gone.
+  if (!member) return { chainLanguage: null }; // Treat as success — already gone.
 
   await prisma.prayerChainMember.update({
     where: { id: memberId },
@@ -1924,4 +1931,6 @@ export async function unsubscribeFromChain(memberId: string) {
   });
 
   if (member.chain) revalidatePath(`/chain/${member.chain.slug}`);
+
+  return { chainLanguage: member.chain?.language ?? null };
 }

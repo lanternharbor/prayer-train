@@ -109,6 +109,40 @@ When a reviewer is committed, add a row to this file with name + locale + status
 
 ---
 
+## Outstanding gaps (not yet translated — flagged for future work)
+
+### Legal pages — **require legally-fluent bilingual reviewer**
+
+- [`src/app/[locale]/privacy/page.tsx`](../src/app/%5Blocale%5D/privacy/page.tsx) — Privacy Policy body (~140 hard-coded English strings)
+- [`src/app/[locale]/terms/page.tsx`](../src/app/%5Blocale%5D/terms/page.tsx) — Terms of Use body (~130 hard-coded English strings)
+
+Both pages have **meta titles + descriptions already translated** per locale (`meta.privacyTitle` / `meta.termsTitle` keys), so SERP appearance is correct. The page bodies remain English.
+
+**Why these are flagged, not done**: legal language has specific enforceability implications. Translation errors create real legal risk for Lantern Harbor LLC, especially around:
+- GDPR-equivalent disclosures in pt-BR + pl (Brazil's LGPD, Poland's RODO)
+- Filipino Data Privacy Act (DPA) phrasing for fil
+- Term-of-service liability waivers in Spanish-speaking jurisdictions
+
+These need a **bilingual lawyer or compliance professional**, not a pastoral Catholic reviewer. Recommended path:
+1. Identify a Catholic-network lawyer who handles religious-nonprofit work — Lantern Harbor's own legal counsel if available, or Massachusetts Catholic Conference for referrals.
+2. Have them review the existing English text + draft locale-specific equivalents (or approve "English-only is the legally-binding version with locale-specific summaries" as the policy).
+3. Until then, English-only body is acceptable practice for many SaaS products with multilingual UI.
+
+### Interactive sub-components — translation-pending (not blocking)
+
+These render text to non-English visitors but are interactive UI elements (not SEO surfaces). Flagged as future Track C work:
+
+- [`src/app/[locale]/p/[slug]/guestbook.tsx`](../src/app/%5Blocale%5D/p/%5Bslug%5D/guestbook.tsx) — encouragement wall form (4-5 strings: placeholder, button label, empty state, badge title)
+- [`src/app/[locale]/p/[slug]/add-warrior-button.tsx`](../src/app/%5Blocale%5D/p/%5Bslug%5D/add-warrior-button.tsx) — "Add yourself as a prayer warrior" modal (~15 strings; only shown when train fully covered)
+- [`src/app/[locale]/p/[slug]/complete/complete-form.tsx`](../src/app/%5Blocale%5D/p/%5Bslug%5D/complete/complete-form.tsx) — slot-complete note form (~10 strings; auth-gated via email link)
+
+Pattern follows the [PR #97 share-button](https://github.com/lanternharbor/prayer-train/pull/97) approach: client component accepts a `t: Dictionary["<namespace>"]` prop; parent server component threads `dict.<namespace>` through.
+
+Lower priority than Track E (canonical prayer text) since these don't affect SEO body-content/head-language match. A non-English visitor sees translated H1/H2/calendar/situation badges but English form placeholders — acceptable degradation pattern for non-critical UI.
+
+---
+
 ## Changelog
 
 - **2026-05-15**: Initial tracker; first batch is `/our-story` strings drafted by Claude (Opus 4.7) on branch `claude/seo-track-c-our-story`.
+- **2026-05-15** (later): Added outstanding-gaps section. Privacy + Terms flagged as requiring legally-fluent bilingual reviewer (legal risk if translated by pastoral reviewer alone). Three interactive sub-components flagged as future Track C work, lower priority than Track E.

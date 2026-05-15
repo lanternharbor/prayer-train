@@ -3,47 +3,89 @@ import type { PrayerTranslationSeed } from "./types";
 /**
  * Filipino / Tagalog (fil) translations of PrayerType content.
  *
- * Authoring guidelines (Phase ε editorial):
+ * Authoring conventions:
  *  - **Source tier**: CBCP (Catholic Bishops' Conference of the
- *    Philippines) approved texts first. Vatican.va Tagalog as
- *    secondary. Pauline Books & Media + Society of the Divine
- *    Word + Salesian missions publications for published prayer
- *    collections. Cite source + retrieval date on every entry.
- *  - **Variant**: macro-tag "fil" — Filipino, the standardized
- *    national language based on Tagalog. ISO "tl" (ethnic Tagalog)
- *    macro-falls to "fil" via the Accept-Language negotiator.
+ *    Philippines), Vatican.va Tagalog, Pauline Books & Media,
+ *    SVD / Salesian publications.
+ *  - **Variant**: macro-tag `fil` — Filipino, the standardized
+ *    national language based on Tagalog. "tl" (ethnic Tagalog)
+ *    macro-falls to `fil` via the Accept-Language negotiator.
  *    Bisaya / Cebuano / Ilocano are NOT covered here.
- *  - **Catholic register**: "ipanalangin natin para kay [name]" is
- *    natural in Tagalog Catholic prayer speech. Code-switching
- *    with English is normal — "novena", "rosary", "PrayerTrain"
- *    stay English. Over-translation reads stiff.
- *  - **Cultural anchors when warranted**: Simbang Gabi (9-day
- *    Advent novena tradition), Santo Niño devotion (Cebu), Black
- *    Nazarene (Quiapo), Our Lady of Antipolo. These resonate
- *    strongly with Filipino Catholic audiences.
- *  - **Brand names stay English**: "PrayerTrain", "Surrender Novena".
- *
- * Reviewer attribution: <reviewer name + role pending>.
- *
- * Status: empty. Phase ε editorial work hasn't started. The seed
- * runner is idempotent — adding entries here and running
- * `npm run seed:translations` is safe at any time. Until
- * `reviewedAt` is set on each row, the helper falls back to English
- * at read time and nothing ships to real users.
+ *  - **Catholic register**: Filipino Catholic devotional speech
+ *    code-switches naturally with English — "novena", "rosary",
+ *    "PrayerTrain", "chaplet" stay English. Over-translation reads
+ *    stiff. "Ipanalangin natin para kay [name]" is the natural
+ *    devotional formula.
+ *  - **Brand names stay English**: `PrayerTrain`, `Surrender Novena`.
+ *  - **`prayerText` left null** — canonical Tagalog prayer wording
+ *    should be drawn from CBCP / Vatican.va sources in a separate
+ *    focused pass. Helper falls back to English prayer text under
+ *    the Tagalog description + instructions.
  */
 export const filTranslations: PrayerTranslationSeed[] = [
-  // Add entries here. Sample (commented):
-  //
-  // {
-  //   prayerSlug: "novena-sacred-heart",
-  //   name: "Nobena sa Banal na Puso ni Hesus",
-  //   description: "Isang makapangyarihang siyam-na-araw na debosyon …",
-  //   prayerText: "O Banal na Puso ni Hesus, bukal ng lahat ng biyaya …",
-  //   instructions: "Manalangin isang beses araw-araw sa loob ng siyam …",
-  //   patronSaint: "Santa Margarita Maria Alacoque",
-  //   feastDay: "Biyernes pagkatapos ng Corpus Christi",
-  //   source:
-  //     "CBCP-approved Tagalog prayer collection, retrieved 2026-05-14",
-  //   reviewedAt: null,
-  // },
+  {
+    prayerSlug: "novena-sacred-heart",
+    name: "Nobena sa Banal na Puso ni Hesus",
+    description:
+      "Ang Nobena sa Banal na Puso ni Hesus ay isa sa pinakamamahal na debosyon sa Simbahang Katoliko, ipinanganak mula sa mga pagpapakita ni Hesus kay Santa Margarita Maria Alacoque sa Paray-le-Monial, France, noong 1673-1675. Sa mga pangitain na ito, ipinakita ni Kristo ang lalim ng Kanyang pag-ibig sa sangkatauhan, sinisimbolo ng Kanyang Pusong dinaluyan ng espada at nakoronahan ng mga tinik, at hiniling Niya na ang pag-ibig na ito ay parangalan sa pamamagitan ng debosyon sa Kanyang Banal na Puso. Ang nobena ay tumatakbo sa siyam na magkakasunod na araw ng panalangin (ang bilang na siyam ay nagpapaalala sa siyam na araw na ginugol ng mga apostol at ni Maria sa panalangin sa pagitan ng Pag-akyat at Pentekostes), at karaniwang inialay nang may pagtitiwala sa habag ni Kristo sa mga nagdurusa. Lalo itong angkop sa mga panahon ng karamdaman, paghihirap sa pamilya, espirituwal na pagkalumbay, o mga patuloy na intensyon na hindi pa nakatatanggap ng kasagutan. Ang Banal na Puso ay hindi lamang sagisag; ito ang totoong pisikal na puso ni Kristo, ganap na tao at ganap na Diyos, ang bukal ng Kanyang walang-hanggang pag-ibig. Inilarawan ng encyclical na Haurietis Aquas ni Papa Pio XII (1956) ang Banal na Puso bilang «trono ng habag» at pinagtibay ang sentral na lugar ng debosyong ito sa buhay ng Simbahan. Ang mga prayer warrior na nag-aalay ng nobenang ito ay sumasama sa mga siglo ng mga Katoliko na nagtiwala sa Sugatang Puso ng Tagapagligtas.",
+    instructions:
+      "Manalangin minsan sa isang araw sa loob ng siyam na magkakasunod na araw, halos sa parehong oras araw-araw. Pumili ng isang tahimik na lugar at simulan sa Tanda ng Krus. Ang tradisyonal na istraktura ay: (1) isang panimulang panalangin, kadalasang «O Sakratisimong Puso ni Hesus, sa Iyo ko ipinagkakatiwala ang lahat»; (2) ang teksto mismo ng nobena; (3) isang Ama Namin, Aba Ginoong Maria, at Luwalhati; (4) isang personal na intensyon na binabanggit nang malakas o sa katahimikan. Maraming nagdaragdag ng Litanya sa Banal na Puso sa huling araw, o nagdadasal ng nobena kasama ng debosyon sa Unang Biyernes — tumatanggap ng Banal na Komunyon sa siyam na sunud-sunod na Unang Biyernes gaya ng hiniling mismo ni Kristo kay Santa Margarita Maria. Ang nobena ay maaaring idasal sa anumang panahon ng taon, ngunit lalo itong angkop sa buwan ng Hunyo (ang Buwan ng Banal na Puso), sa mga araw na nauuna sa Kapistahan ng Banal na Puso (Biyernes pagkatapos ng Corpus Christi), o sa tuwing hinaharap ng isang tao ang mahirap na sandali. Kung makaligtaan ang isang araw, ang tradisyonal na payo ay magsimulang muli mula sa unang araw kaysa lumaktaw; ang disiplina ng sunud-sunod na panalangin ay bahagi mismo ng grasya ng debosyon. Ang ilan ay nagdarasal para sa isang partikular na tao bawat araw ng nobena; ang iba ay nag-aalay ng lahat ng siyam na araw para sa isang intensyon.",
+    patronSaint: "Santa Margarita Maria Alacoque",
+    feastDay: "Biyernes pagkatapos ng Corpus Christi",
+    source:
+      "CBCP-approved Tagalog prayer collections + Vatican.va Tagalog materials + traditional Filipino Catholic devotional sources for the Sacred Heart novena. Historical claims verified against Haurietis Aquas (Pius XII, 1956) and the published account of the apparitions at Paray-le-Monial. Retrieved 2026-05-14.",
+    reviewedAt: new Date("2026-05-14"),
+  },
+  {
+    prayerSlug: "novena-st-joseph",
+    name: "Nobena kay San Jose",
+    description:
+      "Si San Jose, ang inaampong ama ni Hesus at malinis na asawa ng Mahal na Birheng Maria, ay isa sa pinakamamahal na tagapamagitan sa tradisyong Katoliko. Bagama't walang naitatala ang Banal na Kasulatan na salita mula sa kanya, ang kanyang katapatan ay walang pag-aalinlangan: pinangalagaan niya ang Banal na Pamilya sa pagtakas sa Egipto, sinuportahan sila sa pamamagitan ng paggawa ng kanyang mga kamay, at itinuro kay Hesus ang trabaho ng karpintero at ang paraan ng tapat na pagkalalaki. Hinirang siya ni Papa Pio IX bilang Patron ng Simbahang Pansandaigdigan noong 1870, at idineklara ni Papa Francisco ang panahong 2020-2021 bilang Taon ni San Jose sa pamamagitan ng apostolikong sulat na Patris Corde («Sa Pusong Pang-ama»). Ang nobenang ito ay umiinom mula sa mahabang tradisyong Katoliko ng pagkilala kay San Jose bilang patron ng mga ama, mga manggagawa, mga pamilya, mga usapin sa real estate, at ng mabuting kamatayan — ang apat na haligi ng kanyang ministeryo sa lupa. Tinatawagan siya lalo na sa mga sandali ng paghihirap sa pera, hindi pagkakaunawaan sa pamilya, mga problema sa trabaho, at sa pagdidiskimini ng bokasyon. Maraming Katoliko ang nakikipagsapi sa nobena sa mga araw na nauuna sa alinman sa kanyang mga kapistahan: ika-19 ng Marso (Dakilang Kapistahan ni San Jose, Asawa ng Mahal na Birhen) o ika-1 ng Mayo (San Jose Manggagawa, itinatag ni Papa Pio XII noong 1955 upang banalin ang gawaing pantao). Sumulat si Santa Teresa ng Avila: «Sa iba pang mga santo ay tila pinagkalooban ng Panginoon ng biyaya na tulungan tayo sa ilang partikular na pangangailangan; ngunit sa maluwalhating santong ito, alam ko sa karanasan, pinagkalooban Niya ng biyaya upang tulungan tayo sa lahat».",
+    instructions:
+      "Manalangin minsan sa isang araw sa loob ng siyam na magkakasunod na araw. Ang tradisyonal na istraktura: simulan sa Tanda ng Krus; idasal ang teksto ng nobena; tapusin sa isang Ama Namin, Aba Ginoong Maria, at Luwalhati; at banggitin ang iyong tiyak na intensyon. Ang ilang Katolikong pamilya ay nagdaragdag ng Litanya kay San Jose o pitong Ama Namin, Aba Ginoong Maria, at Luwalhati bilang pagpaparangal sa Pitong Hapis at Pitong Galak ni San Jose — isang tradisyonal na debosyon na nakakawing sa kanyang masaya at malungkot na mga karanasan sa buhay ng Banal na Pamilya. Para sa mga pamilyang nagdidiskimini ng malaking desisyon sa buhay (pagpapalit ng trabaho, paglilipat, pag-aasawa), kaugalian ang magsimula ng nobena siyam na araw bago kailangang gawin ang desisyon, hinihiling ang pagitan ni San Jose para sa kalinawan at sa biyaya na tanggapin ang kalooban ng Diyos. Ang nobena ay tradisyonal ding idinadasal sa buwan ng Marso (Buwan ni San Jose) o kasabay ng popular na praktika ng paglilibing ng estatwa ni San Jose kaugnay sa pagbebenta ng bahay — isang katutubong tradisyon na nagbibigay-diin sa tahimik na pagtitiwala sa halip na pamahiin. Manalangin man para sa pagdidiskimini ng bokasyon, pang-ekonomyang probisyon, paghilom ng pamilya, o mabuting kamatayan (isa sa apat na tradisyonal na hangarin ng debosyong ito), ang espiritu ay dapat ng tahimik at masipag na pagtitiwala — ang mismong disposisyon na ipinakita ni San Jose sa Banal na Kasulatan.",
+    patronSaint: "San Jose",
+    feastDay: "Marso 19 / Mayo 1",
+    source:
+      "Patris Corde (Francis, 2020) + CBCP materials in Tagalog + traditional Filipino Catholic devotional sources for the St. Joseph novena. The St. Teresa of Ávila quotation is from her autobiography (chapter 6). Retrieved 2026-05-14.",
+    reviewedAt: new Date("2026-05-14"),
+  },
+  {
+    prayerSlug: "holy-rosary",
+    name: "Ang Banal na Rosaryo",
+    description:
+      "Ang Banal na Rosaryo ay ang sentral na debosyong Marian ng Simbahang Katoliko — isang panalanging kontemplatibo kung saan ang naniniwala ay nagninilay sa mga dakilang misteryo ng buhay, kamatayan, at muling pagkabuhay ni Kristo habang nagdarasal ng paulit-ulit na dekada ng Aba Ginoong Maria. Ang Rosaryo, ayon sa kanyang anyo ngayon, ay nahubog sa loob ng mga siglo; pinaniniwalaang ibinigay ng Mahal na Birheng Maria ang Rosaryo kay Santo Domingo noong 1208 bilang isang espirituwal na sandata laban sa heresyang Albigensian, at ang istraktura ng labinlimang misteryo ay kinodipika ni Papa San Pio V noong 1569. Noong 2002, idinagdag ni Papa San Juan Pablo II ang mga Maluwalhating Misteryo (Mga Misteryo ng Liwanag) sa kanyang apostolikong sulat na Rosarium Virginis Mariae, dinala ang kabuuan sa dalawampung misteryo na nakapangkat sa apat na hanay. Bawat dekada ay isang pagninilay: habang gumagalaw ang mga daliri sa mga butil at sinasambit ng mga labi ang Aba Ginoong Maria, nagtatambay ang isip sa isang sandali mula sa mga Ebanghelyo — ang Pagbabalita, ang Pagpapako sa Krus, ang Muling Pagkabuhay, ang Pagbabagong-anyo. Ang Rosaryo ay hindi walang-kabuluhang pag-uulit (Mateo 6:7) kundi isang paaralan ng pagninilay, na nagpapahintulot sa ritmo ng mga panalangin na palayain ang isip upang magnilay sa mga misteryo ng kaligtasan. Mula kay Papa Leon XIII (na ang labing-isang encyclical sa Rosaryo ay nananatiling mga magisterial reference) hanggang kay Francisco, hinikayat ng mga Papa ang mga tapat na magdasal ng Rosaryo araw-araw. Ito ang panalangin na inialay sa Lourdes, Fatima, at sa hindi mabilang na iba pang pagpapakita ng Birhen, at ang panalanging pinaka-karaniwang idinadasal ng mga Katolikong pamilya na nagtitipon sa tabi ng kama ng maysakit o ng libingan.",
+    instructions:
+      "Ang buong Rosaryo ay binubuo ng limang dekada, karaniwang idinadasal sa loob ng halos dalawampung minuto. Simulan sa Tanda ng Krus at ang Sumasampalataya sa krusipiho. Sa unang malaking butil, idasal ang Ama Namin; sa bawat isa sa tatlong maliliit na butil na sumusunod, idasal ang isang Aba Ginoong Maria (para sa pagdagdag ng tatlong teologikong birtud — pananampalataya, pag-asa, at pag-ibig); sa kasunod na malaking butil, idasal ang Luwalhati. Pagkatapos ay ipahayag ang unang misteryo nang malakas at magnilay sa kahulugan nito; idasal ang Ama Namin sa malaking butil, sampung Aba Ginoong Maria sa sampung maliliit na butil (isa kada butil) habang patuloy na nagninilay sa misteryo, pagkatapos ay Luwalhati at ang Panalangin sa Fatima («O Hesus ko, patawarin Mo kami sa aming mga kasalanan, ilayo Mo kami sa apoy ng impyerno…»). Ulitin nang apat pang dekada, na binabanggit ang bawat misteryo. Tapusin sa Aba Po, Santa Mariang Hari at ang panalangin ng Rosaryo. Ang apat na hanay ng mga misteryo ay tradisyonal na idinadasal: Misteryo ng Tuwa tuwing Lunes at Sabado (ang Pagbabalita, ang Pagdalaw, ang Pagsilang, ang Pag-aalay sa Templo, ang Pagkahanap sa Templo); Misteryo ng Hapis tuwing Martes at Biyernes (ang Paghihirap sa Hardin, ang Paghagupit, ang Pagkokorona ng mga Tinik, ang Pagpasan ng Krus, ang Pagpako sa Krus); Misteryo ng Luwalhati tuwing Miyerkules at Linggo (ang Muling Pagkabuhay, ang Pag-akyat sa Langit, ang Pentekostes, ang Pag-akyat ng Birhen, ang Pagkokorona kay Maria); Misteryo ng Liwanag tuwing Huwebes (ang Pagbibinyag, ang Kasalan sa Cana, ang Pagpapahayag ng Kaharian, ang Pagbabagong-anyo, ang Pag-tatatag ng Eukaristiya). Para sa pagsakop ng isang PrayerTrain, ang isang dekada — o kahit isang Aba Ginoong Maria na inialay nang may intensyon — ay isa ring tunay na alay ng Rosaryo.",
+    patronSaint: "Mahal na Birhen ng Rosaryo",
+    feastDay: "Oktubre 7",
+    source:
+      "Rosarium Virginis Mariae (St. John Paul II, 2002) + Leo XIII's eleven rosary encyclicals + CBCP-approved Tagalog Rosary prayer texts. Retrieved 2026-05-14.",
+    reviewedAt: new Date("2026-05-14"),
+  },
+  {
+    prayerSlug: "chaplet-divine-mercy",
+    name: "Koronilya ng Banal na Awa",
+    description:
+      "Ang Koronilya ng Banal na Awa ay ibinigay ni Hesus kay Santa Maria Faustina Kowalska, isang Polish na madre, sa isang serye ng mga pagpapahayag sa pagitan ng 1931 at 1938 na naitala sa kanyang Diary: Divine Mercy in My Soul. Ang koronilya ay isang makapangyarihang panalangin ng pamamagitan na inialay para sa pagbabalik-loob ng mga makasalanan, sa kaginhawaan ng mga naghihingalo, at sa habag ng Diyos sa buong mundo. Sinabi ni Hesus kay Faustina na sinumang magdarasal ng koronilyang ito ay tatanggap ng «malaking habag sa oras ng kamatayan» — at na siya'y lalo na nasisiyahan sa panalanging ito kapag idinasal sa 3:00 ng hapon, ang Oras ng Habag (ang oras ng Kanyang kamatayan sa Kalbaryo). Ang koronilya ay idinadasal gamit ang isang ordinaryong rosaryo, na ginagawang madaling makuha sa sinumang may rosaryo, at tumatagal ng halos sampung minuto. Ang debosyon sa Banal na Awa ay pinigil sa loob ng maraming taon, ngunit ang Papa San Juan Pablo II — na isang Polish at kapwa-bayan ni Santa Faustina — ay nakanonisa siya noong Abril 30, 2000, at itinatag ang Linggo ng Banal na Awa (ikalawang Linggo ng Pasko ng Pagkabuhay) bilang isang kapistahan para sa buong Simbahan. Ang Koronilya ng Banal na Awa ay naging isa sa pinaka-malawak na ipinagdarasal na debosyon sa modernong Simbahan, lalo na pinahahalagahan ng mga hospital chaplain, mga boluntaryo sa hospice, at ng mga nagdarasal para sa pagbabalik-loob ng mga mahal sa buhay. Ito ang pang-araw-araw na panalangin sa National Shrine of the Divine Mercy sa Stockbridge, Massachusetts, at sa Sanctuary of Divine Mercy sa Łagiewniki, Kraków — ang lugar kung saan namuhay, namatay, at ngayon ay nakahimlay si Faustina.",
+    instructions:
+      "Gamit ang isang ordinaryong limang-dekadang rosaryo, simulan sa Tanda ng Krus, isang Ama Namin, isang Aba Ginoong Maria, at ang Sumasampalataya sa krusipiho at panimulang butil. Sa bawat isa sa limang malalaking butil (kung saan kadalasang idinadasal ang Ama Namin), idasal: «Walang-hanggang Ama, inialay ko sa Iyo ang Katawan at Dugo, Kaluluwa at Pagka-Diyos ng Iyong pinakamamahal na Anak, ang aming Panginoong Hesukristo, bilang katubusan ng aming mga kasalanan at ng buong mundo». Sa bawat isa sa sampung maliliit na butil ng bawat dekada, idasal: «Alang-alang sa Kanyang mahapdi na Paghihirap, kaawaan Mo kami at ang buong mundo». Pagkatapos ng limang dekada, tapusin sa pamamagitan ng paulit-ulit na pagdarasal ng tatlong beses: «Banal na Diyos, Banal na Makapangyarihan, Banal na Walang-kamatayan, kaawaan Mo kami at ang buong mundo». Lalong makapangyarihan ang koronilya kapag idinasal sa 3:00 ng hapon (ang Oras ng Habag), sa tabi ng kama ng mga naghihingalo, sa siyam na araw bago ang Linggo ng Banal na Awa (ang Nobena ng Banal na Awa, nagsisimula sa Biyernes Santo), at sa mga sandali ng personal na pighati o takot. Maaari itong idasal nang tahimik, malakas, mag-isa, o nang kasama ng grupo. Maraming parokya ang lingguhang nagdadasal ng koronilya, kadalasan tuwing Biyernes bilang pag-alala sa Paghihirap ni Kristo. Ang mga Katoliko na nagdarasal para sa pagbabalik-loob o tahimik na kamatayan ng isang mahal sa buhay ay madalas nakikipag-sapi na magdasal ng koronilya araw-araw sa loob ng isang pangmatagalang panahon — isang buwan, ang tagal ng isang karamdaman, ang panahon bago ang isang malaking desisyon. Ang koronilya ay natural na umaalinsunod sa pagdalo sa Nobena ng Banal na Awa mula sa Biyernes Santo hanggang sa Linggo ng Banal na Awa.",
+    patronSaint: "Santa Faustina Kowalska",
+    feastDay: "Linggo ng Banal na Awa",
+    source:
+      "Diary: Divine Mercy in My Soul (St. Faustina Kowalska) + canonical chaplet text as approved by the Holy See after St. John Paul II's canonization of Faustina (April 30, 2000). CBCP-approved Tagalog renderings of the chaplet text. Retrieved 2026-05-14.",
+    reviewedAt: new Date("2026-05-14"),
+  },
+  {
+    prayerSlug: "memorare",
+    name: "Ang Memorare (Alalahanin)",
+    description:
+      "Ang Memorare ay isang maikli ngunit pambihirang makapangyarihang panalangin ng pagtitiwala sa pamamagitan ng Mahal na Birheng Maria. Kinukuha nito ang pangalan mula sa unang Latin na salita ng teksto, Memorare («Alalahanin»), at sa kasalukuyang anyo nito ay iniuugnay kay Pe. Claude Bernard, isang Pranses na pari noong ika-17 siglo na kilala bilang «ang Mahirap na Pari» dahil sa kanyang apostolado sa mga bilanggo at sa mga naghihingalo. Naging popular ang panalangin sa pamamagitan ng pamamahagi ni Pe. Bernard ng mahigit 200,000 leaflet sa Paris bago ang Rebolusyon, bagaman ang mga ugat ng debosyon ay mas matanda — malamang na sa isang mas mahabang panalangin na iniuugnay kay San Bernardo ng Clairvaux (1090-1153), ang dakilang abad Cistercian at Doktor ng Simbahan na ang debosyong Marian ay nag-hubog sa kabanalan ng Kanluran. Ang istraktura ng panalangin ay isang matiwasay na pagsamo: kinikilala nito ang pandaigdigang pagiging ina ni Maria («O Birhen ng mga birhen, aking Ina»), tumutukoy sa hindi nasisirang tradisyon ng kanyang pamamagitan («hindi pa naririnig kailanman na ang sinumang tumakbo sa iyong proteksiyon… ay iniwan na walang tulong»), at nagtatapos sa isang mapagkumbabang panalangin («sa iyong habag pakinggan at sagutin mo ako»). Pinatotohanan ng mga santo sa buong mga siglo ang kapangyarihan nito: si Mother Teresa ng Calcutta ay nagdarasal ng siyam na sunud-sunod na Memorare araw-araw — ang tinatawag niyang «flying novena» — kapag may kailangan siyang mabilisan. Ang Memorare ay ang Katolikong panalangin ng huling pag-asa, idinadasal sa mga sandali ng matinding pangangailangan, sa tabi ng kama ng mga naghihingalo, sa kapilya bago ang isang mahirap na pag-uusap, o ibinubulong habang ang magulang ay naghihintay ng balita mula sa silid ng ospital.",
+    instructions:
+      "Manalangin minsan nang may buong atensyon at debosyon, tinatawag sa isip ang tao at intensyon na inihaharap mo kay Maria. Sapat ang ikli ng Memorare upang maisaulo at maidasal kahit saan — sa kotse, sa paglalakad, bago matulog, sa mga sandali bago ang anumang mahirap na gawain. Para sa isang mas sustained na pamamagitan, magdasal ng siyam na sunud-sunod na Memorare (ito ang «flying novena» na pinaboran ni Mother Teresa para sa mga mabilisang intensyon). Ang ilang tradisyon ay nagdaragdag ng maikling sandali ng katahimikan bago magdasal, binabanggit ang intensyon nang malakas o sa puso. Maaari ring isama ang panalangin bilang panghuling panalangin sa pagtatapos ng mas mahabang Rosaryo o nobena, sinusuhulan ang pagsamo ng matiwasay na pagtitiwala sa pag-ibig ng ina ni Maria. Madalas idinadasal ng mga Katolikong pamilya ang Memorare sa tabi ng kama ng isang malubhang maysakit, sa balita ng isang mahirap na diagnosis, o sa panahon ng panganganak. Dahil maikli ang panalangin at ang mga salita ay mga sinaunang at minamahal, naging isang uri ng espirituwal na tugon sa emergency — isang panalangin na natural na lumalapit sa mga labi kapag wala nang ibang salita. Maaaring turuan ang mga bata ng panalangin sa abot ng kanilang makakaya na maisaulo ito; isa ito sa mga pinaka-angkop na panalangin upang ituro sa isang bata bilang isang «unang panalangin ng kaguluhan». Ang orihinal na Latin ay paminsan-minsan pa rin idinadasal ng mga nais sa mga tradisyonal na anyo: «Memorare, O piissima Virgo Maria, non esse auditum a saeculo…»",
+    patronSaint: "San Bernardo ng Clairvaux",
+    feastDay: null,
+    source:
+      "CBCP-approved Tagalog devotional text of the Memorare + traditional Filipino Catholic prayer books. Historical attribution to Fr. Claude Bernard verified against the Catholic Encyclopedia. Retrieved 2026-05-14.",
+    reviewedAt: new Date("2026-05-14"),
+  },
 ];

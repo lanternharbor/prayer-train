@@ -417,6 +417,11 @@
     "verifyExpiry": "El enlace expira en 24 horas. Si no lo ves, revisa tu carpeta de correo no deseado."
   },
   "publicTrain": {
+    "h1PrayersFor": "Oraciones por {recipientName}",
+    "statusActive": "Activo",
+    "statusPaused": "En pausa",
+    "statusCompleted": "Completado",
+    "statusCancelled": "Cancelado",
     "coverageHeading": "Cobertura de oración",
     "coverageCovered": "{pct}% cubierto",
     "statOpen": "{count} abiertos",

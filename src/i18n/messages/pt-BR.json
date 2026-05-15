@@ -417,6 +417,11 @@
     "verifyExpiry": "O link expira em 24 horas. Se não encontrar, verifique a pasta de spam."
   },
   "publicTrain": {
+    "h1PrayersFor": "Orações por {recipientName}",
+    "statusActive": "Ativo",
+    "statusPaused": "Em pausa",
+    "statusCompleted": "Concluído",
+    "statusCancelled": "Cancelado",
     "coverageHeading": "Cobertura de oração",
     "coverageCovered": "{pct}% coberto",
     "statOpen": "{count} em aberto",

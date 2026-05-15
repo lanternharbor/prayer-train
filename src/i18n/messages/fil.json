@@ -417,7 +417,12 @@
     "verifyExpiry": "Ang link ay mag-e-expire sa loob ng 24 na oras. Kung hindi mo ito nakita, tingnan ang spam folder mo."
   },
   "publicTrain": {
-    "coverageHeading": "Prayer Coverage",
+    "h1PrayersFor": "Mga panalangin para kay {recipientName}",
+    "statusActive": "Aktibo",
+    "statusPaused": "Naka-pause",
+    "statusCompleted": "Tapos na",
+    "statusCancelled": "Kinansela",
+    "coverageHeading": "Sakop ng panalangin",
     "coverageCovered": "{pct}% sakop",
     "statOpen": "{count} bukas",
     "statClaimed": "{count} nasakop na",

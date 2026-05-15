@@ -97,6 +97,7 @@ export function localizedMetadata({
   description,
   absoluteTitle = false,
   ogImage,
+  ogType = "website",
   noindex = false,
 }: {
   locale: Locale;
@@ -107,8 +108,13 @@ export function localizedMetadata({
    *  Used by the homepage so the title doesn't render as
    *  "PrayerTrain — Organized Prayer for Those in Need | PrayerTrain". */
   absoluteTitle?: boolean;
-  /** Absolute URL to the page's OG image. Defaults to /logo.png. */
+  /** Absolute URL to the page's OG image. Defaults to the per-locale
+   *  auto-generated OG share card. */
   ogImage?: string;
+  /** Open Graph type. "website" for marketing pages, "article" for
+   *  prayer-detail and situation-detail pages so Facebook/Twitter
+   *  scrapers treat them as content surfaces. */
+  ogType?: "website" | "article";
   /** Auth-gated pages (signin, dashboard) should set this true. */
   noindex?: boolean;
 }): Metadata {
@@ -118,18 +124,22 @@ export function localizedMetadata({
   // gold brand palette, locale-aware tagline). The file convention
   // auto-attaches only to the immediate-parent segment (the
   // [locale]/page.tsx homepage); for deeper routes (/browse,
-  // /prayers, /situations, etc.) we explicitly point at the same
-  // generated URL so every locale-prefixed page gets a branded
-  // share card. Pages that DO pass `ogImage` (train + chain detail
-  // with recipient photo) override.
+  // /prayers, /situations, prayer detail, situation detail, etc.)
+  // we explicitly point at the same generated URL so every locale-
+  // prefixed page gets a branded share card. Pages that DO pass
+  // `ogImage` (prayer detail with saint portrait, train + chain
+  // detail with recipient photo) override.
   //
   // Dimensions are 1200x630, matching `opengraph-image.tsx`'s
-  // `size` export and the canonical OG/Twitter aspect ratio.
+  // `size` export and the canonical OG/Twitter aspect ratio. When
+  // a caller supplies its own image we assume the legacy saint-
+  // portrait 1024x1024 ratio — the only sources of `ogImage` today.
   const baseUrl = getBaseUrl();
   const defaultImage = `${baseUrl}/${locale}/opengraph-image`;
   const image = ogImage ?? defaultImage;
   const imageWidth = ogImage ? 1024 : 1200;
   const imageHeight = ogImage ? 1024 : 630;
+  const selfUrl = `${baseUrl}${localizedHref(locale, path)}`;
 
   return {
     title: absoluteTitle ? { absolute: title } : title,
@@ -139,7 +149,8 @@ export function localizedMetadata({
     openGraph: {
       title,
       description,
-      type: "website",
+      url: selfUrl,
+      type: ogType,
       siteName: "PrayerTrain",
       locale: localeToOgTag(locale),
       images: [{ url: image, width: imageWidth, height: imageHeight, alt: title }],

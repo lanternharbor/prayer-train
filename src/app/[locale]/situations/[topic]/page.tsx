@@ -8,7 +8,7 @@ import { smartTruncate } from "@/lib/utils";
 import { Heart, Users, BookOpen, ArrowRight } from "lucide-react";
 import { SITUATIONS, SITUATION_TOPICS } from "./content";
 import type { SituationContent } from "./content";
-import { buildAlternates } from "@/i18n/metadata";
+import { localizedMetadata } from "@/i18n/metadata";
 import { localizedHref } from "@/i18n/links";
 import { isLocale, defaultLocale, locales } from "@/i18n/config";
 
@@ -49,35 +49,15 @@ export async function generateMetadata({
   const locale = isLocale(rawLocale) ? rawLocale : defaultLocale;
   const content = SITUATIONS[topic];
   if (!content) return { title: "Not Found" };
-  const path = `/situations/${content.topic}`;
-  const baseUrl = getBaseUrl();
-  const description = smartTruncate(content.description, 160);
-  return {
+  // No per-topic imagery — `localizedMetadata` falls through to the
+  // locale's auto-generated 1200x630 OG share card.
+  return localizedMetadata({
+    locale,
+    path: `/situations/${content.topic}`,
     title: content.title,
-    description,
-    alternates: buildAlternates({ locale, path }),
-    openGraph: {
-      title: content.title,
-      description,
-      url: `${baseUrl}${localizedHref(locale, path)}`,
-      type: "article",
-      siteName: "PrayerTrain",
-      locale,
-      images: [
-        {
-          url: `${baseUrl}/logo.png`,
-          width: 1024,
-          height: 1024,
-          alt: content.title,
-        },
-      ],
-    },
-    twitter: {
-      card: "summary_large_image",
-      title: content.title,
-      description,
-    },
-  };
+    description: smartTruncate(content.description, 160),
+    ogType: "article",
+  });
 }
 
 /**

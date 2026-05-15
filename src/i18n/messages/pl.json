@@ -457,6 +457,21 @@
     "verifyBody": "Link do logowania został wysłany na twój adres e-mail. Kliknij link, aby dokończyć logowanie.",
     "verifyExpiry": "Link wygaśnie za 24 godziny. Jeśli go nie widzisz, sprawdź folder spam."
   },
+  "shareButton": {
+    "heading": "Udostępnij ten PrayerTrain",
+    "description": "Zaproś przyjaciół, rodzinę i swoją parafię, by zapisali się na miejsca modlitewne.",
+    "share": "Udostępnij",
+    "copyLink": "Kopiuj link",
+    "copied": "Skopiowano!",
+    "qrCode": "Kod QR",
+    "qrCodeTitle": "Pokaż kod QR",
+    "qrModalAriaLabel": "Kod QR do udostępnienia tego train modlitewnego",
+    "scanToPray": "Zeskanuj, aby się modlić",
+    "scanToPrayBody": "Skieruj aparat telefonu na ten kod, aby otworzyć train modlitewny.",
+    "saveQR": "Zapisz QR",
+    "close": "Zamknij",
+    "nativeShareText": "Dołącz do mnie w modlitwie — zapisz się na miejsce modlitewne:"
+  },
   "publicTrain": {
     "h1PrayersFor": "Modlitwa za {recipientName}",
     "statusActive": "Aktywny",

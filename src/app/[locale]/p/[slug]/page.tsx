@@ -537,7 +537,11 @@ export default async function PrayerTrainPage({
       </div>
 
       {/* Share */}
-      <ShareButton slug={slug} recipientName={train.recipientName} />
+      <ShareButton
+        slug={slug}
+        recipientName={train.recipientName}
+        t={dict.shareButton}
+      />
 
       {/* Pray-anyway CTA — surfaced only when every calendar slot is
           claimed and the train is still accepting prayer. The train

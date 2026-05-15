@@ -2,12 +2,15 @@
 
 import { useEffect, useState } from "react";
 import { Share2, Copy, Check, QrCode, X } from "lucide-react";
+import type { Dictionary } from "@/i18n/dictionaries";
 
 export function ShareButton({
   slug,
+  t,
 }: {
   slug: string;
   recipientName: string;
+  t: Dictionary["shareButton"];
 }) {
   const [copied, setCopied] = useState(false);
   const [showQr, setShowQr] = useState(false);
@@ -39,7 +42,7 @@ export function ShareButton({
     try {
       await navigator.share({
         title: "PrayerTrain",
-        text: "Join me in prayer — sign up for a prayer slot:",
+        text: t.nativeShareText,
         url,
       });
     } catch {
@@ -78,12 +81,9 @@ export function ShareButton({
         <div className="flex-1">
           <h3 className="font-heading text-base font-semibold text-navy-800 mb-1 flex items-center gap-2">
             <Share2 className="w-4 h-4 text-gold-500" />
-            Share this PrayerTrain
+            {t.heading}
           </h3>
-          <p className="text-sm text-muted-foreground">
-            Invite friends, family, and your parish to sign up for prayer
-            slots.
-          </p>
+          <p className="text-sm text-muted-foreground">{t.description}</p>
         </div>
         <div className="flex gap-2 shrink-0">
           {/* Primary share action — native share on mobile, copy on desktop */}
@@ -94,17 +94,17 @@ export function ShareButton({
             {copied ? (
               <>
                 <Check className="w-4 h-4" />
-                Copied!
+                {t.copied}
               </>
             ) : canNativeShare ? (
               <>
                 <Share2 className="w-4 h-4" />
-                Share
+                {t.share}
               </>
             ) : (
               <>
                 <Copy className="w-4 h-4" />
-                Copy Link
+                {t.copyLink}
               </>
             )}
           </button>
@@ -113,10 +113,10 @@ export function ShareButton({
           <button
             onClick={handleShowQr}
             className="flex items-center gap-2 px-4 py-2 border border-navy-200 text-navy-700 text-sm font-medium rounded-lg hover:bg-cream-100 transition-colors"
-            title="Show QR code"
+            title={t.qrCodeTitle}
           >
             <QrCode className="w-4 h-4" />
-            QR Code
+            {t.qrCode}
           </button>
         </div>
       </div>
@@ -127,7 +127,7 @@ export function ShareButton({
           className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4"
           role="dialog"
           aria-modal="true"
-          aria-label="QR code for sharing this prayer train"
+          aria-label={t.qrModalAriaLabel}
           onClick={() => setShowQr(false)}
         >
           <div
@@ -138,16 +138,16 @@ export function ShareButton({
             <button
               onClick={() => setShowQr(false)}
               className="absolute top-3 right-3 text-muted-foreground hover:text-foreground transition-colors"
-              aria-label="Close"
+              aria-label={t.close}
             >
               <X className="w-5 h-5" />
             </button>
 
             <h3 className="font-heading text-lg font-semibold text-navy-800 text-center mb-1">
-              Scan to pray
+              {t.scanToPray}
             </h3>
             <p className="text-sm text-muted-foreground text-center mb-5">
-              Point a phone camera at this code to open the prayer train.
+              {t.scanToPrayBody}
             </p>
 
             {/* QR Code */}
@@ -176,12 +176,12 @@ export function ShareButton({
                 {copied ? (
                   <>
                     <Check className="w-4 h-4" />
-                    Copied!
+                    {t.copied}
                   </>
                 ) : (
                   <>
                     <Copy className="w-4 h-4" />
-                    Copy Link
+                    {t.copyLink}
                   </>
                 )}
               </button>
@@ -190,7 +190,7 @@ export function ShareButton({
                 download={`prayertrain-${slug}-qr.svg`}
                 className="flex items-center justify-center gap-2 px-4 py-2.5 border border-border text-navy-700 text-sm font-medium rounded-lg hover:bg-cream-100 transition-colors"
               >
-                Save QR
+                {t.saveQR}
               </a>
             </div>
 

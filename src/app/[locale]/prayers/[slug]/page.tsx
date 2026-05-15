@@ -10,6 +10,8 @@ import { getBaseUrl } from "@/lib/url";
 import { localizedMetadata } from "@/i18n/metadata";
 import { localizedHref } from "@/i18n/links";
 import { isLocale, defaultLocale, locales } from "@/i18n/config";
+import { getDictionary } from "@/i18n/dictionaries";
+import { t as interpolate } from "@/i18n/format";
 import {
   breadcrumbSchema,
   prayerArticleSchema,
@@ -107,6 +109,23 @@ export default async function PrayerDetailPage({
 
   if (!prayer) notFound();
 
+  const dict = await getDictionary(locale);
+  const t = dict.prayerDetail;
+  const categoryLabel = (cat: string): string =>
+    dict.prayerCategoryLabels[cat as keyof typeof dict.prayerCategoryLabels] ??
+    formatPrayerCategory(cat);
+  const difficultyLabel = (difficulty: string): string => {
+    switch (difficulty) {
+      case "BEGINNER":
+        return dict.prayers.difficultyBeginner;
+      case "INTERMEDIATE":
+        return dict.prayers.difficultyIntermediate;
+      case "ADVANCED":
+        return dict.prayers.difficultyAdvanced;
+      default:
+        return formatDifficulty(difficulty);
+    }
+  };
   const baseUrl = getBaseUrl();
   // Breadcrumb item URLs are locale-prefixed so Google's breadcrumb
   // rich result lands on the active locale's pages, not the bare URLs.
@@ -210,7 +229,7 @@ export default async function PrayerDetailPage({
         className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground mb-8 transition-colors"
       >
         <BookOpen className="w-4 h-4" />
-        Prayer Library
+        {t.backToLibrary}
       </Link>
 
       {/* Header */}
@@ -219,10 +238,10 @@ export default async function PrayerDetailPage({
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2 mb-3">
               <span className="px-2.5 py-0.5 rounded-full text-xs font-medium bg-navy-100 text-navy-700">
-                {formatPrayerCategory(prayer.category)}
+                {categoryLabel(prayer.category)}
               </span>
               <span className="px-2.5 py-0.5 rounded-full text-xs font-medium bg-cream-200 text-cream-700">
-                {formatDifficulty(prayer.difficulty)}
+                {difficultyLabel(prayer.difficulty)}
               </span>
             </div>
             <h1 className="font-heading text-3xl sm:text-4xl font-bold text-navy-800 mb-4">
@@ -244,23 +263,26 @@ export default async function PrayerDetailPage({
         <div className="prayer-card text-center py-4">
           <Clock className="w-5 h-5 text-gold-500 mx-auto mb-1.5" />
           <p className="text-sm font-medium text-navy-700">
-            {prayer.duration} min
+            {interpolate(t.minutesShort, { n: prayer.duration })}
           </p>
-          <p className="text-xs text-muted-foreground">Duration</p>
+          <p className="text-xs text-muted-foreground">{t.statDuration}</p>
         </div>
         <div className="prayer-card text-center py-4">
           <CalendarDays className="w-5 h-5 text-gold-500 mx-auto mb-1.5" />
           <p className="text-sm font-medium text-navy-700">
-            {prayer.daysRequired} {prayer.daysRequired === 1 ? "day" : "days"}
+            {interpolate(
+              prayer.daysRequired === 1 ? t.dayLabelSingular : t.dayLabelPlural,
+              { n: prayer.daysRequired },
+            )}
           </p>
-          <p className="text-xs text-muted-foreground">Commitment</p>
+          <p className="text-xs text-muted-foreground">{t.statCommitment}</p>
         </div>
         <div className="prayer-card text-center py-4">
           <Star className="w-5 h-5 text-gold-500 mx-auto mb-1.5" />
           <p className="text-sm font-medium text-navy-700">
-            {formatDifficulty(prayer.difficulty)}
+            {difficultyLabel(prayer.difficulty)}
           </p>
-          <p className="text-xs text-muted-foreground">Level</p>
+          <p className="text-xs text-muted-foreground">{t.statLevel}</p>
         </div>
         {prayer.patronSaint && (
           <div className="prayer-card text-center py-4">
@@ -268,7 +290,7 @@ export default async function PrayerDetailPage({
             <p className="text-sm font-medium text-navy-700 leading-snug">
               {prayer.patronSaint}
             </p>
-            <p className="text-xs text-muted-foreground">Patron Saint</p>
+            <p className="text-xs text-muted-foreground">{t.statPatronSaint}</p>
           </div>
         )}
       </div>
@@ -278,7 +300,7 @@ export default async function PrayerDetailPage({
         <div className="prayer-card mb-8">
           <h2 className="font-heading text-xl font-semibold text-navy-800 mb-3 flex items-center gap-2">
             <BookOpen className="w-5 h-5 text-gold-500" />
-            How to Pray
+            {t.howToPray}
           </h2>
           <p className="text-foreground leading-relaxed whitespace-pre-line">
             {prayer.instructions}
@@ -290,7 +312,7 @@ export default async function PrayerDetailPage({
       {prayer.prayerText && (
         <div className="prayer-card bg-cream-50 border-gold-200 mb-8">
           <h2 className="font-heading text-xl font-semibold text-navy-800 mb-4">
-            Prayer Text
+            {t.prayerText}
           </h2>
           <div className="bg-white rounded-lg p-6 border border-cream-300">
             <p className="font-heading text-lg leading-relaxed text-navy-700 italic whitespace-pre-line">
@@ -312,11 +334,10 @@ export default async function PrayerDetailPage({
         <div className="prayer-card mb-8">
           <h2 className="font-heading text-xl font-semibold text-navy-800 mb-3 flex items-center gap-2">
             <CalendarDays className="w-5 h-5 text-gold-500" />
-            Daily Meditations
+            {t.dailyMeditations}
           </h2>
           <p className="text-sm text-muted-foreground mb-4 leading-relaxed">
-            Each day of this {prayer.daysRequired}-day prayer has a distinct
-            meditation. Tap to expand.
+            {interpolate(t.dailyMeditationsLead, { n: prayer.daysRequired })}
           </p>
           <div className="space-y-2">
             {prayer.dailyReflections.slice(0, prayer.daysRequired).map(
@@ -326,7 +347,7 @@ export default async function PrayerDetailPage({
                   className="rounded-lg border border-cream-300 bg-cream-50 p-4"
                 >
                   <summary className="cursor-pointer font-medium text-navy-700">
-                    Day {idx + 1}
+                    {interpolate(t.dayN, { n: idx + 1 })}
                   </summary>
                   <p className="mt-3 text-base leading-relaxed text-navy-700 whitespace-pre-line">
                     {reflection}
@@ -343,7 +364,7 @@ export default async function PrayerDetailPage({
         <div className="mb-8">
           <h2 className="font-heading text-lg font-semibold text-navy-800 mb-3 flex items-center gap-2">
             <Tag className="w-5 h-5 text-gold-500" />
-            Recommended For
+            {t.recommendedFor}
           </h2>
           <div className="flex flex-wrap gap-2">
             {prayer.situationTags.map((tag) => (
@@ -351,7 +372,7 @@ export default async function PrayerDetailPage({
                 key={tag}
                 className="px-3 py-1 rounded-full text-sm bg-cream-200 text-cream-700"
               >
-                {formatSituation(tag)}
+                {dict.situationLabels[tag] ?? formatSituation(tag)}
               </span>
             ))}
           </div>
@@ -361,7 +382,7 @@ export default async function PrayerDetailPage({
       {/* Feast Day */}
       {prayer.feastDay && (
         <div className="text-sm text-muted-foreground mb-10">
-          <span className="font-medium">Feast Day:</span> {prayer.feastDay}
+          <span className="font-medium">{t.feastDayLabel}</span> {prayer.feastDay}
         </div>
       )}
 
@@ -375,7 +396,7 @@ export default async function PrayerDetailPage({
         <div className="mt-10">
           <h2 className="font-heading text-xl font-semibold text-navy-800 mb-4 flex items-center gap-2">
             <BookOpen className="w-5 h-5 text-gold-500" />
-            Related prayers
+            {t.relatedPrayers}
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             {relatedRanked.map((p) => (
@@ -388,7 +409,7 @@ export default async function PrayerDetailPage({
                   {p.name}
                 </h3>
                 <p className="text-xs text-muted-foreground">
-                  {formatPrayerCategory(p.category)}
+                  {categoryLabel(p.category)}
                   {p.patronSaint ? ` · ${p.patronSaint}` : ""}
                 </p>
               </Link>
@@ -405,13 +426,13 @@ export default async function PrayerDetailPage({
           <h2 className="font-heading text-xl font-semibold text-navy-800 mb-2 flex items-center gap-2">
             <Users className="w-5 h-5 text-gold-500" />
             {prayer.daysRequired === 1
-              ? "Pray this together"
-              : `Pray a ${prayer.daysRequired}-day novena together`}
+              ? t.prayThisTogether
+              : interpolate(t.prayNovenaTogether, { n: prayer.daysRequired })}
           </h2>
           <p className="text-sm text-muted-foreground leading-relaxed">
-            Invite a small group to pray this
-            {prayer.daysRequired === 1 ? " " : " each day "}with you. Everyone
-            gets the same prayer text, the same rhythm, the same intention.
+            {prayer.daysRequired === 1
+              ? t.prayWithFriendsLeadSingle
+              : t.prayWithFriendsLeadMulti}
           </p>
         </div>
         <Link
@@ -419,7 +440,7 @@ export default async function PrayerDetailPage({
           className="inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-primary text-primary-foreground font-medium rounded-lg hover:bg-navy-700 transition-colors shrink-0"
         >
           <Users className="w-4 h-4" />
-          Pray with friends
+          {t.prayWithFriendsCTA}
         </Link>
       </div>
     </div>

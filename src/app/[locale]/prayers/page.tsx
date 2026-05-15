@@ -34,6 +34,18 @@ export async function generateMetadata({
   });
 }
 
+// Tiny string-template helper. Resolves `{placeholder}` tokens inside
+// dictionary strings at render time. Missing variables collapse to ""
+// rather than throwing.
+function fmt(
+  template: string,
+  vars: Record<string, string | number>,
+): string {
+  return template.replace(/\{(\w+)\}/g, (_, k) =>
+    vars[k] === undefined ? "" : String(vars[k]),
+  );
+}
+
 export default async function PrayersPage({
   params,
   searchParams,
@@ -43,6 +55,23 @@ export default async function PrayersPage({
 }) {
   const { locale: rawLocale } = await params;
   const locale = isLocale(rawLocale) ? rawLocale : defaultLocale;
+  const dict = await getDictionary(locale);
+  const t = dict.prayers;
+  const categoryLabel = (cat: string): string =>
+    dict.prayerCategoryLabels[cat as keyof typeof dict.prayerCategoryLabels] ??
+    formatPrayerCategory(cat);
+  const difficultyLabel = (difficulty: string): string => {
+    switch (difficulty) {
+      case "BEGINNER":
+        return t.difficultyBeginner;
+      case "INTERMEDIATE":
+        return t.difficultyIntermediate;
+      case "ADVANCED":
+        return t.difficultyAdvanced;
+      default:
+        return formatDifficulty(difficulty);
+    }
+  };
   const { category, q: rawQuery } = await searchParams;
   // Trim and cap the query string to defend against absurd inputs and
   // strip the surrounding whitespace users sometimes paste in.
@@ -98,11 +127,10 @@ export default async function PrayersPage({
       {/* Header */}
       <div className="mb-8">
         <h1 className="font-heading text-3xl sm:text-4xl font-bold text-navy-800 mb-3 gold-accent">
-          Prayer Library
+          {t.heading}
         </h1>
         <p className="text-muted-foreground text-lg max-w-2xl">
-          Browse our curated collection of Catholic prayers. Each includes full
-          instructions so anyone can pray with confidence.
+          {t.subheading}
         </p>
       </div>
 
@@ -113,7 +141,7 @@ export default async function PrayersPage({
         action="/prayers"
         method="get"
         role="search"
-        aria-label="Search the prayer library"
+        aria-label={t.searchAriaLabel}
         className="mb-6 max-w-xl"
       >
         {category && (
@@ -128,7 +156,7 @@ export default async function PrayersPage({
             type="search"
             name="q"
             defaultValue={query}
-            placeholder="Search prayers — e.g. St. Blaise, grief, surgery, rosary"
+            placeholder={t.searchPlaceholder}
             maxLength={100}
             className="w-full pl-9 pr-4 py-2.5 border border-border rounded-lg bg-cream-50 focus:outline-none focus:ring-2 focus:ring-gold-400/50 focus:border-gold-400 transition"
           />
@@ -146,7 +174,7 @@ export default async function PrayersPage({
               : "bg-cream-200 text-muted-foreground hover:bg-cream-300"
           }`}
         >
-          All
+          {t.filterAll}
         </Link>
         {categories.map((cat) => {
           const params = new URLSearchParams();
@@ -162,29 +190,43 @@ export default async function PrayersPage({
                   : "bg-cream-200 text-muted-foreground hover:bg-cream-300"
               }`}
             >
-              {formatPrayerCategory(cat)}
+              {categoryLabel(cat)}
             </Link>
           );
         })}
       </div>
 
       {/* Search summary — shown only when a query is active, helps the
-          visitor confirm what they searched for and see how many hits. */}
+          visitor confirm what they searched for and see how many hits.
+          Word order, query/category interpolation, and singular/plural
+          all vary by locale, so the dictionary stores complete sentence
+          templates per case rather than fragments concatenated in JSX. */}
       {query && (
         <p className="text-sm text-muted-foreground mb-6">
-          {prayers.length === 0 ? (
-            <>
-              No prayers match <strong>&ldquo;{query}&rdquo;</strong>
-              {category && <> in {formatPrayerCategory(category)}</>}.
-            </>
-          ) : (
-            <>
-              Found <strong>{prayers.length}</strong>{" "}
-              prayer{prayers.length === 1 ? "" : "s"} matching{" "}
-              <strong>&ldquo;{query}&rdquo;</strong>
-              {category && <> in {formatPrayerCategory(category)}</>}.
-            </>
-          )}
+          {(() => {
+            const inCategory = !!category;
+            const categoryName = category ? categoryLabel(category) : "";
+            if (prayers.length === 0) {
+              return inCategory
+                ? fmt(t.noMatchesForQueryInCategory, {
+                    query,
+                    category: categoryName,
+                  })
+                : fmt(t.noMatchesForQuery, { query });
+            }
+            if (prayers.length === 1) {
+              return inCategory
+                ? fmt(t.foundOneInCategory, { query, category: categoryName })
+                : fmt(t.foundOne, { query });
+            }
+            return inCategory
+              ? fmt(t.foundManyInCategory, {
+                  query,
+                  category: categoryName,
+                  n: prayers.length,
+                })
+              : fmt(t.foundMany, { query, n: prayers.length });
+          })()}
         </p>
       )}
 
@@ -192,7 +234,7 @@ export default async function PrayersPage({
       {Object.entries(grouped).map(([cat, catPrayers]) => (
         <div key={cat} className="mb-12">
           <h2 className="font-heading text-2xl font-semibold text-navy-700 mb-6">
-            {formatPrayerCategory(cat)}
+            {categoryLabel(cat)}
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
             {catPrayers.map((prayer) => (
@@ -213,16 +255,16 @@ export default async function PrayersPage({
                 <div className="flex items-center gap-4 text-xs text-muted-foreground">
                   <span className="flex items-center gap-1">
                     <Clock className="w-3.5 h-3.5" />
-                    {prayer.duration} min
+                    {fmt(t.minutes, { n: prayer.duration })}
                   </span>
                   <span className="flex items-center gap-1">
                     <Star className="w-3.5 h-3.5" />
-                    {formatDifficulty(prayer.difficulty)}
+                    {difficultyLabel(prayer.difficulty)}
                   </span>
                   {prayer.daysRequired > 1 && (
                     <span className="flex items-center gap-1">
                       <CalendarDays className="w-3.5 h-3.5" />
-                      {prayer.daysRequired} days
+                      {fmt(t.daysCount, { n: prayer.daysRequired })}
                     </span>
                   )}
                 </div>
@@ -241,21 +283,21 @@ export default async function PrayersPage({
         <div className="text-center py-20">
           <BookOpen className="w-12 h-12 text-muted-foreground/30 mx-auto mb-4" />
           <h2 className="font-heading text-xl font-semibold text-navy-700 mb-2">
-            No prayers found
+            {t.emptyTitle}
           </h2>
           <p className="text-muted-foreground mb-4">
             {query
-              ? "Try a different search term, or clear filters to see the whole library."
+              ? t.emptySearchBody
               : category
-                ? "No prayers in this category yet."
-                : "The prayer library hasn't been seeded yet."}
+                ? t.emptyCategoryBody
+                : t.emptyLibraryBody}
           </p>
           {(query || category) && (
             <Link
               href="/prayers"
               className="inline-flex items-center gap-2 text-sm font-medium text-gold-700 hover:text-gold-800"
             >
-              Clear filters
+              {t.clearFilters}
             </Link>
           )}
         </div>

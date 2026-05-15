@@ -364,7 +364,7 @@ export default async function PrayerTrainPage({
           <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2 mb-3 flex-wrap">
           <span className="px-2.5 py-0.5 rounded-full text-xs font-medium bg-navy-100 text-navy-700">
-            {formatSituation(train.situation)}
+            {dict.situationLabels[train.situation] ?? formatSituation(train.situation)}
           </span>
           <span
             className={`px-2.5 py-0.5 rounded-full text-xs font-medium ${
@@ -377,11 +377,17 @@ export default async function PrayerTrainPage({
                 : "bg-gray-100 text-gray-700"
             }`}
           >
-            {train.status === "CANCELLED" ? "Cancelled" : train.status}
+            {train.status === "ACTIVE"
+              ? t.statusActive
+              : train.status === "PAUSED"
+              ? t.statusPaused
+              : train.status === "COMPLETED"
+              ? t.statusCompleted
+              : t.statusCancelled}
           </span>
         </div>
         <h1 className="font-heading text-3xl sm:text-4xl font-bold text-navy-800 mb-2">
-          Prayers for {train.recipientName}
+          {interpolate(t.h1PrayersFor, { recipientName: train.recipientName })}
         </h1>
         <ExpandableText
           text={train.intention}

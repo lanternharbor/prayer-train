@@ -417,6 +417,11 @@
     "verifyExpiry": "The link will expire in 24 hours. If you don't see it, check your spam folder."
   },
   "publicTrain": {
+    "h1PrayersFor": "Prayers for {recipientName}",
+    "statusActive": "Active",
+    "statusPaused": "Paused",
+    "statusCompleted": "Completed",
+    "statusCancelled": "Cancelled",
     "coverageHeading": "Prayer Coverage",
     "coverageCovered": "{pct}% covered",
     "statOpen": "{count} open",

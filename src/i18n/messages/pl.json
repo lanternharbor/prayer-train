@@ -417,6 +417,11 @@
     "verifyExpiry": "Link wygaśnie za 24 godziny. Jeśli go nie widzisz, sprawdź folder spam."
   },
   "publicTrain": {
+    "h1PrayersFor": "Modlitwa za {recipientName}",
+    "statusActive": "Aktywny",
+    "statusPaused": "Wstrzymany",
+    "statusCompleted": "Zakończony",
+    "statusCancelled": "Anulowany",
     "coverageHeading": "Pokrycie modlitewne",
     "coverageCovered": "{pct}% pokryte",
     "statOpen": "{count} otwartych",

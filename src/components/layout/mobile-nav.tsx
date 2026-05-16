@@ -25,10 +25,22 @@ export function MobileNav({
   const [open, setOpen] = useState(false);
 
   return (
-    <div className="md:hidden">
+    <div className="md:hidden flex items-center gap-2">
+      {/* Compact CTA pill — keeps the primary acquisition action one
+          tap away on mobile instead of two-taps-deep inside the
+          hamburger drawer. Mirrors the desktop "Get Started" link;
+          uses the same /create destination so the create-flow funnel
+          is identical across viewports. min-h-11 enforces a 44px tap
+          target per the iOS guideline. */}
+      <Link
+        href="/create"
+        className="inline-flex items-center px-3 py-2 text-sm font-medium text-primary-foreground bg-primary rounded-lg hover:bg-navy-700 transition-colors min-h-11"
+      >
+        {common.getStarted}
+      </Link>
       <button
         onClick={() => setOpen(!open)}
-        className="p-2 text-muted-foreground hover:text-foreground"
+        className="min-w-11 min-h-11 flex items-center justify-center text-muted-foreground hover:text-foreground"
         aria-label={open ? nav.closeMenu : nav.openMenu}
       >
         {open ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}

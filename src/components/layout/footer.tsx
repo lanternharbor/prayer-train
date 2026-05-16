@@ -65,6 +65,14 @@ export function Footer({ footer, prayers, common }: Props) {
               </li>
               <li>
                 <Link
+                  href="/how-to-start-a-prayer-train"
+                  className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  {footer.howToStart}
+                </Link>
+              </li>
+              <li>
+                <Link
                   href="/create"
                   className="text-sm text-muted-foreground hover:text-foreground transition-colors"
                 >
@@ -85,6 +93,14 @@ export function Footer({ footer, prayers, common }: Props) {
                   className="text-sm text-muted-foreground hover:text-foreground transition-colors"
                 >
                   {prayers.ourStory}
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/parish-kit"
+                  className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  {footer.forParishes}
                 </Link>
               </li>
               <li>

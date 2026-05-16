@@ -78,7 +78,9 @@
     "terms": "Terms",
     "copyright": "PrayerTrain, a {company} project. Built with faith and love.",
     "madeWith": "Made with",
-    "forBodyOfChrist": "for the Body of Christ"
+    "forBodyOfChrist": "for the Body of Christ",
+    "howToStart": "How to start a prayer train",
+    "forParishes": "For parishes"
   },
   "prayers": {
     "heading": "Prayer Library",

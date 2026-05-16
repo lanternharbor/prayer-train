@@ -142,7 +142,10 @@
     "prayNovenaTogether": "Recen una novena de {n} días juntos",
     "prayWithFriendsLeadSingle": "Invita a un grupo pequeño a rezar esto contigo. Todos reciben el mismo texto, el mismo ritmo, la misma intención.",
     "prayWithFriendsLeadMulti": "Invita a un grupo pequeño a rezar esto cada día contigo. Todos reciben el mismo texto, el mismo ritmo, la misma intención.",
-    "prayWithFriendsCTA": "Reza con amigos"
+    "prayWithFriendsCTA": "Reza con amigos",
+    "startPrayerTrainHeading": "Inicia una cadena de oración con esta oración",
+    "startPrayerTrainBody": "Coordina oración sostenida por alguien que amas. Los voluntarios cubren horarios de 30 minutos durante días o semanas; la familia recibe un ramillete espiritual al final.",
+    "startPrayerTrainCTA": "Crear una cadena de oración"
   },
   "browse": {
     "metadataTitle": "Buscar un PrayerTrain",

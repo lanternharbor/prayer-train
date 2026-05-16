@@ -142,7 +142,10 @@
     "prayNovenaTogether": "Sama-samang magdasal ng {n}-araw na novena",
     "prayWithFriendsLeadSingle": "Mag-imbita ng maliit na grupo upang sama-samang manalangin. Lahat ay tatanggap ng parehong teksto, parehong ritmo, parehong intensyon.",
     "prayWithFriendsLeadMulti": "Mag-imbita ng maliit na grupo upang sama-samang manalangin araw-araw. Lahat ay tatanggap ng parehong teksto, parehong ritmo, parehong intensyon.",
-    "prayWithFriendsCTA": "Sumamang manalangin"
+    "prayWithFriendsCTA": "Sumamang manalangin",
+    "startPrayerTrainHeading": "Magsimula ng prayer train gamit ang panalanging ito",
+    "startPrayerTrainBody": "I-coordinate ang patuloy na panalangin para sa isang mahal sa buhay. Pinupunan ng mga boluntaryo ang 30-minutong slot sa loob ng mga araw o linggo; tumatanggap ang pamilya ng spiritual bouquet sa katapusan.",
+    "startPrayerTrainCTA": "Gumawa ng prayer train"
   },
   "browse": {
     "metadataTitle": "Maghanap ng PrayerTrain",

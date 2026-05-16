@@ -142,7 +142,10 @@
     "prayNovenaTogether": "Odmówcie wspólnie {n}-dniową nowennę",
     "prayWithFriendsLeadSingle": "Zaproś małą grupę, by modliła się z tobą. Każdy otrzymuje ten sam tekst, ten sam rytm, tę samą intencję.",
     "prayWithFriendsLeadMulti": "Zaproś małą grupę, by każdego dnia modliła się z tobą. Każdy otrzymuje ten sam tekst, ten sam rytm, tę samą intencję.",
-    "prayWithFriendsCTA": "Módlcie się razem"
+    "prayWithFriendsCTA": "Módlcie się razem",
+    "startPrayerTrainHeading": "Rozpocznij łańcuch modlitwy z tą modlitwą",
+    "startPrayerTrainBody": "Koordynuj trwałą modlitwę za kogoś, kogo kochasz. Wolontariusze wypełniają 30-minutowe okna przez dni lub tygodnie; rodzina otrzymuje duchowy bukiet na końcu.",
+    "startPrayerTrainCTA": "Utwórz łańcuch modlitwy"
   },
   "browse": {
     "metadataTitle": "Znajdź PrayerTrain",

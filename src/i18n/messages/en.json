@@ -592,5 +592,11 @@
     "email": "Email",
     "emailSubject": "Pray along — PrayerTrain",
     "parishBulletinsHint": "Great for parish bulletins, text messages, and group chats."
+  },
+  "situationTopic": {
+    "prayTogetherHeading": "Pray together with others",
+    "startPrayerTrainCTA": "Start a PrayerTrain",
+    "faqsHeading": "Frequently asked",
+    "readFullGuide": "Not sure how it works? Read the full guide"
   }
 }

@@ -592,5 +592,11 @@
     "email": "E-mail",
     "emailSubject": "Reze conosco — PrayerTrain",
     "parishBulletinsHint": "Ótimo para boletins paroquiais, mensagens de texto e grupos de conversa."
+  },
+  "situationTopic": {
+    "prayTogetherHeading": "Rezar juntos com outros",
+    "startPrayerTrainCTA": "Começar um PrayerTrain",
+    "faqsHeading": "Perguntas frequentes",
+    "readFullGuide": "Não tem certeza de como funciona? Leia o guia completo"
   }
 }

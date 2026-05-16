@@ -9,6 +9,7 @@ import { Heart, Users, BookOpen, ArrowRight } from "lucide-react";
 import { SITUATION_TOPICS } from "./content";
 import type { SituationContent } from "./content";
 import { getSituationContent } from "./content.translations";
+import { getDictionary } from "@/i18n/dictionaries";
 import { localizedMetadata } from "@/i18n/metadata";
 import { localizedHref } from "@/i18n/links";
 import { isLocale, defaultLocale, locales } from "@/i18n/config";
@@ -91,6 +92,9 @@ export default async function SituationPage({
   const locale = isLocale(rawLocale) ? rawLocale : defaultLocale;
   const content = getSituationContent(locale, topic);
   if (!content) notFound();
+
+  const dict = await getDictionary(locale);
+  const t = dict.situationTopic;
 
   // Pull live data for the recommended prayers so a renamed prayer in
   // the library doesn't strand its recommendation here. Only fetch
@@ -220,18 +224,27 @@ export default async function SituationPage({
           <div className="flex-1">
             <h2 className="font-heading text-xl font-semibold text-navy-800 mb-2 flex items-center gap-2">
               <Users className="w-5 h-5 text-gold-500" />
-              Pray together with others
+              {t.prayTogetherHeading}
             </h2>
             <p className="text-sm text-foreground leading-relaxed">
               {content.prayTogetherLead}
             </p>
+            <div className="mt-3">
+              <Link
+                href="/how-to-start-a-prayer-train"
+                className="inline-flex items-center gap-1 text-sm text-navy-700 hover:text-navy-900 underline-offset-4 hover:underline transition-colors"
+              >
+                {t.readFullGuide}
+                <ArrowRight className="w-3.5 h-3.5" />
+              </Link>
+            </div>
           </div>
           <Link
-            href="/create"
+            href="/create/train"
             className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-primary text-primary-foreground font-medium rounded-lg hover:bg-navy-700 transition-colors shrink-0"
           >
             <Heart className="w-4 h-4" />
-            Start a PrayerTrain
+            {t.startPrayerTrainCTA}
           </Link>
         </div>
       </section>
@@ -240,7 +253,7 @@ export default async function SituationPage({
       {content.faqs.length > 0 && (
         <section className="mb-12">
           <h2 className="font-heading text-2xl font-semibold text-navy-800 mb-6">
-            Frequently asked
+            {t.faqsHeading}
           </h2>
           <div className="space-y-6">
             {content.faqs.map((entry) => (

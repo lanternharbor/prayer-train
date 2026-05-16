@@ -1,22 +1,33 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Share2, Copy, Check, QrCode, X } from "lucide-react";
+import { Share2, Copy, Check, QrCode, X, MessageCircle, Mail } from "lucide-react";
+import type { Dictionary } from "@/i18n/dictionaries";
 
 /**
  * Share affordance for the "pray together" PrayerTrain detail page.
  *
- * Mirrors src/app/p/[slug]/share-button.tsx (the calendar share button) so
- * the sharing UX is identical across formats — copy link, native share on
- * mobile, scannable QR code modal. Copy and URL paths are specific to the
+ * Mirrors src/app/[locale]/p/[slug]/share-button.tsx (the calendar share
+ * button) so the sharing UX is identical across formats — copy link,
+ * native share on mobile, scannable QR code modal, WhatsApp + Email
+ * deep-share buttons. Copy and URL paths are specific to the
  * /chain/[slug] route group, even though both formats are PrayerTrain
  * under the umbrella branding.
+ *
+ * The share text composition still embeds the organizer's first name +
+ * recipient phrase when not anonymous. That dynamic string is rendered
+ * in English regardless of locale for now — i18n-ing the share text
+ * itself requires placeholder-format strings in the dictionary
+ * (`{organizerFirstName}`, `{recipientPhrase}`) and a follow-up pass.
+ * The static chrome (heading, button labels, modal copy, hints) is
+ * fully localized via the `t` prop below.
  */
 export function ChainShareButton({
   slug,
   organizerFirstName,
   recipientPhrase,
   isAnonymous = false,
+  t,
 }: {
   slug: string;
   organizerFirstName: string;
@@ -25,6 +36,7 @@ export function ChainShareButton({
    *  from the native-share sheet text so it doesn't read "with the
    *  organizer" in iMessage / link unfurls. */
   isAnonymous?: boolean;
+  t: Dictionary["chainShareButton"];
 }) {
   const [copied, setCopied] = useState(false);
   const [showQr, setShowQr] = useState(false);
@@ -90,19 +102,22 @@ export function ChainShareButton({
     return () => window.removeEventListener("keydown", onKeyDown);
   }, [showQr]);
 
+  // Deep-share URLs. Mobile launches the platform's app; desktop opens
+  // the platform's web share dialog in a new tab.
+  const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(`${shareText} ${url}`)}`;
+  const emailUrl = `mailto:?subject=${encodeURIComponent(t.emailSubject)}&body=${encodeURIComponent(`${shareText}\n\n${url}`)}`;
+
   return (
     <>
       <div className="prayer-card mb-8 flex flex-col sm:flex-row items-start sm:items-center gap-4">
         <div className="flex-1">
           <h3 className="font-heading text-base font-semibold text-navy-800 mb-1 flex items-center gap-2">
             <Share2 className="w-4 h-4 text-gold-500" />
-            Share this prayer
+            {t.heading}
           </h3>
-          <p className="text-sm text-muted-foreground">
-            Invite friends, family, and your parish to pray along with you.
-          </p>
+          <p className="text-sm text-muted-foreground">{t.description}</p>
         </div>
-        <div className="flex gap-2 shrink-0">
+        <div className="flex gap-2 shrink-0 flex-wrap sm:flex-nowrap">
           <button
             onClick={canNativeShare ? handleNativeShare : handleCopy}
             className="flex items-center gap-2 px-4 py-2 bg-navy-600 text-white text-sm font-medium rounded-lg hover:bg-navy-700 transition-colors"
@@ -110,28 +125,52 @@ export function ChainShareButton({
             {copied ? (
               <>
                 <Check className="w-4 h-4" />
-                Copied!
+                {t.copied}
               </>
             ) : canNativeShare ? (
               <>
                 <Share2 className="w-4 h-4" />
-                Share
+                {t.share}
               </>
             ) : (
               <>
                 <Copy className="w-4 h-4" />
-                Copy Link
+                {t.copyLink}
               </>
             )}
           </button>
 
+          {/* WhatsApp — opens in new tab on desktop, app on mobile */}
+          <a
+            href={whatsappUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-2 px-3 py-2 border border-navy-200 text-navy-700 text-sm font-medium rounded-lg hover:bg-cream-100 transition-colors"
+            title={t.whatsapp}
+            aria-label={t.whatsapp}
+          >
+            <MessageCircle className="w-4 h-4" />
+            <span className="hidden sm:inline">{t.whatsapp}</span>
+          </a>
+
+          {/* Email */}
+          <a
+            href={emailUrl}
+            className="flex items-center gap-2 px-3 py-2 border border-navy-200 text-navy-700 text-sm font-medium rounded-lg hover:bg-cream-100 transition-colors"
+            title={t.email}
+            aria-label={t.email}
+          >
+            <Mail className="w-4 h-4" />
+            <span className="hidden sm:inline">{t.email}</span>
+          </a>
+
           <button
             onClick={handleShowQr}
-            className="flex items-center gap-2 px-4 py-2 border border-navy-200 text-navy-700 text-sm font-medium rounded-lg hover:bg-cream-100 transition-colors"
-            title="Show QR code"
+            className="flex items-center gap-2 px-3 py-2 border border-navy-200 text-navy-700 text-sm font-medium rounded-lg hover:bg-cream-100 transition-colors"
+            title={t.qrCodeTitle}
           >
             <QrCode className="w-4 h-4" />
-            QR Code
+            <span className="hidden sm:inline">{t.qrCode}</span>
           </button>
         </div>
       </div>
@@ -141,7 +180,7 @@ export function ChainShareButton({
           className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4"
           role="dialog"
           aria-modal="true"
-          aria-label="QR code for sharing this prayer"
+          aria-label={t.qrModalAriaLabel}
           onClick={() => setShowQr(false)}
         >
           <div
@@ -151,16 +190,16 @@ export function ChainShareButton({
             <button
               onClick={() => setShowQr(false)}
               className="absolute top-3 right-3 text-muted-foreground hover:text-foreground transition-colors"
-              aria-label="Close"
+              aria-label={t.close}
             >
               <X className="w-5 h-5" />
             </button>
 
             <h3 className="font-heading text-lg font-semibold text-navy-800 text-center mb-1">
-              Scan to pray along
+              {t.scanToPray}
             </h3>
             <p className="text-sm text-muted-foreground text-center mb-5">
-              Point a phone camera at this code to join this prayer.
+              {t.scanToPrayBody}
             </p>
 
             <div className="flex justify-center mb-5">
@@ -186,12 +225,12 @@ export function ChainShareButton({
                 {copied ? (
                   <>
                     <Check className="w-4 h-4" />
-                    Copied!
+                    {t.copied}
                   </>
                 ) : (
                   <>
                     <Copy className="w-4 h-4" />
-                    Copy Link
+                    {t.copyLink}
                   </>
                 )}
               </button>
@@ -200,12 +239,12 @@ export function ChainShareButton({
                 download={`prayertrain-prayer-${slug}-qr.svg`}
                 className="flex items-center justify-center gap-2 px-4 py-2.5 border border-border text-navy-700 text-sm font-medium rounded-lg hover:bg-cream-100 transition-colors"
               >
-                Save QR
+                {t.saveQR}
               </a>
             </div>
 
             <p className="text-[11px] text-muted-foreground text-center mt-4">
-              Great for parish bulletins, text messages, and group chats.
+              {t.parishBulletinsHint}
             </p>
           </div>
         </div>

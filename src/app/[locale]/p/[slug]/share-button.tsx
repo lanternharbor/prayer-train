@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Share2, Copy, Check, QrCode, X } from "lucide-react";
+import { Share2, Copy, Check, QrCode, X, MessageCircle, Mail } from "lucide-react";
 import type { Dictionary } from "@/i18n/dictionaries";
 
 export function ShareButton({
@@ -64,6 +64,12 @@ export function ShareButton({
     }
   };
 
+  // Deep-share URLs to the major messaging surfaces. WhatsApp + Email
+  // are direct user-driven shares (no app open dialog on desktop is
+  // worse than just letting the user choose the share medium).
+  const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(`${t.nativeShareText} ${url}`)}`;
+  const emailUrl = `mailto:?subject=${encodeURIComponent(t.emailSubject)}&body=${encodeURIComponent(`${t.nativeShareText}\n\n${url}`)}`;
+
   // Close the QR modal on Escape. Only attach the listener while it's open
   // so we don't intercept Escape when the modal is hidden.
   useEffect(() => {
@@ -109,14 +115,38 @@ export function ShareButton({
             )}
           </button>
 
+          {/* WhatsApp — opens in new tab on desktop, app on mobile */}
+          <a
+            href={whatsappUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-2 px-3 py-2 border border-navy-200 text-navy-700 text-sm font-medium rounded-lg hover:bg-cream-100 transition-colors"
+            title={t.whatsapp}
+            aria-label={t.whatsapp}
+          >
+            <MessageCircle className="w-4 h-4" />
+            <span className="hidden sm:inline">{t.whatsapp}</span>
+          </a>
+
+          {/* Email */}
+          <a
+            href={emailUrl}
+            className="flex items-center gap-2 px-3 py-2 border border-navy-200 text-navy-700 text-sm font-medium rounded-lg hover:bg-cream-100 transition-colors"
+            title={t.email}
+            aria-label={t.email}
+          >
+            <Mail className="w-4 h-4" />
+            <span className="hidden sm:inline">{t.email}</span>
+          </a>
+
           {/* QR code — opens inline modal */}
           <button
             onClick={handleShowQr}
-            className="flex items-center gap-2 px-4 py-2 border border-navy-200 text-navy-700 text-sm font-medium rounded-lg hover:bg-cream-100 transition-colors"
+            className="flex items-center gap-2 px-3 py-2 border border-navy-200 text-navy-700 text-sm font-medium rounded-lg hover:bg-cream-100 transition-colors"
             title={t.qrCodeTitle}
           >
             <QrCode className="w-4 h-4" />
-            {t.qrCode}
+            <span className="hidden sm:inline">{t.qrCode}</span>
           </button>
         </div>
       </div>
@@ -195,7 +225,7 @@ export function ShareButton({
             </div>
 
             <p className="text-[11px] text-muted-foreground text-center mt-4">
-              Great for parish bulletins, text messages, and group chats.
+              {t.parishBulletinsHint}
             </p>
           </div>
         </div>

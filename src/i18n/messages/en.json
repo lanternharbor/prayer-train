@@ -500,7 +500,11 @@
     "scanToPrayBody": "Point a phone camera at this code to open the prayer train.",
     "saveQR": "Save QR",
     "close": "Close",
-    "nativeShareText": "Join me in prayer — sign up for a prayer slot:"
+    "nativeShareText": "Join me in prayer — sign up for a prayer slot:",
+    "whatsapp": "WhatsApp",
+    "email": "Email",
+    "emailSubject": "Pray with us — PrayerTrain",
+    "parishBulletinsHint": "Great for parish bulletins, text messages, and group chats."
   },
   "publicTrain": {
     "h1PrayersFor": "Prayers for {recipientName}",
@@ -564,5 +568,23 @@
     "prayingAlong": "{count} {personOrPeople} praying along",
     "person": "person",
     "people": "people"
+  },
+  "chainShareButton": {
+    "heading": "Share this prayer",
+    "description": "Invite friends, family, and your parish to pray along with you.",
+    "share": "Share",
+    "copyLink": "Copy Link",
+    "copied": "Copied!",
+    "qrCode": "QR Code",
+    "qrCodeTitle": "Show QR code",
+    "qrModalAriaLabel": "QR code for sharing this prayer",
+    "scanToPray": "Scan to pray along",
+    "scanToPrayBody": "Point a phone camera at this code to join this prayer.",
+    "saveQR": "Save QR",
+    "close": "Close",
+    "whatsapp": "WhatsApp",
+    "email": "Email",
+    "emailSubject": "Pray along — PrayerTrain",
+    "parishBulletinsHint": "Great for parish bulletins, text messages, and group chats."
   }
 }

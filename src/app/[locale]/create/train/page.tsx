@@ -25,16 +25,24 @@ export async function generateMetadata({
 
 export default async function CreatePage({
   params,
+  searchParams,
 }: {
   params: Promise<{ locale: string }>;
+  searchParams: Promise<{ prayerType?: string }>;
 }) {
   const { locale } = await params;
+  const { prayerType: prefilledSlug } = await searchParams;
   // Redirect to signin if not authenticated. The edge proxy also gates
   // this route, but it only checks cookie existence — a stale cookie
   // (e.g. session deleted from DB) passes the proxy but fails here.
   const session = await auth();
   if (!session?.user?.id) {
-    redirect(`/${locale}/signin?callbackUrl=/${locale}/create/train`);
+    // Preserve the ?prayerType=... param across the sign-in round-trip
+    // so the wizard pre-fill survives auth.
+    const callbackUrl = prefilledSlug
+      ? `/${locale}/create/train?prayerType=${encodeURIComponent(prefilledSlug)}`
+      : `/${locale}/create/train`;
+    redirect(`/${locale}/signin?callbackUrl=${encodeURIComponent(callbackUrl)}`);
   }
   const dict = await getDictionary(locale);
   const t = dict.wizard;
@@ -55,6 +63,15 @@ export default async function CreatePage({
     },
   });
 
+  // Resolve ?prayerType=<slug> to a PrayerType.id so the wizard's
+  // initial selectedPrayerIds is populated. Unknown slug = silently
+  // ignored (the wizard renders the full list with nothing selected).
+  const initialSelectedPrayerIds = prefilledSlug
+    ? prayerTypes
+        .filter((p) => p.slug === prefilledSlug)
+        .map((p) => p.id)
+    : [];
+
   return (
     <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
       <div className="mb-8">
@@ -72,6 +89,7 @@ export default async function CreatePage({
         t={t}
         situationLabels={dict.situationLabels}
         prayerCategoryLabels={dict.prayerCategoryLabels}
+        initialSelectedPrayerIds={initialSelectedPrayerIds}
       />
     </div>
   );

@@ -249,7 +249,7 @@ export default async function PrayersPage({
                   </h3>
                   <BookOpen className="w-4 h-4 text-gold-400 shrink-0 mt-1" />
                 </div>
-                <p className="text-sm text-muted-foreground leading-relaxed mb-4 line-clamp-3">
+                <p className="text-sm text-foreground leading-relaxed mb-4 line-clamp-3">
                   {prayer.description}
                 </p>
                 <div className="flex items-center gap-4 text-xs text-muted-foreground">

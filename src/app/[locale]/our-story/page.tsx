@@ -73,7 +73,7 @@ export default async function OurStoryPage({
               <p className="font-heading font-semibold text-navy-800 mb-1">
                 {t.crisis1Title}
               </p>
-              <p className="text-muted-foreground text-sm">{t.crisis1Body}</p>
+              <p className="text-foreground text-sm">{t.crisis1Body}</p>
             </div>
           </div>
         </div>
@@ -85,7 +85,7 @@ export default async function OurStoryPage({
               <p className="font-heading font-semibold text-navy-800 mb-1">
                 {t.crisis2Title}
               </p>
-              <p className="text-muted-foreground text-sm">{t.crisis2Body}</p>
+              <p className="text-foreground text-sm">{t.crisis2Body}</p>
             </div>
           </div>
         </div>
@@ -97,7 +97,7 @@ export default async function OurStoryPage({
               <p className="font-heading font-semibold text-navy-800 mb-1">
                 {t.crisis3Title}
               </p>
-              <p className="text-muted-foreground text-sm">{t.crisis3Body}</p>
+              <p className="text-foreground text-sm">{t.crisis3Body}</p>
             </div>
           </div>
         </div>

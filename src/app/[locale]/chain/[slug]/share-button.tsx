@@ -145,7 +145,7 @@ export function ChainShareButton({
             href={whatsappUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center gap-2 px-3 py-2 border border-navy-200 text-navy-700 text-sm font-medium rounded-lg hover:bg-cream-100 transition-colors"
+            className="flex items-center justify-center gap-2 px-3 py-2 min-w-11 min-h-11 border border-navy-200 text-navy-700 text-sm font-medium rounded-lg hover:bg-cream-100 transition-colors"
             title={t.whatsapp}
             aria-label={t.whatsapp}
           >
@@ -156,7 +156,7 @@ export function ChainShareButton({
           {/* Email */}
           <a
             href={emailUrl}
-            className="flex items-center gap-2 px-3 py-2 border border-navy-200 text-navy-700 text-sm font-medium rounded-lg hover:bg-cream-100 transition-colors"
+            className="flex items-center justify-center gap-2 px-3 py-2 min-w-11 min-h-11 border border-navy-200 text-navy-700 text-sm font-medium rounded-lg hover:bg-cream-100 transition-colors"
             title={t.email}
             aria-label={t.email}
           >
@@ -166,7 +166,7 @@ export function ChainShareButton({
 
           <button
             onClick={handleShowQr}
-            className="flex items-center gap-2 px-3 py-2 border border-navy-200 text-navy-700 text-sm font-medium rounded-lg hover:bg-cream-100 transition-colors"
+            className="flex items-center justify-center gap-2 px-3 py-2 min-w-11 min-h-11 border border-navy-200 text-navy-700 text-sm font-medium rounded-lg hover:bg-cream-100 transition-colors"
             title={t.qrCodeTitle}
           >
             <QrCode className="w-4 h-4" />
@@ -189,7 +189,7 @@ export function ChainShareButton({
           >
             <button
               onClick={() => setShowQr(false)}
-              className="absolute top-3 right-3 text-muted-foreground hover:text-foreground transition-colors"
+              className="absolute top-2 right-2 w-11 h-11 flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors"
               aria-label={t.close}
             >
               <X className="w-5 h-5" />

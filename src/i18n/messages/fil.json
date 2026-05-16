@@ -500,7 +500,11 @@
     "scanToPrayBody": "Iturok ang camera ng telepono sa code na ito upang buksan ang prayer train.",
     "saveQR": "I-save ang QR",
     "close": "Isara",
-    "nativeShareText": "Sumama sa akin sa panalangin — mag-sign up sa isang prayer slot:"
+    "nativeShareText": "Sumama sa akin sa panalangin — mag-sign up sa isang prayer slot:",
+    "whatsapp": "WhatsApp",
+    "email": "Email",
+    "emailSubject": "Sumali sa panalangin — PrayerTrain",
+    "parishBulletinsHint": "Magaling para sa mga parokyang bulletin, text message, at group chats."
   },
   "publicTrain": {
     "h1PrayersFor": "Mga panalangin para kay {recipientName}",
@@ -564,5 +568,23 @@
     "prayingAlong": "{count} {personOrPeople} sama-samang nagdadasal",
     "person": "tao",
     "people": "mga tao"
+  },
+  "chainShareButton": {
+    "heading": "Ibahagi ang panalanging ito",
+    "description": "Imbitahan ang mga kaibigan, pamilya, at parokya na manalangin kasama mo.",
+    "share": "Ibahagi",
+    "copyLink": "Kopyahin ang link",
+    "copied": "Nakopya na!",
+    "qrCode": "QR Code",
+    "qrCodeTitle": "Ipakita ang QR code",
+    "qrModalAriaLabel": "QR code para sa pagbabahagi ng panalanging ito",
+    "scanToPray": "I-scan para makasama sa pagdarasal",
+    "scanToPrayBody": "I-point ang camera ng telepono sa code na ito para sumali sa panalanging ito.",
+    "saveQR": "I-save ang QR",
+    "close": "Isara",
+    "whatsapp": "WhatsApp",
+    "email": "Email",
+    "emailSubject": "Sumali sa panalangin — PrayerTrain",
+    "parishBulletinsHint": "Magaling para sa mga parokyang bulletin, text message, at group chats."
   }
 }

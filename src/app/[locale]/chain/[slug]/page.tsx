@@ -471,6 +471,7 @@ export default async function ChainDetailPage({
           organizerFirstName={orgFirst}
           recipientPhrase={phrase}
           isAnonymous={!orgFirstOrNull}
+          t={dict.chainShareButton}
         />
       )}
 

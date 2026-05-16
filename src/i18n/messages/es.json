@@ -500,7 +500,11 @@
     "scanToPrayBody": "Apunta la cámara del teléfono a este código para abrir el tren de oración.",
     "saveQR": "Guardar QR",
     "close": "Cerrar",
-    "nativeShareText": "Únete a mí en oración — inscríbete en un espacio de oración:"
+    "nativeShareText": "Únete a mí en oración — inscríbete en un espacio de oración:",
+    "whatsapp": "WhatsApp",
+    "email": "Correo",
+    "emailSubject": "Reza con nosotros — PrayerTrain",
+    "parishBulletinsHint": "Ideal para boletines parroquiales, mensajes de texto y chats grupales."
   },
   "publicTrain": {
     "h1PrayersFor": "Oraciones por {recipientName}",
@@ -564,5 +568,23 @@
     "prayingAlong": "{count} {personOrPeople} orando juntos",
     "person": "persona",
     "people": "personas"
+  },
+  "chainShareButton": {
+    "heading": "Comparte esta oración",
+    "description": "Invita a amigos, familia y a tu parroquia a orar junto contigo.",
+    "share": "Compartir",
+    "copyLink": "Copiar enlace",
+    "copied": "¡Copiado!",
+    "qrCode": "Código QR",
+    "qrCodeTitle": "Mostrar código QR",
+    "qrModalAriaLabel": "Código QR para compartir esta oración",
+    "scanToPray": "Escanea para orar juntos",
+    "scanToPrayBody": "Apunta la cámara del teléfono a este código para unirte a esta oración.",
+    "saveQR": "Guardar QR",
+    "close": "Cerrar",
+    "whatsapp": "WhatsApp",
+    "email": "Correo",
+    "emailSubject": "Reza con nosotros — PrayerTrain",
+    "parishBulletinsHint": "Ideal para boletines parroquiales, mensajes de texto y chats grupales."
   }
 }

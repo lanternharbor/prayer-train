@@ -500,7 +500,11 @@
     "scanToPrayBody": "Skieruj aparat telefonu na ten kod, aby otworzyć train modlitewny.",
     "saveQR": "Zapisz QR",
     "close": "Zamknij",
-    "nativeShareText": "Dołącz do mnie w modlitwie — zapisz się na miejsce modlitewne:"
+    "nativeShareText": "Dołącz do mnie w modlitwie — zapisz się na miejsce modlitewne:",
+    "whatsapp": "WhatsApp",
+    "email": "E-mail",
+    "emailSubject": "Módl się z nami — PrayerTrain",
+    "parishBulletinsHint": "Świetne do biuletynów parafialnych, wiadomości tekstowych i czatów grupowych."
   },
   "publicTrain": {
     "h1PrayersFor": "Modlitwa za {recipientName}",
@@ -564,5 +568,23 @@
     "prayingAlong": "{count} {personOrPeople} modli się razem",
     "person": "osoba",
     "people": "osób"
+  },
+  "chainShareButton": {
+    "heading": "Udostępnij tę modlitwę",
+    "description": "Zaproś przyjaciół, rodzinę i swoją parafię, aby modlili się razem z tobą.",
+    "share": "Udostępnij",
+    "copyLink": "Kopiuj link",
+    "copied": "Skopiowano!",
+    "qrCode": "Kod QR",
+    "qrCodeTitle": "Pokaż kod QR",
+    "qrModalAriaLabel": "Kod QR do udostępnienia tej modlitwy",
+    "scanToPray": "Zeskanuj, aby modlić się razem",
+    "scanToPrayBody": "Skieruj aparat telefonu na ten kod, aby dołączyć do tej modlitwy.",
+    "saveQR": "Zapisz QR",
+    "close": "Zamknij",
+    "whatsapp": "WhatsApp",
+    "email": "E-mail",
+    "emailSubject": "Módl się z nami — PrayerTrain",
+    "parishBulletinsHint": "Świetne do biuletynów parafialnych, wiadomości tekstowych i czatów grupowych."
   }
 }

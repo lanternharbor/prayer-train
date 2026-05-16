@@ -535,6 +535,8 @@
     "personalPrayerFromOrganizer": "A prayer from {organizerName}",
     "personalPrayerAnonymous": "A personal prayer",
     "personalPrayerLead": "Pray this alongside the prayers below.",
+    "readMore": "Read more",
+    "showLess": "Show less",
     "slotSignUp": "Sign up to pray",
     "slotIPrayed": "I prayed",
     "slotAddNote": "Add note",

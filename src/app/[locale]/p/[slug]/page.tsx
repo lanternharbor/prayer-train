@@ -391,12 +391,18 @@ export default async function PrayerTrainPage({
         </h1>
         <ExpandableText
           text={train.intention}
+          threshold={2000}
           className="text-lg text-muted-foreground leading-relaxed mb-4"
+          readMoreLabel={t.readMore}
+          showLessLabel={t.showLess}
         />
         {train.situationDetail && (
           <ExpandableText
             text={train.situationDetail}
+            threshold={2000}
             className="text-sm text-muted-foreground bg-cream-50 rounded-lg p-3 border border-cream-300"
+            readMoreLabel={t.readMore}
+            showLessLabel={t.showLess}
           />
         )}
         {/* Cancelled-state explanatory note. The badge already signals
@@ -481,10 +487,9 @@ export default async function PrayerTrainPage({
             {t.personalPrayerLead}
           </p>
           <div className="bg-white border border-cream-300 rounded-lg p-5">
-            <ExpandableText
-              text={train.customPrayerText}
-              className="font-heading text-base sm:text-lg leading-relaxed text-navy-700 italic"
-            />
+            <p className="font-heading text-base sm:text-lg leading-relaxed text-navy-700 italic whitespace-pre-line">
+              {train.customPrayerText}
+            </p>
           </div>
         </div>
       )}

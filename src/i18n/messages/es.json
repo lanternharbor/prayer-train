@@ -535,6 +535,8 @@
     "personalPrayerFromOrganizer": "Una oración de {organizerName}",
     "personalPrayerAnonymous": "Una oración personal",
     "personalPrayerLead": "Reza esto junto con las oraciones de abajo.",
+    "readMore": "Leer más",
+    "showLess": "Mostrar menos",
     "slotSignUp": "Comprometerme a orar",
     "slotIPrayed": "Ya recé",
     "slotAddNote": "Añadir nota",

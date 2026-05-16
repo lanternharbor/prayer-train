@@ -24,6 +24,8 @@ export function ExpandableText({
   threshold = 400,
   className = "",
   truncatedClassName,
+  readMoreLabel,
+  showLessLabel,
 }: {
   text: string;
   threshold?: number;
@@ -35,6 +37,10 @@ export function ExpandableText({
    * `className` when omitted.
    */
   truncatedClassName?: string;
+  /** Localized toggle labels. Required so the component never ships
+   *  hardcoded English copy to non-English locales. */
+  readMoreLabel: string;
+  showLessLabel: string;
 }) {
   const [expanded, setExpanded] = useState(false);
 
@@ -69,12 +75,12 @@ export function ExpandableText({
       >
         {expanded ? (
           <>
-            Show less
+            {showLessLabel}
             <ChevronUp className="w-4 h-4" />
           </>
         ) : (
           <>
-            Read more
+            {readMoreLabel}
             <ChevronDown className="w-4 h-4" />
           </>
         )}

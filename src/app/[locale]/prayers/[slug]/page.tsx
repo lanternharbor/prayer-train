@@ -437,7 +437,7 @@ export default async function PrayerDetailPage({
           </p>
         </div>
         <Link
-          href="/create/train"
+          href={`/create/train?prayerType=${prayer.slug}`}
           className="inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-primary text-primary-foreground font-medium rounded-lg hover:bg-navy-700 transition-colors shrink-0"
         >
           {t.startPrayerTrainCTA}

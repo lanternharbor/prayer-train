@@ -54,6 +54,7 @@ export function CreateWizard({
   t,
   situationLabels,
   prayerCategoryLabels,
+  initialSelectedPrayerIds = [],
 }: {
   prayerTypes: PrayerTypeSelect[];
   /** session.user.name if known — pre-fills "Your name" so users with
@@ -62,6 +63,10 @@ export function CreateWizard({
   t: Dictionary["wizard"];
   situationLabels: Dictionary["situationLabels"];
   prayerCategoryLabels: Dictionary["prayerCategoryLabels"];
+  /** Optional pre-fill from ?prayerType=<slug> on /create/train. The
+   *  parent resolved the slug to an ID. Empty array (default) =
+   *  no pre-fill — the wizard renders with nothing selected. */
+  initialSelectedPrayerIds?: string[];
 }) {
   // Locale-aware duration labels. Built inside the component so they
   // can reference the dict the server resolved. Three canonical
@@ -103,7 +108,9 @@ export function CreateWizard({
   // The toggle below makes the choice prominent and explains exactly
   // what "public" entails (browse listing, sitemap, search indexing).
   const [isPublic, setIsPublic] = useState(false);
-  const [selectedPrayerIds, setSelectedPrayerIds] = useState<string[]>([]);
+  const [selectedPrayerIds, setSelectedPrayerIds] = useState<string[]>(
+    initialSelectedPrayerIds,
+  );
   // Optional free-form prayer the organizer wants every volunteer to also
   // pray. Renders as its own card on the detail page and gets appended to
   // daily reminder emails. Lives outside the situationDetail field so the

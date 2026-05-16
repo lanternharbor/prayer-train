@@ -150,6 +150,15 @@ export default async function HomePage({
               description={t.step3Body}
             />
           </div>
+          <div className="text-center mt-12">
+            <Link
+              href="/how-to-start-a-prayer-train"
+              className="inline-flex items-center gap-2 text-navy-700 hover:text-navy-900 font-medium underline-offset-4 hover:underline transition-colors"
+            >
+              {t.howItWorksReadFullGuide}
+              <ArrowRight className="w-4 h-4" />
+            </Link>
+          </div>
         </div>
       </section>
 

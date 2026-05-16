@@ -78,7 +78,9 @@
     "terms": "Términos",
     "copyright": "PrayerTrain, un proyecto de {company}. Construido con fe y amor.",
     "madeWith": "Hecho con",
-    "forBodyOfChrist": "para el Cuerpo de Cristo"
+    "forBodyOfChrist": "para el Cuerpo de Cristo",
+    "howToStart": "Cómo iniciar una cadena de oración",
+    "forParishes": "Para parroquias"
   },
   "prayers": {
     "heading": "Biblioteca de oraciones",

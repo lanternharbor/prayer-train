@@ -78,7 +78,9 @@
     "terms": "Terms",
     "copyright": "PrayerTrain, isang proyekto ng {company}. Itinayo nang may pananampalataya at pag-ibig.",
     "madeWith": "Ginawa nang may",
-    "forBodyOfChrist": "para sa Katawan ni Kristo"
+    "forBodyOfChrist": "para sa Katawan ni Kristo",
+    "howToStart": "Paano magsimula ng prayer train",
+    "forParishes": "Para sa mga parokya"
   },
   "prayers": {
     "heading": "Aklatan ng panalangin",

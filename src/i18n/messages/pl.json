@@ -78,7 +78,9 @@
     "terms": "Regulamin",
     "copyright": "PrayerTrain, projekt {company}. Zbudowane z wiarą i miłością.",
     "madeWith": "Zrobione z",
-    "forBodyOfChrist": "dla Ciała Chrystusa"
+    "forBodyOfChrist": "dla Ciała Chrystusa",
+    "howToStart": "Jak rozpocząć modlitwę",
+    "forParishes": "Dla parafii"
   },
   "prayers": {
     "heading": "Biblioteka modlitw",

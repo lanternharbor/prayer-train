@@ -67,6 +67,8 @@ import {
   BookOpen,
   User,
   Users,
+  HandHeart,
+  ArrowRight,
 } from "lucide-react";
 
 export async function generateMetadata({
@@ -418,10 +420,35 @@ export default async function PrayerDetailPage({
         </div>
       )}
 
+      {/* "Start a prayer train" — entry point to the calendar-style
+          PrayerTrain flow (slots per day, multiple warriors covering a
+          window for a specific recipient). This is the historic core
+          flow; surfacing it here captures the high-intent moment of a
+          visitor reading the prayer description, before they have to
+          hunt for the create CTA in the nav or footer. */}
+      <div className="prayer-card bg-navy-50 border-navy-100 mt-10 flex flex-col sm:flex-row sm:items-center gap-5">
+        <div className="flex-1">
+          <h2 className="font-heading text-xl font-semibold text-navy-800 mb-2 flex items-center gap-2">
+            <HandHeart className="w-5 h-5 text-gold-500" />
+            {t.startPrayerTrainHeading}
+          </h2>
+          <p className="text-sm text-muted-foreground leading-relaxed">
+            {t.startPrayerTrainBody}
+          </p>
+        </div>
+        <Link
+          href="/create/train"
+          className="inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-primary text-primary-foreground font-medium rounded-lg hover:bg-navy-700 transition-colors shrink-0"
+        >
+          {t.startPrayerTrainCTA}
+          <ArrowRight className="w-4 h-4" />
+        </Link>
+      </div>
+
       {/* "Pray with friends" — entry point to the pray-together format
           of PrayerTrain (the small-group, same-prayer-every-day pattern).
           Single additive CTA; doesn't change any existing behavior. */}
-      <div className="prayer-card bg-cream-50 border-cream-300 mt-10 flex flex-col sm:flex-row sm:items-center gap-5">
+      <div className="prayer-card bg-cream-50 border-cream-300 mt-6 flex flex-col sm:flex-row sm:items-center gap-5">
         <div className="flex-1">
           <h2 className="font-heading text-xl font-semibold text-navy-800 mb-2 flex items-center gap-2">
             <Users className="w-5 h-5 text-gold-500" />

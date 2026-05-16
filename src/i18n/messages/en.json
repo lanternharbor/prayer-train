@@ -142,7 +142,10 @@
     "prayNovenaTogether": "Pray a {n}-day novena together",
     "prayWithFriendsLeadSingle": "Invite a small group to pray this with you. Everyone gets the same prayer text, the same rhythm, the same intention.",
     "prayWithFriendsLeadMulti": "Invite a small group to pray this each day with you. Everyone gets the same prayer text, the same rhythm, the same intention.",
-    "prayWithFriendsCTA": "Pray with friends"
+    "prayWithFriendsCTA": "Pray with friends",
+    "startPrayerTrainHeading": "Start a prayer train with this prayer",
+    "startPrayerTrainBody": "Coordinate sustained prayer for someone you love. Volunteers fill 30-minute slots covering days or weeks; the family receives a spiritual bouquet at the end.",
+    "startPrayerTrainCTA": "Create a prayer train"
   },
   "browse": {
     "metadataTitle": "Find a PrayerTrain",

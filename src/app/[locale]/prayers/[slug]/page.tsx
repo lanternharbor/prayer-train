@@ -249,7 +249,7 @@ export default async function PrayerDetailPage({
             <h1 className="font-heading text-3xl sm:text-4xl font-bold text-navy-800 mb-4">
               {prayer.name}
             </h1>
-            <p className="text-lg text-muted-foreground leading-relaxed">
+            <p className="text-lg text-foreground leading-relaxed">
               {prayer.description}
             </p>
           </div>
@@ -338,7 +338,7 @@ export default async function PrayerDetailPage({
             <CalendarDays className="w-5 h-5 text-gold-500" />
             {t.dailyMeditations}
           </h2>
-          <p className="text-sm text-muted-foreground mb-4 leading-relaxed">
+          <p className="text-sm text-foreground mb-4 leading-relaxed">
             {interpolate(t.dailyMeditationsLead, { n: prayer.daysRequired })}
           </p>
           <div className="space-y-2">
@@ -432,7 +432,7 @@ export default async function PrayerDetailPage({
             <HandHeart className="w-5 h-5 text-gold-500" />
             {t.startPrayerTrainHeading}
           </h2>
-          <p className="text-sm text-muted-foreground leading-relaxed">
+          <p className="text-sm text-foreground leading-relaxed">
             {t.startPrayerTrainBody}
           </p>
         </div>
@@ -456,7 +456,7 @@ export default async function PrayerDetailPage({
               ? t.prayThisTogether
               : interpolate(t.prayNovenaTogether, { n: prayer.daysRequired })}
           </h2>
-          <p className="text-sm text-muted-foreground leading-relaxed">
+          <p className="text-sm text-foreground leading-relaxed">
             {prayer.daysRequired === 1
               ? t.prayWithFriendsLeadSingle
               : t.prayWithFriendsLeadMulti}

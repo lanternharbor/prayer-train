@@ -126,7 +126,7 @@ export default async function HomePage({
             <h2 className="font-heading text-3xl sm:text-4xl font-bold text-navy-800 mb-4">
               {t.howItWorksHeading}
             </h2>
-            <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
+            <p className="text-foreground text-lg max-w-2xl mx-auto">
               {t.howItWorksBody}
             </p>
           </div>
@@ -171,7 +171,7 @@ export default async function HomePage({
             <h2 className="font-heading text-3xl sm:text-4xl font-bold text-navy-800 mb-4">
               {t.featuresHeading}
             </h2>
-            <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
+            <p className="text-foreground text-lg max-w-2xl mx-auto">
               {t.featuresBody}
             </p>
           </div>
@@ -265,7 +265,7 @@ export default async function HomePage({
               <h2 className="font-heading text-3xl sm:text-4xl font-bold text-navy-800 mb-4">
                 {t.finalCTAHeading}
               </h2>
-              <p className="text-muted-foreground text-lg mb-8 leading-relaxed">
+              <p className="text-foreground text-lg mb-8 leading-relaxed">
                 {t.finalCTABody}
               </p>
               <Link
@@ -305,7 +305,7 @@ function StepCard({
       <h3 className="font-heading text-xl font-semibold text-navy-800 mb-2">
         {title}
       </h3>
-      <p className="text-muted-foreground leading-relaxed">{description}</p>
+      <p className="text-foreground leading-relaxed">{description}</p>
     </div>
   );
 }
@@ -327,7 +327,7 @@ function FeatureCard({
       <h3 className="font-heading text-lg font-semibold text-navy-800 mb-2">
         {title}
       </h3>
-      <p className="text-sm text-muted-foreground leading-relaxed">
+      <p className="text-sm text-foreground leading-relaxed">
         {description}
       </p>
     </div>

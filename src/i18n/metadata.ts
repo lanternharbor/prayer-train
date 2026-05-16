@@ -97,6 +97,8 @@ export function localizedMetadata({
   description,
   absoluteTitle = false,
   ogImage,
+  ogImageWidth,
+  ogImageHeight,
   ogType = "website",
   noindex = false,
 }: {
@@ -111,6 +113,11 @@ export function localizedMetadata({
   /** Absolute URL to the page's OG image. Defaults to the per-locale
    *  auto-generated OG share card. */
   ogImage?: string;
+  /** Pixel dimensions of `ogImage`. When omitted, defaults to the
+   *  legacy 1024x1024 saint-portrait ratio. Pages that ship a
+   *  1200x630 page-local opengraph-image.tsx should set both. */
+  ogImageWidth?: number;
+  ogImageHeight?: number;
   /** Open Graph type. "website" for marketing pages, "article" for
    *  prayer-detail and situation-detail pages so Facebook/Twitter
    *  scrapers treat them as content surfaces. */
@@ -137,8 +144,8 @@ export function localizedMetadata({
   const baseUrl = getBaseUrl();
   const defaultImage = `${baseUrl}/${locale}/opengraph-image`;
   const image = ogImage ?? defaultImage;
-  const imageWidth = ogImage ? 1024 : 1200;
-  const imageHeight = ogImage ? 1024 : 630;
+  const imageWidth = ogImage ? (ogImageWidth ?? 1024) : 1200;
+  const imageHeight = ogImage ? (ogImageHeight ?? 1024) : 630;
   const selfUrl = `${baseUrl}${localizedHref(locale, path)}`;
 
   return {

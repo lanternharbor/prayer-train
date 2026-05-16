@@ -592,5 +592,11 @@
     "email": "Email",
     "emailSubject": "Sumali sa panalangin — PrayerTrain",
     "parishBulletinsHint": "Magaling para sa mga parokyang bulletin, text message, at group chats."
+  },
+  "situationTopic": {
+    "prayTogetherHeading": "Manalangin kasama ang iba",
+    "startPrayerTrainCTA": "Magsimula ng PrayerTrain",
+    "faqsHeading": "Mga karaniwang tanong",
+    "readFullGuide": "Hindi sigurado kung paano ito gumagana? Basahin ang buong gabay"
   }
 }

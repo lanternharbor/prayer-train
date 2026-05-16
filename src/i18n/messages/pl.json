@@ -592,5 +592,11 @@
     "email": "E-mail",
     "emailSubject": "Módl się z nami — PrayerTrain",
     "parishBulletinsHint": "Świetne do biuletynów parafialnych, wiadomości tekstowych i czatów grupowych."
+  },
+  "situationTopic": {
+    "prayTogetherHeading": "Módlcie się razem z innymi",
+    "startPrayerTrainCTA": "Rozpocznij PrayerTrain",
+    "faqsHeading": "Najczęściej zadawane",
+    "readFullGuide": "Nie wiesz, jak to działa? Przeczytaj pełny przewodnik"
   }
 }

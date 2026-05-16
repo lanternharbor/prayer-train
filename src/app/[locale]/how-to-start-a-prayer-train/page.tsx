@@ -9,6 +9,7 @@ import {
 import { ArrowRight, Users, Mail, Heart, Calendar, Sparkles } from "lucide-react";
 import { localizedMetadata } from "@/i18n/metadata";
 import { isLocale, defaultLocale, type Locale } from "@/i18n/config";
+import { getBaseUrl } from "@/lib/url";
 
 // Consumer pastoral landing: captures the search intent
 // "how to organize prayer for a sick family member" / "set up a
@@ -474,12 +475,16 @@ export async function generateMetadata({
   const { locale: rawLocale } = await params;
   const locale = isLocale(rawLocale) ? rawLocale : defaultLocale;
   const t = COPY[locale];
+  const baseUrl = getBaseUrl();
   return localizedMetadata({
     locale,
     path: "/how-to-start-a-prayer-train",
     title: t.metaTitle,
     description: t.metaDescription,
     absoluteTitle: true,
+    ogImage: `${baseUrl}/${locale}/how-to-start-a-prayer-train/opengraph-image`,
+    ogImageWidth: 1200,
+    ogImageHeight: 630,
   });
 }
 

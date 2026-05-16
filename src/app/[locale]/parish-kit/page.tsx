@@ -370,12 +370,16 @@ export async function generateMetadata({
   const { locale: rawLocale } = await params;
   const locale = isLocale(rawLocale) ? rawLocale : defaultLocale;
   const t = COPY[locale];
+  const baseUrl = getBaseUrl();
   return localizedMetadata({
     locale,
     path: "/parish-kit",
     title: t.metaTitle,
     description: t.metaDescription,
     absoluteTitle: true,
+    ogImage: `${baseUrl}/${locale}/parish-kit/opengraph-image`,
+    ogImageWidth: 1200,
+    ogImageHeight: 630,
   });
 }
 

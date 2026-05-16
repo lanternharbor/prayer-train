@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { LocaleLink as Link } from "@/components/locale-link";
 import { CrossIcon, CrossDivider } from "@/components/ui/catholic-icons";
-import { ArrowRight, Copy, Mail, Heart, BookOpen } from "lucide-react";
+import { ArrowRight, Copy, Mail, Heart, BookOpen, Sparkles } from "lucide-react";
 import { localizedMetadata } from "@/i18n/metadata";
 import { isLocale, defaultLocale, type Locale } from "@/i18n/config";
 import { getBaseUrl } from "@/lib/url";
@@ -493,7 +493,7 @@ export default async function ParishKitPage({
         <ul className="space-y-3 ml-16">
           {t.talkingPoints.map((point, i) => (
             <li key={i} className="flex gap-3 text-foreground/90">
-              <span className="shrink-0 text-gold-500 font-bold">·</span>
+              <span className="shrink-0 text-gold-500 font-bold mt-1">·</span>
               <span>{point}</span>
             </li>
           ))}
@@ -502,9 +502,14 @@ export default async function ParishKitPage({
 
       {/* FAQ */}
       <section className="mb-12">
-        <h2 className="font-heading text-2xl font-bold text-navy-800 mb-5">
-          {t.faqHeading}
-        </h2>
+        <div className="flex items-start gap-4 mb-5">
+          <div className="shrink-0 w-12 h-12 rounded-2xl bg-navy-100 flex items-center justify-center">
+            <Sparkles className="w-6 h-6 text-navy-700" />
+          </div>
+          <h2 className="font-heading text-2xl font-bold text-navy-800">
+            {t.faqHeading}
+          </h2>
+        </div>
         <div className="space-y-5">
           {t.faqs.map((faq, i) => (
             <div

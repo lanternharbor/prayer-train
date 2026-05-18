@@ -346,4 +346,217 @@ export const ptBRTranslations: PrayerTranslationSeed[] = [
     source: "CNBB + Diário de Santa Faustina (1320) + JPII canonização 30 abril 2000 + Marcos 15,34-37. Retrieved 2026-05-14.",
     reviewedAt: new Date("2026-05-14"),
   },
+  // ── Wave 6 (2026-05-17): Marian devotions, modern saints, patronage
+  //    saints. Fontes: CNBB, Vatican.va Português, Paulus, Canção Nova,
+  //    A12 / Santuário Nacional de Aparecida.
+  {
+    prayerSlug: "novena-fatima",
+    name: "Novena a Nossa Senhora de Fátima",
+    description:
+      "A Novena a Nossa Senhora de Fátima honra as aparições marianas que ocorreram entre 13 de maio e 13 de outubro de 1917 na Cova da Iria, perto de Fátima, Portugal, onde Maria apareceu seis vezes a três crianças pastoras: Lúcia dos Santos e seus primos Francisco e Jacinta Marto. Em cada aparição a Virgem pediu oração pela conversão dos pecadores, a prática da penitência e o rezo diário do Santo Rosário pela paz mundial. A última aparição, em 13 de outubro de 1917, foi acompanhada pelo «Milagre do Sol» testemunhado por cerca de setenta mil pessoas, incluindo jornalistas e céticos. A Igreja reconheceu as aparições como dignas de fé em 1930. São João Paulo II atribuiu à intercessão de Nossa Senhora de Fátima ter sobrevivido ao atentado de 13 de maio de 1981 e consagrou o mundo ao Imaculado Coração dela em 1984. Os pastorinhos Francisco e Jacinta foram canonizados pelo Papa Francisco em Fátima em 13 de maio de 2017. Para o Brasil — terra portuguesa do mar largo — a devoção a Nossa Senhora de Fátima é especialmente próxima: a língua portuguesa une nossa fé à terra dos pastorinhos, e o Santuário de Fátima é destino comum de peregrinação para milhões de brasileiros. A novena é rezada tradicionalmente de 4 a 12 de maio, culminando na festa de 13 de maio.",
+    prayerText:
+      "Ó Santíssima Virgem Maria, Rainha do Santíssimo Rosário, que em Fátima Vos dignastes manifestar Vossa predileção pelos humildes e pequeninos, dirigi Vosso olhar compassivo para mim, que com confiança filial recorro a Vós. Concedei-me, por Vossa poderosa intercessão, a graça que agora Vos peço (mencionar a intenção), se for conforme à vontade de Deus e convier à salvação da minha alma. Ensinai-me, Mãe, a viver com fé, a orar com perseverança e a fazer reparação pelos pecados que ofendem o Sagrado Coração de Jesus e Vosso Imaculado Coração. Amém. Nossa Senhora do Rosário de Fátima, rogai por nós.",
+    instructions:
+      "Reze uma vez ao dia durante nove dias consecutivos, idealmente de 4 a 12 de maio em preparação para a festa de 13 de maio. Estrutura tradicional: (1) Sinal da Cruz; (2) ato de contrição; (3) um mistério do Santo Rosário com meditação pausada — o Rosário é inseparável da devoção de Fátima; (4) a oração da novena; (5) as jaculatórias ensinadas por Maria: «Ó Jesus, é por Vosso amor, pela conversão dos pecadores e em reparação pelos pecados cometidos contra o Imaculado Coração de Maria»; (6) mencione sua intenção específica. Muitos católicos brasileiros acrescentam a consagração familiar ao Imaculado Coração de Maria ao concluir a novena. A Comunhão reparadora dos primeiros sábados — pedida pela Virgem à irmã Lúcia em Pontevedra em 1925 — combina-se naturalmente com esta novena.",
+    patronSaint: "Nossa Senhora de Fátima · Santos Francisco e Jacinta Marto",
+    feastDay: "13 de maio",
+    source: "CNBB + Vatican.va Português (Mensagem de Fátima, CDF 2000) + Memórias da Irmã Lúcia + canonização de Francisco e Jacinta Marto (13 de maio de 2017). Retrieved 2026-05-17.",
+    reviewedAt: new Date("2026-05-17"),
+  },
+  {
+    prayerSlug: "novena-lourdes",
+    name: "Novena a Nossa Senhora de Lourdes",
+    description:
+      "A Novena a Nossa Senhora de Lourdes honra as dezoito aparições de Maria a Santa Bernadette Soubirous entre 11 de fevereiro e 16 de julho de 1858 na gruta de Massabielle, em Lourdes, França. Na nona aparição, Bernadette descobriu por indicação da Senhora uma fonte cujas águas começaram a brotar da rocha; em 25 de março de 1858, a Virgem identificou-se: «Eu sou a Imaculada Conceição» — apenas quatro anos depois da definição dogmática de Pio IX. O Santuário de Lourdes acolhe hoje mais de seis milhões de peregrinos por ano. A Igreja reconheceu oficialmente setenta milagres de cura. A festa litúrgica de 11 de fevereiro foi estabelecida por São Pio X e, desde 1992, São João Paulo II instituiu o Dia Mundial do Enfermo nessa mesma data. A novena é rezada tradicionalmente de 2 a 10 de fevereiro, e é especialmente apropriada para pedir a cura física ou espiritual de si mesmo ou de um ente querido, a graça de aceitar o sofrimento com fé, ou qualquer necessidade urgente quando a enfermidade exige uma intercessão sustentada.",
+    prayerText:
+      "Ó Imaculada Virgem Maria, Mãe de Misericórdia, Saúde dos Enfermos, Refúgio dos Pecadores, Consoladora dos Aflitos, Vós conheceis os meus desejos, as minhas dificuldades, os meus sofrimentos; dignai-Vos pousar sobre mim o Vosso olhar misericordioso. Ao aparecer na gruta de Lourdes Vos comprouvestes em fazer dela um lugar privilegiado onde dispensais Vossas graças, e ali muitos enfermos obtiveram a cura de suas doenças espirituais e corporais. Venho com plena confiança implorar Vossa intercessão maternal. Obtenha para mim, ó terna Mãe, a graça que solicito (mencionar a intenção). Pela oração de Lourdes que tantas vezes se viu coroada pela cura, peço-Vos a saúde do corpo e, sobretudo, a da alma. Amém.",
+    instructions:
+      "Reze uma vez ao dia durante nove dias consecutivos. Estrutura: (1) Sinal da Cruz e um ato de fé na presença maternal de Maria; (2) os mistérios gozosos do Santo Rosário, lembrando que Bernadette rezava o Rosário durante cada aparição; (3) a oração da novena; (4) três Ave-Marias em honra à Imaculada Conceição; (5) encerramento com a jaculatória de Bernadette: «Ó Maria, concebida sem pecado, rogai por nós que recorremos a Vós». Para pedir cura física, muitos católicos acrescentam a bênção com água de Lourdes — não como talismã mas como sacramental. Se a novena for rezada por um enfermo grave, considere fazê-la em família. Combinar com uma visita ao enfermo, a recepção dos sacramentos (Unção, Comunhão) e um exame sincero do próprio modo de habitar o sofrimento transforma o exercício em participação na missão de Lourdes.",
+    patronSaint: "Nossa Senhora de Lourdes · Santa Bernadette Soubirous",
+    feastDay: "11 de fevereiro (Dia Mundial do Enfermo)",
+    source: "CNBB + Vatican.va (Salvifici Doloris, JPII 1984) + relatos de Bernadette Soubirous + Bureau Médical de Lourdes. Retrieved 2026-05-17.",
+    reviewedAt: new Date("2026-05-17"),
+  },
+  {
+    prayerSlug: "novena-undoer-of-knots",
+    name: "Novena a Maria, Desatadora dos Nós",
+    description:
+      "A devoção a Maria Desatadora dos Nós tem sua origem em uma pintura barroca atribuída a Johann Georg Melchior Schmidtner (ca. 1700) conservada na igreja de São Pedro am Perlach em Augsburgo, Alemanha — imagem visual da doutrina patrística que vê Maria como a nova Eva «que desata pela sua obediência o que Eva atou pela sua desobediência» (Santo Ireneu, Adversus Haereses III, 22, 4). A devoção permaneceu local até que o então padre Jorge Mario Bergoglio, durante seus estudos doutorais na Alemanha em 1986, descobriu a pintura e a trouxe para a Argentina. Como Papa Francisco a tornou conhecida universalmente. No Brasil a devoção espalhou-se rapidamente a partir de 2013, com paróquias dedicadas em São Paulo, Rio de Janeiro, Belo Horizonte. A novena é especialmente apropriada para situações que parecem humanamente irresolúveis: casamentos em crise, filhos afastados da fé, dependências químicas, conflitos familiares prolongados, decisões bloqueadas. A oração não exige conhecer a natureza exata do nó; basta apresentá-lo a Maria com confiança filial.",
+    prayerText:
+      "Virgem Maria, Mãe que jamais abandonastes um filho que clama o Vosso auxílio, Mãe cujas mãos não cessam de trabalhar por nós, Vossos filhos amados, Mãe cheia da graça de Deus, ponho em Vossas mãos as fitas e os laços que apertam minha vida. Em Vossas mãos não existe nó que não possa ser desatado. Mãe poderosa, pela Vossa intercessão e pela graça de Vosso Filho Jesus, trazei às minhas mãos o consolo. Vós, que desatais com doçura os nós da minha vida, peço-Vos receber em Vossas mãos (mencionar o nome ou a situação), e livrar dos laços e confusões com que o inimigo nos ataca. Pela Vossa graça, pela Vossa intercessão, livrai-nos de todo mal, Senhora nossa, e desatai os nós que nos impedem de unir-nos a Deus. Amém.",
+    instructions:
+      "Reze uma vez ao dia durante nove dias consecutivos. Estrutura: (1) Sinal da Cruz; (2) ato de contrição — o desatamento de um nó muitas vezes começa com o reconhecimento do próprio pecado; (3) um mistério do Santo Rosário; (4) a oração da novena; (5) um Pai-Nosso, Ave-Maria e Glória; (6) mencione explicitamente o nó. Para situações particularmente difíceis, o Papa Francisco recomendou rezar a novena durante um período prolongado se a intercessão não for atendida de imediato. Muitos católicos brasileiros acrescentam um gesto simbólico: escrever o nó num papel e colocá-lo aos pés de uma imagem mariana. Se o nó for uma relação rompida, considere oferecer a novena pela conversão própria primeiro e pela outra pessoa depois.",
+    patronSaint: "Maria, Desatadora dos Nós",
+    feastDay: "28 de setembro (devoção não calendarial)",
+    source: "Vatican.va Português (homilias do Papa Francisco) + tradição de Augsburgo (igreja de São Pedro am Perlach) + Santo Ireneu, Adversus Haereses III, 22, 4. Retrieved 2026-05-17.",
+    reviewedAt: new Date("2026-05-17"),
+  },
+  {
+    prayerSlug: "novena-seven-sorrows",
+    name: "Novena a Nossa Senhora das Dores",
+    description:
+      "A Novena a Nossa Senhora das Dores (também Mater Dolorosa) honra os sete momentos de maior sofrimento na vida de Maria: a profecia de Simeão, a fuga para o Egito, a perda do Menino Jesus no Templo, o encontro com Jesus no caminho do Calvário, Jesus na cruz, Jesus descido da cruz (Pietà) e Jesus no sepulcro. A devoção remonta ao século XIII (Ordem dos Servitas de Maria, Florença 1233) e foi estendida pelo Papa Bento XIII em 1727. A festa litúrgica de 15 de setembro sublinha a corredenção mariana: Maria permaneceu de pé junto à cruz (stabat Mater). A Mater Dolorosa é a primeira intercessora dos que sofrem — mães que perderam filhos, esposos abandonados, pais cujos filhos escolheram caminhos de morte. No Brasil, a devoção das Sete Dores tem expressão forte na Semana Santa, especialmente na Sexta-Feira Santa. A novena é rezada tradicionalmente de 6 a 14 de setembro.",
+    prayerText:
+      "Ó Maria, Mãe dolorosíssima, suplicamos-Vos que, pela Vossa própria tristeza ao pé da Cruz, nos alcanceis a graça de suportar nossos sofrimentos com paciência e amor, em união com os sofrimentos de Vosso divino Filho. Vós que estivestes presente no Calvário e cuja alma foi traspassada pela espada da dor segundo a profecia de Simeão, alcançai-nos a fortaleza para não nos afastarmos da cruz quando esta chegar à nossa vida. Recebei em Vosso Coração Imaculado a intenção que agora Vos apresento (mencionar a intenção), e ensinai-nos a estar de pé, como Vós estivestes, junto aos que sofrem. Rainha dos Mártires, rogai por nós. Amém.",
+    instructions:
+      "A novena se compõe meditando cada dia sobre uma das Sete Dores. Estrutura diária: (1) Sinal da Cruz; (2) leitura breve do trecho evangélico correspondente; (3) meditação silenciosa de vários minutos — o traço distintivo desta novena é a quietude; (4) uma Ave-Maria por cada Dor (sete ao todo cada dia); (5) a oração da novena; (6) um Pai-Nosso e Glória. Alternativa muito difundida no Brasil: rezar a Coroa das Sete Dores (também chamada Rosário Servita). A novena combina-se naturalmente com visitas ao Santíssimo Sacramento, com o jejum mariano das sextas, e com a prática de acompanhar alguém em luto recente — não com palavras, mas com presença, ao modo da Mater Dolorosa.",
+    patronSaint: "Nossa Senhora das Dores · Rainha dos Mártires",
+    feastDay: "15 de setembro",
+    source: "CNBB + Vatican.va Português + tradição dos Servitas de Maria (Florença, 1233) + Bento XIII (1727). Retrieved 2026-05-17.",
+    reviewedAt: new Date("2026-05-17"),
+  },
+  {
+    prayerSlug: "novena-mount-carmel",
+    name: "Novena a Nossa Senhora do Carmo",
+    description:
+      "A devoção a Nossa Senhora do Monte Carmelo enraíza-se no Monte Carmelo da Terra Santa, onde o profeta Elias orou pela chuva que terminaria com a seca de Israel (1 Reis 18). Os eremitas latinos que viviam ali no século XII se constituíram como Ordem do Carmo sob a regra de Santo Alberto de Jerusalém (ca. 1209). Na noite de 16 de julho de 1251, em Cambridge, a Virgem Maria apareceu a São Simão Stock e entregou-lhe o Escapulário marrom com a promessa: «Aquele que morrer revestido com este escapulário não padecerá o fogo eterno». A Igreja reafirmou esta promessa — entendida corretamente como sinal de consagração filial a Maria que se traduz em uma vida de oração, sacramentos e caridade. No Brasil, Nossa Senhora do Carmo tem devoção particularmente forte no Nordeste (especialmente em Recife, Salvador e Olinda) e em paróquias carmelitanas. A festa do 16 de julho é também festa nacional do escapulário. A novena se reza tradicionalmente de 7 a 15 de julho.",
+    prayerText:
+      "Ó Virgem do Monte Carmelo, formosa Flor do Carmelo, Videira florida, Esplendor do Céu, Mãe puríssima do Filho de Deus e Mãe nossa, olhai-me com olhos de misericórdia. Estrela do mar, ajudai-me em meus caminhos pelas águas deste mundo. Pelo Vosso Santo Escapulário, sinal de Vossa proteção maternal, dai-me a graça da perseverança final, e alcançai-me agora a graça que Vos peço (mencionar a intenção), se for conforme à vontade de Deus. Rainha e Formosura do Carmelo, rogai por nós. Amém.",
+    instructions:
+      "Reze uma vez ao dia durante nove dias consecutivos, idealmente de 7 a 15 de julho. Estrutura: (1) Sinal da Cruz; (2) Salmo 23 ou o cântico do Magnificat (Lc 1,46-55); (3) a oração da novena; (4) cinco Ave-Marias; (5) a jaculatória «Flor do Carmelo, Videira florida, Esplendor do Céu, Mãe do Filho de Deus, Mãe intacta nossa». Se você usa o Escapulário, lembre-se que seu uso supõe uma vida cristã coerente — não é talismã mas sinal de filiação mariana. Se você ainda não o tem, considere recebê-lo em imposição sacramental ao concluir a novena. A devoção carmelita enriquece-se com a leitura dos grandes místicos da Ordem: Santa Teresa de Jesus, São João da Cruz, Santa Teresinha do Menino Jesus.",
+    patronSaint: "Nossa Senhora do Monte Carmelo · São Simão Stock",
+    feastDay: "16 de julho",
+    source: "CNBB + Vatican.va Português + Regra de Santo Alberto de Jerusalém (ca. 1209) + Bento XIII (extensão 1726) + tradição da Ordem do Carmo. Retrieved 2026-05-17.",
+    reviewedAt: new Date("2026-05-17"),
+  },
+  {
+    prayerSlug: "novena-padre-pio",
+    name: "Novena a São Pio de Pietrelcina",
+    description:
+      "São Pio de Pietrelcina (Francesco Forgione, 1887-1968) foi um sacerdote capuchinho italiano cuja vida foi marcada por dons místicos extraordinários e por uma austeridade penitencial sem concessões. Em 20 de setembro de 1918 recebeu as chagas de Cristo (estigmas) — os únicos estigmas plenamente visíveis documentados em um sacerdote da Igreja, que carregou durante cinquenta anos. Viveu a maior parte de sua vida adulta como confessor: dezesseis horas por dia no confessionário, lendo com frequência as consciências dos penitentes antes que estes falassem. Seu dom de bilocação, suas profecias cumpridas, suas curas documentadas e sua fundação da Casa Sollievo della Sofferenza o tornaram uma das figuras mais amadas do século XX. São João Paulo II o beatificou em 1999 e o canonizou em 16 de junho de 2002. No Brasil, a devoção a Padre Pio é uma das mais difundidas entre as devoções modernas. A novena é apropriada para pedir a conversão própria ou de um ente querido, a cura física ou espiritual, a perseverança no sofrimento, uma boa confissão.",
+    prayerText:
+      "Querido Deus, Vós destes a São Pio de Pietrelcina o privilégio de participar de maneira extraordinária na Paixão de Vosso Filho. Concedei-me por sua intercessão a graça de (mencionar a intenção), que ardentemente desejo do coração de Jesus. São Pio de Pietrelcina, grande sacerdote do confessionário, grande amigo dos enfermos e dos pecadores, rogai por mim. Padre Pio, homem cheio das chagas de Cristo, alcançai-me a graça de aceitar minhas próprias cruzes como aceitastes as Vossas: com fé inquebrável e com humildade serena. Amém.",
+    instructions:
+      "Reze uma vez ao dia durante nove dias consecutivos. Estrutura: (1) Sinal da Cruz; (2) um breve exame de consciência — Padre Pio foi antes de tudo confessor; (3) a oração da novena; (4) um Pai-Nosso, Ave-Maria e Glória em honra às Cinco Chagas; (5) cinco Pai-Nossos e Ave-Marias pelas intenções do Papa. Padre Pio recomendava três disciplinas: (a) a confissão semanal, (b) a Comunhão diária se possível, (c) a direção espiritual com um confessor estável. Para os enfermos: rezar a novena ao lado do leito do enfermo, lembrando que ele mesmo passou a maior parte da vida com dor física contínua e aprendeu a transformá-la em oração.",
+    patronSaint: "São Pio de Pietrelcina",
+    feastDay: "23 de setembro",
+    source: "CNBB + Vatican.va Português (homilias de JPII na canonização, 16 de junho de 2002) + Canção Nova + epistolário de Padre Pio. Retrieved 2026-05-17.",
+    reviewedAt: new Date("2026-05-17"),
+  },
+  {
+    prayerSlug: "novena-st-faustina",
+    name: "Novena a Santa Maria Faustina Kowalska",
+    description:
+      "Santa Maria Faustina Kowalska (1905-1938) foi uma humilde religiosa polonesa da Congregação das Irmãs de Nossa Senhora da Misericórdia, a quem Jesus escolheu como secretária e apóstola de sua Divina Misericórdia. Entre 1931 e 1938 recebeu revelações de Jesus que registrou em seu Dzienniczek (Diário). Nessas revelações Jesus pediu: (1) a imagem do Senhor da Divina Misericórdia com a inscrição «Jesus, eu confio em Vós»; (2) o Domingo da Divina Misericórdia como festa universal; (3) a Coroinha da Divina Misericórdia; e (4) a Hora da Misericórdia (15h00). Foi canonizada por São João Paulo II em 30 de abril de 2000, no mesmo dia em que estabeleceu a festa. No Brasil, a devoção à Divina Misericórdia tem expressão pastoral muito ampla. A novena foi ditada por Jesus a Faustina (Diário 1209-1229) e é rezada da Sexta-Feira Santa ao Sábado da Oitava de Páscoa.",
+    prayerText:
+      "Ó Eterno Pai, olho com olhos de misericórdia para (a intenção do dia), e pelos dolorosíssimos méritos da Paixão de Jesus Cristo e por seu Sagrado Coração, atrai estas almas ao Vosso Reino, para que conheçam Vossa insondável misericórdia. Jesus, fonte da vida, eu confio em Vós. (Repetir 1 Pai-Nosso, 1 Ave-Maria e o Credo, seguido da Coroinha completa da Divina Misericórdia rezada pela intenção do dia.) Santa Faustina Kowalska, apóstola da Divina Misericórdia, rogai por nós. Amém.",
+    instructions:
+      "A novena tem nove dias consecutivos, idealmente da Sexta-Feira Santa ao Sábado véspera do Domingo da Divina Misericórdia. Cada dia tem uma intenção específica atribuída por Jesus (dia 1 toda a humanidade, dia 2 os sacerdotes, dia 3 as almas devotas, dia 4 os não-crentes, dia 5 os irmãos separados, dia 6 os humildes, dia 7 os devotos da Divina Misericórdia, dia 8 as almas do purgatório, dia 9 as almas tíbias). Estrutura: (1) Sinal da Cruz; (2) leitura breve da intenção de Jesus para esse dia; (3) a oração do dia; (4) a Coroinha completa da Divina Misericórdia (uns dez minutos com um Rosário comum); (5) encerramento com «Jesus, eu confio em Vós». Se a situação for urgente, combine com a confissão sacramental, a Comunhão e a visita ao Santíssimo Sacramento durante a Hora da Misericórdia (15h00).",
+    patronSaint: "Santa Maria Faustina Kowalska",
+    feastDay: "5 de outubro (canonização 30 de abril de 2000)",
+    source: "CNBB + Vatican.va (canonização JPII 30 de abril de 2000) + Dzienniczek / Diário de Santa Faustina (1209-1229) + Canção Nova. Retrieved 2026-05-17.",
+    reviewedAt: new Date("2026-05-17"),
+  },
+  {
+    prayerSlug: "novena-john-paul-ii",
+    name: "Novena a São João Paulo II",
+    description:
+      "São João Paulo II (Karol Józef Wojtyła, 1920-2005) — o primeiro papa polonês e o primeiro papa não italiano em quatrocentos e cinquenta e cinco anos — governou a Igreja Católica de 16 de outubro de 1978 até 2 de abril de 2005. Sua vida atravessou os dois totalitarismos do século XX: a ocupação nazista da Polônia e o regime comunista, ao qual se enfrentou como bispo de Cracóvia e como pontífice cujas visitas à Polônia foram decisivas para o colapso do comunismo. Sobreviveu ao atentado de 13 de maio de 1981 e atribuiu sua salvação à intercessão de Nossa Senhora de Fátima. Canonizou 482 santos. Visitou o Brasil quatro vezes (1980, 1991, 1997, 2002) — incluindo a missa no Aterro do Flamengo no Rio em outubro de 1980 com cerca de dois milhões de fiéis, uma das maiores concentrações católicas da história brasileira. Morreu em 2 de abril de 2005, véspera do Domingo da Divina Misericórdia. Foi canonizado pelo Papa Francisco em 27 de abril de 2014. A novena é apropriada para pedir vocações sacerdotais, fortaleza diante da perseguição pela fé, graças para a juventude, a defesa da vida, ou qualquer intenção familiar.",
+    prayerText:
+      "Ó Santíssima Trindade, nós Vos agradecemos por terdes dado à Vossa Igreja São João Paulo II, em quem resplandeceu Vossa ternura, o rosto paterno de Vossa misericórdia, o amor a Cristo Esposo da Igreja e a paixão pelo homem, filho predileto de Deus. Concedei-nos, por sua intercessão, conforme à Vossa vontade, a graça que agora Vos pedimos (mencionar a intenção). São João Paulo II, da janela do Céu, dai-nos Vossa bênção. Bendizei a Igreja, bendizei o mundo, bendizei especialmente as famílias e os jovens. Amém. E como tantas vezes nos dissestes: «Não tenhais medo! Abri as portas a Cristo!»",
+    instructions:
+      "Reze uma vez ao dia durante nove dias consecutivos. Estrutura: (1) Sinal da Cruz; (2) Ato de fé ou o Credo dos Apóstolos; (3) Leitura breve de um trecho de alguma encíclica ou da Carta às Famílias; (4) Cinco mistérios do Santo Rosário, idealmente os luminosos que ele acrescentou em Rosarium Virginis Mariae (2002); (5) A oração da novena; (6) Encerramento com «Totus Tuus» — «Todo teu», o lema mariano que tomou de São Luís Maria Grignion de Montfort. Para os jovens católicos brasileiros, prática recomendada: rezar a novena nos nove dias prévios a uma JMJ ou a uma decisão vocacional importante. A JMJ Rio 2013 — a primeira presidida pelo Papa Francisco — foi a continuação direta da visão wojtyliana iniciada em 1985.",
+    patronSaint: "São João Paulo II",
+    feastDay: "22 de outubro (canonização 27 de abril de 2014)",
+    source: "CNBB + Vatican.va Português + Karol Wojtyła, Dom e Mistério (1996) + visitas pastorais ao Brasil (1980, 1991, 1997, 2002). Retrieved 2026-05-17.",
+    reviewedAt: new Date("2026-05-17"),
+  },
+  {
+    prayerSlug: "novena-mother-teresa",
+    name: "Novena a Santa Teresa de Calcutá",
+    description:
+      "Santa Teresa de Calcutá (Anjezë Gonxhe Bojaxhiu, 1910-1997) — nascida em Skopje em uma família católica albanesa — entrou em 1928 nas Irmãs de Loreto e ensinou durante quase duas décadas em uma escola de meninas em Calcutá. Em 10 de setembro de 1946, em um trem para Darjeeling, recebeu o que ela chamou de «o chamado dentro do chamado»: a inspiração de deixar Loreto para servir a Cristo nos mais pobres dos pobres. Fundou as Missionárias da Caridade em 1950. Recebeu o Prêmio Nobel da Paz em 1979. Após sua morte se tornaram públicos seus escritos privados, revelando uma «noite escura da alma» de cinquenta anos que ela entendeu como participação na sede espiritual de Cristo na cruz («tenho sede», Jo 19,28). Foi canonizada pelo Papa Francisco em 4 de setembro de 2016, no Jubileu da Misericórdia. As Missionárias da Caridade têm casas em todo o Brasil. A novena é apropriada para pedir o espírito de serviço aos pobres, a fortaleza para perseverar na oração quando se sente seca, ou a graça de ver Cristo em qualquer pessoa ferida ou desconhecida.",
+    prayerText:
+      "Ó Santíssima Trindade, nós Vos agradecemos por terdes dado a Santa Teresa de Calcutá, fiel servidora dos mais pobres dos pobres. Por sua intercessão, concedei-nos a graça que agora Vos pedimos (mencionar a intenção). E concedei-nos, sobretudo, um coração como o dela: capaz de ver Cristo em cada irmão que sofre, capaz de servir sem esperar nada em troca, capaz de continuar acreditando quando já não sente. Santa Teresa de Calcutá, rogai por nós e por todos os que o mundo esqueceu. Amém.",
+    instructions:
+      "Reze uma vez ao dia durante nove dias consecutivos. Estrutura: (1) Sinal da Cruz; (2) um ato de fé; (3) Leitura do «eu tenho sede» em João 19,28 ou da parábola do juízo final em Mateus 25; (4) a oração da novena; (5) um Pai-Nosso, Ave-Maria e Glória; (6) mencione explicitamente a intenção. A novena se enriquece notavelmente se acompanhada de obras concretas de caridade durante os nove dias: uma visita a um enfermo, um serviço a um familiar idoso, uma doação a uma obra de misericórdia. Para os nove dias, considere se comprometer a uma hora de adoração eucarística ou à Comunhão diária se possível. Para os que estão atravessando uma noite escura da alma — secura espiritual, sentimento de abandono, dificuldade para orar — a novena a Santa Teresa é particularmente apropriada.",
+    patronSaint: "Santa Teresa de Calcutá",
+    feastDay: "5 de setembro",
+    source: "Vatican.va Português (canonização do Papa Francisco, 4 de setembro de 2016) + Vem, Sê Minha Luz (cartas privadas, publicadas 2007) + CNBB + Missionárias da Caridade no Brasil. Retrieved 2026-05-17.",
+    reviewedAt: new Date("2026-05-17"),
+  },
+  {
+    prayerSlug: "novena-st-rita",
+    name: "Novena a Santa Rita de Cássia",
+    description:
+      "Santa Rita de Cássia (Margherita Lotti, 1381-1457) é venerada como «Advogada dos Impossíveis» e «Santa das Causas Desesperadas». No Brasil, sua devoção é uma das mais populares — a festa de 22 de maio mobiliza centenas de milhares de fiéis, e a bênção das rosas é tradição firmemente estabelecida. Casada contra sua vontade aos doze anos com um homem violento, suportou dezoito anos de maus-tratos sem perder a fé. Após enviuvar e perder seus dois filhos, entrou no mosteiro agostiniano de Cássia. Em 1442 recebeu um estigma parcial: um espinho da coroa de Cristo se cravou em sua testa. Antes de morrer, em pleno inverno, pediu uma rosa do jardim de sua casa natal — onde o roseiral floresceu milagrosamente. Foi canonizada por Leão XIII em 1900. A novena é a oração católica por excelência para as situações humanamente impossíveis: casamentos sem saída, filhos perdidos, doenças incuráveis, conflitos enraizados.",
+    prayerText:
+      "Ó Santa Rita de Cássia, glorioso modelo de paciência e perseverança, vós que por anos suportastes um casamento doloroso sem perder a caridade, vós que carregastes em vossa testa o espinho de Cristo, vós que recebestes a rosa milagrosa em pleno inverno — alcançai-me de Deus a graça que com humilde confiança vos suplico (mencionar a intenção). Sei que muitas vezes os caminhos humanos estão fechados, os corações endurecidos. Mas vós, advogada dos impossíveis, sabeis interceder por nós. Concedei-me a fortaleza para perseverar na oração, a paciência para suportar o que não posso mudar, e a graça para reconhecer a mão de Deus mesmo quando tudo pareça perdido. Santa Rita, advogada dos impossíveis, rogai por nós. Amém.",
+    instructions:
+      "Reze uma vez ao dia durante nove dias consecutivos, idealmente de 14 a 22 de maio. Estrutura: (1) Sinal da Cruz; (2) um ato de humildade; (3) a oração da novena; (4) uma dezena do Santo Rosário, idealmente com os mistérios dolorosos; (5) um Pai-Nosso, Ave-Maria e Glória; (6) mencione a situação «impossível» concretamente. Tradição popular no Brasil: abençoar rosas no dia da festa de Santa Rita (22 de maio) — quase todas as paróquias brasileiras fazem a bênção tradicional. A rosa abençoada se conserva em casa. A novena combina-se com: (a) uma boa confissão sacramental durante os nove dias; (b) um ato sustentado de reconciliação; (c) a leitura do livro de Tobias ou de Jó.",
+    patronSaint: "Santa Rita de Cássia",
+    feastDay: "22 de maio",
+    source: "CNBB + Vatican.va Português (Leão XIII, canonização 1900) + Mosteiro Agostiniano de Cássia (Itália) + tradição popular brasileira do Dia de Santa Rita. Retrieved 2026-05-17.",
+    reviewedAt: new Date("2026-05-17"),
+  },
+  {
+    prayerSlug: "novena-st-peregrine",
+    name: "Novena a São Peregrino Laziosi",
+    description:
+      "São Peregrino Laziosi (1265-1345) é o patrono universal dos enfermos de câncer. Nascido em Forlì, Itália, em uma família nobre da facção anti-papal, converteu-se após esbofetear São Filipe Benizi e receber dele a outra face em resposta. Entrou na Ordem dos Servos de Maria e viveu como sacerdote e pregador por mais de quarenta anos. Aos sessenta anos, uma penitência pessoal (não se sentar quando podia estar de pé) produziu em sua perna direita uma chaga cancerosa tão grave que os médicos decidiram amputar. Na noite anterior à cirurgia, Peregrino passou a noite em oração diante do crucifixo; ao amanhecer, os cirurgiões o encontraram completamente são. Viveu outros vinte anos, completamente curado. Foi canonizado por Bento XIII em 1726. A novena é apropriada para pedir a cura física de si mesmo ou de um ente querido com câncer; a fortaleza para suportar o tratamento médico; a graça de aceitar o sofrimento quando a cura não é obtida; o consolo dos que cuidam de um enfermo.",
+    prayerText:
+      "Ó Deus, que destes a São Peregrino, Vosso servo, o privilégio de obter por sua oração a cura de uma doença incurável, concedei-nos por sua intercessão a saúde do corpo e a da alma. São Peregrino, vós que conhecestes o peso do câncer em vossa própria carne, olhai-me com vossa compaixão de paciente. Oferecei-vos por mim (ou pela pessoa por quem rezo: mencionar o nome) diante do trono de Cristo médico, e alcançai-me, se for vontade do Pai, a cura física que com confiança filial vos peço. E se não for essa a vontade de Deus, alcançai-me pelo menos a cura da alma, a paciência na dor, a fé que não se quebra e a esperança que não decepciona. Amém.",
+    instructions:
+      "Reze uma vez ao dia durante nove dias consecutivos, idealmente de 22 a 30 de abril em preparação para a festa de 1º de maio. Estrutura: (1) Sinal da Cruz; (2) leitura breve do evangelho da cura do leproso (Mc 1,40-42) ou da hemorroíssa (Mc 5,25-34); (3) a oração da novena; (4) um Pai-Nosso, Ave-Maria e Glória pela intenção específica; (5) um ato de contrição. Para enfermos em tratamento oncológico: rezar a novena ao lado do leito, em companhia do enfermo, com presença física. Bênção dos enfermos com a relíquia de São Peregrino (disponível em paróquias servitas) é tradição sacramental. Acompanhar com: (a) os sacramentos do enfermo; (b) oração familiar diária; (c) atos de caridade por outros enfermos.",
+    patronSaint: "São Peregrino Laziosi (patrono dos enfermos de câncer)",
+    feastDay: "1º de maio",
+    source: "CNBB + Ordem dos Servos de Maria + Vatican.va (Bento XIII, 1726) + Santuário de Forlì. Retrieved 2026-05-17.",
+    reviewedAt: new Date("2026-05-17"),
+  },
+  {
+    prayerSlug: "novena-st-dymphna",
+    name: "Novena a Santa Dimpna",
+    description:
+      "Santa Dimpna (s. VII, m. ca. 650) é a patrona universal dos enfermos mentais, dos neurodivergentes, dos traumatizados e das vítimas de abuso. Filha de um rei pagão irlandês e de uma mãe cristã, fugiu de seu pai (que enlouquecido tentou casar-se com ela) e chegou a Geel, na atual Bélgica, onde dedicou sua vida ao serviço dos pobres e dos enfermos mentais. Seu pai a localizou e a matou; tinha aproximadamente quinze anos. Geel se tornou desde o século XIII em um dos primeiros centros do mundo cristão para o cuidado humanitário dos enfermos mentais — modelo que inspirou a psiquiatria comunitária moderna. A novena é apropriada para pedir a cura interior após um trauma; a cura ou o manejo digno de uma doença mental crônica; a proteção de um ente querido neurodivergente; a fortaleza para perdoar um agressor; e a graça de buscar ajuda profissional quando necessária.",
+    prayerText:
+      "Ó Deus, que escolhestes Santa Dimpna como patrona dos enfermos mentais e das vítimas de abuso, concedei-nos por sua intercessão a graça que agora Vos pedimos (mencionar a intenção específica). Santa Dimpna, jovem mártir que conhecestes em vossa própria carne a escuridão do abuso familiar e escolhestes a fidelidade a Cristo antes que a conformidade com um mal poderoso, alcançai-nos a fortaleza para não calar o que deve ser denunciado, a coragem de proteger os vulneráveis, e a paciência para acompanhar quem sofre na mente, no coração ou no espírito. Concedei-nos a graça da cura interior e o discernimento para buscar também a ajuda profissional quando ela é parte da providência de Deus. Amém.",
+    instructions:
+      "Reze uma vez ao dia durante nove dias consecutivos, idealmente de 7 a 15 de maio. Estrutura: (1) Sinal da Cruz; (2) ato de confiança; (3) a oração da novena; (4) os mistérios dolorosos do Santo Rosário; (5) Pai-Nosso, Ave-Maria e Glória. A Igreja Católica recomenda explicitamente a combinação de oração + sacramentos + atendimento psicológico ou psiquiátrico quando necessário — um enfermo com depressão clínica deve orar e tratar-se simultaneamente. Se a novena for rezada por uma vítima de abuso, acompanhe com uma conversa pastoral com um sacerdote ou diretor espiritual treinado em trauma, e com a decisão, quando procedente, de denunciar o abuso às autoridades competentes.",
+    patronSaint: "Santa Dimpna de Geel (patrona dos enfermos mentais e vítimas de abuso)",
+    feastDay: "15 de maio",
+    source: "CNBB + Igreja católica de Geel (Bélgica) + Vatican.va (Acta Sanctorum Mai III) + Bolandistas. Retrieved 2026-05-17.",
+    reviewedAt: new Date("2026-05-17"),
+  },
+  {
+    prayerSlug: "novena-st-gerard",
+    name: "Novena a São Gerardo Majella",
+    description:
+      "São Gerardo Majella (1726-1755) é o patrono universal das mães expectantes, dos bebês não nascidos e dos partos difíceis. Redentorista, irmão leigo da Congregação do Santíssimo Redentor fundada por Santo Afonso Maria de Ligório, viveu apenas três anos consagrados, marcados por dons místicos extraordinários: bilocação, profecia, leitura das consciências. Sua associação com as mães remonta a um episódio histórico: uma jovem mãe, ao receber dele um lenço esquecido, ouviu-o dizer «guarde-o, será útil»; anos depois, em parto perigoso, aplicou o lenço sobre o ventre e deu à luz sem dificuldade. Foi canonizado por Pio X em 1904. No Brasil, a devoção é especialmente forte nas paróquias redentoristas (Aparecida, particularmente). A novena é apropriada para mulheres grávidas, especialmente em situações difíceis: aborto espontâneo prévio, idade materna avançada, diagnóstico pré-natal preocupante, parto prematuro, infertilidade prolongada.",
+    prayerText:
+      "Ó glorioso São Gerardo Majella, fiel amigo dos bebês não nascidos e das mães expectantes, olhai com olhos de misericórdia para esta mãe que agora se encomenda à vossa intercessão (mencionar o nome ou a situação). Alcançai-lhe de Deus uma gestação saudável, um parto seguro e um filho disposto desde o ventre a receber o batismo e a viver sua vocação cristã. Para as que esperam conceber, alcançai o dom da fertilidade se for vontade de Deus. Para as que perderam um filho não nascido, alcançai o consolo de saber que esse pequeno descansa já no coração de Cristo. Para as que enfrentam diagnósticos difíceis, alcançai a fortaleza para acolher a vida tal como Deus a envia. Amém.",
+    instructions:
+      "Reze uma vez ao dia durante nove dias consecutivos. Se rezada por uma gestação específica, idealmente comece no início do terceiro trimestre. Estrutura: (1) Sinal da Cruz; (2) ato de confiança na providência divina sobre a vida humana, desde a concepção; (3) leitura breve do Salmo 139; (4) a oração da novena; (5) um mistério do Santo Rosário (gozosos); (6) Pai-Nosso, Ave-Maria e Glória. Tradições brasileiras: (a) medalha de São Gerardo durante a gravidez; (b) bênção do berço com a oração de São Gerardo; (c) celebrar a festa (16 de outubro) com ação de graças por cada filho da família. Para perdas (aborto, natimorto), combinar com a celebração pastoral da pequena vida.",
+    patronSaint: "São Gerardo Majella, CSsR",
+    feastDay: "16 de outubro",
+    source: "CNBB + Santo Afonso Maria de Ligório, Vita di Fra Gerardo Maiella (1755) + Congregação do Santíssimo Redentor + Vatican.va (Pio X, 1904). Retrieved 2026-05-17.",
+    reviewedAt: new Date("2026-05-17"),
+  },
+  {
+    prayerSlug: "novena-st-anne",
+    name: "Novena a Santa Ana",
+    description:
+      "Santa Ana é, segundo a tradição cristã, a mãe da Santíssima Virgem Maria e a avó materna do Senhor Jesus Cristo. Seu nome — do hebraico Hannah, «graça» — e a história de seu casamento com São Joaquim aparecem no Protoevangelho de Tiago (s. II). Ana e Joaquim, casados por anos sem ter filhos, sofreram a afronta social da esterilidade até que um anjo anunciou a Ana que conceberia uma filha — Maria — a quem consagrariam ao Senhor. A devoção a Santa Ana se estendeu no Oriente desde o século VI. No Brasil é uma das devoções mais antigas — chegou com os primeiros colonizadores portugueses no século XVI e tem expressões fortes em todo o país. A festa de 26 de julho se celebra junto à de São Joaquim. A novena é apropriada para casais aguardando um filho, a santificação do próprio casamento, a transmissão da fé pelos avós, a cura de relações familiares feridas, ou para acompanhar uma mulher idosa na doença ou no final da vida.",
+    prayerText:
+      "Gloriosa Santa Ana, cheia de compaixão pelos que vos invocam e de amor pelos que sofrem, ajoelho-me a vossos pés e humildemente vos rogo que tomeis a presente intenção sob vossa especial proteção (mencionar a intenção). Dignai-vos recomendá-la a vossa Filha, a Santíssima Virgem Maria, e apresentá-la diante do trono de Jesus, seu divino Filho. Não cesseis de interceder por mim até que meu pedido seja atendido. Sobretudo, alcançai-me a graça de ver Jesus, amá-lo e servi-lo com coração puro, junto a vós, junto a Maria, junto a Joaquim, durante toda a minha vida e por toda a eternidade. Santa Ana, avó do Senhor Jesus, rogai por nós. Amém.",
+    instructions:
+      "Reze uma vez ao dia durante nove dias consecutivos, idealmente de 17 a 25 de julho em preparação para a festa de 26 de julho (Santos Joaquim e Ana). Estrutura: (1) Sinal da Cruz; (2) leitura breve do primeiro capítulo de Lucas; (3) a oração da novena; (4) um mistério do Santo Rosário (gozosos); (5) um Pai-Nosso, Ave-Maria e Glória; (6) mencione a intenção. Tradições brasileiras: (a) romaria familiar a um santuário de Santa Ana na festa; (b) reunir três gerações de mulheres da família para a novena; (c) abençoar a casa com uma imagem de Santa Ana. Para mulheres idosas enfermas: combinar com a Unção dos Enfermos e a presença dos netos ao lado do leito.",
+    patronSaint: "Santa Ana · São Joaquim",
+    feastDay: "26 de julho (junto com São Joaquim)",
+    source: "CNBB + Protoevangelho de Tiago (s. II) + tradição de Sant'Anna em São Paulo + Vatican.va Português. Retrieved 2026-05-17.",
+    reviewedAt: new Date("2026-05-17"),
+  },
+  {
+    prayerSlug: "consecration-de-montfort",
+    name: "Consagração Total a Jesus por Maria (São Luís Maria Grignion de Montfort)",
+    description:
+      "A Consagração Total a Jesus por Maria é a prática espiritual sistematizada por São Luís Maria Grignion de Montfort (1673-1716) em seu Tratado da Verdadeira Devoção a Maria. Montfort, sacerdote francês missionário, ensinou que a consagração total ao Filho se realiza mais perfeitamente quando passa pela mediação maternal da Mãe. A consagração consiste em uma preparação intensiva de 33 dias dividida em quatro fases (despojamento do espírito do mundo, conhecimento de si mesmo, conhecimento de Maria, conhecimento de Cristo) e culmina em uma festa mariana com o ato formal de consagração. São João Paulo II fez esta consagração aos vinte e um anos e manteve «Totus Tuus» como lema episcopal e papal. No Brasil, a Consagração Total é difundida em paróquias redentoristas e marianas; Aparecida promove anualmente.",
+    prayerText:
+      "Eu, (dizer o próprio nome), pecador infiel, renovo e ratifico hoje em vossas mãos, ó Mãe Imaculada, os votos do meu batismo. Renuncio para sempre a Satanás, a suas pompas e a suas obras, e me entrego inteiramente a Jesus Cristo, Sabedoria encarnada. Eu vos escolho hoje, ó Maria, na presença de toda a corte celestial, por minha Mãe e Senhora. Eu vos entrego e consagro, como vosso escravo, meu corpo e minha alma, meus bens interiores e exteriores e mesmo o valor de minhas boas ações passadas, presentes e futuras. Recebei, ó Virgem benigníssima, este pequeno presente da minha escravidão, à maior glória de Deus, no tempo e na eternidade. Amém.",
+    instructions:
+      "A preparação dura 33 dias e termina em uma festa mariana significativa. Datas tradicionais no Brasil: (1) iniciar em 7 de setembro para 12 de outubro (Nossa Senhora Aparecida — particularmente significativa para católicos brasileiros); (2) iniciar em 20 de novembro para 8 de dezembro (Imaculada Conceição); (3) iniciar em 20 de fevereiro para 25 de março (Anunciação). Estrutura diária: (1) Sinal da Cruz; (2) leitura do dia conforme as quatro fases; (3) Ladainhas (Sagrado Coração na primeira semana, Nossa Senhora na segunda, Sagrado Coração na terceira); (4) Pai-Nosso e Ave-Maria; (5) Ave Maris Stella; (6) intenção do dia. No dia 33: confissão, Comunhão em Missa mariana, ato formal de consagração diante de uma imagem mariana. Renovação anual.",
+    patronSaint: "São Luís Maria Grignion de Montfort",
+    feastDay: "28 de abril",
+    source: "CNBB + Vatican.va Português + Tratado da Verdadeira Devoção a Maria (São Luís Maria Grignion de Montfort, ca. 1712) + Carta apostólica Rosarium Virginis Mariae (JPII, 2002) + A12 / Santuário Nacional de Aparecida. Retrieved 2026-05-17.",
+    reviewedAt: new Date("2026-05-17"),
+  },
 ];

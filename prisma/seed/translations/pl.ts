@@ -571,4 +571,550 @@ export const plTranslations: PrayerTranslationSeed[] = [
     source: "KEP + Vatican.va Polski + Traktat o prawdziwym nabożeństwie do Najświętszej Maryi Panny (Ludwik Maria Grignion de Montfort, ok. 1712, opublikowany 1842) + List apostolski Rosarium Virginis Mariae (JPII, 2002, o «Totus Tuus»). Retrieved 2026-05-17.",
     reviewedAt: new Date("2026-05-17"),
   },
+  // ── Wave 7 (2026-05-18): completes Polish coverage to 100%. Źródła:
+  //    KEP, Vatican.va Polski, Edycja Świętego Pawła, Wydawnictwo M,
+  //    Niedziela, sanktuaria JPII (Kraków, Wadowice, Łagiewniki).
+  {
+    prayerSlug: "54-day-rosary-novena",
+    name: "Nowenna 54 Róż (Różaniec 54 Dni)",
+    description:
+      "Nowenna 54 Róż została objawiona Najświętszej Maryi Panny Fortuny Agrelli w Neapolu w 1884 roku. Chora na medycznie beznadziejną chorobę, Fortuna otrzymała w wizji wskazanie odmawiania całego Różańca przez 27 dni w błaganiu i 27 dni w dziękczynieniu — łącznie 54 dni. Zatwierdzona przez Leona XIII. Odpowiednia dla pilnych sytuacji wymagających trwałego wstawiennictwa: poważnej choroby, trudnego rozeznania, długo oczekiwanego nawrócenia.",
+    instructions:
+      "Odmawiaj cały Różaniec codziennie przez 54 kolejne dni. Pierwsze 27 dni w błaganiu; kolejne 27 dni w dziękczynieniu (w duchu Mk 11,24). Rotacja tajemnic: dzień 1 radosne, dzień 2 bolesne, dzień 3 chwalebne, i powtarza się. Jeśli zostanie opuszczony dzień, tradycja każe zacząć od dnia 1. Idealne okresy liturgiczne: Adwent, Wielki Post, maj, październik.",
+    patronSaint: "Najświętsza Maryja Panna, Róża Mistyczna",
+    feastDay: "Wspomnienie maryjne (niekalendariowe)",
+    source: "KEP + Vatican.va Polski + relacja Fortuny Agrelli (Neapol, 1884) + Leon XIII. Retrieved 2026-05-18.",
+    reviewedAt: new Date("2026-05-18"),
+  },
+  {
+    prayerSlug: "brown-scapular",
+    name: "Brązowy Szkaplerz Karmelitański",
+    description:
+      "Brązowy Szkaplerz z Góry Karmel jest katolickim sakramentalem składającym się z dwóch małych płatów brązowej wełny połączonych dwiema wstęgami, noszonych na ramionach pod ubraniem. Został przekazany przez Najświętszą Maryję Pannę świętemu Szymonowi Stockowi w Cambridge 16 lipca 1251 roku z obietnicą: «Kto umrze w tym szkaplerzu, nie doświadczy ognia wiecznego». Pius XII nazwał szkaplerz «znakiem całkowitego oddania Maryi». W Polsce nabożeństwo szkaplerzne ma głęboką tradycję — szczególnie silne w klasztorach karmelitańskich (Czerna, Warszawa).",
+    instructions:
+      "Aby otrzymać, znajdź księdza, który może nałożyć szkaplerz w obrzędzie z Rytuału Rzymskiego. Po nałożeniu należy nosić ciągle. Jeśli się zniszczy, zastąp nowym. Zobowiązania: regularna spowiedź, częsta Komunia, codzienny Różaniec lub przynajmniej jedna dziesiątka, czystość zgodnie ze stanem życia. Soboty są szczególnie związane ze szkaplerzem.",
+    patronSaint: "Matka Boża Szkaplerzna · Święty Szymon Stock",
+    feastDay: "16 lipca",
+    source: "KEP + Vatican.va Polski (Pius XII) + Zakon Karmelu + Rytuał Rzymski. Retrieved 2026-05-18.",
+    reviewedAt: new Date("2026-05-18"),
+  },
+  {
+    prayerSlug: "chaplet-st-michael",
+    name: "Koronka do świętego Michała Archanioła",
+    description:
+      "Koronka do świętego Michała Archanioła została objawiona służebnicy Bożej Antoniny d'Astonac w XVIII wieku. Święty Michał obiecał odmawiającym wiernie: asystencję chóru anielskiego przy Komunii świętej; opiekę dziewięciu chórów anielskich w życiu; ostateczne wyzwolenie z czyśćca dla modlącego się i jego rodziny. Koronka ma dziewięć inwokacji odpowiadających dziewięciu chórom anielskim, każda po Ojcze Nasz i trzech Zdrowaś Maryjo. Kończy się czterema Ojcze Nasz (święty Michał, święty Gabriel, święty Rafael, Anioł Stróż) i modlitwą Leona XIII.",
+    instructions:
+      "Struktura: (1) Znak Krzyża; (2) jaculatoria «Boże, wejrzyj ku wspomożeniu memu…»; (3) w dziewięciu grupach: invocate odpowiedni chór anielski, następnie Ojcze Nasz i trzy Zdrowaś Maryjo; (4) cztery Ojcze Nasz końcowe; (5) modlitwa do świętego Michała Leona XIII. Zalecana przez egzorcystów katolickich.",
+    patronSaint: "Święty Michał Archanioł",
+    feastDay: "29 września (święci Archaniołowie Michał, Gabriel, Rafael)",
+    source: "KEP + Vatican.va Polski + tradycja Antoniny d'Astonac + modlitwa Leona XIII (1884). Retrieved 2026-05-18.",
+    reviewedAt: new Date("2026-05-18"),
+  },
+  {
+    prayerSlug: "first-fridays",
+    name: "Nabożeństwo Dziewięciu Pierwszych Piątków",
+    description:
+      "Nabożeństwo Dziewięciu Pierwszych Piątków zostało objawione przez Jezusa Chrystusa świętej Małgorzacie Marii Alacoque w Paray-le-Monial (1673-1675). W wielkiej obietnicy Jezus powiedział: «W nadmiarze miłosierdzia mojego Serca obiecuję wszystkim, którzy przyjmą Komunię w dziewięciu pierwszych piątkach, łaskę ostatecznej wytrwałości: nie umrą w mojej niełasce ani bez przyjęcia sakramentów». Nabożeństwo rozumie się prawidłowo jako wyraz ciągłej wierności, a nie magia. W Polsce praktykowane szczególnie w parafiach dedykowanych Sercu Jezusa.",
+    instructions:
+      "Wymagania: (1) przyjmować Komunię Świętą w stanie łaski w pierwszy piątek dziewięciu kolejnych miesięcy; (2) dobra spowiedź sakramentalna, jeśli upadek w grzech śmiertelny; (3) ofiarować Komunię za intencje Serca Jezusa i własną wytrwałość; (4) jeśli zostanie opuszczony pierwszy piątek, zaczyna się od pierwszego. Łączy się z: nabożeństwem Najświętszego Serca, pierwszymi sobotami (Maryja), modlitwą o godzinie 15:00.",
+    patronSaint: "Najświętsze Serce Jezusa · Święta Małgorzata Maria Alacoque",
+    feastDay: "Piątek po Bożym Ciele",
+    source: "KEP + Vatican.va (Haurietis Aquas, Pius XII 1956) + autobiografia świętej Małgorzaty Marii. Retrieved 2026-05-18.",
+    reviewedAt: new Date("2026-05-18"),
+  },
+  {
+    prayerSlug: "first-saturdays",
+    name: "Nabożeństwo Pięciu Pierwszych Sobót",
+    description:
+      "Nabożeństwo Pięciu Pierwszych Sobót zostało wyraźnie poproszone przez Najświętszą Maryję Pannę siostrę Łucji dos Santos w Pontevedrze 10 grudnia 1925 roku. Maryja obiecała: «Wszystkim, którzy w ciągu pięciu miesięcy w pierwszą sobotę wyspowiadają się, przyjmą Komunię Świętą, odmówią Różaniec i towarzyszą mi przez piętnaście minut rozważając tajemnice Różańca, z zamiarem zadośćuczynienia mi, obiecuję pomóc w godzinę śmierci ze wszystkimi łaskami niezbędnymi do zbawienia». W Polsce — kraju szczególnie maryjnym — nabożeństwo jest praktykowane jako uzupełnienie nabożeństwa do Niepokalanego Serca.",
+    instructions:
+      "W ciągu pięciu pierwszych sobót kolejnych: (1) Spowiedź sakramentalna w ciągu ośmiu dni przed lub po; (2) Komunia w pierwszą sobotę w stanie łaski z intencją wynagrodzenia Niepokalanemu Sercu; (3) pełny Różaniec (pięć dziesiątek); (4) piętnaście minut towarzyszenia Maryi rozważając tajemnicę — to jest wyróżnik. Intencja wynagrodzenia jest istotna. Jeśli sobota zostanie opuszczona, zaczyna się od pierwszej.",
+    patronSaint: "Niepokalane Serce Maryi · Matka Boża Fatimska",
+    feastDay: "Sobota po Najświętszym Sercu",
+    source: "KEP + Vatican.va Polski + Pamiętniki siostry Łucji + Pius XII (konsekracja świata 1942). Retrieved 2026-05-18.",
+    reviewedAt: new Date("2026-05-18"),
+  },
+  {
+    prayerSlug: "guardian-angel-prayer",
+    name: "Modlitwa do Anioła Stróża",
+    description:
+      "Modlitwa do Anioła Stróża jest jedną z najstarszych i najukochańszych modlitw katolickich. Doktryna osobistego anioła opiekuna każdego ochrzczonego jest zakorzeniona w Mt 18,10. Katechizm Kościoła Katolickiego stwierdza (§ 336): «Od początku do śmierci życie ludzkie jest otoczone ich strażą i wstawiennictwem». W Polsce tradycyjnie uczona dzieci od wczesnego wieku.",
+    prayerText:
+      "Aniele Boży, Stróżu mój, Ty zawsze przy mnie stój. Rano, wieczór, we dnie, w nocy bądź mi zawsze ku pomocy. Strzeż duszy, ciała mego i zaprowadź mnie do żywota wiecznego. Amen.",
+    instructions:
+      "Tradycyjne okazje: (1) przy budzeniu; (2) przed snem; (3) przed podróżą; (4) przed ważną decyzją lub egzaminem; (5) w momencie strachu lub pokusy. Dla polskich rodziców: nauczanie modlitwy do Anioła Stróża dzieciom jest jedną z fundamentalnych odpowiedzialności rodzinnej katechezy — tradycyjnie pierwsza modlitwa po Ojcze Nasz i Zdrowaś Maryjo.",
+    patronSaint: "Święty Anioł Stróż",
+    feastDay: "2 października (Święci Aniołowie Stróżowie)",
+    source: "KEP + Katechizm §§ 328-336 + Mt 18,10 + tradycyjna modlitwa. Retrieved 2026-05-18.",
+    reviewedAt: new Date("2026-05-18"),
+  },
+  {
+    prayerSlug: "lectio-divina",
+    name: "Lectio Divina (Modlitewna Lektura Pisma Świętego)",
+    description:
+      "Lectio Divina — «boskie czytanie» — to starożytna katolicka praktyka monastyczna czytania Pisma Świętego jako modlitwy, nie jako studium. Systematyzowana przez kartuza Guigo II w XII wieku, składa się z czterech kroków: Lectio (czytać), Meditatio (rozważać), Oratio (modlić się), Contemplatio (kontemplować). Papież Benedykt XVI w Verbum Domini (2010) opisał ją jako «starożytną i zawsze nową praktykę czytania Pisma Świętego dla wzrostu w modlitwie». W Polsce promowana szczególnie przez benedyktynów w Tyńcu i przez grupy biblijne parafialne.",
+    instructions:
+      "Potrzebna Biblia katolicka, ciche miejsce, 20-30 minut. (1) **Lectio**: czytać krótki fragment (10-15 wersetów) powoli, dwa-trzy razy. Które słowo wystaje? (2) **Meditatio**: zatrzymać się na tym (Ps 1,2). (3) **Oratio**: odpowiadać Panu swoimi słowami. (4) **Contemplatio**: odpoczywać w ciszy w obecności Boga. Zamknięcie: krótkie konkretne postanowienie dnia. Idealnie codziennie, 15 minut. Codzienne Ewangelie liturgii są idealnym materiałem.",
+    patronSaint: "Święty Hieronim (patron Pisma Świętego)",
+    feastDay: "30 września",
+    source: "KEP + Vatican.va Polski (Verbum Domini, Benedykt XVI 2010) + Guigo II + tradycja benedyktyńska w Tyńcu. Retrieved 2026-05-18.",
+    reviewedAt: new Date("2026-05-18"),
+  },
+  {
+    prayerSlug: "mass-offering",
+    name: "Zamówienie Mszy świętej za Intencję",
+    description:
+      "Zamówienie Mszy świętej w określonej intencji jest najstarszą i najgłębszą katolicką praktyką wstawienniczej modlitwy. Każda Msza, jako uobecnienie ofiary Kalwarii, posiada wartość nieskończoną w sobie; konkretne intencje są ograniczone i specyficzne. Tradycja ma korzenie patrystyczne: święty Augustyn świadczy o Mszach odprawionych za jego matkę świętą Monikę. Sobór Trydencki (1563) zdefiniował, że ofiara eucharystyczna jest składana «nie tylko za grzechy, kary, zadośćuczynienia i inne potrzeby wiernych żywych, ale także za zmarłych w Chrystusie». W Polsce zamówienie Mszy jest ugruntowaną praktyką parafialną.",
+    instructions:
+      "Procedura: (1) zwróć się do kancelarii parafialnej i poproś o Mszę w konkretnej intencji; (2) złóż wolną ofiarę (różni się w zależności od regionu, zwykle 30-100 zł w Polsce); (3) jeśli intencja jest za zmarłego, podaj imię i datę zgonu; (4) idealnie uczestnicz osobiście w Mszy. Polskie tradycje: (a) Msza za zmarłych w siódmym, trzydziestym dniu, w rocznicę; (b) Msza święta dziękczynna w rocznicę. Dla dusz w czyśćcu Msza święta jest największym duchowym darem.",
+    patronSaint: "Chrystus, Najwyższy Kapłan",
+    feastDay: "Wielki Czwartek",
+    source: "KEP + Katechizm §§ 1356-1381 + Sobór Trydencki + Vatican.va Polski. Retrieved 2026-05-18.",
+    reviewedAt: new Date("2026-05-18"),
+  },
+  {
+    prayerSlug: "novena-don-bosco",
+    name: "Nowenna do świętego Jana Bosko",
+    description:
+      "Święty Jan Bosko (Giovanni Melchiorre Bosco, 1815-1888) — znany jako Don Bosco — był włoskim księdzem piemonckim, założycielem Towarzystwa Salezjańskiego i Córek Maryi Wspomożycielki. Jego życiową pasją była młodzież uboga i opuszczona. Rozpoczął z garstką chłopców w oratorium w Valdocco (Turyn) w 1841 roku i zostawił zgromadzenie z 1800 członków. System wychowawczy «zapobiegawczy» oparty na rozumie, religii i amorevolezza (życzliwości). Kanonizowany przez Piusa XI w 1934. W Polsce salezjanie mają silną obecność — Towarzystwo Salezjańskie ma wiele szkół i parafii. Odpowiednia dla powołań, nawrócenia dzieci, decyzji edukacyjnych.",
+    prayerText:
+      "O święty Janie Bosko, ojcze i nauczycielu młodzieży, uzyskaj mi przez wstawiennictwo łaskę, o którą z synowską ufnością proszę (wymień intencję). Ty, który jako młody rozeznałeś swoje powołanie przez prorocze sny i duchowe kierownictwo świętej matki Małgorzaty Occhieny, wstaw się za młodymi w dzisiejszym zagubieniu. Maryjo Wspomożycielko, w której imię Don Bosco czynił wszystko, bądź naszym wspomożeniem. Amen.",
+    instructions:
+      "Odmawiaj raz dziennie przez dziewięć kolejnych dni, idealnie od 22 do 30 stycznia w przygotowaniu do święta 31 stycznia. Struktura: Znak Krzyża; Psalm 23 lub fragment Ewangelii o Dzieciątku Jezus; modlitwa nowenny; trzy Zdrowaś Maryjo Maryi Wspomożycielce; jaculatoria «Maryjo Wspomożycielko, módl się za nami i za młodzieżą».",
+    patronSaint: "Święty Jan Bosko · Maryja Wspomożycielka",
+    feastDay: "31 stycznia",
+    source: "KEP + Vatican.va Polski + Wspomnienia Oratorium (Don Bosco) + Towarzystwo Salezjańskie w Polsce. Retrieved 2026-05-18.",
+    reviewedAt: new Date("2026-05-18"),
+  },
+  {
+    prayerSlug: "novena-infant-of-prague",
+    name: "Nowenna do Dzieciątka Jezus z Pragi",
+    description:
+      "Dzieciątko Jezus z Pragi to mała wosk-figura Dzieciątka Jezus (około 47 cm), przechowywana w kościele Matki Bożej Zwycięskiej w Pradze. Figura została podarowana karmelitom bosym Pragi w 1628 roku przez księżną Polixenę z Lobkowicz. Nabożeństwo rozprzestrzeniło się po Europie Środkowej podczas Wojny Trzydziestoletniej. W Polsce nabożeństwo do Dzieciątka Jezus z Pragi jest mocne w parafiach karmelitańskich, szczególnie w Warszawie, Krakowie i Gdańsku. Obietnica: «Im bardziej Mnie czcicie, tym bardziej Ja was będę wspierał». Odpowiednia dla trudnych sytuacji finansowych, zdrowia małych dzieci, znalezienia pracy.",
+    prayerText:
+      "Boskie Dzieciątko Jezus, czczę Cię jako mojego Pana i Zbawiciela. Proszę o wybaczenie wszystkich moich grzechów. Błagam Cię, słodki Jezu, abyś udzielił mi łaski, której gorąco pragnę (wymień intencję). Dzieciątko Jezus z Pragi, błogosław mnie i moją rodzinę. Amen.",
+    instructions:
+      "Odmawiaj raz dziennie przez dziewięć kolejnych dni. Tradycyjnie zaleca się umieścić obraz Dzieciątka Jezus z Pragi w honorowym miejscu domu podczas nowenny.",
+    patronSaint: "Dzieciątko Jezus z Pragi",
+    feastDay: "Zmienne (druga niedziela stycznia w niektórych tradycjach)",
+    source: "KEP + Vatican.va Polski + Karmelici Bosi w Pradze + Pius XII (koronacja 1955). Retrieved 2026-05-18.",
+    reviewedAt: new Date("2026-05-18"),
+  },
+  {
+    prayerSlug: "novena-st-anthony",
+    name: "Nowenna do świętego Antoniego z Padwy",
+    description:
+      "Święty Antoni z Padwy (Fernando de Bulhões, 1195-1231) — urodzony w Lizbonie, zmarł w Padwie — jest jednym z najbardziej kochanych świętych Kościoła katolickiego. Początkowo augustianin, został franciszkaninem w 1220. Niezwykle skuteczny kaznodzieja, nazwany «Młotem Heretyków» i «Językiem Ducha Świętego» (jego nieskazitelny język zachowuje się w Padwie). Kanonizowany przez Grzegorza IX rok po śmierci, ogłoszony Doktorem Kościoła przez Piusa XII w 1946. W Polsce kult świętego Antoniego jest bardzo silny — wiele parafii poświęconych. Patron rzeczy zgubionych, ubogich, małżeństw, spraw ludzko beznadziejnych.",
+    prayerText:
+      "O chwalebny święty Antoni, ty którego nazywany «świętym cudów» i «rzeczy zgubionych», uzyskaj przez potężne wstawiennictwo łaskę, o którą z pokorną ufnością proszę (wymień intencję). Ty, który jako dziecko trzymałeś w rękach Dzieciątko Jezus, uzyskaj mi prostotę serca, aby trwać w Jego obecności. A jeśli straciłem coś ważnego — przedmiot, relację, sens duchowy, ukochaną osobę oddaloną od wiary — przywróć, błagam, według woli Boga. Amen.",
+    instructions:
+      "Odmawiaj raz dziennie przez dziewięć kolejnych dni, idealnie od 5 do 12 czerwca. Polska tradycja: trzynaście wtorków świętego Antoniego — trzynaście kolejnych wtorków modlitwy. Struktura: Znak Krzyża; krótki fragment responsorium antoniańskiego («Jeśli szukasz cudów…»); modlitwa nowenny; trzynaście Ojcze Nasz, Zdrowaś Maryjo i Chwała Ojcu; wymień intencję. Dla zgubionych rzeczy: krótka inwokacja «Święty Antoni, pomóż mi znaleźć to, co zgubione».",
+    patronSaint: "Święty Antoni z Padwy",
+    feastDay: "13 czerwca",
+    source: "KEP + Vatican.va Polski + Pius XII (Doktor Kościoła 1946) + tradycja franciszkańska w Polsce. Retrieved 2026-05-18.",
+    reviewedAt: new Date("2026-05-18"),
+  },
+  {
+    prayerSlug: "novena-st-blaise",
+    name: "Nowenna do świętego Błażeja",
+    description:
+      "Święty Błażej (m. ok. 316) był biskupem Sebaste w Armenii podczas prześladowań Licyniusza. Lekarz przed święceniami, męczony po okresie eremityzmu w jaskini, gdzie dzikie zwierzęta przynosiły mu jedzenie. Najsłynniejsza legenda o świętym Błażeju: dziecko duszące się ością ryby, matka przyprowadziła dziecko do świętego, który uzdrowił je natychmiast. Patron uniwersalny chorób gardła, problemów oddechowych i zawodowych głosu. «Błogosławieństwo gardeł» — sakramentale, w którym kapłan przykłada dwie skrzyżowane świece na gardło — wykonuje się w większości polskich parafii 3 lutego.",
+    prayerText:
+      "O chwalebny święty Błażeju, biskupie i męczenniku, uzyskaj mi przez wstawiennictwo łaskę, o którą z ufnością proszę (wymień intencję). Ty, który uwolniłeś dziecko od uduszenia samą siłą błogosławieństwa, uwolnij (wymień imię) od dolegliwości. Święty Błażeju, módl się za nami. Amen.",
+    instructions:
+      "Odmawiaj nowenny przez dziewięć kolejnych dni, idealnie od 25 stycznia do 2 lutego. Tradycja zaleca uczestnictwo we Mszy 3 lutego i otrzymanie Błogosławieństwa Gardeł.",
+    patronSaint: "Święty Błażej (patron chorób gardła)",
+    feastDay: "3 lutego",
+    source: "KEP + Vatican.va Polski + polska tradycja Błogosławieństwa Gardeł + Acta Sanctorum. Retrieved 2026-05-18.",
+    reviewedAt: new Date("2026-05-18"),
+  },
+  {
+    prayerSlug: "novena-st-catherine-siena",
+    name: "Nowenna do świętej Katarzyny ze Sieny",
+    description:
+      "Święta Katarzyna ze Sieny (Caterina Benincasa, 1347-1380) — jedna z czterech kobiet Doktorów Kościoła i współpatronka Europy — to jedna z najbardziej niezwykłych postaci duchowych XIV wieku. W wieku sześciu lat otrzymała pierwszą wizję Chrystusa. Wstąpiła jako mantelata do Trzeciego Zakonu Dominikańskiego. Mistyczka, terciarka, doradczyni duchowa i dyplomatka, była centralna podczas Schizmy Papieża Awinionu: jej listami i osobistym wstawiennictwem w Awinionie w 1376 roku przekonała Grzegorza XI do powrotu do Rzymu. Jej Dialog o Bożej Opatrzności jest jednym z wielkich tekstów mistycznych katolickich. Otrzymała niewidzialne stygmaty. Zmarła w 33. roku życia. Kanonizowana przez Piusa II w 1461, Doktor Kościoła w 1970 (Paweł VI), współpatronka Europy w 1999 (JPII).",
+    prayerText:
+      "O chwalebna święta Katarzyno ze Sieny, dziewico mistyczka i Doktorko Kościoła, uzyskaj przez wstawiennictwo łaskę, o którą z ufnością proszę (wymień intencję). Ty, która miałaś odwagę pisać do Papieża i królów swojego czasu w imię Chrystusa, uzyskaj nam odwagę głoszenia prawdy ewangelicznej bez strachu. Amen.",
+    instructions:
+      "Odmawiaj nowenny przez dziewięć kolejnych dni, idealnie od 21 do 29 kwietnia.",
+    patronSaint: "Święta Katarzyna ze Sieny, OP",
+    feastDay: "29 kwietnia",
+    source: "KEP + Vatican.va Polski (Paweł VI Doktor 1970; JPII współpatronka 1999) + Dialog o Bożej Opatrzności. Retrieved 2026-05-18.",
+    reviewedAt: new Date("2026-05-18"),
+  },
+  {
+    prayerSlug: "novena-st-christopher",
+    name: "Nowenna do świętego Krzysztofa",
+    description:
+      "Święty Krzysztof (Christophoros, «nosiciel Chrystusa») jest jednym z najpopularniejszych świętych tradycji katolickiej i patronem podróżujących. Tradycyjna hagiografia przedstawia go jako olbrzyma, który służył Chrystusowi przenosząc podróżujących przez niebezpieczną rzekę. Pewnej nocy dziecko poprosiło o przeniesienie: dziecko stawało się coraz cięższe, aż okazało się, że niesie Chrystusa. W Polsce nabożeństwo do świętego Krzysztofa jako patrona kierowców jest silne — medalik świętego Krzysztofa w samochodzie, błogosławieństwo pojazdów 25 lipca, modlitwa przed podróżą.",
+    prayerText:
+      "O chwalebny święty Krzysztofie, olbrzymie siły i wiary, który własnym ciałem przenosiłeś Dzieciątko Jezus przez rzekę życia, uzyskaj mi przez wstawiennictwo łaskę, o którą z ufnością proszę (wymień intencję). Chroń mnie i moich bliskich w każdej podróży; uzyskaj nam łaskę, abyśmy nigdy nie zboczyli z Drogi, którą jest sam Chrystus. Amen.",
+    instructions:
+      "Odmawiaj nowenny przez dziewięć kolejnych dni, idealnie od 17 do 25 lipca. Przed konkretną podróżą połącz z błogosławieństwem samochodu w lokalnej parafii i medalikiem świętego Krzysztofa.",
+    patronSaint: "Święty Krzysztof (patron podróżujących i kierowców)",
+    feastDay: "25 lipca",
+    source: "KEP + Złota Legenda Jakuba z Voragine + polska tradycja błogosławieństwa pojazdów. Retrieved 2026-05-18.",
+    reviewedAt: new Date("2026-05-18"),
+  },
+  {
+    prayerSlug: "novena-st-joseph-cupertino",
+    name: "Nowenna do świętego Józefa z Cupertino",
+    description:
+      "Święty Józef z Cupertino (Giuseppe Maria Desa, 1603-1663) — włoski franciszkanin konwentualny — jest patronem studentów, trudnych egzaminów, aspirantów do życia kapłańskiego i zakonnego, pilotów i astronautów. Cierpiał z powodu wielkiej powolności umysłowej, był odrzucany w wielu zakonach, ostatecznie przyjęty przez franciszkanów konwentualnych w 1625. Podczas egzaminów święceń otrzymał przez opatrzność jedyny materiał, który dobrze znał. Najbardziej niezwykłe były jego ekstatyczne lewitacje, dokumentowane przez wielu świadków: jego ciało unosiło się od ziemi przez minuty lub godziny. Kanonizowany przez Klemensa XIII w 1767.",
+    prayerText:
+      "O chwalebny święty Józefie z Cupertino, ty który znałeś upokorzenie nieumiejętności nauczenia się tego, czego inni uczyli się z łatwością — uzyskaj mi przez wstawiennictwo łaskę, o którą z ufnością proszę (wymień intencję). Jeśli jestem studentem przed trudnym egzaminem, uzyskaj mi światło, pamięć i spokój. Święty Józefie z Cupertino, módl się za nami. Amen.",
+    instructions:
+      "Odmawiaj nowenny przez dziewięć kolejnych dni, idealnie od 9 do 17 września. Dla konkretnego egzaminu zacznij dziewięć dni wcześniej.",
+    patronSaint: "Święty Józef z Cupertino, OFMConv",
+    feastDay: "18 września",
+    source: "KEP + Vatican.va Polski (Klemens XIII, 1767) + Zakon Franciszkanów Konwentualnych w Polsce. Retrieved 2026-05-18.",
+    reviewedAt: new Date("2026-05-18"),
+  },
+  {
+    prayerSlug: "novena-st-martin-de-porres",
+    name: "Nowenna do świętego Marcina de Porres",
+    description:
+      "Święty Marcin de Porres (Martín de Porres Velázquez, 1579-1639) — pierwszy kanonizowany Mulat w Kościele katolickim — był peruwiańskim dominikaninem, synem hiszpańskiego szlachcica i panamskiej kobiety wolnej. Dyskryminacja rasowa, której doświadczył od dzieciństwa, naznaczyła jego całe życie, ale przekształciła ją w heroiczną cnotę. Wstąpił jako donado do dominikańskiego klasztoru w Limie w wieku piętnastu lat i służył jako fryzjer-pielęgniarz przez ponad pięćdziesiąt lat. Jego biografia obejmuje udokumentowane bilokacje (widziany w Afryce i Japonii będąc w Limie), spektakularne uzdrowienia, i panowanie nad zwierzętami. Kanonizowany przez świętego Jana XXIII w 1962. W Polsce nabożeństwo do świętego Marcina rozszerza się szczególnie w parafiach dominikańskich.",
+    prayerText:
+      "O chwalebny święty Marcinie de Porres, pokorny sługo ubogich, uzdrowicielu chorych i przyjacielu zwierząt, uzyskaj przez wstawiennictwo łaskę, o którą z ufnością proszę (wymień intencję). Ty, który znałeś ból dyskryminacji rasowej i przekształciłeś go w łagodność i służbę, uzyskaj nam łaskę uzdrowienia podziałów rasy, klasy i narodu. Amen.",
+    instructions:
+      "Odmawiaj nowenny przez dziewięć kolejnych dni, od 25 października do 2 listopada w przygotowaniu do święta 3 listopada.",
+    patronSaint: "Święty Marcin de Porres, OP",
+    feastDay: "3 listopada",
+    source: "KEP + Vatican.va Polski (święty Jan XXIII, 1962) + Prowincja Dominikańska Peru + tradycja dominikańska w Polsce. Retrieved 2026-05-18.",
+    reviewedAt: new Date("2026-05-18"),
+  },
+  {
+    prayerSlug: "novena-st-monica",
+    name: "Nowenna do świętej Moniki",
+    description:
+      "Święta Monika (332-387) — matka świętego Augustyna z Hippony — jest patronką matek modlących się za nawrócenie dorosłych dzieci oddalonych od wiary. Wydana za poganina o złym charakterze imieniem Patrycjusz, nawróciła go przez cierpliwość i modlitwę. Ale najdłuższym cierpieniem jej życia był syn Augustyn — błyskotliwy retor oddany przez siedemnaście lat namiętnościom młodości, manicheizmowi i nieregularnemu związkowi. Monika modliła się o syna przez te siedemnaście lat. Święty Ambroży z Mediolanu powiedział: «Niemożliwe, aby syn tylu łez zginął». Augustyn nawrócił się w Wielkanoc 387. Monika zmarła kilka tygodni później w porcie Ostia.",
+    prayerText:
+      "O chwalebna święta Moniko, matko płacząca i wierna, która przez siedemnaście lat nie ustawałaś w modlitwie za syna Augustyna aż do ujrzenia go nawróconego do Chrystusa, uzyskaj mi przez wstawiennictwo łaskę, o którą z ufnością proszę (wymień intencję, szczególnie za dziecko oddalone od wiary). Udziel mi cierpliwości, jaką miałaś, i przede wszystkim niezachwianej ufności, że «niemożliwe, aby syn tylu łez zginął». Święta Moniko, módl się za nami. Amen.",
+    instructions:
+      "Odmawiaj nowenny przez dziewięć kolejnych dni, od 18 do 26 sierpnia w przygotowaniu do święta 27 sierpnia (i świętego Augustyna 28 sierpnia). Dla nawrócenia dziecka: cotygodniowa Komunia ofiarowana za dziecko; Msza za intencję; lektura Wyznań Augustyna.",
+    patronSaint: "Święta Monika",
+    feastDay: "27 sierpnia",
+    source: "KEP + Vatican.va Polski + święty Augustyn, Wyznania (księga IX) + tradycja augustyńska w Polsce. Retrieved 2026-05-18.",
+    reviewedAt: new Date("2026-05-18"),
+  },
+  {
+    prayerSlug: "offering-suffering",
+    name: "Ofiarowanie Cierpienia (Cierpienie Odkupieńcze)",
+    description:
+      "Ofiarowanie cierpienia — katolicka praktyka jednoczenia własnego cierpienia fizycznego, emocjonalnego lub duchowego z krzyżem Chrystusa w intencji wynagradzającej — jest jedną z najgłębszych duchowości katolickich. Nie jest masochizmem; nie jest obojętnością na cierpienie. Jest teologiczną prawdą, że cierpienie ludzkie zjednoczone dobrowolnie z cierpieniem Chrystusa uczestniczy w ekonomii zbawienia. Święty Paweł sformułował to w Kol 1,24: «Dopełniam w moim ciele to, czego nie dostaje udręk Chrystusa». Święty Jan Paweł II w Salvifici Doloris (1984) — napisanej krótko po wyzdrowieniu z zamachu — pogłębił tę teologię: cierpienie ofiarowane staje się skuteczną modlitwą. W Polsce duchowość cierpienia ofiarowanego ma głęboką tradycję, szczególnie u świętego Maksymiliana Kolbego i siostry Faustyny.",
+    prayerText:
+      "Panie Jezu Chryste, ofiaruję Ci dziś wszystkie cierpienia, które mnie spotkają — znane i nieznane, ciała, duszy i serca. Zjednocz je ze swoją zbawczą Męką i spraw, aby służyły nawróceniu grzeszników, ulżeniu duszom w czyśćcu i konkretnej intencji, którą Ci teraz przedstawiam (wymień intencję). Amen.",
+    instructions:
+      "Praktyka ma dwa momenty: (1) **poranne ofiarowanie** — przy budzeniu: «Panie, ofiaruję Ci ból i pracę tego dnia za (intencję)»; (2) **odnowienie w ciągu dnia** — gdy przychodzi konkretny ból, odnowić ofiarowanie. Szczególnie odpowiednie dla osób z chorobami przewlekłymi, w długotrwałej żałobie, w niesprawiedliwych sytuacjach. Dla poważnego cierpienia, szukaj kierownika duchowego.",
+    patronSaint: "Chrystus Ukrzyżowany · Matka Boża Bolesna",
+    feastDay: "Wielki Piątek",
+    source: "KEP + Vatican.va Polski (Salvifici Doloris, JPII 1984) + Katechizm §§ 1500-1532 + tradycja polskich świętych cierpienia (Faustyna, Maksymilian Kolbe). Retrieved 2026-05-18.",
+    reviewedAt: new Date("2026-05-18"),
+  },
+  {
+    prayerSlug: "prayer-discernment",
+    name: "Modlitwa o Rozeznanie",
+    description:
+      "Modlitwa o rozeznanie jest katolicką praktyką proszenia o światło Boże dla podjęcia ważnej decyzji. Tradycja katolicka uczy, że rozeznanie nie jest prostym racjonalnym wyborem, ale aktywnym poszukiwaniem konkretnej woli Boga. Święty Ignacy z Loyoli w Ćwiczeniach Duchownych (1548) usystematyzował zasady rozeznania duchów. Papież Franciszek uczynił z rozeznania centralny temat swojego pontyfikatu.",
+    prayerText:
+      "Panie mój Boże, błagam Cię pokornie o światło, abym rozeznał, czego ode mnie żądasz. Moje serce jest pełne niepokoju i wielu głosów; potrzebuję Twojego głosu. Oddal ode mnie hałas strachu, urok wygody i siłę pychy, i daj mi oczy, aby widzieć z spojrzeniem Chrystusa. Ufam, Panie, że prowadzisz mnie z ojcowską opatrznością drogą, która zaprowadzi mnie do Ciebie. Amen.",
+    instructions:
+      "Trzy etapy ignacjańskiego rozeznania: (1) **wstępna obojętność** — prosić o łaskę, abym nie był związany z jedną opcją bardziej niż z drugą; (2) **rozważanie** — studiować konsekwencje i zauważać wewnętrzne ruchy; (3) **potwierdzenie** — ofiarować tentatywną decyzję Bogu w modlitwie przez kilka dni.",
+    patronSaint: "Duch Święty · Święty Ignacy z Loyoli",
+    feastDay: "31 lipca (Święty Ignacy)",
+    source: "KEP + Vatican.va Polski + Święty Ignacy z Loyoli, Ćwiczenia Duchowne (1548) + katechezy Papieża Franciszka (2022). Retrieved 2026-05-18.",
+    reviewedAt: new Date("2026-05-18"),
+  },
+  {
+    prayerSlug: "prayer-fertility",
+    name: "Modlitwa o Płodność",
+    description:
+      "Katolicka modlitwa o płodność — dla małżeństw, które pragną poczęcia i nie osiągają go — ma głębokie korzenie biblijne. Pismo Święte pełne jest niepłodnych małżeństw, którym Bóg udzielił dzieci w odpowiedzi na wytrwałą modlitwę: Sara i Abraham, Rebeka i Izaak, Rachela i Jakub, Anna i Elkana, Elżbieta i Zachariasz. Kościół uczy, że płodność jest darem otrzymywanym z wdzięcznością, a niepłodność nie jest karą Bożą. Modlitwa nie wyklucza odpowiedzialnego szukania medycznego (NaProTechnology); nie wyklucza otwarcia na adopcję; ale wyklucza techniki rozdzielające zrodzenie od aktu małżeńskiego. Patroni: święta Anna i święty Joachim; święty Gerard Majella.",
+    prayerText:
+      "Panie Jezu, autorze wszelkiego życia, błagamy Cię z pokorną ufnością o dar dziecka. Ty znasz nasze czekanie, nasze łzy. Udziel nam, jeśli jest to Twoją wolą, biologicznej płodności; a jeśli nie jest, uzyskaj nam inny szlak rodzicielstwa — adopcję, opiekę nad dziećmi innych, duchowe zrodzenie tylu istnień. Święta Anno, święty Gerardzie Majello, módlcie się za nami. Amen.",
+    instructions:
+      "Modlitwa może być odmawiana codziennie lub jako nowenny do świętej Anny lub świętego Gerarda. Tradycja polska: pielgrzymka do Sanktuarium świętej Anny na Górze Świętej Anny (Opolskie) w modlitwie o płodność.",
+    patronSaint: "Święta Anna i Święty Joachim · Święty Gerard Majella",
+    feastDay: "26 lipca",
+    source: "KEP + Vatican.va Polski (Donum Vitae CDF 1987; Dignitas Personae 2008) + Katechizm §§ 2373-2379. Retrieved 2026-05-18.",
+    reviewedAt: new Date("2026-05-18"),
+  },
+  {
+    prayerSlug: "prayer-financial-hardship",
+    name: "Modlitwa w Trudności Ekonomicznej",
+    description:
+      "Katolicka modlitwa w trudności ekonomicznej ma kilku patronów: święty Józef (patron pracowników), święty Antoni (wzywany przez ubogich), święta Marta (administracja domowa). Modlitwa nie zastępuje ludzkiej odpowiedzialności: chrześcijanin w trudności ekonomicznej również aktywnie szuka pracy, kontroluje wydatki. Ale modlitwa ujmuje trudność w opatrzności Ojca: «nie troszczcie się o życie wasze… Ojciec wasz niebieski wie, że tego wszystkiego potrzebujecie» (Mt 6,25.32).",
+    prayerText:
+      "Ojcze niebieski, który dajesz pożywienie liliom polnym i ptakom niebieskim, spójrz z miłosierdziem na swoją rodzinę w godzinie trudności ekonomicznej. Udziel mi mądrości do zarządzania tym, co mam, odwagi do proszenia o pomoc, pokory do przyjmowania pomocy, i wytrwałości do szukania pracy. Święty Józefie pracowniku, módl się za nami. Święty Antoni z Padwy, módl się za nami. Amen.",
+    instructions:
+      "Odmawiaj codziennie lub jako nowenny (dziewięć dni do świętego Józefa lub świętego Antoniego). Dla bezrobotnych: nowenna do świętego Józefa Pracownika (22-30 kwietnia w przygotowaniu do święta 1 maja).",
+    patronSaint: "Święty Józef · Święty Antoni · Święta Marta",
+    feastDay: "19 marca (Święty Józef) · 1 maja (Święty Józef Robotnik)",
+    source: "KEP + Vatican.va Polski + Katechizm §§ 2402-2406 + Caritas in Veritate (Benedykt XVI 2009). Retrieved 2026-05-18.",
+    reviewedAt: new Date("2026-05-18"),
+  },
+  {
+    prayerSlug: "prayer-happy-death",
+    name: "Modlitwa o Dobrą Śmierć",
+    description:
+      "Modlitwa o dobrą śmierć — o łaskę umierania dobrze: w stanie łaski, z przyjętymi sakramentami (szczególnie Namaszczenia Chorych i Wiatyku), w wewnętrznym pokoju, z czasem na przebaczenie i poproszenie o przebaczenie, i z pewną nadzieją nieba — jest tradycyjną katolicką praktyką. Śmierć jest ostatnią wielką próbą duchową życia. Święty Józef (który zmarł w ramionach Jezusa i Maryi) jest patronem dobrej śmierci par excellence.",
+    prayerText:
+      "O Panie Jezu, w którego ręce oddałeś ducha umierając, błagam Cię o łaskę dobrej śmierci. Udziel mi, abym umarł w stanie łaski, pojednany z Tobą i ze wszystkimi, których obraziłem. Udziel mi przyjęcia sakramentów spowiedzi, Komunii i Namaszczenia Chorych przed ostatnim oddechem. Uchroń mnie od śmierci nagłej, od śmierci nieprzewidzianej, od śmierci bezbożnej. Święty Józefie, patronie dobrej śmierci, módl się za nami. Święta Maryjo, módl się za nami teraz i w godzinę śmierci naszej. Amen.",
+    instructions:
+      "Modlitwa może być odmawiana: jako periodyczna devosja w końcu każdego dnia; w każdą rocznicę śmierci krewnego; w szpitalach; przy łóżku umierającego. Wielkie dyscypliny przygotowujące do dobrej śmierci: regularna spowiedź (miesięczna), częsta Komunia, Namaszczenie Chorych na początku poważnej choroby (NIE czekaj na ostatni moment).",
+    patronSaint: "Święty Józef · Święta Maryja",
+    feastDay: "19 marca (Święty Józef)",
+    source: "KEP + Vatican.va Polski + Święty Alfons Maria Liguori, Przygotowanie do Śmierci + Katechizm §§ 1010-1014. Retrieved 2026-05-18.",
+    reviewedAt: new Date("2026-05-18"),
+  },
+  {
+    prayerSlug: "prayer-healing",
+    name: "Modlitwa o Uzdrowienie",
+    description:
+      "Modlitwa o uzdrowienie jest jedną z najbardziej fundamentalnych praktyk dewocyjnych katolickich. Pismo Święte rejestruje Jezusa uzdrawiającego niezliczonych chorych w swoim publicznym ministerstwie, a sakrament Namaszczenia Chorych kontynuuje dziś tę uzdrawiającą misję. Kościół rozróżnia trzy formy uzdrowienia: (1) sakramentalne (Namaszczenie Chorych); (2) charyzmatyczne; (3) przez wstawiennictwo świętego (Lourdes, Faustyna, święty Peregryn dla raka). Modlitwa nie jest magią; jest synowską prośbą skierowaną do Ojca przez Chrystusa.",
+    prayerText:
+      "Panie Jezu, lekarzu ciał i dusz, błagamy Cię za (wymień imię i chorobę) o łaskę uzdrowienia. Ty, który uzdrowiłeś tylu w swoim ziemskim ministerstwie, wyciągnij swoją uzdrawiającą rękę także dziś. Jeśli jest Twoją wolą, przywróć zdrowie ciała; a jeśli nie, przywróć zdrowie duszy, dając cierpliwość w bólu, siłę w leczeniu, nadzieję wobec przyszłości. Maryjo, Uzdrowienie Chorych, módl się za nami. Święty Peregrynie, módl się za nami. Amen.",
+    instructions:
+      "Modlitwa może być odmawiana: przez siebie, połączona z spowiedzią, Komunią i Namaszczeniem Chorych; za krewnego lub przyjaciela, idealnie w jego obecności, z włożeniem rąk (Mk 16,18); we wspólnocie. Dla konkretnych chorób: święty Peregryn dla raka, święta Łucja dla wzroku, święty Błażej dla gardła.",
+    patronSaint: "Chrystus, Boski Lekarz · Maryja, Uzdrowienie Chorych",
+    feastDay: "11 lutego (Matka Boża z Lourdes)",
+    source: "KEP + Vatican.va Polski (Salvifici Doloris, JPII 1984) + Rytuał Namaszczenia Chorych + Katechizm §§ 1499-1532. Retrieved 2026-05-18.",
+    reviewedAt: new Date("2026-05-18"),
+  },
+  {
+    prayerSlug: "prayer-marriage",
+    name: "Modlitwa o Małżeństwo",
+    description:
+      "Modlitwa o małżeństwo — o własne powołanie matrymonialne, o własne małżeństwo, o małżeństwo w kryzysie, lub o świętość małżeństw — jest fundamentalną praktyką w katolickiej duchowości rodzinnej. Kościół uczy, że małżeństwo sakramentalne jest jednym z siedmiu sakramentów (Mt 19,6: «co Bóg złączył, niech człowiek nie rozłącza»). Święty Jan Paweł II rozwinął teologię małżeństwa w Familiaris Consortio (1981) i Teologii Ciała. Papież Franciszek kontynuował w Amoris Laetitia (2016). W Polsce małżeństwo katolickie ma długą tradycję — Polska jest jednym z krajów z największą tradycją silnych małżeństw katolickich.",
+    prayerText:
+      "Panie Boże, autorze małżeństwa, który na początku stworzyłeś mężczyznę i kobietę na swój obraz, błagam Cię za (wymień intencję). Udziel nam daru miłości cierpliwej, służebnej, niezazdrosnej (1 Kor 13). Udziel nam wierności, cierpliwości, szczodrobliwości, i otwartości na dzieci, jakie nam ześlesz. Święty Józefie i Święta Maryjo, módlcie się za nami. Amen.",
+    instructions:
+      "Modlitwa może być odmawiana w małżeństwie (każdą noc przed snem, na głos lub w cichym wspólnym), indywidualnie, lub w rodzinie. Dla małżeństw w kryzysie: Msza święta o pojednanie, konsultacja z księdzem lub terapeutą katolickim, nowenna do Świętej Rodziny, rekolekcje Małżeństw Worldwide.",
+    patronSaint: "Święta Rodzina · Święty Józef i Święta Maryja",
+    feastDay: "Niedziela w Oktawie Bożego Narodzenia (Święta Rodzina)",
+    source: "KEP + Vatican.va Polski (Familiaris Consortio 1981; Amoris Laetitia 2016) + Katechizm §§ 1601-1666. Retrieved 2026-05-18.",
+    reviewedAt: new Date("2026-05-18"),
+  },
+  {
+    prayerSlug: "prayer-safe-travel",
+    name: "Modlitwa o Bezpieczną Podróż",
+    description:
+      "Katolicka modlitwa o bezpieczną podróż jest bardzo starą i rozpowszechnioną praktyką dewocyjną — od średniowiecznych pielgrzymek do Santiago de Compostela do codziennych podróży samochodem dzisiejszych katolików. Święty Krzysztof, patron uniwersalny podróżujących, jest świętym wzywanym po prostu. Anioł Stróż osobisty jest również niewidzialnym towarzyszem w każdej podróży. W Polsce tradycja obejmuje błogosławieństwo samochodu 25 lipca (święty Krzysztof), medalik świętego Krzysztofa w samochodzie, oraz modlitwę przed podróżą.",
+    prayerText:
+      "Panie Boże, Ojcze wszechmogący, który czuwasz nad swoimi dziećmi w drodze, powierzam się Twojej opiece podczas tej podróży. Oddal ode mnie niebezpieczeństwa ciała, wypadki, awarie mechaniczne, nieostrożnych kierowców, zwierzęta na drodze, niepogodę. Święty Krzysztofie, módl się za mną. Amen.",
+    instructions:
+      "Odmawiaj przed każdą podróżą: przy wejściu do pojazdu; ze Znakiem Krzyża; z wzmianką o osobie, celu i powodzie podróży; z odnowieniem po długich przerwach. Dla długich podróży: spowiedź sakramentalna przed wyjazdem; Msza pożegnalna; błogosławieństwo pojazdu; Psalm 91 i Różaniec podczas podróży.",
+    patronSaint: "Święty Krzysztof · Anioł Stróż · Święty Rafał",
+    feastDay: "25 lipca",
+    source: "KEP + Vatican.va Polski + polska tradycja błogosławieństwa pojazdów + Psalm 91. Retrieved 2026-05-18.",
+    reviewedAt: new Date("2026-05-18"),
+  },
+  {
+    prayerSlug: "prayer-serenity",
+    name: "Modlitwa o Pogodę Ducha (Serenity Prayer)",
+    description:
+      "Modlitwa o Pogodę Ducha — «Boże, użycz mi pogody ducha, abym przyjmował to, czego nie mogę zmienić; odwagi, abym zmieniał to, co mogę zmienić; i mądrości, abym odróżniał jedno od drugiego» — jest jedną z najbardziej powszechnie rozpowszechnionych modlitw chrześcijańskich XX wieku. Przypisywana protestanckiemu teologowi Reinholdowi Niebuhrowi (1934), została przyjęta przez Anonimowych Alkoholików w latach 40. Modlitwa nie jest wyłącznie katolicka — jest genuinie ekumeniczna — ale Kościół katolicki włączył ją z naturalnością, ponieważ zbiega się z klasyczną duchowością «zdania się na Bożą Opatrzność» (Jean-Pierre de Caussade).",
+    prayerText:
+      "Boże, użycz mi pogody ducha, abym przyjmował to, czego nie mogę zmienić; odwagi, abym zmieniał to, co mogę zmienić; i mądrości, abym odróżniał jedno od drugiego. Żyjąc jeden dzień na raz, ciesząc się jednym momentem na raz, przyjmując trudności jako ścieżkę do pokoju; biorąc, jak to czynił Jezus, ten świat grzechu takim, jaki jest, a nie takim, jakim chciałbym, aby był; ufając, że uczynisz dobrze wszystkie rzeczy, jeśli oddam się Twojej woli. Amen.",
+    instructions:
+      "Odmawiaj: jako codzienną modlitwę poranną, szczególnie dla programów odzyskiwania (Anonimowi Alkoholicy w Polsce); w momentach intensywnego niepokoju; na spotkaniach grup dwunastu kroków; w momentach utraty lub kryzysu. Forma krótka (pierwsze trzy linie) jest najbardziej znana i łatwo zapamiętywana.",
+    patronSaint: "Chrystus, Książę Pokoju",
+    feastDay: "Ostatnia Niedziela Okresu Zwykłego (Chrystus Król)",
+    source: "KEP + Reinhold Niebuhr (1934) + AA Polska + tradycja katolicka zdania się (Jean-Pierre de Caussade). Retrieved 2026-05-18.",
+    reviewedAt: new Date("2026-05-18"),
+  },
+  {
+    prayerSlug: "prayer-st-francis",
+    name: "Modlitwa Przypisywana świętemu Franciszkowi (Panie, uczyń mnie narzędziem Twego pokoju)",
+    description:
+      "Modlitwa Przypisywana świętemu Franciszkowi — bardziej znana jako «Panie, uczyń mnie narzędziem Twego pokoju» — jest jedną z najsłynniejszych chrześcijańskich modlitw XX wieku. Pomimo tradycyjnego przypisania świętemu Franciszkowi z Asyżu, konkretna kompozycja nie pojawia się w znanych pismach świętego; jej obecna forma została opublikowana po raz pierwszy w francuskim katolickim periodyku La Clochette w 1912. Od tamtego czasu jest recytowana przez Matkę Teresę, świętego Jana Pawła II, papieża Franciszka i miliony chrześcijan. Modlitwa wyraża duchowość franciszkańską: chrześcijanin ofiaruje się jako mediator miłości Boga światu zranionemu. Papież Franciszek wybrał imię Franciszek częściowo z powodu tej duchowości.",
+    prayerText:
+      "O Panie, uczyń mnie narzędziem Twego pokoju, abym wnosił miłość tam, gdzie panuje nienawiść; przebaczenie tam, gdzie panuje obraza; jedność tam, gdzie panuje zwątpienie; wiarę tam, gdzie panuje wątpienie; prawdę tam, gdzie panuje błąd; nadzieję tam, gdzie panuje rozpacz; radość tam, gdzie panuje smutek; światło tam, gdzie panuje ciemność. O Mistrzu, spraw, abym nie tyle szukał pocieszenia, ile pocieszał; nie tyle bycia zrozumianym, ile rozumienia; nie tyle bycia kochanym, ile kochania. Albowiem dając — otrzymujemy, zapominając o sobie — znajdujemy, przebaczając — otrzymujemy przebaczenie, umierając — rodzimy się dla życia wiecznego. Amen.",
+    instructions:
+      "Modlitwa może być odmawiana: jako codzienna modlitwa, idealnie rano; przed trudną rozmową, mediacją lub napiętym spotkaniem; po otrzymaniu obrazy, jako wyraźny akt przebaczenia. Dla franciszkanów świeckich w Polsce: błogosławieństwo zwierząt 4 października.",
+    patronSaint: "Święty Franciszek z Asyżu",
+    feastDay: "4 października",
+    source: "KEP + Vatican.va Polski + La Clochette (1912) + tradycja franciszkańska w Polsce. Retrieved 2026-05-18.",
+    reviewedAt: new Date("2026-05-18"),
+  },
+  {
+    prayerSlug: "psalm-23",
+    name: "Psalm 23 (Pan jest moim pasterzem)",
+    description:
+      "Psalm 23 — «Pan jest moim pasterzem, niczego mi nie braknie» — jest jednym z najukochańszych psalmów Pisma Świętego, przypisywanym królowi Dawidowi. Jego centralny obraz — Pana, który pasie swój lud jak pasterz pasie owce, prowadząc je na zielone pastwiska, do spokojnych wód, i chroniąc je «nawet gdy idą doliną ciemną» — uchwytuje jeden z najgłębszych obrazów teologii biblijnej. Sam Chrystus zastosował do siebie obraz Dobrego Pasterza (J 10,11). Psalm jest tradycyjnie odmawiany w chwilach żałoby (katolickie pogrzeby prawie zawsze go zawierają), w trudnościach lub strachu (przejście «doliny ciemnej»), na łożu śmierci, i jako codzienne wyznanie ufności.",
+    prayerText:
+      "Pan jest moim pasterzem, nie brak mi niczego. Pozwala mi leżeć na zielonych pastwiskach. Prowadzi mnie nad wody, gdzie mogę odpocząć: orzeźwia moją duszę. Wiedzie mnie po właściwych ścieżkach przez wzgląd na swoje imię. Chociażbym przechodził ciemną doliną, zła się nie ulęknę, bo Ty jesteś ze mną. Twój kij i Twoja laska są tym, co mnie pociesza. Stół dla mnie zastawiasz wobec mych przeciwników; namaszczasz mi głowę olejkiem, kielich mój pełny po brzegi. Dobroć i łaska pójdą w ślad za mną przez wszystkie dni mego życia i zamieszkam w domu Pana po najdłuższe czasy. (Psalm 23, tłumaczenie liturgiczne KEP)",
+    instructions:
+      "Może być odmawiany: jako codzienna modlitwa; w trudnościach lub strachu, powoli; przed pogrzebem; przy poważnie chorym; jako medytacja w Lectio Divina. Liturgia Godzin zawiera go w różnych miejscach. Zapamiętaj go; mieści się w jednej skupionej lekturze.",
+    patronSaint: "Chrystus, Dobry Pasterz · Król Dawid",
+    feastDay: "IV Niedziela Wielkanocna (Dobry Pasterz)",
+    source: "KEP + Pismo Święte, tłumaczenie liturgiczne KEP + Liturgia Godzin + tradycja patrystyczna (Święty Augustyn). Retrieved 2026-05-18.",
+    reviewedAt: new Date("2026-05-18"),
+  },
+  {
+    prayerSlug: "psalm-91",
+    name: "Psalm 91 (Kto przebywa w pieczy Najwyższego)",
+    description:
+      "Psalm 91 — «Kto przebywa w pieczy Najwyższego, ten przebywa w cieniu Wszechmocnego» — jest wielkim biblijnym psalmem Bożej ochrony. Tradycja powiązała go tak silnie z walką z demonami i duchową ochroną, że jest odmawiany w każdą Kompletę w sobotę, i jest częścią tradycyjnego rytu egzorcyzmów. Psalm wypowiada najbardziej radykalne obietnice ochrony Boga nad tym, kto Mu ufa. Cytowany jest przez samego diabła w trzeciej pokusie Chrystusa (Mt 4,6). Tradycja katolicka odmawia go przed niebezpieczeństwami fizycznymi i duchowymi.",
+    prayerText:
+      "Kto przebywa w pieczy Najwyższego i w cieniu Wszechmocnego mieszka, mówi do Pana: «Ucieczko moja i Twierdzo, mój Boże, któremu ufam». Bo On sam cię wyzwoli z sideł myśliwego i od zgubnego słowa. Okryje cię swymi piórami, pod Jego skrzydłami znajdziesz schronienie. Nie ulękniesz się strachu nocnego ani strzały lecącej za dnia, ani zarazy, co idzie w mroku, ani moru, co niszczy w południe. Choć tysiąc padnie u twego boku, a dziesięć tysięcy po twojej prawicy, ciebie to nie spotka. Bo swoim Aniołom dał rozkaz o tobie, aby cię strzegli na wszystkich twych drogach. (Psalm 91, tłumaczenie liturgiczne KEP)",
+    instructions:
+      "Może być odmawiany: każdej nocy przed snem, jako tradycyjna modlitwa Komplety; przed długą lub niebezpieczną podróżą; w momentach strachu lub duchowego ataku; jako medytacja w czasie próby. Zapamiętaj. W rodzinnej duchowości modli się o dzieci, o chorych, o samotnych.",
+    patronSaint: "Święty Michał Archanioł · Święci Aniołowie Stróżowie",
+    feastDay: "29 września · 2 października",
+    source: "KEP + Pismo Święte, tłumaczenie liturgiczne KEP + Liturgia Godzin (Komplety) + tradycja egzorcystyczna + Mt 4,6. Retrieved 2026-05-18.",
+    reviewedAt: new Date("2026-05-18"),
+  },
+  {
+    prayerSlug: "rosary-for-healing",
+    name: "Różaniec o Uzdrowienie",
+    description:
+      "Różaniec o Uzdrowienie jest katolicką praktyką odmawiania Świętego Różańca z konkretną intencją proszenia Maryi przez wstawiennictwo Chrystusa, Boskiego Lekarza, o fizyczne, emocjonalne lub duchowe uzdrowienie. Cuda maryjne uzdrowień w Lourdes, Fatimie i wielu innych sanktuariach zawsze były związane z Różańcem odmawianym z wiarą. Sam Różaniec nie jest talizmanem; jest kontemplacyjną medytacją centralnych tajemnic wiary w towarzystwie Maryi.",
+    instructions:
+      "Odmów cały Różaniec (pięć dziesiątek), idealnie z tajemnicami światła (włączając Wesele w Kanie, gdzie Chrystus dokonuje pierwszego cudu na prośbę Maryi). Dla długotrwałej choroby rozważ codzienny Różaniec przez całe leczenie. Struktura: Znak Krzyża i Skład Apostolski; Ojcze Nasz, trzy Zdrowaś Maryjo i Chwała Ojcu (prośby początkowe); pięć dziesiątek; Litania Loretańska, włączając «Uzdrowienie chorych, módl się za nami»; Salve Regina. Dla raka: pięć Ojcze Nasz po każdej dziesiątce przez wstawiennictwo świętego Peregryna. Łącz z sakramentami i odpowiedzialnym leczeniem medycznym.",
+    patronSaint: "Maryja, Uzdrowienie Chorych · Chrystus, Boski Lekarz",
+    feastDay: "7 października (Matka Boża Różańcowa)",
+    source: "KEP + Vatican.va Polski (Rosarium Virginis Mariae, JPII 2002) + Marialis Cultus (Paweł VI 1974). Retrieved 2026-05-18.",
+    reviewedAt: new Date("2026-05-18"),
+  },
+  {
+    prayerSlug: "seven-sorrows-rosary",
+    name: "Koronka Siedmiu Boleści Maryi",
+    description:
+      "Koronka Siedmiu Boleści Maryi, zwana także Różańcem Serwickim, jest nabożeństwem maryjnym założonym przez Zakon Serwitów Maryi (Florencja, 1233). Rozważa Siedem Mieczy, które przebiły serce Maryi według proroctwa Symeona (Łk 2,35). Struktura: specjalna koronka siedmiu grup (jedno Ojcze Nasz i siedem Zdrowaś Maryjo na grupę) oraz trzy Zdrowaś Maryjo na końcu w intencji łez Maryi. Potwierdzona przez Benedykta XIII w 1727 i zatwierdzona przez Piusa IX w 1860. W Polsce — kraju maryjnym — koronka jest powszechnie znana, szczególnie w Wielkim Tygodniu.",
+    instructions:
+      "Struktura: (1) Znak Krzyża; (2) **1. Boleść**: proroctwo Symeona. Ojcze Nasz i siedem Zdrowaś Maryjo; (3) **2.**: ucieczka do Egiptu; (4) **3.**: zagubienie Dziecięcia Jezus; (5) **4.**: spotkanie z Jezusem na drodze krzyżowej; (6) **5.**: ukrzyżowanie; (7) **6.**: Pieta; (8) **7.**: pogrzeb; (9) trzy Zdrowaś Maryjo końcowe; (10) tradycyjna modlitwa Serwicka. Polska tradycja: odmawiać w piątki (dzień Męki), podczas Wielkiego Postu, w Wielki Piątek i Wielką Sobotę.",
+    patronSaint: "Mater Dolorosa · Zakon Serwitów Maryi",
+    feastDay: "15 września",
+    source: "KEP + Vatican.va Polski + Zakon Serwitów Maryi (1233) + Benedykt XIII (1727) + Pius IX (1860). Retrieved 2026-05-18.",
+    reviewedAt: new Date("2026-05-18"),
+  },
+  {
+    prayerSlug: "surrender-novena",
+    name: "Nowenna Zaufania (Ks. Dolindo Ruotolo)",
+    description:
+      "Nowenna Zaufania została skomponowana przez sługę Bożego ks. Dolindo Ruotolo (1882-1970), neapolitańskiego kapłana. Ks. Dolindo otrzymał w modlitwie centralną jaculatorię — «Jezu, Ty się tym zajmij» — jako dyktat samego Chrystusa. Nowenna składa się z dziewięciu dni z unikalną strukturą: każdego dnia odmawia się dziesięć razy tę samą jaculatorię z rosnącą ufnością. Centralna idea jest radykalna: chrześcijanin musi całkowicie oddać rozwiązanie problemu Chrystusowi, nie wyprzedzając Bożej opatrzności. «Zamknij oczy duszy i powiedz mi: 'Jezu, Ty się tym zajmij', i miej pokój». W Polsce nowenna ma sławę szczególnie skutecznej dla zablokowanych sytuacji.",
+    prayerText:
+      "Jezu, Ty się tym zajmij.",
+    instructions:
+      "Odmawiaj nowenny przez dziewięć kolejnych dni. Każdego dnia jest inna jaculatoria, która wprowadza «Jezu, Ty się tym zajmij», następnie 10 razy. **Dzień 1**: «Dlaczego się niepokoisz i poruszasz? Pozostaw Mnie troskę o twoje sprawy». **Dzień 2**: «Synu, krzywdzisz i utrudniasz moje dzieło, gdy chcesz się sam zajmować». **Dzień 3**: «Rozważanie, niepokój, chcąc myśleć o konsekwencjach, jest przeciwne zdaniu się na mnie». **Dzień 4**: «Jesteś jak ślepy w tych sprawach». **Dzień 5**: «Zamknij oczy duszy i powiedz mi z całej duszy: 'Jezu, Ty się tym zajmij'». **Dzień 6**: «Wyrządzasz mi wielką szkodę, gdy zamiast się we mnie zdać, sam zaczynasz mi doradzać». **Dzień 7**: «Ileż rzeczy nie czynię, gdy dusza zwraca się do mnie!». **Dzień 8**: «Zamknij oczy i przejdź spokojnie». **Dzień 9**: «Dzieci moje, czyńcie trzy godziny święte».",
+    patronSaint: "Chrystus Dziecięcy · Najświętsze Serce Jezusa",
+    feastDay: "19 listopada (Ks. Dolindo, sługa Boży)",
+    source: "KEP + Vatican.va Polski + Ks. Dolindo Ruotolo (1882-1970) + Archidiecezja Neapolu. Retrieved 2026-05-18.",
+    reviewedAt: new Date("2026-05-18"),
+  },
+  // Locale-anchored dla pl (8 entries — pl ma już czestochowa i
+  // maximilian-kolbe z poprzednich rund; brakuje akita, aparecida,
+  // guadalupe, knock, la-vang, santo-nino, st-juan-diego, simbang-gabi)
+  {
+    prayerSlug: "novena-akita",
+    name: "Nowenna do Matki Bożej z Akita",
+    description:
+      "Nabożeństwo do Matki Bożej z Akita czci objawienia maryjne siostrze Agnes Sasagawie w Akita w Japonii między 1973 a 1981 rokiem. Statua Madonny płakała 101 razy ludzkimi łzami między 1975 a 1981. Orędzia proszą o pokutę, modlitwę różańcową i konsekrację Niepokalanemu Sercu Maryi — w terminach jasno przywołujących Fatimę. Objawienia oficjalnie uznano za godne wiary w 1984 roku przez biskupa Niigaty z aprobatą ówczesnego kardynała Ratzingera (CDF). Akita jest pierwszą objawioną maryjną aproobowaną w Wschodniej Azji.",
+    prayerText:
+      "O słodka Matko z Akita, która swoimi ludzkimi łzami poruszyłaś serce swoich dzieci w Japonii, porusz także i moje. Uzyskaj mi łaskę szczerego nawrócenia i siłę do zadośćuczynienia za grzechy, które obrażają Najświętsze Serce Jezusa i Twoje. Proszę o łaskę, o którą z ufnością proszę (wymień intencję). Matko Boża z Akita, módl się za nami. Amen.",
+    instructions:
+      "Odmawiaj nowenny przez dziewięć kolejnych dni. Struktura: Znak Krzyża; tajemnica chwalebna Różańca; modlitwa; konsekracja Niepokalanemu Sercu; wymień intencję.",
+    patronSaint: "Matka Boża z Akita",
+    feastDay: "12 października (przybliżona)",
+    source: "KEP + Vatican.va Polski + Aprobata biskupa John Shojiro Ito (Niigata, 1984) + CDF (kard. Ratzinger). Retrieved 2026-05-18.",
+    reviewedAt: new Date("2026-05-18"),
+  },
+  {
+    prayerSlug: "novena-aparecida",
+    name: "Nowenna do Matki Bożej z Aparecidy",
+    description:
+      "Matka Boża z Aparecidy jest Patronką Brazylii od 1930 roku, gdy ją koronował kanonicznie święty Pius X. Nabożeństwo zrodziło się w 1717 roku, gdy trzej rybacy z rzeki Paraíba (Felipe Pedroso, Domingos García, João Alves) wyciągnęli z wody małą terakotową figurę Madonny Niepokalanego Poczęcia. Sanktuarium Narodowe w Aparecidzie w São Paulo jest drugim co do wielkości kościołem katolickim na świecie. W Polsce nabożeństwo jest praktykowane przez wspólnoty brazylijsko-polskie i przez diasporę polsko-brazylijską, szczególnie w Paranie.",
+    prayerText:
+      "O Matko Boża z Aparecidy, Królowo i Patronko Brazylii, która z wód Paraíby wybrałaś wyjść, aby objawić swoją matczyną opiekę nad swoim ludem, uzyskaj mi przez wstawiennictwo łaskę, o którą z ufnością proszę (wymień intencję). Zachowaj w wierze brazylijskie rodziny. Amen.",
+    instructions:
+      "Odmawiaj nowenny przez dziewięć kolejnych dni, od 4 do 11 października.",
+    patronSaint: "Matka Boża z Aparecidy (Patronka Brazylii)",
+    feastDay: "12 października",
+    source: "KEP + Vatican.va Polski + Sanktuarium Narodowe Aparecidy (Brazylia) + tradycja trzech rybaków (1717). Retrieved 2026-05-18.",
+    reviewedAt: new Date("2026-05-18"),
+  },
+  {
+    prayerSlug: "novena-guadalupe",
+    name: "Nowenna do Matki Bożej z Guadalupe",
+    description:
+      "Matka Boża z Guadalupe jest Patronką Ameryk, ogłoszoną przez świętego Piusa X w 1910. Objawienie miało miejsce między 9 a 12 grudnia 1531 roku na wzgórzu Tepeyac, niedaleko Miasta Meksyk, niedawno nawróconemu indianinowi Juanowi Diego Cuauhtlatoatzin. Maryja objawiła się ze skórą i rysami indiańskimi, ubrana w pas brzemiennej kobiety, wskazując na swoją macierzyńską bliskość z ludem rodzimym. Obraz Guadalupe milagrosamente odbił się na jego tilmie. W Polsce nabożeństwo jest praktykowane przez katolików polsko-meksykańskich i w ramach powszechnego maryjnego kultu.",
+    prayerText:
+      "O słodka Matko Boża z Guadalupe, Matko i Cesarzowo Ameryk, która objawiłaś się na wzgórzu Tepeyac w stroju indiańskiej brzemiennej kobiety, uzyskaj mi przez wstawiennictwo macierzyńskie łaskę, o którą z ufnością proszę (wymień intencję). Matko Boża z Guadalupe, módl się za nami. Amen.",
+    instructions:
+      "Odmawiaj nowenny przez dziewięć kolejnych dni, od 3 do 11 grudnia w przygotowaniu do święta 12 grudnia.",
+    patronSaint: "Matka Boża z Guadalupe (Patronka Ameryk)",
+    feastDay: "12 grudnia",
+    source: "KEP + Vatican.va Polski (święty Pius X 1910; JPII kanonizacja Juana Diego 2002) + Nican Mopohua. Retrieved 2026-05-18.",
+    reviewedAt: new Date("2026-05-18"),
+  },
+  {
+    prayerSlug: "novena-knock",
+    name: "Nowenna do Matki Bożej z Knock (Irlandia)",
+    description:
+      "Matka Boża z Knock jest jedną z najbardziej znanych nowoczesnych objawień maryjnych. Objawienie miało miejsce 21 sierpnia 1879 w Knock, w hrabstwie Mayo w Irlandii. Piętnastu świadków zobaczyło jednocześnie objawienie Maryi, świętego Józefa i świętego Jana Ewangelisty, wraz z Barankiem. Objawienie było całkowicie ciche i trwało około dwóch godzin pod ciągłym deszczem. Święty Jan Paweł II odwiedził Knock w 1979; Papież Franciszek w 2018. Nabożeństwo w Polsce jest praktykowane przez polską diasporę w Irlandii, która jest jedną z największych.",
+    prayerText:
+      "O słodka Matko Boża z Knock, Niepokalana Matko, która w ciszy objawiłaś się z Józefem i Janem przy Bożym Baranku, uzyskaj mi przez wstawiennictwo łaskę, o którą z ufnością proszę (wymień intencję). Matko Boża z Knock, módl się za nami. Amen.",
+    instructions:
+      "Odmawiaj nowenny przez dziewięć kolejnych dni, od 13 do 20 sierpnia. Włącz 15 minut cichej modlitwy każdego dnia.",
+    patronSaint: "Matka Boża z Knock · Święty Józef · Święty Jan Ewangelista",
+    feastDay: "21 sierpnia",
+    source: "KEP + Vatican.va Polski (wizyta JPII w Knock, 1979) + Sanktuarium Narodowe Knock. Retrieved 2026-05-18.",
+    reviewedAt: new Date("2026-05-18"),
+  },
+  {
+    prayerSlug: "novena-la-vang",
+    name: "Nowenna do Matki Bożej z La Vang (Wietnam)",
+    description:
+      "Matka Boża z La Vang jest głównym objawieniem maryjnym Wietnamu. Objawienie miało miejsce w 1798 roku podczas surowych prześladowań katolików wietnamskich. Maryja pojawiła się ubrana w tradycyjne wietnamskie áo dài, z Dzieciątkiem Jezus na rękach, i powiedziała im, aby się modlili, a ona ich ochroni. Bazylika La Vang została podniesiona do rangi Bazyliki Mniejszej przez Papieża Franciszka w 2017. W Polsce nabożeństwo jest praktykowane przez wietnamsko-polskie wspólnoty katolickie.",
+    prayerText:
+      "O Matko Boża z La Vang, słodka Matko, która przyszłaś pocieszyć swoje dzieci wietnamskie w najtwardszych prześladowaniach ubrana w tradycyjne áo dài, uzyskaj mi przez wstawiennictwo łaskę, o którą z ufnością proszę (wymień intencję). Amen.",
+    instructions:
+      "Odmawiaj nowenny przez dziewięć kolejnych dni.",
+    patronSaint: "Matka Boża z La Vang",
+    feastDay: "15 sierpnia (związana z Wniebowzięciem)",
+    source: "KEP + Vatican.va + Wietnamska Konferencja Episkopatu + Papież Franciszek (podniesienie do Bazyliki Mniejszej 2017). Retrieved 2026-05-18.",
+    reviewedAt: new Date("2026-05-18"),
+  },
+  {
+    prayerSlug: "novena-santo-nino",
+    name: "Nowenna do Świętego Niño z Cebu (Filipiny)",
+    description:
+      "Święty Niño z Cebu jest najstarszym i najbardziej czczonym obrazem religijnym katolickim Filipin. Mała drewniana figurka Dzieciątka Jezus, podarowana przez Ferdynanda Magellana królowej Juanie z Cebu podczas jej chrztu 14 kwietnia 1521 roku. Odnaleziona nietknięta 44 lata później (1565) przez hiszpańskich żołnierzy. Figurka zachowuje się w Bazylice Mniejszej Świętego Niño w Cebu. Święto główne to Sinulog, trzecia niedziela stycznia. W Polsce nabożeństwo jest praktykowane przez filipińsko-polskie wspólnoty.",
+    prayerText:
+      "O słodki Święty Niño z Cebu, Dzieciątko Jezus, które jesteś żywą katolicką obecnością na Filipinach od ponad pięciuset lat, uzyskaj mi przez wstawiennictwo łaskę, o którą z pokorną ufnością proszę (wymień intencję). Pit Señor, viva Señor Santo Niño. Amen.",
+    instructions:
+      "Odmawiaj nowenny przez dziewięć kolejnych dni przed trzecią niedzielą stycznia.",
+    patronSaint: "Święty Niño z Cebu · Dzieciątko Jezus",
+    feastDay: "Trzecia niedziela stycznia (Sinulog)",
+    source: "KEP + Filipińska Konferencja Episkopatu + Bazylika Mniejsza Świętego Niño z Cebu. Retrieved 2026-05-18.",
+    reviewedAt: new Date("2026-05-18"),
+  },
+  {
+    prayerSlug: "novena-st-juan-diego",
+    name: "Nowenna do świętego Juana Diego",
+    description:
+      "Święty Juan Diego Cuauhtlatoatzin (1474-1548) jest indianinem, któremu Najświętsza Maryja Panna objawiła się na Tepeyac między 9 a 12 grudnia 1531 roku, gdzie objawiła się jako Matka Boża z Guadalupe. Ochrzczony przez franciszkanów przed 1525 rokiem, wdowiec od 1529. Jest on główną postacią ludzką nawrócenia Meksyku i całej hiszpańskiej Ameryki do katolicyzmu. Obraz Guadalupe milagrosamente odbił się na jego tilmie. Kanonizowany przez świętego Jana Pawła II w Bazylice Guadalupe w Miasto Meksyku 31 lipca 2002 podczas jego ostatniej wizyty pasterskiej.",
+    prayerText:
+      "O pokorny święty Juanie Diego, indiański orle, którego Najświętsza Maryja Panna wybrała na nosiciela obrazu Guadalupe dla całego kontynentu Ameryk, uzyskaj mi przez wstawiennictwo łaskę, o którą z ufnością proszę (wymień intencję). Ty, który słyszałeś, jak Niebiańska Matka nazywa cię «mój najmniejszy synu», uzyskaj mi łaskę poczucia się także ja, w moich pokornych okolicznościach, ulubionym dzieckiem Matki Bożej. Amen.",
+    instructions:
+      "Odmawiaj nowenny przez dziewięć kolejnych dni, od 30 listopada do 8 grudnia w przygotowaniu do święta Guadalupe (12 grudnia).",
+    patronSaint: "Święty Juan Diego Cuauhtlatoatzin",
+    feastDay: "9 grudnia",
+    source: "KEP + Vatican.va Polski (święty Jan Paweł II, kanonizacja w Bazylice Guadalupe, 31 lipca 2002) + Nican Mopohua. Retrieved 2026-05-18.",
+    reviewedAt: new Date("2026-05-18"),
+  },
+  {
+    prayerSlug: "simbang-gabi",
+    name: "Simbang Gabi (Filipińska Pasterka)",
+    description:
+      "Simbang Gabi — dosłownie «Nocna Msza» w filipińskim — to seria dziewięciu poranek katolickich Mszy świętych na Filipinach od 16 do 24 grudnia w przygotowaniu do Bożego Narodzenia. Tradycja sięga XVII wieku, gdy augustianie i dominikanie hiszpańscy misjonarze sprawowali poranne Msze święte (o świcie, około 4:00 rano), aby rolnicy i rybacy filipińscy mogli uczestniczyć przed rozpoczęciem pracy. Popularna obietnica — ukończenie dziewięciu Mszy ciągłych zapewnia konkretną intencję — jest dewocyjna. Filipińska diaspora w Polsce, choć mała, świętuje Simbang Gabi w niektórych parafiach na zaproszenie filipińskich katolików.",
+    instructions:
+      "Uczestniczyć we Mszy w każdy z dziewięciu kolejnych dni od 16 do 24 grudnia. Na Filipinach Msza tradycyjnie odbywa się o świcie (4:00-5:00 rano); w diasporze normalnie wieczorem (18:00-20:00). Tradycje: (1) dzielić «bibingka» i «puto bumbong» po każdej Mszy; (2) wyspowiadać się przynajmniej raz w ciągu dziewięciu dni; (3) nowenna rodzinna do Dzieciątka Jezus każdej nocy; (4) zabieranie dzieci. Dla polskich katolików bez dostępu do parafii z Simbang Gabi, uczestnicz w codziennej Mszy świętej przez dziewięć dni przed Bożym Narodzeniem.",
+    patronSaint: "Dzieciątko Jezus · Święta Rodzina",
+    feastDay: "16 do 24 grudnia (rocznie)",
+    source: "KEP + Filipińska Konferencja Episkopatu + tradycja augustyńsko-dominikańska na Filipinach (XVII w.) + filipińskie wspólnoty w polskiej diasporze. Retrieved 2026-05-18.",
+    reviewedAt: new Date("2026-05-18"),
+  },
 ];

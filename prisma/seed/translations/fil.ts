@@ -574,4 +574,553 @@ export const filTranslations: PrayerTranslationSeed[] = [
     source: "CBCP + Vatican.va + Treatise on the True Devotion to Mary (St. Louis Marie Grignion de Montfort, ca. 1712) + Apostolic letter Rosarium Virginis Mariae (JPII, 2002, on «Totus Tuus»). Retrieved 2026-05-17.",
     reviewedAt: new Date("2026-05-17"),
   },
+  // ── Wave 7 (2026-05-18): completes Filipino coverage to 100%. Sources:
+  //    CBCP, Vatican.va, Word & Life Publications, Daughters of St. Paul
+  //    Philippines. Filipino Catholic publishing is bilingual; English-
+  //    Filipino mix reflects actual liturgical practice in PH parishes.
+  {
+    prayerSlug: "54-day-rosary-novena",
+    name: "Nobena ng 54 na Rosas (54-Day Rosary Novena)",
+    description:
+      "Ang 54-Day Rosary Novena ay ibinunyag ng Mahal na Birheng Maria kay Fortuna Agrelli sa Naples noong 1884. Isang batang babae na may mapanganib na sakit, natanggap ni Fortuna sa pangitain ang utos na magdasal ng buong Rosaryo (limang dekada) sa loob ng 27 araw ng pagsamo at 27 araw ng pasasalamat — 54 araw lahat. Naaprubahan ng Papa Leo XIII. Angkop para sa mga agarang sitwasyon na nangangailangan ng tuloy-tuloy na pamamagitan.",
+    instructions:
+      "Idasal ang buong Rosaryo araw-araw sa loob ng 54 magkakasunod na araw. Unang 27 araw ay pagsamo; sumunod na 27 araw ay pasasalamat (Marcos 11,24). Rotasyon ng mga misteryo: araw 1 joyful, araw 2 sorrowful, araw 3 glorious, at uulit. Kung may makaligtaan na araw, magsisimula muli mula sa araw 1.",
+    patronSaint: "Mahal na Birheng Maria, Rosa Mystica",
+    feastDay: "Marian memorial (hindi calendrical)",
+    source: "CBCP + Vatican.va + account of Fortuna Agrelli (Naples, 1884) + Leo XIII. Retrieved 2026-05-18.",
+    reviewedAt: new Date("2026-05-18"),
+  },
+  {
+    prayerSlug: "brown-scapular",
+    name: "Kayumangging Eskapulario ng Carmelo",
+    description:
+      "Ang Kayumangging Eskapulario ng Bundok ng Karmelo ay isang Katolikong sacramental — dalawang maliliit na piraso ng lana na kayumanggi na pinagdugtong ng mga laso, isinusuot sa mga balikat sa ilalim ng damit. Ibinigay ng Mahal na Birheng Maria kay San Simon Stock sa Cambridge noong Hulyo 16, 1251, kasama ng pangako: «Ang sinumang mamamatay na nakasuot ng eskapulario na ito ay hindi magdurusa sa walang-hanggang apoy». Hindi anting-anting; tanda ng katapatan kay Maria na nangangailangan ng pamumuhay-Kristiyano. Sa Pilipinas, ang devotion sa Eskapulario ay laganap sa mga Carmelite parishes.",
+    instructions:
+      "Para tumanggap, humanap ng pari na maaaring magbigay ng eskapulario sa pormal na rito ng Roman Ritual. Pagkatapos suotin, dapat ito ay walang-hintong nakasuot. Kung masira, palitan ng panibago. Mga responsibilidad: regular na kumpisal, madalas na Komunyon, araw-araw na Rosaryo o di kaya'y isang dekada, kalinisan ng buhay. Ang mga Sabado ay partikular na ipinapares sa eskapulario.",
+    patronSaint: "Mahal na Birhen ng Karmelo · San Simon Stock",
+    feastDay: "Hulyo 16",
+    source: "CBCP + Vatican.va (Pius XII) + Order of Carmel + Roman Ritual. Retrieved 2026-05-18.",
+    reviewedAt: new Date("2026-05-18"),
+  },
+  {
+    prayerSlug: "chaplet-st-michael",
+    name: "Koronilya kay San Miguel Arkanghel",
+    description:
+      "Ang Koronilya kay San Miguel Arkanghel ay ibinunyag sa lingkod ng Diyos na si Antonia d'Astonac noong ika-18 siglo. Pinangakuan ni San Miguel ang sinumang magdasal nang taimtim: assistance ng angelic choir sa Komunyon; proteksyon ng siyam na angelic choirs sa buhay; final liberation mula sa Purgatoryo para sa nagdasal at mga kamag-anak. May siyam na invocation na tumutugma sa siyam na choirs ng anghel, bawat isa ay sinusundan ng isang Ama Namin at tatlong Aba Ginoong Maria. Nagtatapos sa apat na Ama Namin (San Miguel, San Gabriel, San Rafael, Guardian Angel) at panalangin ni Papa Leo XIII.",
+    instructions:
+      "Istruktura: (1) Tanda ng Krus; (2) jaculatorya «Diyos ko, halina at tulungan ako; Panginoon, magmadali Kang tumulong sa akin. Luwalhati sa Ama…»; (3) sa siyam na grupo, tawagin ang katugmang angelic choir, sinusundan ng Ama Namin at tatlong Aba Ginoong Maria; (4) ang apat na Ama Namin sa katapusan; (5) panalangin ni Papa Leo XIII kay San Miguel: «San Miguel Arkanghel, ipagsanggalang mo kami sa labanan…». Inirerekomenda ito ng mga eksorsista ng Simbahan.",
+    patronSaint: "San Miguel Arkanghel",
+    feastDay: "Setyembre 29 (Banal na Arkanghel)",
+    source: "CBCP + Vatican.va + tradisyon ni Antonia d'Astonac + panalangin ni Papa Leo XIII (1884). Retrieved 2026-05-18.",
+    reviewedAt: new Date("2026-05-18"),
+  },
+  {
+    prayerSlug: "first-fridays",
+    name: "Devosyon ng Siyam na Unang Biyernes",
+    description:
+      "Ang Devosyon ng Siyam na Unang Biyernes ay ibinunyag ni Hesukristo kay Santa Margarita Maria Alacoque sa Paray-le-Monial (1673-1675). Sa malaking pangako, sinabi ni Hesus: «Sa labis na awa ng Aking Puso, pinangangako Ko sa lahat ng tatanggap ng Komunyon sa siyam na unang Biyernes ang biyaya ng huling pagtitiyaga: hindi sila mamamatay sa Aking kawalan-kabaitan, ni walang mga sakramento». Sa Pilipinas, ang devotion ay laganap sa mga parokya na nakatuon sa Sagradong Puso at sa Apostolate of Prayer.",
+    instructions:
+      "Mga kinakailangan: (1) tanggapin ang Sagradong Komunyon sa estado ng grasya sa unang Biyernes ng siyam na magkakasunod na buwan; (2) mabuting kumpisal kung kailangan; (3) ialay ang Komunyon sa intensyon ng Sagradong Puso at sa sariling huling pagtitiyaga; (4) kung may makaligtaan, magsisimula muli. Naipares natural sa devosyon ng Sagradong Puso, sa mga unang Sabado (reparasyon kay Maria), at sa Oras ng Awa.",
+    patronSaint: "Sagradong Puso ni Hesus · Santa Margarita Maria Alacoque",
+    feastDay: "Biyernes pagkatapos ng Corpus Christi",
+    source: "CBCP + Vatican.va (Haurietis Aquas, Pius XII 1956) + Autobiography of Margaret Mary + Apostolate of Prayer Philippines. Retrieved 2026-05-18.",
+    reviewedAt: new Date("2026-05-18"),
+  },
+  {
+    prayerSlug: "first-saturdays",
+    name: "Devosyon ng mga Unang Sabado (Reparadora)",
+    description:
+      "Ang Devosyon ng mga Unang Sabado ay tahasang hiniling ng Mahal na Birheng Maria kay Sister Lucia dos Santos sa Pontevedra noong Disyembre 10, 1925. Pinangako ni Maria: «Sa lahat ng sa loob ng limang buwan, sa unang Sabado, mangungumpisal, tatanggap ng Sagradong Komunyon, magdarasal ng Rosaryo at sasamahan Akong meditasyon sa loob ng labinlimang minuto, na may layuning magbigay-kasiyahan sa Akin, ipinapangako Kong tutulungan sila sa oras ng kamatayan ng lahat ng biyayang kailangan para sa kaligtasan». Ito ang devosyon na ipinapares sa Siyam na Unang Biyernes.",
+    instructions:
+      "Sa loob ng limang unang Sabado: (1) Kumpisal sa loob ng walong araw bago o pagkatapos; (2) Komunyon sa unang Sabado mismo sa estado ng grasya na may layuning reparasyon sa Imakuladong Puso; (3) buong Rosaryo (limang dekada); (4) labinlimang minuto ng pagsama kay Maria na nagmumuni-muni sa isang misteryo — ito ang natatanging katangian. Mahalaga ang layuning reparasyon. Kung may makaligtaan, magsisimula muli.",
+    patronSaint: "Imakuladong Puso ni Maria · Birheng Fatima",
+    feastDay: "Sabado pagkatapos ng Sagradong Puso",
+    source: "CBCP + Vatican.va + Memoirs of Sister Lucia + Pius XII (consecration 1942). Retrieved 2026-05-18.",
+    reviewedAt: new Date("2026-05-18"),
+  },
+  {
+    prayerSlug: "guardian-angel-prayer",
+    name: "Panalangin sa Guardian Angel",
+    description:
+      "Ang panalangin sa Guardian Angel ay isa sa pinakamatandang at minamahal na Katolikong panalangin. Ang doktrina ng personal na anghel na tagapag-ingat sa bawat bautisado ay nakaugat kay Mateo 18,10. Sinasabi ng Catechism (§ 336): «Mula sa pagsisimula hanggang sa kamatayan, ang buhay ng tao ay nababalot ng kanilang pag-iingat at pamamagitan». Tradisyonal na itinuturo sa mga batang Pilipino mula sa maagang edad.",
+    prayerText:
+      "Anghel ng Diyos, na ipinagkatiwala sa iyo ang aking pag-iingat, liwanagan, ingatan, patnubayan at pamahalaan mo ako sa araw na ito. Amen.",
+    instructions:
+      "Tradisyonal na pagkakataon: (1) sa paggising; (2) bago matulog; (3) bago maglakbay; (4) bago ang mahalagang desisyon o eksamen; (5) sa anumang sandali ng takot o tukso. Para sa mga magulang na Pilipino: ang pagturo ng panalangin sa Guardian Angel sa mga batang anak ay isa sa mga malalaking responsibilidad ng katekismo ng pamilya — tradisyonal na unang panalangin pagkatapos ng Ama Namin at Aba Ginoong Maria.",
+    patronSaint: "Banal na Guardian Angel",
+    feastDay: "Oktubre 2 (Holy Guardian Angels)",
+    source: "CBCP + Catechism §§ 328-336 + Matthew 18,10 + traditional prayer. Retrieved 2026-05-18.",
+    reviewedAt: new Date("2026-05-18"),
+  },
+  {
+    prayerSlug: "lectio-divina",
+    name: "Lectio Divina (Praying Reading ng Banal na Kasulatan)",
+    description:
+      "Ang Lectio Divina — «banal na pagbabasa» — ay ang sinaunang monastic Katolikong gawain ng pagbabasa ng Banal na Kasulatan bilang panalangin. Sinistematized ni Guigo II sa ika-12 siglo, may apat na hakbang: Lectio (basahin), Meditatio (pagnilayan), Oratio (manalangin), Contemplatio (pagmuni-muni). Inilarawan ito ni Papa Benedict XVI sa Verbum Domini (2010) bilang «sinaunang at palaging bagong gawain ng pagbabasa ng Banal na Kasulatan para sa paglago sa panalangin». Sa Pilipinas, ang Lectio ay laganap sa Bible groups ng parokya.",
+    instructions:
+      "Kailangan ng Katolikong Bibliya, tahimik na lugar, at 20-30 minuto. (1) **Lectio**: basahin ang maikling sipi (10-15 talata, hal. ang Ebanghelyo ng araw) nang dahan-dahan, dalawa o tatlong beses. Anong salita ang lumalabas? (2) **Meditatio**: tumigil sa lumabas (Awit 1,2). (3) **Oratio**: tumugon sa Panginoon sa sariling salita. (4) **Contemplatio**: magpahinga sa katahimikan. Pagsasara: maikling konkretong resolusyon. Ideal na araw-araw, 15 minuto. Ang araw-araw na Ebanghelyo ng liturhiya ay angkop.",
+    patronSaint: "San Jerome (patrono ng Banal na Kasulatan)",
+    feastDay: "Setyembre 30",
+    source: "CBCP + Vatican.va (Verbum Domini, Benedict XVI 2010) + Guigo II + Benedictine tradition. Retrieved 2026-05-18.",
+    reviewedAt: new Date("2026-05-18"),
+  },
+  {
+    prayerSlug: "mass-offering",
+    name: "Pagpapamisa para sa Isang Intensyon",
+    description:
+      "Ang pagpapamisa para sa isang partikular na intensyon ay ang pinakamatanda at pinakamalalim na Katolikong gawain ng nakaaaliw na panalangin. Bawat Misa ay may walang-hanggang halaga sa sarili nito; ang mga partikular na intensyon ay may-hangganan at espesipiko. Mga ugat patristic: si Santo Agustin sa ika-4 siglo ay nagpatotoo sa Misa para sa kanyang ina na si Santa Monica. Sa Pilipinas, ang pagpapamisa ay establishe na gawain ng parokya.",
+    instructions:
+      "Pamamaraan: (1) lapitan ang sakristia o opisina ng parokya at humingi ng Misa para sa partikular na intensyon; (2) magbigay ng libreng alay (₱50-200 sa Pilipinas, kanya-kanyang parokya); (3) kung intensyon ay para sa namatay, ibahagi pangalan at petsa ng pagpanaw; (4) ideal kung dadalo ka mismo sa Misa. Filipino traditions: (a) «Mass for the dead» sa ika-9, ika-30, ika-40 araw; (b) Anniversary Masses; (c) Thanksgiving Masses sa kaarawan o anibersaryo. Para sa mga kaluluwa sa Purgatoryo, ang Misa ay pinakamalaking espirituwal na regalo.",
+    patronSaint: "Kristo, Mataas na Pari",
+    feastDay: "Huwebes Santo (institusyon ng Eukaristiya)",
+    source: "CBCP + Catechism §§ 1356-1381 + Council of Trent (Session XXII) + Vatican.va. Retrieved 2026-05-18.",
+    reviewedAt: new Date("2026-05-18"),
+  },
+  {
+    prayerSlug: "novena-don-bosco",
+    name: "Nobena kay San Juan Bosco (Don Bosco)",
+    description:
+      "Si San Juan Bosco (Giovanni Melchiorre Bosco, 1815-1888) — pangkalahatang kilala bilang Don Bosco — ay paring Italyano, tagapagtatag ng Salesian Society at Daughters of Mary Help of Christians. Ang kanyang vital passion ay ang dukha at nasa panganib na kabataan. Nagsimula sa isang dakot ng mga lalaking bata sa oratoryo sa Valdocco (Turin) noong 1841 at iniwan sa pagkamatay ang isang congregation na may 1,800 myembro. Sistema na «preventive»: dahilan, relihiyon at amorevolezza (lambing). Kinanonisa ni Pius XI noong 1934. Sa Pilipinas, ang mga Salesians ay malakas — Don Bosco Boys' Home, Don Bosco Pasil, atbp. Angkop para sa vocations, pagbabalik-loob ng anak, mga desisyon ng edukasyon.",
+    prayerText:
+      "O San Juan Bosco, ama at guro ng kabataan, ipagkaloob mo sa akin ang biyaya na may kompiyansa kong hinihiling (banggitin ang intensyon). Ikaw na sa pagiging bata mo ay nag-discern ng iyong tawag sa pamamagitan ng prophetic dreams at espirituwal na patnubay ng iyong banal na ina na si Margarita Occhiena, mamagitan ka para sa mga kabataang nalilito ngayon, sa mga educators na inaapuhap, at sa mga magulang na nagdarasal para sa pagtitiyaga ng kanilang mga anak sa pananampalataya. Maria Auxiliadora, sa pangalan kung saan ginawa ni Don Bosco ang ginawa niya, samahan din kami. Amen.",
+    instructions:
+      "Idasal nang siyam na magkakasunod na araw, mula Enero 22 hanggang 30 sa paghahanda para sa piyesta ng Enero 31. Istruktura: (1) Tanda ng Krus; (2) Awit 23 o sipi ng Bata Hesus; (3) ang panalangin; (4) tatlong Aba Ginoong Maria kay Maria Auxiliadora; (5) jaculatorya «Maria Auxiliadora, ipanalangin kami at ang kabataan».",
+    patronSaint: "San Juan Bosco · Maria Auxiliadora",
+    feastDay: "Enero 31",
+    source: "CBCP + Vatican.va + Memorie dell'Oratorio (Don Bosco) + Salesian Society in the Philippines. Retrieved 2026-05-18.",
+    reviewedAt: new Date("2026-05-18"),
+  },
+  {
+    prayerSlug: "novena-infant-of-prague",
+    name: "Nobena sa Santo Niño ng Prague",
+    description:
+      "Ang Santo Niño ng Prague ay maliit na imahen ng waks ng Sanggol na Hesus (mga 47 cm), nakaimbak sa Church of Our Lady Victorious sa Prague. Ang imahen ay ibinigay noong 1628 sa Discalced Carmelites ng Prague ni Princess Polyxena ng Lobkowicz. Ang devotion ay lumaganap sa Central Europe sa Thirty Years War at na-globalize sa ika-19 siglo. Sa Pilipinas, ang devotion sa Santo Niño ng Prague ay laganap sa mga Carmelite parishes. Pangako sa kanyang mga devotees: «Habang dinaragdagan ninyo ang Aking parangal, lalo kong pagpapakaloob sa inyo». Angkop sa mga sitwasyong pinansiyal na mahirap, kalusugan ng mga maliliit na bata, paghahanap ng trabaho.",
+    prayerText:
+      "Banal na Sanggol Hesus, sinasamba kita bilang aking Panginoon at Tagapagligtas. Humihingi ako ng tawad sa lahat ng aking kasalanan. Hinihingi ko sa Iyo, dulcing Hesus, na ipagkaloob Mo sa akin ang biyaya na taimtim kong hinahangad (banggitin ang intensyon). Alam ko na Ikaw ang nagmamay-ari ng lahat ng nilikha. Nagtitiwala ako sa Iyong walang-hanggang awa. Santo Niño ng Prague, pagpalain mo ako at ang aking pamilya. Amen.",
+    instructions:
+      "Idasal nang siyam na magkakasunod na araw. Istruktura: (1) Tanda ng Krus; (2) maikling pagsamba sa Sanggol na Hesus; (3) ang panalangin; (4) Ama Namin, Aba Ginoong Maria at Luwalhati; (5) banggitin ang intensyon. Inirerekomenda ang paglalagay ng imahen ng Santo Niño ng Prague sa kagalang-galang na lugar sa tahanan habang ang nobena.",
+    patronSaint: "Santo Niño ng Prague",
+    feastDay: "Variable (pangalawang Linggo ng Enero sa ibang tradisyon)",
+    source: "CBCP + Vatican.va + Carmelitas Descalzas sa Prague + Pius XII (coronation 1955). Retrieved 2026-05-18.",
+    reviewedAt: new Date("2026-05-18"),
+  },
+  {
+    prayerSlug: "novena-st-anthony",
+    name: "Nobena kay San Antonio de Padua",
+    description:
+      "Si San Antonio de Padua (Fernando de Bulhões, 1195-1231) — ipinanganak sa Lisbon, namatay sa Padua — ay isa sa pinakaminamahal at pinakatinatawagan na santo ng Katolikong Simbahan. Una ay Augustinian canon, naging Franciscan noong 1220. Pinagkatiwalaan siya ni San Francisco na magturo ng teolohiya. Pambihira ang kanyang pagiging mangangaral, tinawag na «ang Martilyo ng mga Erehe» at «ang Dila ng Banal na Espiritu». Kinanonisa ni Gregory IX isang taon lang pagkamatay (pinakamabilis na canonization sa kasaysayan), idineklara ang Doktor ng Simbahan ni Pius XII noong 1946. Sa Pilipinas, ang devotion ay malalim — maraming parokya ang nakatuon sa kanya. Patron ng nawawalang bagay, mahihirap, kasal, at mga kaso na imposible sa tao.",
+    prayerText:
+      "O dakilang San Antonio, ikaw na tinatawag na «santo ng mga himala» at «ng mga bagay na nawawala», ipagkaloob mo sa akin ang biyaya na may kompiyansa kong hinihiling (banggitin ang intensyon). Ikaw na sa pagiging bata mo ay nasa iyong mga kamay ang Sanggol na Hesus, ipagkaloob mo sa akin ang kasimplehan ng puso na mapanatili sa Kanyang harapan. At kung nawalan ako ng mahalaga — bagay, ugnayan, kahulugan ng espiritu, mahal sa buhay na lumayo sa pananampalataya — ibalik mo, ipinakikiusap ko, ayon sa kalooban ng Diyos. Amen.",
+    instructions:
+      "Idasal siyam na magkakasunod na araw, mula Hunyo 5 hanggang 12. Filipino tradition: ang «Trezena» (13 araw) bago ang piyesta ng Hunyo 13. Istruktura: (1) Tanda ng Krus; (2) responsoryo Antonian; (3) ang panalangin; (4) labintatlong Ama Namin, Aba Ginoong Maria at Luwalhati; (5) banggitin ang intensyon. Para sa nawawalang bagay: «San Antonio, tulungan mo akong mahanap ang nawala». Para sa hanapin ng asawa, dagdagan ng labintatlong Aba Ginoong Maria.",
+    patronSaint: "San Antonio de Padua",
+    feastDay: "Hunyo 13",
+    source: "CBCP + Vatican.va + Pius XII (Doctor of the Church, 1946) + tradisyon ng mga Franciscans sa Pilipinas. Retrieved 2026-05-18.",
+    reviewedAt: new Date("2026-05-18"),
+  },
+  {
+    prayerSlug: "novena-st-blaise",
+    name: "Nobena kay San Blas",
+    description:
+      "Si San Blas (m. ca. 316) ay obispo ng Sebaste sa Armenia sa panahon ng pag-uusig ni Licinius. Doktor bago ang ordenasyon, namartir matapos ng eremitismo sa kuweba kung saan ang mga ligaw na hayop ay dinadalhan siya ng pagkain at lumalapit sa kanya upang mapagaling. Pinakakilalang alamat: ang ina ay dinala sa santo ang batang nasa-suffocation sa tinik ng isda; pinagaling siya ni San Blas agad-agad. Sa Pilipinas, ang Blessing of Throats ay ginagawa sa karamihan ng mga parokya tuwing Pebrero 3, kasama ang dalawang kandilang inilalagay sa leeg.",
+    prayerText:
+      "O dakilang San Blas, obispo at martir, ipagkaloob mo sa akin ang biyaya na may kompiyansa kong hinihiling (banggitin ang intensyon). Ikaw na nagpalaya sa bata mula sa pagka-suffocation sa lakas lamang ng iyong basbas, palayain mo (banggitin ang pangalan) sa karamdamang gumigipuspos. San Blas, ipanalangin mo kami. Amen.",
+    instructions:
+      "Idasal siyam na magkakasunod na araw, mula Enero 25 hanggang Pebrero 2. Inirerekomenda ng tradisyon ang pagdalo sa Misa ng Pebrero 3 at pagtanggap ng Blessing of Throats sa dalawang krusang kandila.",
+    patronSaint: "San Blas (patron ng mga sakit sa lalamunan)",
+    feastDay: "Pebrero 3",
+    source: "CBCP + Vatican.va + Filipino tradition of Blessing of Throats + Acta Sanctorum. Retrieved 2026-05-18.",
+    reviewedAt: new Date("2026-05-18"),
+  },
+  {
+    prayerSlug: "novena-st-catherine-siena",
+    name: "Nobena kay Santa Catalina de Siena",
+    description:
+      "Si Santa Catalina de Siena (Caterina Benincasa, 1347-1380) — isa sa apat na babaeng Doktor ng Simbahan at copatron ng Europe — ay isa sa pinakapambihirang espirituwal na figura ng ika-14 siglo. Sa anim na taong gulang, una niyang nakita si Kristo. Pumasok bilang mantelata sa Dominican Third Order sa labing-walong taon. Mystic, terciary, espirituwal na tagapayo at diplomat, sentral sa Crisis ng Papacy ng Avignon: kanyang mga sulat at presensya sa Avignon noong 1376 ay convince kay Pope Gregory XI na bumalik sa Roma. Ang kanyang Dialog ng Banal na Providensya, dictated sa extasy, ay isa sa mga dakilang mystic na tekstong Katoliko. Tumanggap ng invisible stigmata. Namatay sa 33 taon. Kinanonisa ni Pius II noong 1461, Doctor of the Church ni Beato Pablo VI noong 1970, copatron ng Europe ni San Juan Pablo II noong 1999. Angkop para sa unity ng Simbahan, lakas sa panalangin contemplative, tapang sa pagsabi ng katotohanan sa mga makapangyarihan.",
+    prayerText:
+      "O dakilang Santa Catalina de Siena, mystic na birhen at Doktor ng Simbahan, ipagkaloob mo sa pamamagitan ng iyong pamamagitan ang biyaya na may kompiyansa kong hinihiling (banggitin ang intensyon). Ikaw na nagkaroon ng tapang na sulatan ang Papa at mga hari ng iyong panahon sa pangalan ni Kristo, ipagkaloob mo sa amin ang katapangan ng pagpapahayag ng katotohanan ng Evangelio nang walang takot. Amen.",
+    instructions:
+      "Idasal siyam na magkakasunod na araw, mula Abril 21 hanggang 29. Istruktura: (1) Tanda ng Krus; (2) maikling sipi ng Dialog ng Banal na Providensya; (3) ang panalangin; (4) Ama Namin, Aba Ginoong Maria at Luwalhati; (5) banggitin ang intensyon.",
+    patronSaint: "Santa Catalina de Siena, OP",
+    feastDay: "Abril 29",
+    source: "CBCP + Vatican.va (Paul VI Doctor 1970; JPII copatron 1999) + Dialogue of Divine Providence + Dominican Order in the Philippines. Retrieved 2026-05-18.",
+    reviewedAt: new Date("2026-05-18"),
+  },
+  {
+    prayerSlug: "novena-st-christopher",
+    name: "Nobena kay San Kristoper",
+    description:
+      "Si San Kristoper (Christophoros, «ang nagdadala kay Kristo») ay isa sa mga pinakapopular na santo ng pangkalahatang Katolikong tradisyon at patron ng mga manlalakbay. Ang tradisyonal na hagiography ay nag-ipinta sa kanya bilang higante na nagsilbi kay Kristo sa pagdadala ng mga manlalakbay sa peligrosong ilog. Isang gabi, isang bata ang humingi na dalhin sa kabilang panig: habang tumatawid, lumamingming bumigat ang bata, hanggang sa pagdating ay nagpakilala ang bata bilang si Kristo. Sa Pilipinas, ang devosyon kay San Kristoper bilang patron ng mga drayber ay laganap — medalya sa awto, bendisyon ng sasakyan sa Hulyo 25, at panalangin bago maglakbay.",
+    prayerText:
+      "O dakilang San Kristoper, higante ng lakas at pananampalataya, ikaw na sa iyong sariling katawan ay dinala ang Sanggol na Hesus sa ilog ng buhay, ipagkaloob mo sa akin ang biyaya na may kompiyansa kong hinihiling (banggitin ang intensyon). Protektahan mo ako at ang mga minamahal ko sa lahat ng paglalakbay; at higit sa lahat, ipagkaloob mo sa amin ang biyayang hindi kami mawawala kailanman sa Daan na si Kristo Mismo. Amen.",
+    instructions:
+      "Idasal siyam na magkakasunod na araw, mula Hulyo 17 hanggang 25 sa paghahanda sa piyesta ng Hulyo 25. Bago ang tiyak na paglalakbay, isama ang bendisyon ng sasakyan sa lokal na parokya at medalya ni San Kristoper sa awto bilang sacramental.",
+    patronSaint: "San Kristoper (patron ng mga manlalakbay at drayber)",
+    feastDay: "Hulyo 25",
+    source: "CBCP + Lenda Áurea ni Jacobus de Voragine + Filipino tradition of vehicle blessing. Retrieved 2026-05-18.",
+    reviewedAt: new Date("2026-05-18"),
+  },
+  {
+    prayerSlug: "novena-st-joseph-cupertino",
+    name: "Nobena kay San Jose ng Cupertino",
+    description:
+      "Si San Jose ng Cupertino (Giuseppe Maria Desa, 1603-1663) — Italyanong Franciscan Conventual — ay patron ng mga estudyante, mahihirap na eksamen, mga aspirante sa pari at relihiyosong buhay, mga piloto at astronaut. Ang kanyang biograpiya ay isa sa pinakanakakagulat: nahihirapan siyang matuto, tinanggihan nang ilang beses sa mga relihiyosong orden, sa wakas tinanggap ng Conventuals noong 1625. Sa kanyang ordination exam, tinanggap niya ang nag-iisang materyal na alam niya nang husto. Pinakahindi pangkaraniwan ay ang kanyang ecstatic levitations, dinokumento ng dosenang testigo: ang katawan ay nag-elevate mula sa lupa nang minuto o oras. Kinanonisa ni Clement XIII noong 1767.",
+    prayerText:
+      "O dakilang San Jose ng Cupertino, ikaw na alam mo ang kahihiyan ng hindi makapag-aral kung ano ang madaling natutunan ng iba — ipagkaloob mo sa akin ang biyaya na may kompiyansa kong hinihiling (banggitin ang intensyon). Kung ako ay estudyante sa mahirap na eksamen, ipagkaloob mo ang liwanag, alaala at kalmadong loob. San Jose ng Cupertino, ipanalangin mo kami. Amen.",
+    instructions:
+      "Idasal siyam na magkakasunod na araw, mula Setyembre 9 hanggang 17. Para sa tiyak na eksamen, simulan siyam na araw bago. Jaculatorya: «San Jose ng Cupertino, tulungan mo ako sa aking eksamen».",
+    patronSaint: "San Jose ng Cupertino, OFMConv",
+    feastDay: "Setyembre 18",
+    source: "CBCP + Vatican.va (Clement XIII, 1767) + Franciscan Conventual Order. Retrieved 2026-05-18.",
+    reviewedAt: new Date("2026-05-18"),
+  },
+  {
+    prayerSlug: "novena-st-martin-de-porres",
+    name: "Nobena kay San Martin de Porres",
+    description:
+      "Si San Martin de Porres (Martín de Porres Velázquez, 1579-1639) — ang unang mulato na santong kinanonisa ng Katolikong Simbahan — ay Peruvian Dominican friar, anak ng Espanyol na nobleman at babaeng panama na liberta. Ang racial discrimination na tinaglay niya simula pagkabata ay minarka ang buong buhay, ngunit binago ito ng heroic virtue. Pumasok bilang donado sa Dominican convent ng Lima sa labing-limang taon at nagsilbi bilang barber-nurse sa loob ng higit 50 taon. Kanyang biograpiya ay puno ng pambihirang mystical gifts: bilocations dinokumento (nakita sa Africa at Japan habang nasa Lima), espektakulong pagpapagaling. Kinanonisa ni San Juan XXIII noong 1962. Sa Pilipinas, ang devotion ay laganap sa mga Dominican parishes at sa mga komunidad na sumailalim sa karahasan na racial.",
+    prayerText:
+      "O dakilang San Martin de Porres, abang lingkod ng mahihirap, healer ng maysakit at kaibigan ng mga hayop, ipagkaloob mo ang biyaya na may kompiyansa kong hinihiling (banggitin ang intensyon). Ikaw na alam ang sakit ng racial discrimination at ginawa ito sa kahinhinan at paglilingkod, ipagkaloob mo sa amin ang biyaya ng pagpapagaling ng mga dibisyon ng lahi, klase at bansa. Amen.",
+    instructions:
+      "Idasal siyam na magkakasunod na araw, mula Oktubre 25 hanggang Nobyembre 2. Filipino traditions: (a) bendisyon ng mga hayop sa kanyang piyesta (Nobyembre 3); (b) konkretong pag-aalaga sa isang maysakit, mahirap o iniwanang hayop habang siyam na araw; (c) tapat na pagsusuri sa sariling ugali sa lahi o uri.",
+    patronSaint: "San Martin de Porres, OP",
+    feastDay: "Nobyembre 3",
+    source: "CBCP + Vatican.va (San Juan XXIII, 1962) + Dominican Order in Peru + Filipino Catholic devotion. Retrieved 2026-05-18.",
+    reviewedAt: new Date("2026-05-18"),
+  },
+  {
+    prayerSlug: "novena-st-monica",
+    name: "Nobena kay Santa Monica",
+    description:
+      "Si Santa Monica (332-387) — ina ni San Agustin ng Hippo — ay pangkalahatang patron ng mga ina na nagdarasal para sa pagbabalik-loob ng mga adult na anak na lumayo sa pananampalataya. Ipinangasawa sa pagang na lalaking marahas na nagngangalang Patricius, nakumberte siya sa pamamagitan ng pasensya at panalangin. Ngunit ang pinakamatagal na pagsusubok ng kanyang buhay ay ang anak na si Augustin — brilyanteng tagapagsalita, ngunit nakaalay 17 taon sa pagiging-bata ng kabataan, Manichaeism at irregular na ugnayan. Si Monica ay nagdasal para sa kanyang anak sa 17 taong walang panghihina, lumuha, sumunod sa kanya mula Africa hanggang Italya. Sinabi sa kanya ni San Ambrose ng Milan: «Imposible na ang anak ng napakaraming luha ay mawala». Naging Kristiyano si Augustin sa Pasko ng Pagkabuhay 387. Namatay si Monica ilang linggo lang pagkatapos sa daungan ng Ostia.",
+    prayerText:
+      "O dakilang Santa Monica, malulungkot at tapat na ina, ikaw na sa loob ng 17 taon ay hindi tumigil sa pagsamo para sa iyong anak na si Augustin hanggang sa makitang nabalik kay Kristo, ipagkaloob mo sa akin ang biyaya na may kompiyansa kong hinihiling (banggitin ang intensyon, lalo na kung para sa anak o mahal sa buhay na lumayo sa pananampalataya). Ipagkaloob mo sa akin ang pasensya at lalo na ang hindi matitibay na kompiyansa na «imposible na ang anak ng napakaraming luha ay mawala». Amen.",
+    instructions:
+      "Idasal siyam na magkakasunod na araw, mula Agosto 18 hanggang 26 sa paghahanda para sa piyesta ng Agosto 27 (at kay San Agustin, ang kanyang anak, sa Agosto 28). Istruktura: (1) Tanda ng Krus; (2) sipi mula sa Confessions ni San Agustin (Aklat IX); (3) ang panalangin; (4) banggitin ang pangalan ng konkretong tao. Para sa pagbabalik-loob ng anak, isama ang Misa para sa intensyon, lingguhang Komunyon para sa kanya, at pagpipigil sa pagpipresyon habang ang nobena.",
+    patronSaint: "Santa Monica",
+    feastDay: "Agosto 27",
+    source: "CBCP + Vatican.va + San Agustin, Confessions + Augustinian tradition in the Philippines. Retrieved 2026-05-18.",
+    reviewedAt: new Date("2026-05-18"),
+  },
+  {
+    prayerSlug: "offering-suffering",
+    name: "Pag-aalay ng Pagdurusa (Sufrimiento Redentor)",
+    description:
+      "Ang pag-aalay ng pagdurusa — ang Katolikong gawain ng pag-iisa ng sariling pisikal, emosyonal o espirituwal na sakit sa krus ni Kristo bilang reparatif intensyon — ay isa sa pinakamalalim na Katolikong espiritwalidad. Hindi ito masochism; hindi ito kawalang-pansin sa pagdurusa. Ito ang teolohikal na katotohanan na ang pagdurusa ng tao, kapag ipinares nang kusang-loob sa pagdurusa ni Kristo, ay nakikibahagi sa economy ng kaligtasan. Si Pablo ang nagsabi sa Colosas 1,24: «Ginagawan ko ang nawawala sa mga paghihirap ni Kristo, para sa kabutihan ng Kanyang Katawan, na ito ang Simbahan». Si San Juan Pablo II ay nagpalalim nito sa Salvifici Doloris (1984).",
+    prayerText:
+      "Panginoong Hesukristo, iniaalay ko sa Iyo ngayon ang lahat ng sakit na darating — ang kilala at hindi kilala, ng katawan, ng kaluluwa at ng puso. Pagsamahin Mo sa Iyong nagligtas na Pasyon, at gawin Mong magsilbi sa pagbabalik-loob ng mga makasalanan, sa pag-aginhaw ng mga kaluluwa sa Purgatoryo, at para sa konkretong intensyon na inihahain ko (banggitin ang intensyon). Amen.",
+    instructions:
+      "Dalawang sandali: (1) **morning offering** — sa paggising: «Panginoon, iniaalay ko sa Iyo ang mga sakit at trabaho ng araw para sa (intensyon)»; (2) **renewal sa buong araw** — kapag may konkretong sakit dumating, mag-renew: «Ito rin, para sa (intensyon)». Para sa malubhang pagdurusa, humanap ng spiritual director.",
+    patronSaint: "Krusipikadong Kristo · Birheng Hapis",
+    feastDay: "Biyernes Santo",
+    source: "CBCP + Vatican.va (Salvifici Doloris, JPII 1984) + Catechism §§ 1500-1532. Retrieved 2026-05-18.",
+    reviewedAt: new Date("2026-05-18"),
+  },
+  {
+    prayerSlug: "prayer-discernment",
+    name: "Panalangin para sa Pag-discern",
+    description:
+      "Ang panalangin para sa pag-discern ay ang Katolikong gawain ng paghingi sa liwanag ng Diyos para sa mahalagang desisyon. Itinuturo ng tradisyon na ang pag-discern ay hindi lang pasensyang pinili sa pagitan ng mga opsyon, kundi aktibong paghahanap ng konkretong kalooban ng Diyos. Si San Ignacio de Loyola sa Spiritual Exercises (1548) ay sinistematized ang panuntunan ng pag-discern ng mga espiritu, distinguishing «mabuting espiritu» (consolasyon, matatagalang kapayapaan) mula sa «masamang espiritu» (kawalang-pansin, pagkagambala, takot).",
+    prayerText:
+      "Panginoon, humihingi ako ng iyong liwanag para makakilala kung ano ang hinihingi mo sa akin. Ang puso ko ay puno ng kawalang-pansin at maraming boses; kailangan ko ng iyong tinig. Tanggalin mo sa akin ang ingay ng takot, ang akit ng kaginhawaan at ang lakas ng pagmamataas, at bigyan mo ako ng mga mata upang makita gaya ng pagkakita ni Kristo. Nagtitiwala ako, Panginoon, na ginagabayan mo ako sa kamay ng amang providensya sa daan na maglalapit sa akin sa iyo. Amen.",
+    instructions:
+      "Tatlong yugto ng Ignatian discernment: (1) **inisyal na indipiperensya** — humingi ng biyaya ng hindi pagkakatali sa isang opsyon; (2) **pagsasaalang-alang** — pag-aaral ng konsekuwensya at pansin sa interior movements; (3) **kumpirmasyon** — ialay ang tentative desisyon sa Diyos sa panalangin sa loob ng ilang araw at pansin kung kinukumpirma ng matatagalang kapayapaan.",
+    patronSaint: "Banal na Espiritu · San Ignacio de Loyola",
+    feastDay: "Hulyo 31 (San Ignacio)",
+    source: "CBCP + Vatican.va + Ignatian Exercises (1548) + Pope Francis catecheses on discernment (2022). Retrieved 2026-05-18.",
+    reviewedAt: new Date("2026-05-18"),
+  },
+  {
+    prayerSlug: "prayer-fertility",
+    name: "Panalangin para sa Pagkakaroon ng Anak",
+    description:
+      "Ang Katolikong panalangin para sa pagkakaroon ng anak — para sa mag-asawa na naghahangad makapag-anak at hindi nagagawa — ay may malalim na ugat na bibliko. Puno ang Banal na Kasulatan ng mga steril na mag-asawa na binigyan ng Diyos ng anak sa pamamagitan ng mahabang panalangin: Sara at Abraham, Rebeka at Isaak, Rakela at Hakob, Ana at Elcana, Isabel at Zacarias. Ang Simbahan ay nagtuturo na ang fertility ay regalong tinatanggap nang may pasasalamat, at ang sterility ay hindi parusa. Ang panalangin ay hindi nag-eexclude sa medikal na paghahanap (NaProTechnology). Patrons: Santa Ana at San Joaquin; San Gerardo Majella.",
+    prayerText:
+      "Panginoong Hesus, may-akda ng lahat ng buhay, hinihingi namin nang may kompiyansa ang regalo ng isang anak. Alam mo ang aming paghihintay, ang aming mga luha. Ipagkaloob mo sa amin, kung ito ang iyong kalooban, ang biyolohikong fertility na hinihingi; at kung hindi, ipagkaloob mo ang ibang daan ng pagiging magulang — ang ampon, ang pag-aalaga ng anak ng iba, ang espirituwal na pagbubuhay ng mga buhay sa iyong Simbahan. Amen.",
+    instructions:
+      "Idasal araw-araw o bilang nobena (siyam na araw kay Santa Ana, San Gerardo o pareho). Istruktura: (1) Tanda ng Krus; (2) acto ng pagtanggap ng kalooban ng Diyos; (3) ang panalangin; (4) misteryo ng Rosaryo (joyful); (5) banggitin ang intensyon. Para sa mga mag-asawa sa medikal na paggagamot, tiyakin ang pagkakatugma sa Catholic moral teaching.",
+    patronSaint: "Santa Ana at San Joaquin · San Gerardo Majella",
+    feastDay: "Hulyo 26",
+    source: "CBCP + Vatican.va (Donum Vitae CDF 1987; Dignitas Personae 2008) + Catechism §§ 2373-2379. Retrieved 2026-05-18.",
+    reviewedAt: new Date("2026-05-18"),
+  },
+  {
+    prayerSlug: "prayer-financial-hardship",
+    name: "Panalangin sa Pinansiyal na Hirap",
+    description:
+      "Ang Katolikong panalangin sa pinansiyal na hirap ay tradisyon na may ilang patron: San Jose (patron ng mga manggagawa), San Antonio (tinatawagan ng mga mahirap), Santa Marta (administration ng tahanan). Ang panalangin ay hindi pumapalit sa human responsibility: ang Kristiyano sa pinansiyal na hirap ay aktibong naghahanap ng trabaho, kinokontrol ang gastos. Ngunit kinakawasan ng panalangin ang hirap sa providensya ng Ama: «huwag matakot sa buhay… alam ng inyong amang celestial na kailangan ninyo ang lahat» (Mateo 6,25.32).",
+    prayerText:
+      "Amang celestial, na nagbibigay sa lirio ng bukid at mga ibon ng kalangitan, tingnan Mo nang may awa ang Iyong pamilya sa oras na ito ng pinansiyal na hirap. Ipagkaloob Mo sa akin ang karunungan na mag-administer ng kakaunti, ang tapang na humingi ng tulong, ang kapakumbabaan na tanggapin ang tulong, at ang pagtitiyaga para sa trabaho. San Jose obrero, ipanalangin mo kami. Santo Antonio de Padua, ipanalangin mo kami. Amen.",
+    instructions:
+      "Idasal araw-araw o bilang nobena (siyam na araw kay San Jose o San Antonio). Para sa unemployment, ang nobena kay San Jose Obrero (Abril 22-30 patungo sa piyesta ng Mayo 1). Para sa mga utang: maginahan na confession, Awit 37, gospel parables sa administrasyon. Pagsamahin sa praktikal na aksyon: hingin ang payo sa propesyonal, hingin ang tulong sa parokya, bawasan ang mga gastos na hindi kailangan, gumawa ng konkretong gawang charity.",
+    patronSaint: "San Jose · San Antonio · Santa Marta",
+    feastDay: "Marso 19 (San Jose) · Mayo 1 (San Jose Obrero)",
+    source: "CBCP + Vatican.va + Catechism §§ 2402-2406 + Caritas in Veritate (Benedict XVI 2009). Retrieved 2026-05-18.",
+    reviewedAt: new Date("2026-05-18"),
+  },
+  {
+    prayerSlug: "prayer-happy-death",
+    name: "Panalangin para sa Mabuting Kamatayan",
+    description:
+      "Ang panalangin para sa mabuting kamatayan — para sa biyaya ng pagkamatay sa estado ng grasya, na tumanggap ng mga sakramento (lalo na ang Pamamahid sa Maysakit at ang Viaticum), sa kapayapaan ng loob, na may oras para sa pagpapatawad at paghingi ng tawad, at na may matatag na pag-asa sa langit — ay tradisyonal na Katolikong gawain. Ang kamatayan ay ang huling malaking espirituwal na pagsubok ng buhay. Si San Jose (na namatay sa mga bisig ni Hesus at Maria) ay ang patron ng mabuting kamatayan par excellence.",
+    prayerText:
+      "O Panginoong Hesus, sa kaninong mga kamay ay ibinigay ninyo ang inyong espiritu sa pagkamatay, hinihiling ko sa Inyo ang biyaya ng mabuting kamatayan. Ipagkaloob Ninyo sa akin na mamatay sa estado ng grasya, ipinanagumpay sa Inyo at sa lahat ng aking nasaktan. Ipagkaloob Ninyo sa akin ang pagtanggap ng mga sakramento ng kumpisal, ng Komunyon at ng Pamamahid sa Maysakit bago ang aking huling hininga. Ilayo Ninyo ako sa biglaang kamatayan, sa hindi inaasahang kamatayan, sa kamatayang walang Diyos. San Jose, patron ng mabuting kamatayan, ipanalangin Ninyo kami. Banal na Maria, ipanalangin Ninyo kami, ngayon at sa oras ng aming kamatayan. Amen.",
+    instructions:
+      "Idasal: (a) bilang periodic devosyon — sa katapusan ng bawat araw; (b) sa bawat kaarawan o anibersaryo ng pagpanaw ng kamag-anak; (c) sa mga ospital; (d) sa tabi ng namamatay. Para sa kamag-anak na may sakit, ang nobena kay San Jose (Marso 11-19). Malalaking disiplina: regular na kumpisal (buwanan), madalas na Komunyon, Pamamahid sa Maysakit sa simula ng malubhang sakit (HINDI maghintay sa huling sandali).",
+    patronSaint: "San Jose · Santa Maria",
+    feastDay: "Marso 19 (San Jose)",
+    source: "CBCP + Vatican.va + St. Alphonsus Liguori, Preparation for Death + Catechism §§ 1010-1014. Retrieved 2026-05-18.",
+    reviewedAt: new Date("2026-05-18"),
+  },
+  {
+    prayerSlug: "prayer-healing",
+    name: "Panalangin para sa Pagpapagaling",
+    description:
+      "Ang panalangin para sa pagpapagaling ay isa sa pinakapundamental na Katolikong devosyon. Itinala ng Banal na Kasulatan si Hesus na nagpapagaling sa hindi mabilang na maysakit sa public ministry, at ang sakramento ng Pamamahid sa Maysakit ay nagpapatuloy ng healing mission. Tatlong anyo ng pagpapagaling: (1) sacramental (Pamamahid sa Maysakit); (2) charismatic (panalangin ng believer o komunidad); (3) sa pamamagitan ng intercession ng santo (Lourdes, San Peregrine para sa kanser). Ang panalangin ay hindi anting-anting; ito ay paghingi.",
+    prayerText:
+      "Panginoong Hesus, manggagamot ng katawan at kaluluwa, humihingi kami para kay (banggitin ang pangalan at sakit) ng biyaya ng pagpapagaling. Kayo na nagpagaling sa napakaraming sa Inyong terrestrial ministry, palawakin ang Inyong sanitator na kamay ngayon. Kung kalooban Ninyo, ibalik ang kalusugan ng katawan; at kung hindi, ibalik ang kalusugan ng kaluluwa, na nagbibigay ng pasensya sa sakit, lakas sa paggagamot, pag-asa sa kinabukasan. Maria, Kalusugan ng Maysakit, ipanalangin Ninyo kami. San Peregrine, ipanalangin Ninyo kami. Amen.",
+    instructions:
+      "Idasal: (a) para sa sarili, kasama ng kumpisal, Komunyon, Pamamahid; (b) para sa kamag-anak na maysakit, sa kanyang presensya, na may imposition of hands (Marcos 16,18); (c) sa komunidad. Para sa tiyak na sakit: San Peregrine para sa kanser, Santa Lucia para sa mga mata, San Blas para sa lalamunan. Pagsamahin sa medikal na paggagamot, sakramento, Pamamahid sa Maysakit, pilgrimage sa Marian sanctuary.",
+    patronSaint: "Kristo, Banal na Manggagamot · Maria, Kalusugan ng Maysakit",
+    feastDay: "Pebrero 11 (Birheng Lourdes)",
+    source: "CBCP + Vatican.va (Salvifici Doloris, JPII 1984) + Ritual of Anointing + Catechism §§ 1499-1532. Retrieved 2026-05-18.",
+    reviewedAt: new Date("2026-05-18"),
+  },
+  {
+    prayerSlug: "prayer-marriage",
+    name: "Panalangin para sa Pag-aasawa",
+    description:
+      "Ang panalangin para sa pag-aasawa — para sa sariling vocation matrimonial, para sa sariling pag-aasawa, para sa pag-aasawa sa krisis, o para sa kabanalan ng mga pag-aasawa — ay pundamental na gawain sa Katolikong family spirituality. Ang Simbahan ay nagtuturo na ang pag-aasawang sacramental ay isa sa pitong sakramento (Mateo 19,6: «kung ano ang pinagsama ng Diyos, huwag pakialaman ng tao»). Si San Juan Pablo II ay nakapaglahad ng theologia ng pag-aasawa sa Familiaris Consortio (1981). Ang Papa Francisco ay nagpatuloy sa Amoris Laetitia (2016). Sa Pilipinas, ang pamilya ay tradisyonal na pundamental na social unit.",
+    prayerText:
+      "Panginoong Diyos, may-akda ng pag-aasawa, na sa simula ay nilikha ang lalaki at babae sa Iyong imahen, at sa Kasal ng Cana ay ibinunyag ang dignidad ng pag-ibig na conjugal, humihingi ako para sa (banggitin ang intensyon). Ipagkaloob Ninyo sa amin ang regalo ng pag-ibig na matiyaga, mapaglingkod, hindi naiingit (1 Cor 13). Ipagkaloob Ninyo ang katapatan, ang pasensya, ang katipid, at ang pagbubukas sa mga anak na ipadadala Ninyo. Amen.",
+    instructions:
+      "Idasal sa mag-asawa (gabi-gabi bago matulog), individualmente, o sa pamilya. Istruktura: (1) Tanda ng Krus; (2) pasasalamat para sa regalo ng pag-aasawa; (3) ang panalangin; (4) dekada ng Rosaryo (joyful: Annunciation, Visitation, Kasal sa Cana); (5) acto ng pakikipagkasundo kung kinakailangan. Para sa pag-aasawang nasa krisis: Misa para sa pagkakasundo, konsulta sa pari o therapist na Katoliko, nobena sa Banal na Pamilya.",
+    patronSaint: "Banal na Pamilya · San Jose at Santa Maria",
+    feastDay: "Linggo sa Oktava ng Pasko (Banal na Pamilya)",
+    source: "CBCP + Vatican.va (Familiaris Consortio 1981; Amoris Laetitia 2016) + Catechism §§ 1601-1666. Retrieved 2026-05-18.",
+    reviewedAt: new Date("2026-05-18"),
+  },
+  {
+    prayerSlug: "prayer-safe-travel",
+    name: "Panalangin para sa Ligtas na Paglalakbay",
+    description:
+      "Ang Katolikong panalangin para sa ligtas na paglalakbay ay matagal-matagal na devosyon. Si San Kristoper, patron ng mga manlalakbay, ay ang santong tinatawagan. Ang Guardian Angel ay kasama rin. Sa Pilipinas, ang devosyon ay kinakabilang ang panalangin bago lumakad, ang bendisyon ng sasakyan sa piyesta ni San Kristoper (Hulyo 25), ang medalya ni San Kristoper sa kotse.",
+    prayerText:
+      "Panginoong Diyos, Ama na pumapansin ng lahat sa daan, ipinagkakatiwala ko ang sariling proteksyon sa paglalakbay na ito. Iwasan Mo sa akin ang mga panganib ng katawan, aksidente, sasakyang sira, mga driver na walang ingat, mga hayop sa daan, at masamang panahon. Ipadala Mo ang Iyong Guardian Angel. San Kristoper, ipanalangin mo ako. Amen.",
+    instructions:
+      "Idasal bago bawat paglalakbay: (1) pagpasok sa sasakyan, bago iturn-on ang makina; (2) sa Tanda ng Krus; (3) banggitin ang taong naglalakbay, destinasyon, at dahilan; (4) renewal pagkatapos ng mahabang paghinto. Para sa mahabang paglalakbay: kumpisal, Misa ng paalam kung tuluyan na pag-alis, bendisyon ng sasakyan, Awit 91 at Rosaryo habang naglalakbay. Para sa pamilya: panalangin sa voz alta sa harap ng mga bata.",
+    patronSaint: "San Kristoper · Guardian Angel · San Rafael",
+    feastDay: "Hulyo 25",
+    source: "CBCP + Vatican.va + Filipino tradition of vehicle blessing + Psalm 91. Retrieved 2026-05-18.",
+    reviewedAt: new Date("2026-05-18"),
+  },
+  {
+    prayerSlug: "prayer-serenity",
+    name: "Panalangin ng Serenity",
+    description:
+      "Ang Serenity Prayer — «Diyos, ipagkaloob mo sa akin ang serenity para tanggapin ang mga bagay na hindi ko mabago, ang tapang para baguhin ang mga magagawa, at ang karunungan para makilala ang pagkakaiba» — ay isa sa pinakauniversally na ikinakalat na Kristiyanong panalangin ng ika-20 siglo. Akda ng Protestant theologian na si Reinhold Niebuhr noong 1934, kinuha ng Alcoholics Anonymous sa 1940s. Ang panalangin ay hindi exclusively Katoliko — siya ay genuinely ecumenical — ngunit naipasok ng Simbahan dahil tumutugma sa klasikong espiritwalidad ng abandono sa Banal na Providensya (Jean-Pierre de Caussade).",
+    prayerText:
+      "Diyos, ipagkaloob mo sa akin ang serenity para tanggapin ang mga bagay na hindi ko mabago, ang tapang para baguhin ang mga magagawa, at ang karunungan para makilala ang pagkakaiba. Ipagkaloob mo sa akin na mabuhay isang araw sa bawat oras, masiyahan sa bawat sandali, tanggapin ang mga paghihirap bilang daan tungo sa kapayapaan. Amen.",
+    instructions:
+      "Idasal: (a) bilang araw-araw na umaga lalo na para sa mga programa ng recovery (Alcoholics Anonymous Philippines, etc.); (b) sa sandali ng tumitinding kabalisahan; (c) sa mga pagpupulong ng twelve-step groups; (d) sa pagkawala o krisis. Maikling porma (unang tatlong linya) ay madaling ma-memorize.",
+    patronSaint: "Kristo, Prince ng Kapayapaan",
+    feastDay: "Huling Linggo ng Karaniwang Panahon (Cristo Rey)",
+    source: "CBCP + Reinhold Niebuhr (1934) + AA Philippines + Jean-Pierre de Caussade, Abandonment to Divine Providence. Retrieved 2026-05-18.",
+    reviewedAt: new Date("2026-05-18"),
+  },
+  {
+    prayerSlug: "prayer-st-francis",
+    name: "Panalangin Iniugnay kay San Francisco (Gawin Akong Instrumento ng Iyong Kapayapaan)",
+    description:
+      "Ang Prayer Attributed to St. Francis — kilala bilang «Make me an instrument of your peace» — ay isa sa pinakakilalang Kristiyanong panalangin ng ika-20 siglo. Sa kabila ng tradisyonal na iniugnay kay San Francisco ng Asisi, ang aktwal na kompusisyon ay unang inilathala sa Pranses na katolikong pahayagang La Clochette noong 1912. Mula noon ay binigyang-kahulugan ni Madre Teresa, San Juan Pablo II, Papa Francisco at milyun-milyong Kristiyano. Ang panalangin ay nagpapahayag ng espiritwalidad na Pransiskano: nag-aalay ang Kristiyano bilang tagapamagitan ng pag-ibig ng Diyos sa mundong sugatan.",
+    prayerText:
+      "Panginoon, gawin Mo akong instrumento ng Iyong kapayapaan: kung saan may galit, magdala ng pag-ibig; kung saan may pinsala, ng kapatawaran; kung saan may pagkakahati, ng kaisahan; kung saan may pagdududa, ng pananampalataya; kung saan may mali, ng katotohanan; kung saan may kawalang-pag-asa, ng pag-asa; kung saan may dilim, ng liwanag; kung saan may lungkot, ng kagalakan. O Banal na Guro, gawin Mong sa pag-aaliw kaysa sa pag-aliwin; sa pag-unawa kaysa sa unawain; sa pag-ibig kaysa sa ibigin. Sapagka't sa pagbibigay tumatanggap; sa pagpapatawad pinapatawad; sa pagkamatay nabubuhay sa eternal na buhay. Amen.",
+    instructions:
+      "Idasal: (a) bilang araw-araw na umaga; (b) bago mahirap na pag-uusap, mediation o tense meeting; (c) pagkatapos ng natanggap na insulto bilang explicit act ng kapatawaran. Para sa mga Pransiskano sa Pilipinas: kasama ng Cantico ng mga Nilikha, leitura ng Florinhas, bendisyon ng mga hayop sa Oktubre 4.",
+    patronSaint: "San Francisco ng Asisi",
+    feastDay: "Oktubre 4",
+    source: "CBCP + Vatican.va + La Clochette (1912) + Pransiskanong tradisyon sa Pilipinas. Retrieved 2026-05-18.",
+    reviewedAt: new Date("2026-05-18"),
+  },
+  {
+    prayerSlug: "psalm-23",
+    name: "Awit 23 (Ang Panginoon ay aking Pastol)",
+    description:
+      "Ang Awit 23 — «Ang Panginoon ay aking pastol, wala akong kakulangin» — ay isa sa pinakaminamahal na awit ng Banal na Kasulatan, iniugnay kay Haring David. Ang sentral na imahen — ang Panginoon na nagaalaga sa Kanyang bayan tulad ng pastol na nag-aalaga ng mga tupa — ay isa sa pinakamalalim ng theologiang bibliko. Si Kristo Mismo ay nag-aplay sa Kanyang sarili ang imahen ng Banal na Pastol (Juan 10,11). Tradisyonal na dinadasal sa mga sandali ng pagdadalamhati (kasama ang lahat ng Filipino Catholic funerals), sa mga pagsubok o takot, sa tabi ng namamatay, at bilang araw-araw na kompiyansa.",
+    prayerText:
+      "Ang Panginoon ay aking pastol, wala akong kakulangin. Sa luntiang pastulan ay pinaghihiga niya ako; ginabayan niya ako sa tahimik na mga tubig at hinati ang aking kaluluwa. Pinangungunahan niya ako sa tuwid na landas para sa Kanyang Pangalan. Bagaman naglakad ako sa madilim na lambak, hindi ako matatakot sa anumang kasamaan, sapagkat Ikaw ay kasama ko; ang Iyong tungkod at ang Iyong baras ay nagpapagana sa akin. Hinanda mo ang isang hapag sa harap ng aking mga kalaban; pinahiran mo ang aking ulo ng langis, at ang aking kopa ay tumagayan. Ang kabutihan at kaawaan ay kasama ko sa lahat ng araw ng aking buhay, at tatahan ako sa bahay ng Panginoon sa walang hanggan. (Awit 23, liturhikal na pagsasalin ng CBCP)",
+    instructions:
+      "Maaari dasalin: (a) bilang araw-araw na panalangin, lalo na sa simula at katapusan ng araw; (b) sa mga pagsubok o takot; (c) sa libing o kamakailang pagdadalamhati; (d) bilang meditation sa Lectio Divina. Memorize-en mo; kasya sa isang focused na pagbabasa. Sa Pilipinas, ang pagsasalin ng CBCP ay ginagamit sa pang-tanging liturhikal na anyo.",
+    patronSaint: "Kristo, Banal na Pastol · Haring David",
+    feastDay: "Ikaapat na Linggo ng Pasko ng Pagkabuhay (Banal na Pastol)",
+    source: "CBCP + Sagrada Biblia, liturhikal na pagsasalin ng CBCP + Liturgy of the Hours + Patristic tradition. Retrieved 2026-05-18.",
+    reviewedAt: new Date("2026-05-18"),
+  },
+  {
+    prayerSlug: "psalm-91",
+    name: "Awit 91 (Ang Nananahan sa Lihim ng Kataastaasan)",
+    description:
+      "Ang Awit 91 — «Ang nananahan sa lihim ng Kataastaasan ay mananahan sa lilim ng Makapangyarihan» — ay ang malaking bibliko na awit ng banal na proteksyon. Pinagdugtong ng tradisyon kasama ang labanan laban sa mga demonyo at espirituwal na proteksyon kaya idinadasal sa Completas (gabi na office ng Liturhy of the Hours) sa Sabado, at bahagi ito ng tradisyonal na ritwal ng exorcism. Ang awit ay nagpapahayag ng pinakaradical na pangako ng proteksyon ng Diyos. Sinipi ito ng demonyo mismo sa ikatlong tukso kay Kristo (Mateo 4,6). Idinadasal sa mga panganib pisikal at espirituwal.",
+    prayerText:
+      "Ang nananahan sa lihim ng Kataastaasan ay mananahan sa lilim ng Makapangyarihan. Sasabihin niya sa Panginoon: «Aking kanlungan at aking sandigan, aking Diyos, sa kanya ako tumitiwala». Ililigtas ka niya sa silò ng manghuhuli at sa salot na nakamamatay. Tatakpan ka niya ng kanyang mga balahibo, at sa ilalim ng kanyang mga pakpak ay makakahanap ka ng pakaibahan. Hindi ka matatakot sa lagim ng gabi, ni sa pana na lumilipad sa araw. Bumagsak ang isang libo sa iyong tabing-kaliwa at sampung libo sa iyong tabing-kanan, ngunit hindi ka tatamaan. Sa kanyang mga anghel ay binigyan niya ng utos upang ipagtanggol ka sa lahat ng iyong daan. (Awit 91)",
+    instructions:
+      "Idasal: (a) gabi-gabi bago matulog, bilang Completas; (b) bago mahabang o panganib na paglalakbay; (c) sa anumang takot o espirituwal na pag-atake; (d) bilang meditation sa pagsubok. Memorize-en mo. Sa espirituwalidad ng pamilya, dinadasal para sa mga bata, maysakit, mga nag-iisang nakatira.",
+    patronSaint: "San Miguel Arkanghel · lahat ng Banal na Anghel ng Tagapag-bantay",
+    feastDay: "Setyembre 29 · Oktubre 2",
+    source: "CBCP + Sagrada Biblia, liturhikal na pagsasalin ng CBCP + Liturhia ng mga Oras (Completas) + tradisyonal na exorcism + Mateo 4,6. Retrieved 2026-05-18.",
+    reviewedAt: new Date("2026-05-18"),
+  },
+  {
+    prayerSlug: "rosary-for-healing",
+    name: "Rosaryo para sa Pagpapagaling",
+    description:
+      "Ang Rosaryo para sa Pagpapagaling ay ang Katolikong gawain ng pagdasal ng Banal na Rosaryo na may tiyak na intensyon ng paghingi kay Maria, sa pamamagitan ng pamamagitan ni Kristo Banal na Manggagamot, para sa pisikal, emosyonal o espirituwal na pagpapagaling. Ang Marian miracles ng pagpapagaling sa Lourdes, Fatima at iba pang sanctuaries ay laging nakaugnay sa Rosaryo na dinasal sa pananampalataya. Ang Rosaryo ay hindi anting-anting; ito ay contemplative meditation ng mga sentral na misteryo ng pananampalataya sa kasamang Maria.",
+    instructions:
+      "Idasal ang buong Rosaryo (limang dekada), ideal na may luminous mysteries (na kasama ang Kasal sa Cana). Para sa matagalang sakit, isaalang-alang ang araw-araw sa buong tagal ng paggagamot. Struktura: (1) Tanda ng Krus at Credo; (2) Ama Namin, tatlong Aba Ginoong Maria at Luwalhati; (3) limang dekada; (4) Litanya ng Mahal na Birhen, kasama ang «Kalusugan ng maysakit, ipanalangin mo kami»; (5) Salve. Para sa kanser, dagdagan ng limang Ama Namin para sa pamamagitan ni San Peregrine. Pagsamahin sa sakramento (Kumpisal, Komunyon, Pamamahid).",
+    patronSaint: "Maria, Kalusugan ng Maysakit · Kristo, Banal na Manggagamot",
+    feastDay: "Oktubre 7 (Mahal na Birhen ng Rosaryo)",
+    source: "CBCP + Vatican.va (Rosarium Virginis Mariae, JPII 2002). Retrieved 2026-05-18.",
+    reviewedAt: new Date("2026-05-18"),
+  },
+  {
+    prayerSlug: "seven-sorrows-rosary",
+    name: "Rosaryo ng Pitong Hapis ni Maria",
+    description:
+      "Ang Rosaryo ng Pitong Hapis ni Maria, tinatawag ding Coronilla ng Pitong Hapis o Rosaryo Servita, ay devosyon ng Order of Servants of Mary (Florence, 1233). Nagmuni-muni sa pitong espadang lumampas sa puso ni Maria ayon sa propesiya ni Simeon (Lc 2,35). Ang istraktura: korona ng pitong grupo (isang Ama Namin at pitong Aba Ginoong Maria bawat grupo) at tatlong Aba Ginoong Maria sa katapusan para sa luha ni Maria. Sa Pilipinas, ang devotion ay malakas sa Holy Week, lalo na sa Biyernes Santo.",
+    instructions:
+      "Istruktura: (1) Tanda ng Krus; (2) **1st Sorrow**: Propesiya ni Simeon. Ama Namin at pitong Aba Ginoong Maria; (3) **2nd**: Flight to Egypt; (4) **3rd**: Loss in the Temple; (5) **4th**: Meeting on the Way of the Cross; (6) **5th**: Crucifixion; (7) **6th**: Pietà; (8) **7th**: Burial; (9) tatlong Aba Ginoong Maria sa katapusan; (10) tradisyonal na panalangin Servita. Filipino tradition: dasalin sa Biyernes, sa buong Lenten season.",
+    patronSaint: "Mater Dolorosa · Order of Servites",
+    feastDay: "Setyembre 15",
+    source: "CBCP + Vatican.va + Order of Servites (1233) + Benedict XIII (1727). Retrieved 2026-05-18.",
+    reviewedAt: new Date("2026-05-18"),
+  },
+  {
+    prayerSlug: "surrender-novena",
+    name: "Nobena ng Pagsuko (Pe. Dolindo Ruotolo)",
+    description:
+      "Ang Surrender Novena ay binuo ng lingkod ng Diyos na si Don Dolindo Ruotolo (1882-1970), pari ng Naples. Tinanggap ni Don Dolindo sa panalangin ang sentral na jaculatorya — «Hesus, ikaw na nag-iisip nito» — bilang dictation mula kay Kristo Mismo. Siyam na araw na nobena na may natatanging struktura: bawat araw ay sampung beses idinadasal ang parehong jaculatorya na may umuusbong na kompiyansa. Ang sentral na ideya ay radical: ang Kristiyano ay dapat lubusang ibigay ang solusyon ng problema kay Kristo, nang hindi inaasahan ang banal na providensya. Sa Pilipinas, ang devotion ay laganap dahil sa kahirapan ng pagsuko ng problema.",
+    prayerText:
+      "Hesus, ikaw na nag-iisip nito.",
+    instructions:
+      "Idasal nang siyam na magkakasunod na araw. Bawat araw ay may ibang jaculatorya na nagbubukas, sinusundan 10 beses ng «Hesus, ikaw na nag-iisip nito». **Araw 1**: «Bakit ka naguguluhan at nababalisa? Ipaalam mo sa Akin ang pag-aalaga ng iyong mga bagay at lahat ay tumitigil». **Araw 2**: «Anak, pinipinsala at hinahadlang mo ang Aking gawa kapag gusto mong magtuon ka». **Araw 3**: «Ang mangatuwiran, mabalisa, isipan ang konsekuwensya ay kabaligtaran sa pagtitiwala sa Akin». **Araw 4**: «Bulag ka sa mga bagay na ito». **Araw 5**: «Isara ang mga mata ng kaluluwa at sabihin: 'Hesus, ikaw na nag-iisip nito'». **Araw 6**: «Pinipinsala mo Ako kapag, sa halip na ipinaubaya sa Akin, ay pinapayuhan Ako». **Araw 7**: «Ilang bagay ang hindi Ko ginagawa kapag ang kaluluwa, sa kanyang mga pangangailangan, ay bumabaling sa Akin at nagsasabing: 'Hesus, ikaw na nag-iisip nito'!». **Araw 8**: «Isara ang mga mata at dumaan tahimik». **Araw 9**: «Mga anak ko, gumawa kayo ng tatlong banal na oras».",
+    patronSaint: "Sanggol na Hesus · Sagradong Puso",
+    feastDay: "Nobyembre 19 (Don Dolindo, lingkod ng Diyos)",
+    source: "CBCP + Vatican.va + Don Dolindo Ruotolo + Archdiocese of Naples. Retrieved 2026-05-18.",
+    reviewedAt: new Date("2026-05-18"),
+  },
+  // Locale-anchored para Filipino (8 entries — fil already has santo-nino,
+  // simbang-gabi from earlier; needs akita, aparecida, czestochowa,
+  // guadalupe, knock, la-vang, maximilian-kolbe, st-juan-diego)
+  {
+    prayerSlug: "novena-akita",
+    name: "Nobena sa Mahal na Birhen ng Akita",
+    description:
+      "Ang devotion sa Mahal na Birhen ng Akita ay nagpaparangal sa mga Marian apparitions kay Sister Agnes Sasagawa sa Akita, Japan, sa pagitan ng 1973 at 1981. Ang estatwa ng Birhen ay lumuha ng 101 beses ng human na luha sa pagitan ng 1975 at 1981. Ang mga mensahe ay humihingi ng pagsisisi, pagdarasal ng Rosaryo, at consecration sa Imakuladong Puso ni Maria. Opisyal na kinilala ng obispo ng Niigata noong 1984. Akita ay ang unang Marian apparition na inaprubahan sa Eastern Asia.",
+    prayerText:
+      "O dulcing Ina ng Akita, na sa Inyong mga human na luha ay nakapag-pakilos sa puso ng Inyong mga anak sa Japan, kilusin din ang akin. Ipagkaloob Ninyo sa akin ang biyaya ng tapat na pagbabalik-loob at ang lakas para gumawa ng reparasyon para sa mga kasalanang nakakasakit sa Sagradong Puso ni Hesus at sa Inyo. Hinihingi ko ang biyaya na may kompiyansa kong hinihiling (banggitin ang intensyon). Mahal na Birhen ng Akita, ipanalangin mo kami. Amen.",
+    instructions:
+      "Idasal nang siyam na magkakasunod na araw. Istraktura: Tanda ng Krus; misteryo ng Rosaryo (glorious); ang panalangin; consecration sa Imakuladong Puso; banggitin ang intensyon.",
+    patronSaint: "Mahal na Birhen ng Akita",
+    feastDay: "Oktubre 12 (humigit-kumulang)",
+    source: "CBCP + Vatican.va + Approval of Bishop John Shojiro Ito (Niigata, 1984) + CDF (Cardinal Ratzinger). Retrieved 2026-05-18.",
+    reviewedAt: new Date("2026-05-18"),
+  },
+  {
+    prayerSlug: "novena-aparecida",
+    name: "Nobena sa Birhen ng Aparecida (Patrona ng Brazil)",
+    description:
+      "Ang Mahal na Birhen ng Aparecida ay ang Patrona ng Brazil mula 1930, at sentral na Marian advocation ng kulturang Katolikong Brasileño. Ang devotion ay nagmula noong 1717 nang tatlong mangingisda ng ilog Paraíba (Felipe Pedroso, Domingos García, João Alves) ay kumuha mula sa tubig ng maliit na estatwa ng terracotta ng Mahal na Birhen ng Concepcion. Ang Pambansang Santuario ng Aparecida sa São Paulo ay ang pangalawang pinakamalaking simbahan ng Katoliko sa daigdig. Sa Pilipinas, ang devosyon ay vivido ng mga komunidad ng Brasileño at sa diaspora.",
+    prayerText:
+      "O Birhen ng Aparecida, Reyna at Patrona ng Brazil, na mula sa tubig ng Paraíba ay pinili ninyong lumitaw upang ipahayag ang maternal na pag-aalaga sa Inyong bayan, ipagkaloob Ninyo sa akin ang biyaya na may kompiyansa kong hinihiling (banggitin ang intensyon). Panatilihin Ninyo sa pananampalataya ang mga pamilyang Brasileño, lalo na ang mga apektado ng migration. Mahal na Birhen ng Aparecida, ipanalangin mo kami. Amen.",
+    instructions:
+      "Idasal nang siyam na magkakasunod na araw, mula Oktubre 4 hanggang 11 sa paghahanda para sa piyesta ng Oktubre 12.",
+    patronSaint: "Mahal na Birhen ng Aparecida (Patrona ng Brazil)",
+    feastDay: "Oktubre 12",
+    source: "CBCP + Vatican.va + Pambansang Santuario ng Aparecida + tradisyon ng tatlong mangingisda (1717). Retrieved 2026-05-18.",
+    reviewedAt: new Date("2026-05-18"),
+  },
+  {
+    prayerSlug: "novena-czestochowa",
+    name: "Nobena sa Birhen ng Częstochowa (Itim na Birhen ng Poland)",
+    description:
+      "Ang Mahal na Birhen ng Częstochowa, tinatawag ding Itim na Birhen ng Poland, ay ang pinakavenerated na Marian icon ng Poland. Iniugnay sa San Lucas evangelista ayon sa tradisyon mula ika-14 siglo, ang icon ay nakaimbak sa Paulist monastery ng Jasna Góra sa Częstochowa. Ang devotion ay nakaugnay sa milagro ng Agosto 26, 1655 sa Swedish invasion ng Poland. Si San Juan Pablo II ay particular na devoto: bumisita sa sanctuary maraming beses. Sa Pilipinas, ang devotion ay laganap sa komunidad ng JPII devotees.",
+    prayerText:
+      "O Itim na Birhen ng Częstochowa, Reyna at Patrona ng Poland, na nagtanggol sa Poland noong ika-17 siglo at nagpatnubay sa kanya sa ika-20 siglo sa pamamagitan ng totalitarianisms, ipagkaloob Ninyo sa akin ang biyaya na may kompiyansa kong hinihiling (banggitin ang intensyon). Reyna ng Poland, ipanalangin mo kami. Amen.",
+    instructions:
+      "Idasal nang siyam na magkakasunod na araw, mula Agosto 18 hanggang 25 sa paghahanda para sa piyesta ng Agosto 26. Glorious mysteries ng Rosaryo.",
+    patronSaint: "Mahal na Birhen ng Częstochowa (Reyna ng Poland)",
+    feastDay: "Agosto 26",
+    source: "CBCP + Vatican.va (homilies of JPII at Jasna Góra) + Paulist Monastery of Jasna Góra. Retrieved 2026-05-18.",
+    reviewedAt: new Date("2026-05-18"),
+  },
+  {
+    prayerSlug: "novena-guadalupe",
+    name: "Nobena sa Birhen ng Guadalupe",
+    description:
+      "Ang Mahal na Birhen ng Guadalupe ay ang Patrona ng Amerika, idineklara ni San Pius X noong 1910. Ang aparisyon ay nangyari sa pagitan ng Disyembre 9 at 12, 1531 sa burol ng Tepeyac, malapit sa Mexico City, sa indigenous na bagong-converted na si Juan Diego Cuauhtlatoatzin. Si Maria ay nagpakilala sa kanyang sarili sa indigenous skin at features, na nag-iindika ng pagkakamag-anak sa katutubo na bayan. Ang imahen ng Guadalupe ay milagrong-iimprenta sa kanyang tilma (manto ng maguey fibers), na sa kasalukuyan ay nasa Basilica ng Guadalupe sa Mexico City. Sa Pilipinas, ang devotion ay laganap sa mga Hispanic-Filipino Catholics at sa pangkalahatang Marian devotion.",
+    prayerText:
+      "O dulcing Birhen ng Guadalupe, Ina at Reyna ng Amerika, na lumitaw sa burol ng Tepeyac na nakasuot ng cingcord ng buntis na indigenous na babae, ipagkaloob Ninyo sa akin ang biyaya na may kompiyansa kong hinihiling (banggitin ang intensyon). Mahal na Birhen ng Guadalupe, ipanalangin mo kami. Amen.",
+    instructions:
+      "Idasal nang siyam na magkakasunod na araw, mula Disyembre 3 hanggang 11 sa paghahanda para sa piyesta ng Disyembre 12.",
+    patronSaint: "Mahal na Birhen ng Guadalupe (Patrona ng Amerika)",
+    feastDay: "Disyembre 12",
+    source: "CBCP + Vatican.va (Pius X 1910; JPII canonization ni Juan Diego 2002) + Nican Mopohua. Retrieved 2026-05-18.",
+    reviewedAt: new Date("2026-05-18"),
+  },
+  {
+    prayerSlug: "novena-knock",
+    name: "Nobena sa Birhen ng Knock (Ireland)",
+    description:
+      "Ang Mahal na Birhen ng Knock ay isa sa pinakaakanonisadong Marian apparitions ng English-speaking world. Ang aparisyon ay nangyari noong Agosto 21, 1879 sa Knock, county Mayo, Ireland. Labing-limang testigo ay nakakita ng aparisyon ng Maria, San Jose, at San Juan Evangelista, kasama ang isang Cordero (Lamb of God). Ang aparisyon ay ganap na tahimik at tumagal ng halos dalawang oras sa patuloy na ulan. Si San Juan Pablo II ay bumisita sa Knock noong 1979; Papa Francisco noong 2018.",
+    prayerText:
+      "O dulcing Birhen ng Knock, Imakuladong Ina na sa katahimikan ay lumitaw kasama ni Jose at Juan sa tabi ng Banal na Cordero, ipagkaloob Ninyo sa akin ang biyaya na may kompiyansa kong hinihiling (banggitin ang intensyon). Mahal na Birhen ng Knock, ipanalangin mo kami. Amen.",
+    instructions:
+      "Idasal nang siyam na magkakasunod na araw, mula Agosto 13 hanggang 20. Isama ang 15 minuto ng katahimikang panalangin bawat araw, sa imitasyon ng katahimikang Marian sa Knock.",
+    patronSaint: "Mahal na Birhen ng Knock · San Jose · San Juan Evangelista",
+    feastDay: "Agosto 21",
+    source: "CBCP + Vatican.va (visita ni JPII sa Knock, 1979) + Knock National Shrine. Retrieved 2026-05-18.",
+    reviewedAt: new Date("2026-05-18"),
+  },
+  {
+    prayerSlug: "novena-la-vang",
+    name: "Nobena sa Birhen ng La Vang (Vietnam)",
+    description:
+      "Ang Mahal na Birhen ng La Vang ay ang pangunahing Marian advocation ng Vietnam. Ang aparisyon ay nangyari noong 1798 sa malupit na pag-uusig laban sa mga Katolikong Vietnamese. Ang Maria ay lumitaw na nakasuot ng tradisyonal na áo dài Vietnamese na may Sanggol na Hesus sa kanyang mga bisig, at sinabi sa kanila na magdasal at na sila ay kanyang poprotektahan. Ang Basilica ng La Vang ay itinaas sa antas ng Basilica Minor ng Papa Francisco noong 2017. Sa Pilipinas, ang devotion ay vivido ng mga komunidad ng Vietnamese Catholic at ng pagkakaibigan sa pagitan ng diaspora Asian Catholic.",
+    prayerText:
+      "O Birhen ng La Vang, dulcing Ina na lumitaw upang aliwin ang Inyong mga anak Vietnamese sa pinakamatinding pag-uusig, na nakasuot ng áo dài para sa pagkakilala bilang sarili, ipagkaloob Ninyo sa akin ang biyaya na may kompiyansa kong hinihiling (banggitin ang intensyon). Para sa lahat ng pinagsasalakay na mga Kristiyano sa mundo, intercede. Amen.",
+    instructions:
+      "Idasal nang siyam na magkakasunod na araw. Sorrowful mysteries ng Rosaryo.",
+    patronSaint: "Mahal na Birhen ng La Vang",
+    feastDay: "Agosto 15 (associated sa Assumption)",
+    source: "CBCP + Vatican.va + Vietnamese Episcopal Conference + Pope Francis (elevation to Basilica Minor 2017). Retrieved 2026-05-18.",
+    reviewedAt: new Date("2026-05-18"),
+  },
+  {
+    prayerSlug: "novena-maximilian-kolbe",
+    name: "Nobena kay San Maximilian Kolbe",
+    description:
+      "Si San Maximiliano Maria Kolbe (Rajmund Kolbe, 1894-1941) — Pransiskanong Conventual na pari ng Poland — ay patron ng mga preso ng konsensya, mga peryodistang Katoliko, mga pamilya at ang pro-life movement. Itinatag niya ang Militia of the Immaculate (1917). Sa pagsakop ng Nazi, dinala sa Auschwitz noong Mayo 1941. Sa Agosto, nang isang preso ay nakatakas at ang Nazi ay nagpasya na pumatay ng sampung preso bilang kolektibong parusa, voluntarily nag-alay si Kolbe na halinhinan ang isa sa mga condemned, si Franciszek Gajowniczek — isang ama ng pamilya. Nabuhay ng dalawang linggo sa hunger bunker, at finally executed sa phenol injection noong Agosto 14, 1941. Si Gajowniczek ay nabuhay hanggang 1995. Kinanonisa ni San Juan Pablo II noong 1982 bilang «martyr of charity».",
+    prayerText:
+      "O dakilang San Maximiliano Maria Kolbe, martyr ng caridad at knight ng Imakulada, ikaw na nagbigay ng iyong buhay sa Auschwitz upang ang isang ama ng pamilya ay makauwi, ipagkaloob mo sa akin ang biyaya na may kompiyansa kong hinihiling (banggitin ang intensyon). Para sa lahat ng mga preso ng konsensya, para sa lahat ng mga refugee, intercede. Amen.",
+    instructions:
+      "Idasal nang siyam na magkakasunod na araw, mula Agosto 5 hanggang 13. Istraktura: Tanda ng Krus; consecration sa Imakulada; ang panalangin; misteryo ng Rosaryo (sorrowful); banggitin ang intensyon. Para sa justicia causes: konkretong gawa ng solidarity — sulat sa preso, donation sa pro-life cause; pagbabasa ng Filipenses 2,5-11.",
+    patronSaint: "San Maximiliano Maria Kolbe, OFMConv (martyr ng Auschwitz)",
+    feastDay: "Agosto 14",
+    source: "CBCP + Vatican.va (canonization JPII 1982) + Niepokalanów + Auschwitz Museum (testimony of Franciszek Gajowniczek). Retrieved 2026-05-18.",
+    reviewedAt: new Date("2026-05-18"),
+  },
+  {
+    prayerSlug: "novena-st-juan-diego",
+    name: "Nobena kay San Juan Diego",
+    description:
+      "Si San Juan Diego Cuauhtlatoatzin (1474-1548) ay ang indigenous na lalaki na siyang pinakitaan ng Mahal na Birheng Maria sa Tepeyac sa pagitan ng Disyembre 9 at 12, 1531, kung saan ipinakilala ang sarili bilang Birhen ng Guadalupe. Naging Kristiyano siya bago ang 1525, nabalo noong 1529. Siya ang sentral na human figure ng pagbabalik-loob ng Mexico at lahat ng Hispanic America sa Katolisismo. Ang imahen ng Guadalupe ay milagrong-iimprenta sa kanyang tilma. Kinanonisa ni San Juan Pablo II sa Basilica ng Guadalupe noong Hulyo 31, 2002. Patron ng mga katutubo at humble.",
+    prayerText:
+      "O dakilang San Juan Diego, indigenous na agila na pinili ng Mahal na Birheng Maria para maging tagapagdala ng imahen ng Guadalupe sa buong continent ng Amerika, ipagkaloob mo sa akin ang biyaya na may kompiyansa kong hinihiling (banggitin ang intensyon). Ikaw na narinig ang Celestial na Ina na tumawag sa iyo bilang «aking pinakamaliit na anak», ipagkaloob mo sa akin ang biyaya ng pagdama sa sarili, kahit sa abang sitwasyon, bilang minamahal na anak ng Ina ng Diyos. Amen.",
+    instructions:
+      "Idasal nang siyam na magkakasunod na araw, mula Nobyembre 30 hanggang Disyembre 8 sa paghahanda para sa Guadalupe (Disyembre 12).",
+    patronSaint: "San Juan Diego Cuauhtlatoatzin",
+    feastDay: "Disyembre 9",
+    source: "CBCP + Vatican.va (San Juan Pablo II, canonization sa Basilica ng Guadalupe, July 31, 2002) + Nican Mopohua. Retrieved 2026-05-18.",
+    reviewedAt: new Date("2026-05-18"),
+  },
 ];

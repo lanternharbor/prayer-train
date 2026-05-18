@@ -559,4 +559,564 @@ export const ptBRTranslations: PrayerTranslationSeed[] = [
     source: "CNBB + Vatican.va Português + Tratado da Verdadeira Devoção a Maria (São Luís Maria Grignion de Montfort, ca. 1712) + Carta apostólica Rosarium Virginis Mariae (JPII, 2002) + A12 / Santuário Nacional de Aparecida. Retrieved 2026-05-17.",
     reviewedAt: new Date("2026-05-17"),
   },
+  // ── Wave 7 (2026-05-18): closes coverage to 100%. Mesma hierarquia de
+  //    fontes católicas (CNBB, Vatican.va Português, A12 / Aparecida,
+  //    Paulus, Canção Nova, Loyola Editora).
+  {
+    prayerSlug: "54-day-rosary-novena",
+    name: "Novena das 54 Rosas (Rosário dos 54 Dias)",
+    description:
+      "A Novena das 54 Rosas, também chamada Rosário dos 54 Dias, foi revelada pela Santíssima Virgem Maria a Fortuna Agrelli em Nápoles em 1884. Doente de uma enfermidade médica desesperada, Fortuna recebeu em visão a indicação de rezar o Rosário completo durante 27 dias em súplica e 27 dias em ação de graças — 54 dias no total. Sua cura foi completa. A devoção foi aprovada por Leão XIII e estendeu-se à Igreja universal como uma das grandes promessas marianas. A novena é apropriada para situações urgentes que requerem intercessão sustentada: doença grave, discernimento difícil, conversão demorada, ou qualquer petição em que a simples novena de 9 dias se mostre insuficiente.",
+    instructions:
+      "Reze o Rosário completo cada dia durante 54 dias consecutivos. Os primeiros 27 dias são em súplica; os 27 dias seguintes em ação de graças (no espírito de Marcos 11,24). Rotação dos mistérios: dia 1 gozosos, dia 2 dolorosos, dia 3 gloriosos, e reinicia. Estrutura diária: (1) Sinal da Cruz; (2) intenção específica nomeada em voz alta; (3) Rosário completo; (4) a oração da novena. Se um dia for omitido, a tradição é reiniciar do dia 1. Período litúrgico ideal: Advento, Quaresma, maio ou outubro.",
+    patronSaint: "Santíssima Virgem Maria, Rosa Mística",
+    feastDay: "Memória mariana móvel",
+    source: "CNBB + Vatican.va Português + relato de Fortuna Agrelli (Nápoles, 1884) + Leão XIII. Retrieved 2026-05-18.",
+    reviewedAt: new Date("2026-05-18"),
+  },
+  {
+    prayerSlug: "brown-scapular",
+    name: "Escapulário do Carmo (Escapulário Marrom)",
+    description:
+      "O Escapulário Marrom do Monte Carmelo é um sacramental católico que consiste em dois pequenos panos de lã marrom unidos por duas fitas, usados sobre os ombros sob a roupa. Foi entregue pela Santíssima Virgem Maria a São Simão Stock em Cambridge em 16 de julho de 1251 com a promessa: «Quem morrer revestido com este escapulário não padecerá o fogo eterno». A devoção, corretamente entendida, requer vida cristã coerente: estado de graça, sacramentos frequentes, oração mariana. Pio XII chamou-o «sinal de consagração total a Maria». No Brasil, a devoção do Escapulário tem profunda tradição nas paróquias carmelitanas.",
+    instructions:
+      "Para receber, busque um sacerdote que possa impor o escapulário no rito do Ritual Romano. Depois imposto, deve ser usado continuamente. Se quebrar, substitua-o sem necessidade de nova bênção. Responsabilidades: (1) confissão regular; (2) Comunhão frequente; (3) Rosário diário ou ao menos uma dezena; (4) castidade própria do estado de vida. Os Sábados são particularmente associados ao escapulário pelo Privilégio Sabatino.",
+    patronSaint: "Nossa Senhora do Carmo · São Simão Stock",
+    feastDay: "16 de julho",
+    source: "CNBB + Vatican.va Português (Pio XII) + Ordem do Carmo + Ritual Romano. Retrieved 2026-05-18.",
+    reviewedAt: new Date("2026-05-18"),
+  },
+  {
+    prayerSlug: "chaplet-st-michael",
+    name: "Coroinha a São Miguel Arcanjo",
+    description:
+      "A Coroinha a São Miguel Arcanjo foi revelada à serva de Deus Antônia d'Astonac no século XVIII. São Miguel prometeu a quem rezasse fielmente: assistência de um coro angélico ao receber a Comunhão; proteção dos nove coros angélicos durante a vida; libertação final do Purgatório para o devoto e parentes. A coroinha tem nove invocações correspondentes aos nove coros angélicos (Serafins, Querubins, Tronos, Dominações, Virtudes, Potestades, Principados, Arcanjos, Anjos), cada uma seguida de um Pai-Nosso e três Ave-Marias. Conclui-se com quatro Pai-Nossos (São Miguel, São Gabriel, São Rafael, Anjo da Guarda) e a oração de Leão XIII. É a oração de proteção espiritual por excelência.",
+    instructions:
+      "Estrutura: (1) Sinal da Cruz; (2) «Deus, vinde em meu auxílio; Senhor, apressai-vos em socorrer-me. Glória ao Pai…»; (3) nos nove grupos, invocar o coro angélico correspondente, seguido de um Pai-Nosso e três Ave-Marias; (4) os quatro Pai-Nossos finais; (5) a oração a São Miguel de Leão XIII: «São Miguel Arcanjo, defendei-nos no combate…». Pe. Gabriele Amorth recomendava-a entre as orações mais poderosas para a guerra espiritual. Apropriada antes da Missa, viagem, decisão importante, ou em situações espiritualmente densas.",
+    patronSaint: "São Miguel Arcanjo",
+    feastDay: "29 de setembro (Santos Arcanjos Miguel, Gabriel e Rafael)",
+    source: "CNBB + Vatican.va Português + tradição de Antônia d'Astonac + oração de Leão XIII (1884). Retrieved 2026-05-18.",
+    reviewedAt: new Date("2026-05-18"),
+  },
+  {
+    prayerSlug: "first-fridays",
+    name: "Devoção das Nove Primeiras Sextas-Feiras",
+    description:
+      "A Devoção das Nove Primeiras Sextas-Feiras é a prática católica revelada por Jesus Cristo a Santa Margarida Maria Alacoque em Paray-le-Monial (1673-1675). Na grande promessa, Jesus disse: «No excesso da misericórdia do meu Coração, prometo a todos os que receberem a Comunhão nove primeiras sextas-feiras consecutivas a graça da perseverança final: não morrerão em minha desgraça, nem sem terem recebido os sacramentos; meu divino Coração será seu refúgio seguro naquela última hora». A devoção entende-se corretamente não como mágica, mas como expressão da fidelidade sustentada que abre o coração à perseverança final. No Brasil, a devoção é difundida em paróquias dedicadas ao Sagrado Coração e em movimentos como o Apostolado da Oração.",
+    instructions:
+      "Requisitos: (1) receber a Sagrada Comunhão em estado de graça na primeira sexta-feira de nove meses consecutivos; (2) fazer boa confissão antes de cada Comunhão se necessário — a tradição recomenda confissão semanal ou quinzenal; (3) oferecer a Comunhão pelas intenções do Sagrado Coração e pela própria perseverança final; (4) se uma primeira sexta for omitida, reinicie do primeiro. A prática combina-se com a devoção do Sagrado Coração (imagem em casa, consagração familiar), os primeiros sábados (reparação a Maria) e a oração das 15h00 (Hora da Misericórdia).",
+    patronSaint: "Sagrado Coração de Jesus · Santa Margarida Maria Alacoque",
+    feastDay: "Sexta-feira após Corpus Christi",
+    source: "CNBB + Vatican.va (Haurietis Aquas, Pio XII 1956) + Autobiografia de Santa Margarida Maria + Apostolado da Oração no Brasil. Retrieved 2026-05-18.",
+    reviewedAt: new Date("2026-05-18"),
+  },
+  {
+    prayerSlug: "first-saturdays",
+    name: "Devoção dos Primeiros Sábados (Reparadora)",
+    description:
+      "A Devoção dos Primeiros Sábados foi pedida explicitamente pela Santíssima Virgem Maria a Irmã Lúcia dos Santos em Pontevedra em 10 de dezembro de 1925. Maria, com o Menino Jesus a seu lado e mostrando o Imaculado Coração rodeado de espinhos, prometeu: «A todos os que durante cinco meses, no primeiro sábado, se confessarem, receberem a Sagrada Comunhão, rezarem o Terço e me fizerem companhia durante quinze minutos meditando os mistérios do Rosário, com o fim de me desagravar, prometo assisti-los na hora da morte com todas as graças necessárias à salvação». É a prática mariana por excelência que se emparelha com as Nove Primeiras Sextas-Feiras.",
+    instructions:
+      "Durante cinco primeiros sábados consecutivos: (1) Confissão sacramental nos oito dias antes ou depois; (2) Comunhão no primeiro sábado em estado de graça com intenção reparadora ao Imaculado Coração; (3) um Terço completo (cinco dezenas, gozosos ou gloriosos); (4) quinze minutos de companhia a Maria meditando um mistério do Rosário — esse é o distintivo: meditação pausada sobre Maria. A intenção reparadora é essencial. Se um sábado for omitido, reinicie do primeiro.",
+    patronSaint: "Imaculado Coração de Maria · Nossa Senhora de Fátima",
+    feastDay: "Sábado seguinte ao Sagrado Coração",
+    source: "CNBB + Vatican.va Português + Memórias da Irmã Lúcia + Pio XII (consagração do mundo ao Imaculado Coração, 1942). Retrieved 2026-05-18.",
+    reviewedAt: new Date("2026-05-18"),
+  },
+  {
+    prayerSlug: "guardian-angel-prayer",
+    name: "Oração ao Anjo da Guarda",
+    description:
+      "A oração ao Anjo da Guarda é uma das orações católicas mais antigas e queridas. A doutrina do anjo custódio pessoal de cada batizado está enraizada em Mateus 18,10: «Não desprezeis um destes pequeninos; porque os seus anjos nos céus veem sempre a face de meu Pai que está nos céus». O Catecismo da Igreja Católica afirma (§ 336): «Desde sua infância até a morte, a vida humana é cercada por sua custódia e intercessão. Junto a cada fiel há um anjo como protetor e pastor para conduzi-lo à vida». A memória litúrgica dos Santos Anjos Custódios é em 2 de outubro. A oração é tradicionalmente ensinada às crianças desde cedo.",
+    prayerText:
+      "Santo Anjo do Senhor, meu zeloso guardador, se a ti me confiou a piedade divina, sempre me rege, me guarda, me governa, me ilumina. Amém.",
+    instructions:
+      "Ocasiões tradicionais: (1) ao despertar — o primeiro pensamento do dia; (2) antes de dormir; (3) antes de uma viagem; (4) antes de decisão importante ou exame; (5) em qualquer momento de medo ou tentação. Para pais brasileiros: ensinar a oração às crianças pequenas é uma das grandes responsabilidades catequéticas familiares. A devoção pode aprofundar-se com: (a) terça-feira como dia do anjo em muitas tradições; (b) leitura do Catecismo §§ 328-336.",
+    patronSaint: "Santo Anjo Custódio",
+    feastDay: "2 de outubro",
+    source: "CNBB + Catecismo §§ 328-336 + Mateus 18,10 + oração tradicional. Retrieved 2026-05-18.",
+    reviewedAt: new Date("2026-05-18"),
+  },
+  {
+    prayerSlug: "lectio-divina",
+    name: "Lectio Divina (Leitura Orante da Escritura)",
+    description:
+      "A Lectio Divina — «leitura divina» — é a antiga prática monástica católica de ler a Sagrada Escritura como oração, não como estudo. Sistematizada por Guigo II no século XII na Scala Claustralium, consta de quatro passos: Lectio (ler), Meditatio (meditar), Oratio (orar) e Contemplatio (contemplar). O Papa Bento XVI, em Verbum Domini (2010), descreveu-a como «a prática antiga e sempre nova com a qual um crente lê a Sagrada Escritura para crescer na oração». No Brasil, a Lectio é amplamente promovida por dioceses, mosteiros beneditinos (especialmente a Abadia de São Bento de Olinda) e pelos grupos bíblicos paroquiais.",
+    instructions:
+      "Necessita-se uma Bíblia católica, um lugar tranquilo e 20-30 minutos. (1) **Lectio**: leia um trecho breve (10-15 versículos, ex. Evangelho do dia) devagar, duas ou três vezes. Que palavra sobressai? (2) **Meditatio**: detenha-se no que sobressaiu, como diz o Salmo 1,2: «medita em sua Lei dia e noite». (3) **Oratio**: responda ao Senhor com suas próprias palavras. (4) **Contemplatio**: descanse em silêncio na presença de Deus. Conclua com uma breve resolução concreta para a jornada. Idealmente diário, 15 minutos. Os Evangelhos diários da liturgia são a matéria-prima ideal.",
+    patronSaint: "São Jerônimo (patrono da Escritura)",
+    feastDay: "30 de setembro",
+    source: "CNBB + Vatican.va (Verbum Domini, Bento XVI 2010) + Guigo II, Scala Claustralium + tradição beneditina no Brasil. Retrieved 2026-05-18.",
+    reviewedAt: new Date("2026-05-18"),
+  },
+  {
+    prayerSlug: "mass-offering",
+    name: "Mandar Rezar uma Missa por uma Intenção",
+    description:
+      "Mandar rezar uma Missa por uma intenção particular é a prática católica mais antiga e profunda de oração intercessória. Cada Missa, por ser atualização incruenta do sacrifício do Calvário, possui valor infinito em si; as intenções particulares são finitas e específicas. A tradição tem raízes patrísticas: Santo Agostinho testemunha as Missas oferecidas por sua mãe Santa Mônica. O Concílio de Trento (1563) definiu que o sacrifício eucarístico se oferece «não só pelos pecados, penas, satisfações e outras necessidades dos fiéis vivos, mas também pelos defuntos em Cristo que ainda não estão de todo purificados». No Brasil, mandar rezar Missas é prática paroquial estabelecida.",
+    instructions:
+      "Procedimento: (1) procure a secretaria paroquial e solicite uma Missa para uma intenção particular; (2) entregue uma oferta livre (varia por região, geralmente R$ 30-100 no Brasil); (3) se a intenção for por um defunto, comunique nome e data de falecimento; (4) idealmente assista à Missa pessoalmente. Tradições brasileiras: (a) Trezena (13 Missas consecutivas pelos defuntos), Sétimo Dia, Trigésimo Dia; (b) Missas em aniversário de falecimento; (c) Missa de Ação de Graças por aniversário, casamento, ou graças recebidas. Para almas do Purgatório, mandar rezar uma Missa é o maior presente espiritual.",
+    patronSaint: "Cristo, Sumo Sacerdote",
+    feastDay: "Quinta-feira Santa (instituição da Eucaristia)",
+    source: "CNBB + Catecismo §§ 1356-1381 + Concílio de Trento (Sessão XXII) + Vatican.va Português. Retrieved 2026-05-18.",
+    reviewedAt: new Date("2026-05-18"),
+  },
+  {
+    prayerSlug: "novena-don-bosco",
+    name: "Novena a São João Bosco (Dom Bosco)",
+    description:
+      "São João Bosco (Giovanni Melchiorre Bosco, 1815-1888) — universalmente conhecido como Dom Bosco — foi sacerdote piemontês italiano, fundador da Sociedade Salesiana e do Instituto das Filhas de Maria Auxiliadora. Sua paixão vital foi a juventude pobre, abandonada e em risco. Iniciou com um punhado de meninos em um oratório em Valdocco (Turim) em 1841 e deixou ao morrer uma congregação com mil e oitocentos membros e trezentas casas no mundo. Seu sistema educativo — «preventivo» — baseia-se em razão, religião e amorevolezza (carinho). Canonizado por Pio XI em 1934. No Brasil, os Salesianos têm presença histórica em todas as regiões, com colégios, oratórios e paróquias. A novena é apropriada para vocações, conversão de filhos, decisões educativas, ou necessidades juvenis.",
+    prayerText:
+      "Ó São João Bosco, pai e mestre da juventude, alcançai-me por vossa intercessão a graça que com confiança filial vos peço (mencionar a intenção). Vós que de jovem discernistes vossa vocação através dos sonhos proféticos e da direção espiritual de vossa santa mãe Margarida Occhiena, intercedei pelos jovens hoje em confusão, pelos educadores sobrecarregados e pelos pais que oram pela perseverança de seus filhos na fé. Maria Auxiliadora, em cujo nome Dom Bosco fez tudo o que fez, sede também nosso auxílio. Amém.",
+    instructions:
+      "Reze uma vez ao dia durante nove dias consecutivos, idealmente de 22 a 30 de janeiro em preparação para a festa de 31 de janeiro. Estrutura: (1) Sinal da Cruz; (2) Salmo 23 ou trecho do Evangelho do Menino Jesus; (3) a oração da novena; (4) três Ave-Marias a Maria Auxiliadora; (5) jaculatória salesiana: «Maria Auxiliadora, rogai por nós e pela juventude». No Brasil, a leitura das Memórias do Oratório (autoria do próprio Dom Bosco) é fonte primária de sua pedagogia. O carisma salesiano é a alegria — «a santidade consiste em estar sempre alegre», dizia Dom Bosco.",
+    patronSaint: "São João Bosco · Maria Auxiliadora",
+    feastDay: "31 de janeiro",
+    source: "CNBB + Vatican.va Português + Memórias do Oratório (Dom Bosco) + Sociedade Salesiana no Brasil. Retrieved 2026-05-18.",
+    reviewedAt: new Date("2026-05-18"),
+  },
+  {
+    prayerSlug: "novena-infant-of-prague",
+    name: "Novena ao Menino Jesus de Praga",
+    description:
+      "O Menino Jesus de Praga é uma pequena imagem de cera do Menino Jesus (cerca de 47 cm), conservada na igreja de Santa Maria da Vitória em Praga. A imagem foi presenteada em 1628 aos carmelitas descalços de Praga pela princesa Polixena de Lobkowicz. A devoção espalhou-se por Europa Central durante a Guerra dos Trinta Anos e globalizou-se no século XIX, com cópias bendizidas chegando ao Brasil, Filipinas e América Latina. A promessa atribuída ao Santo Menino aos seus devotos: «Quanto mais me honrarem, mais Eu os favorecerei». No Brasil, a devoção ao Menino Jesus de Praga é especialmente forte em paróquias carmelitas e em famílias devotas. A novena é apropriada para situações financeiras difíceis, saúde de crianças pequenas, busca de emprego, e necessidades familiares concretas.",
+    prayerText:
+      "Divino Menino Jesus, adoro-vos como meu Senhor e Salvador. Peço-vos perdão por todos os meus pecados. Rogo-vos, ó dulcíssimo Jesus, que me concedais a graça que ardentemente desejo (mencionar a intenção), se for para vossa maior glória e o bem da minha alma. Sei que sois o dono de toda a criação. Confio em vossa misericórdia infinita. Menino Jesus de Praga, abençoai-me e a minha família. Amém.",
+    instructions:
+      "Reze uma vez ao dia durante nove dias consecutivos. Estrutura: (1) Sinal da Cruz; (2) breve ato de adoração ao Menino Jesus; (3) a oração da novena; (4) um Pai-Nosso, Ave-Maria e Glória; (5) mencione a intenção. A tradição católica recomenda colocar uma imagem do Menino Jesus de Praga em lugar de honra na casa durante a novena, e entronizá-lo permanentemente se a novena der fruto.",
+    patronSaint: "Menino Jesus de Praga",
+    feastDay: "Variável (segundo domingo de janeiro em algumas tradições)",
+    source: "CNBB + Vatican.va Português + Carmelitas Descalços de Praga + tradição da princesa Polixena de Lobkowicz + Pio XII (coroação 1955). Retrieved 2026-05-18.",
+    reviewedAt: new Date("2026-05-18"),
+  },
+  {
+    prayerSlug: "novena-st-anthony",
+    name: "Novena a Santo Antônio de Pádua",
+    description:
+      "Santo Antônio de Pádua (Fernando de Bulhões, 1195-1231) — nascido em Lisboa e morto em Pádua — é um dos santos mais amados da Igreja católica e tem profunda ligação com Portugal e o Brasil. Inicialmente cônego agostiniano, fez-se franciscano em 1220. São Francisco confiou-lhe o ensino da teologia. Pregador extraordinário, foi chamado «o Martelo dos Herejes» e «a Língua do Espírito Santo» (sua lengua incorrupta conserva-se em Pádua). Canonizado por Gregório IX um ano após a morte (o santo mais rapidamente canonizado da história), declarado Doutor da Igreja por Pio XII em 1946. No Brasil, é especialmente venerado: a tradição da «Trezena de Santo Antônio» (13 dias antes de sua festa de 13 de junho) é uma das mais populares. É padroeiro dos objetos perdidos, dos casamentos, dos pobres, e das causas humanamente perdidas.",
+    prayerText:
+      "Ó glorioso Santo Antônio, alcançai por vossa poderosa intercessão a graça que com humilde confiança vos peço (mencionar a intenção). Vós que de menino tivestes nos braços o Menino Jesus, alcançai-me a simplicidade do coração. E se perdi algo importante — um objeto, uma relação, um sentido espiritual, um ente querido afastado da fé — restituí-o, eu vos rogo, segundo a vontade de Deus. Amém.",
+    instructions:
+      "Reze uma vez ao dia durante nove dias, idealmente de 5 a 12 de junho. Variante muito difundida no Brasil: a Trezena de Santo Antônio — 13 dias consecutivos antes da festa (de 1 a 13 de junho). Estrutura: (1) Sinal da Cruz; (2) trecho do responsório antoniano («Se buscas milagres…»); (3) a oração; (4) treze Pai-Nossos, Ave-Marias e Glórias; (5) mencione a intenção. Para objetos perdidos: invocação curta «Santo Antônio, ajudai-me». Para encontrar matrimônio, treze Ave-Marias adicionais. Tradição brasileira: o «Pão de Santo Antônio» — dar aos pobres o equivalente de um pãozinho cada dia.",
+    patronSaint: "Santo Antônio de Pádua",
+    feastDay: "13 de junho",
+    source: "CNBB + Vatican.va Português + Pio XII (Doutor da Igreja, 1946) + tradição franciscana brasileira. Retrieved 2026-05-18.",
+    reviewedAt: new Date("2026-05-18"),
+  },
+  {
+    prayerSlug: "novena-st-blaise",
+    name: "Novena a São Brás",
+    description:
+      "São Brás (m. ca. 316) foi bispo de Sebaste na Armênia durante a perseguição de Licínio. Médico antes da ordenação, foi martirizado após eremitismo numa caverna onde animais selvagens lhe traziam comida e iam a ele para serem curados. A lenda mais conhecida: a mãe levou ao santo seu filho que se sufocava com espinha de peixe; São Brás curou-o instantaneamente. Daí ser patrono universal das afecções da garganta, problemas respiratórios e profissionais da voz. A «Bênção das Gargantas» — sacramental em que o sacerdote impõe duas velas cruzadas na garganta dizendo «Por intercessão de São Brás, bispo e mártir, Deus te livre do mal da garganta…» — é realizada em quase todas as paróquias brasileiras no dia 3 de fevereiro.",
+    prayerText:
+      "Ó glorioso São Brás, bispo e mártir, alcançai-me por vossa intercessão a graça que com confiança filial vos peço (mencionar a intenção). Vós que libertastes o menino da asfixia com a sola força da bênção, livrai do mal aquele por quem rezo. Padroeiro dos que sofrem na garganta e na respiração, intercedei por todos os enfermos de câncer de garganta, tireoide, cordas vocais ou pulmões. São Brás, rogai por nós. Amém.",
+    instructions:
+      "Reze nove dias consecutivos, idealmente de 25 de janeiro a 2 de fevereiro. Estrutura: (1) Sinal da Cruz; (2) ato de fé na providência sobre a saúde; (3) a oração; (4) Pai-Nosso, Ave-Maria e Glória; (5) mencione a intenção. A tradição recomenda assistir à Missa de 3 de fevereiro e receber a Bênção das Gargantas com as duas velas cruzadas. Em muitas paróquias brasileiras, são também abençoados pães e frutas naquele dia.",
+    patronSaint: "São Brás (patrono das afecções da garganta)",
+    feastDay: "3 de fevereiro",
+    source: "CNBB + Vatican.va Português + tradição da Bênção das Gargantas no Brasil + Acta Sanctorum. Retrieved 2026-05-18.",
+    reviewedAt: new Date("2026-05-18"),
+  },
+  {
+    prayerSlug: "novena-st-catherine-siena",
+    name: "Novena a Santa Catarina de Sena",
+    description:
+      "Santa Catarina de Sena (Caterina Benincasa, 1347-1380) — uma das quatro mulheres Doutoras da Igreja e copadroeira da Europa — é uma das figuras espirituais mais extraordinárias do século XIV. Aos seis anos teve sua primeira visão de Cristo; aos sete fez voto privado de virgindade. Aos dezoito entrou como mantelata na Terceira Ordem Dominicana. Mística, terciária, conselheira espiritual e diplomata, foi central durante o Cisma do Papado de Avignon: com suas cartas e presença pessoal em Avignon em 1376 convenceu o Papa Gregório XI a voltar a Roma. Seu Diálogo da Divina Providência, ditado durante êxtase prolongado, é um dos grandes textos místicos católicos. Recebeu estigmas invisíveis. Morreu aos 33 anos. Canonizada por Pio II em 1461, Doutora da Igreja pelo Beato Paulo VI em 1970, copadroeira da Europa por São João Paulo II em 1999. No Brasil, a devoção dominicana tem profunda história desde o século XVIII. A novena é apropriada para unidade da Igreja, fortaleza na oração contemplativa, coragem para falar verdade aos poderes.",
+    prayerText:
+      "Ó gloriosa Santa Catarina de Sena, virgem mística e Doutora da Igreja, alcançai por vossa intercessão a graça que com confiança filial vos peço (mencionar a intenção). Vós que tivestes a audácia de escrever ao Papa e aos reis de vosso tempo em nome de Cristo, alcançai-nos a coragem de proclamar a verdade evangélica sem medo. E por vossa intercessão, defendei a Igreja de seus inimigos e conservai nela a unidade e a santidade. Amém.",
+    instructions:
+      "Reze nove dias consecutivos, idealmente de 21 a 29 de abril. Estrutura: (1) Sinal da Cruz; (2) trecho breve do Diálogo da Divina Providência; (3) a oração; (4) Pai-Nosso, Ave-Maria e Glória; (5) mencione a intenção. Para a Igreja em crise, combine com jejum semanal e oração do Salmo 51. Para perseverança vocacional, leitura das Cartas de Catarina.",
+    patronSaint: "Santa Catarina de Sena, OP",
+    feastDay: "29 de abril",
+    source: "CNBB + Vatican.va Português (Paulo VI Doutora 1970; JPII copadroeira 1999) + Diálogo + Ordem Dominicana brasileira. Retrieved 2026-05-18.",
+    reviewedAt: new Date("2026-05-18"),
+  },
+  {
+    prayerSlug: "novena-st-christopher",
+    name: "Novena a São Cristóvão",
+    description:
+      "São Cristóvão (Christophoros, «o portador de Cristo») é um dos santos mais populares da tradição católica universal e o patrono dos viajantes. A hagiografia tradicional o apresenta como um gigante que servia a Cristo carregando viajantes através de um rio perigoso. Uma noite, um menino pediu para ser levado ao outro lado: durante a travessia o menino tornou-se cada vez mais pesado, até que ao chegar à outra margem se revelou como Cristo. Assim São Cristóvão tornou-se figura do cristão que «carrega a Cristo» na vida cotidiana. No Brasil, a devoção a São Cristóvão como padroeiro dos motoristas é especialmente forte: medalhas no carro, bênção de veículos no dia 25 de julho (festa de São Cristóvão), e oração antes das viagens.",
+    prayerText:
+      "Ó glorioso São Cristóvão, gigante de força e fé, que com vosso próprio corpo carregastes o Menino Jesus através do rio da vida, alcançai-me por vossa intercessão a graça que com confiança filial vos peço (mencionar a intenção). Protegei-me e a quem amo em toda viagem e em todo deslocamento; e alcançai-nos sobretudo a graça de não nos perdermos jamais do Caminho que é Cristo mesmo. Amém.",
+    instructions:
+      "Reze nove dias consecutivos, idealmente de 17 a 25 de julho. Estrutura: (1) Sinal da Cruz; (2) breve evocação de Cristóvão carregando o Menino Jesus; (3) a oração; (4) Pai-Nosso, Ave-Maria e Glória pelos viajantes; (5) mencione a intenção. Antes de uma viagem concreta: combine com bênção do veículo na paróquia (todas as paróquias brasileiras fazem em 25 de julho) e medalha de São Cristóvão no carro como sacramental. Para motoristas profissionais (taxistas, motoristas de aplicativo, caminhoneiros), a novena anual é prática devocional apropriada.",
+    patronSaint: "São Cristóvão (padroeiro dos viajantes e motoristas)",
+    feastDay: "25 de julho",
+    source: "CNBB + Lenda Áurea de Tiago de Voragine + tradição brasileira da bênção de veículos. Retrieved 2026-05-18.",
+    reviewedAt: new Date("2026-05-18"),
+  },
+  {
+    prayerSlug: "novena-st-joseph-cupertino",
+    name: "Novena a São José de Cupertino",
+    description:
+      "São José de Cupertino (Giuseppe Maria Desa, 1603-1663) — frade menor conventual italiano — é o patrono dos estudantes, exames difíceis, aspirantes a vida sacerdotal e religiosa, pilotos e astronautas. Sua biografia é uma das mais surpreendentes da hagiografia: padecia de grande lentidão mental, foi rejeitado várias vezes em ordens religiosas, e finalmente aceito pelos franciscanos conventuais em 1625. Durante seus exames de ordenação recebeu por providência a única matéria que conhecia bem. Mais extraordinárias foram suas levitações extáticas, documentadas por dezenas de testemunhas: quando entrava em contemplação durante a Missa, seu corpo elevava-se do chão por minutos ou horas. Canonizado por Clemente XIII em 1767. A novena é a oração por excelência para estudantes ante exames, decisões acadêmicas, ou vocações humanamente impossíveis.",
+    prayerText:
+      "Ó glorioso São José de Cupertino, vós que conhecestes a humilhação de não poder aprender o que outros aprendiam facilmente — alcançai-me por vossa intercessão a graça que com confiança vos peço (mencionar a intenção). Se sou estudante diante de um exame difícil, alcançai-me luz, memória e calma. São José de Cupertino, rogai por nós. Amém.",
+    instructions:
+      "Reze nove dias consecutivos, idealmente de 9 a 17 de setembro. Para exame específico, comece nove dias antes. Estrutura: (1) Sinal da Cruz; (2) ato de humildade; (3) a oração; (4) Pai-Nosso, Ave-Maria e Glória; (5) mencione a intenção. Jaculatória diária: «São José de Cupertino, ajudai-me no meu exame». Para pais que rezam por filhos com dificuldades de aprendizagem (incluindo dislexia, TDAH), a devoção é particularmente apropriada.",
+    patronSaint: "São José de Cupertino, OFMConv",
+    feastDay: "18 de setembro",
+    source: "CNBB + Vatican.va Português (Clemente XIII, 1767) + Ordem Franciscana Conventual. Retrieved 2026-05-18.",
+    reviewedAt: new Date("2026-05-18"),
+  },
+  {
+    prayerSlug: "novena-st-martin-de-porres",
+    name: "Novena a São Martinho de Porres",
+    description:
+      "São Martinho de Porres (Martín de Porres Velázquez, 1579-1639) — o primeiro santo mulato canonizado da Igreja católica — foi frade dominicano peruano, filho de um nobre espanhol e de uma mulher panamenha liberta. A discriminação racial que sofreu desde a infância marcou toda a sua vida, mas transformou-a em virtude heroica. Entrou como donado no convento dominicano de Lima aos quinze anos e exerceu como barbeiro-enfermeiro por mais de cinquenta anos. Sua biografia inclui bilocações documentadas (visto em África e Japão estando em Lima), curas espetaculares (de leprosos, escravos negros, índios e espanhóis indistintamente), e o domínio sobre animais (a imagem icônica de Martinho comendo na mesma mesa com um cão, um gato e um rato). Canonizado por São João XXIII em 1962. No Brasil, é venerado especialmente nas comunidades afrodescendentes e em paróquias dominicanas. Apropriada para saúde, harmonia inter-racial, pobres, e conversão das próprias divisões sociais.",
+    prayerText:
+      "Ó glorioso São Martinho de Porres, servo humilde dos pobres, curador dos enfermos e amigo dos animais, alcançai por vossa intercessão a graça que com confiança filial vos peço (mencionar a intenção). Vós que conhecestes na própria pele a dor da discriminação racial e a transformastes em mansidão e serviço, alcançai-nos a graça de não responder ao desprezo com desprezo, e a cura das divisões de raça, classe e nação que ainda ferem a Igreja e o mundo. Amém.",
+    instructions:
+      "Reze nove dias consecutivos, de 25 de outubro a 2 de novembro. Estrutura: (1) Sinal da Cruz; (2) ato de humildade; (3) a oração; (4) Pai-Nosso, Ave-Maria e Glória; (5) mencione a intenção. Tradições brasileiras: (a) bênção dos animais no dia da festa (3 de novembro); (b) cuidado concreto de um pobre, enfermo ou animal abandonado durante os nove dias; (c) exame sincero sobre as próprias atitudes raciais ou classistas. A devoção é especialmente apropriada para católicos negros, mestiços e indígenas brasileiros.",
+    patronSaint: "São Martinho de Porres, OP",
+    feastDay: "3 de novembro",
+    source: "CNBB + Vatican.va Português (São João XXIII, 1962) + Província Dominicana do Peru + tradição afrobrasileira católica. Retrieved 2026-05-18.",
+    reviewedAt: new Date("2026-05-18"),
+  },
+  {
+    prayerSlug: "novena-st-monica",
+    name: "Novena a Santa Mônica",
+    description:
+      "Santa Mônica (332-387) — mãe de Santo Agostinho — é a padroeira universal das mães que oram pela conversão de filhos adultos afastados da fé. Casada com um pagão violento chamado Patrício, converteu-o através da paciência e oração. Mas o sofrimento mais longo de sua vida foi seu filho Agostinho — brilhante orador, entregue durante dezessete anos às paixões da juventude, ao maniqueísmo e a uma relação irregular. Mônica orou por seu filho durante esses dezessete anos sem desfalecer. Santo Ambrósio de Milão disse-lhe: «É impossível que o filho de tantas lágrimas se perca». Agostinho converteu-se na Páscoa de 387. Mônica morreu poucas semanas depois, no porto de Óstia. Canonizada no século XIV. A novena é a oração por excelência para pais que oram pela conversão de filhos adultos.",
+    prayerText:
+      "Ó gloriosa Santa Mônica, mãe chorosa e fiel, vós que durante dezessete anos não cessastes de rogar por vosso filho Agostinho até vê-lo voltado a Cristo, alcançai-me por vossa intercessão a graça que com confiança filial vos peço (mencionar a intenção, especialmente por um filho afastado da fé). Concedei-me a paciência que tivestes, as lágrimas que chorastes, e sobretudo a confiança inquebrável de que «é impossível que o filho de tantas lágrimas se perca». Santa Mônica, mãe de Agostinho, rogai por nós. Amém.",
+    instructions:
+      "Reze nove dias consecutivos, de 18 a 26 de agosto em preparação à festa de 27 de agosto (e a Santo Agostinho, seu filho, em 28 de agosto). Estrutura: (1) Sinal da Cruz; (2) trecho das Confissões de Santo Agostinho (Livro IX); (3) a oração; (4) Pai-Nosso, Ave-Maria e Glória; (5) mencione o nome específico. Para conversão de filho adulto, combine com: (a) confissão e Comunhão semanal pelo filho; (b) Missa oferecida pela intenção; (c) leitura das Confissões; (d) abstenção de pressionar ou discutir com o filho durante a novena. A novena pode repetir-se cada ano por todos os anos necessários.",
+    patronSaint: "Santa Mônica",
+    feastDay: "27 de agosto",
+    source: "CNBB + Vatican.va Português + Santo Agostinho, Confissões (livros III, VI, IX) + tradição agostiniana brasileira. Retrieved 2026-05-18.",
+    reviewedAt: new Date("2026-05-18"),
+  },
+  {
+    prayerSlug: "offering-suffering",
+    name: "Oferecer o Sofrimento (Sofrimento Redentor)",
+    description:
+      "Oferecer o sofrimento — a prática católica de unir o próprio sofrimento físico, emocional ou espiritual à cruz de Cristo em intenção reparadora — é uma das espiritualidades mais profundas da tradição católica. Não é masoquismo nem indiferença ao sofrimento. É a verdade teológica de que o sofrimento humano, quando unido voluntariamente ao sofrimento de Cristo, participa na economia da salvação. São Paulo formulou-a em Colossenses 1,24: «Completo na minha carne o que falta aos sofrimentos de Cristo, pelo bem do seu Corpo, que é a Igreja». São João Paulo II, em Salvifici Doloris (1984), aprofundou-a: o sofrimento ofertado torna-se oração eficaz.",
+    prayerText:
+      "Senhor Jesus Cristo, ofereço-vos hoje todas as dores que me hão de vir — as conhecidas e as desconhecidas, as do corpo, as da alma e as do coração. Uni-as à vossa Paixão salvadora, e fazei que sirvam para a conversão dos pecadores, para o alívio das almas do Purgatório, e pela intenção específica que agora vos apresento (mencionar a intenção). Amém.",
+    instructions:
+      "A prática tem dois momentos: (1) **ofertório matinal** — ao despertar, dizer: «Senhor, ofereço-vos as dores e trabalhos deste dia por (a intenção)»; (2) **renovação ao longo do dia** — quando vem uma dor concreta, renovar o ofertório: «Isto também, por (a intenção)». Particularmente apropriado para doentes crônicos, em luto prolongado ou em situações injustas. Empareja-se com: (a) devoção do Sagrado Coração; (b) Adoração Eucarística; (c) Salvifici Doloris (leitura semanal). Para sofrimento grave (câncer terminal, perda de filho), buscar direção espiritual.",
+    patronSaint: "Cristo Crucificado · Nossa Senhora das Dores",
+    feastDay: "Sexta-feira Santa",
+    source: "CNBB + Vatican.va Português (Salvifici Doloris, JPII 1984) + Catecismo §§ 1500-1532. Retrieved 2026-05-18.",
+    reviewedAt: new Date("2026-05-18"),
+  },
+  {
+    prayerSlug: "prayer-discernment",
+    name: "Oração para o Discernimento",
+    description:
+      "A oração para o discernimento é a prática católica de pedir a luz de Deus para uma decisão importante. A tradição ensina que o discernimento não é simples escolha racional, mas busca ativa da vontade concreta de Deus. São Inácio de Loyola, nos Exercícios Espirituais (1548), sistematizou as regras do discernimento de espíritos, distinguindo entre «bom espírito» (consolação, paz duradoura) e «mau espírito» (desolação, agitação, medo). O Papa Francisco fez do discernimento um tema central de seu pontificado (Amoris Laetitia 2016; catequeses de 2022). A oração não substitui a consulta humana — bom senso, conselho de confessor, opinião de pessoas sábias — mas a enquadra em confiança filial.",
+    prayerText:
+      "Senhor meu Deus, suplico-vos humildemente a luz para discernir o que me pedis. Meu coração está cheio de inquietação e de muitas vozes; preciso da vossa voz. Afastai de mim o ruído do medo, o atrativo do conforto e a força do orgulho, e dai-me os olhos para ver com o olhar de Cristo. Confio, Senhor, em que me levais com providência paterna pelo caminho que me leva a vós. Amém.",
+    instructions:
+      "Três etapas inacianas: (1) **indiferença inicial** — pedir a graça de não estar mais ligado a uma opção que a outra; (2) **ponderação** — estudar consequências e notar movimentos interiores; (3) **confirmação** — oferecer a decisão tentativa a Deus em oração por dias e notar se a paz duradoura a confirma. A oração pode rezar-se: (a) diariamente durante discernimento estendido; (b) como novena específica de nove dias ao Espírito Santo; (c) em Hora de Adoração Eucarística.",
+    patronSaint: "Espírito Santo · Santo Inácio de Loyola",
+    feastDay: "31 de julho (Santo Inácio)",
+    source: "CNBB + Vatican.va Português + Santo Inácio de Loyola, Exercícios Espirituais + catequeses do Papa Francisco (2022). Retrieved 2026-05-18.",
+    reviewedAt: new Date("2026-05-18"),
+  },
+  {
+    prayerSlug: "prayer-fertility",
+    name: "Oração pela Fertilidade",
+    description:
+      "A oração católica pela fertilidade — para casais que desejam conceber e não conseguem — tem raízes bíblicas profundas. A Escritura está cheia de casamentos estéreis a quem Deus concede filhos em resposta à oração perseverante: Sara e Abraão, Rebeca e Isaque, Raquel e Jacó, Ana e Elcana, Isabel e Zacarias. O padrão é consistente: longa espera de oração seguida do dom de Deus. A Igreja católica ensina que a fertilidade é dom recebido com gratidão, e que a esterilidade não é castigo. A oração não exclui a busca médica responsável (NaProTechnology respeita a moral católica); nem exclui a adoção; mas exclui as técnicas que separam a geração do ato conjugal (a fecundação in vitro está excluída pela enseñanza moral). Patronos: Santa Ana e São Joaquim, São Gerardo Majella, Santa Isabel.",
+    prayerText:
+      "Senhor Jesus, autor de toda a vida, suplicamos-vos com humilde confiança o dom de um filho. Vós conheceis nossa espera, nossas lágrimas. Concedei-nos, se for vossa vontade, a fecundidade biológica que pedimos; e se não for, alcançai-nos outro caminho de paternidade e maternidade — a adoção, o cuidado dos filhos de outros, a geração espiritual de tantas vidas na vossa Igreja. Santa Ana, avó do Senhor, rogai por nós. São Gerardo Majella, padroeiro dos embarazos, rogai por nós. Maria, Mãe do Menino Jesus, sede nossa Mãe nesta espera. Amém.",
+    instructions:
+      "A oração pode rezar-se como prática diária ou como novena específica (nove dias a Santa Ana, São Gerardo ou ambos). Estrutura: (1) Sinal da Cruz; (2) ato de aceitação da vontade de Deus; (3) a oração; (4) um mistério do Rosário (gozosos); (5) mencione a intenção. Tradições brasileiras: (a) peregrinação a Aparecida em oração pela fecundidade; (b) medalhas de São Gerardo e Santa Ana; (c) oração em casal, não individual. Para casais em tratamento médico: verificar alinhamento com a moral católica; abertura à adoção.",
+    patronSaint: "Santa Ana e São Joaquim · São Gerardo Majella",
+    feastDay: "26 de julho",
+    source: "CNBB + Vatican.va Português (Donum Vitae CDF 1987; Dignitas Personae 2008) + Catecismo §§ 2373-2379. Retrieved 2026-05-18.",
+    reviewedAt: new Date("2026-05-18"),
+  },
+  {
+    prayerSlug: "prayer-financial-hardship",
+    name: "Oração na Dificuldade Econômica",
+    description:
+      "A oração católica na dificuldade econômica tem vários patronos: São José (padroeiro dos trabalhadores), Santo Antônio (invocado pelos pobres), Santa Marta (administração doméstica). A oração não substitui a responsabilidade humana: o cristão que reza em dificuldade econômica também busca trabalho ativamente, controla os gastos e busca ajuda profissional. Mas a oração enquadra a dificuldade na providência paterna de Deus: «não vos preocupeis com a vida… vosso Pai celestial sabe que precisais de tudo isso» (Mateus 6,25.32). O sofrimento financeiro é dos mais reais e dolorosos da vida humana.",
+    prayerText:
+      "Pai celestial, que provedes aos lírios do campo e às aves do céu, olhai com misericórdia para vossa família nesta hora de dificuldade econômica. Concedei-me a sabedoria para administrar o pouco que tenho, a coragem para pedir ajuda, a humildade para aceitar a ajuda oferecida, e a perseverança para buscar o trabalho que há de vir. São José operário, rogai por nós. Santo Antônio de Pádua, rogai por nós. E, sobretudo, Padre Nosso, dai-nos hoje o pão de cada dia. Amém.",
+    instructions:
+      "Reze como prática diária ou novena (nove dias a São José ou Santo Antônio). Estrutura: (1) Sinal da Cruz; (2) ato de confiança; (3) a oração; (4) três Ave-Marias a Nossa Senhora da Divina Providência; (5) mencione a dificuldade com honestidade. Para desemprego: novena a São José Operário (22 a 30 de abril). Para dívidas: confissão sacramental, Salmo 37, parábolas evangélicas sobre administração prudente. Ações práticas: aconselhamento financeiro profissional (Cáritas oferece serviços gratuitos no Brasil), pedir ajuda à paróquia, reduzir gastos não-essenciais, um pequeno ato de caridade durante a dificuldade.",
+    patronSaint: "São José · Santo Antônio · Santa Marta",
+    feastDay: "19 de março (São José) · 1° de maio (São José Operário)",
+    source: "CNBB + Vatican.va Português + Catecismo §§ 2402-2406 + Caritas in Veritate (Bento XVI 2009). Retrieved 2026-05-18.",
+    reviewedAt: new Date("2026-05-18"),
+  },
+  {
+    prayerSlug: "prayer-happy-death",
+    name: "Oração por uma Boa Morte",
+    description:
+      "A oração por uma boa morte — pela graça de morrer em estado de graça, com os sacramentos recebidos (especialmente a Unção dos Enfermos e o Viático), em paz interior, com tempo para perdoar e pedir perdão, e com esperança firme do céu — é uma prática católica tradicional. A morte é a última grande prova espiritual da vida. São José (que morreu nos braços de Jesus e Maria) é o padroeiro da boa morte por excelência. Santo Afonso Maria de Ligório escreveu a obra Preparação para a Morte. A oração não é mórbida; é realista: cada cristão deve morrer, e orar por morrer bem é fazer-se responsável pelo próprio destino eterno.",
+    prayerText:
+      "Ó Senhor Jesus, em cujas mãos vós entregastes o espírito ao morrer, suplico-vos a graça de uma boa morte. Concedei-me morrer em estado de graça, reconciliado com vós e com todos os que ofendi. Concedei-me receber os sacramentos da confissão, da Comunhão e da Unção dos Enfermos antes do meu último suspiro. Livrai-me da morte súbita, da morte imprevista, da morte ímpia. Amém. São José, padroeiro da boa morte, rogai por nós. Santa Maria, rogai por nós agora e na hora da nossa morte. Amém.",
+    instructions:
+      "A oração pode rezar-se: (a) como prática periódica — no final de cada dia, antes do exame de consciência; (b) em cada aniversário ou no aniversário do falecimento de um familiar; (c) em hospitais; (d) acompanhando um moribundo. Para familiar enfermo, novena de São José (11 a 19 de março). Grandes disciplinas que preparam à boa morte: (a) confissão regular (mensal); (b) Comunhão frequente; (c) Unção dos Enfermos no início de doença grave (NÃO esperar o último momento); (d) preparação do próprio funeral em termos católicos.",
+    patronSaint: "São José · Santa Maria",
+    feastDay: "19 de março (São José)",
+    source: "CNBB + Vatican.va Português + Santo Afonso Maria de Ligório, Preparação para a Morte + Catecismo §§ 1010-1014. Retrieved 2026-05-18.",
+    reviewedAt: new Date("2026-05-18"),
+  },
+  {
+    prayerSlug: "prayer-healing",
+    name: "Oração pela Cura",
+    description:
+      "A oração pela cura é uma das práticas devocionais católicas mais fundamentais. A Escritura registra Jesus curando inúmeros enfermos no seu ministério público, e o sacramento da Unção dos Enfermos continua hoje essa missão curativa. A Igreja católica distingue três formas de cura: (1) sacramental (Unção dos Enfermos); (2) carismática (oração de creyente ou comunidade); (3) por intercessão de santo (Lourdes, Aparecida, Fátima, São Peregrino para câncer, etc.). A oração não é mágica: é petição filial, dirigida ao Pai por meio de Cristo com a mediação dos santos.",
+    prayerText:
+      "Senhor Jesus, médico de corpos e de almas, suplicamos-vos por (mencionar o nome e a doença) a graça da cura. Vós que curastes a tantos durante vosso ministério terreno, estendei vossa mão curadora hoje. Se for vossa vontade, restaurai a saúde do corpo; e se não, restaurai a saúde da alma, dando paciência na dor, fortaleza no tratamento, esperança no futuro. Maria, Saúde dos Enfermos, rogai por nós. São Peregrino, padroeiro dos enfermos de câncer, rogai por nós. Amém.",
+    instructions:
+      "A oração pode rezar-se: (a) por si próprio, combinada com confissão, Comunhão e Unção dos Enfermos; (b) por familiar ou amigo enfermo, idealmente em sua presença, com imposição de mãos se a situação permitir (prática bíblica, Marcos 16,18); (c) em comunidade. Para doenças específicas: São Peregrino para câncer, Santa Luzia para vista, São Brás para garganta. Acompanhe com tratamento médico responsável, sacramentos, Unção dos Enfermos no início (não no último momento), peregrinação a Aparecida quando possível.",
+    patronSaint: "Cristo, Médico Divino · Maria, Saúde dos Enfermos",
+    feastDay: "11 de fevereiro (Nossa Senhora de Lourdes)",
+    source: "CNBB + Vatican.va Português (Salvifici Doloris, JPII 1984) + Ritual da Unção dos Enfermos + Catecismo §§ 1499-1532. Retrieved 2026-05-18.",
+    reviewedAt: new Date("2026-05-18"),
+  },
+  {
+    prayerSlug: "prayer-marriage",
+    name: "Oração pelo Matrimônio",
+    description:
+      "A oração pelo matrimônio — pela própria vocação matrimonial, pelo próprio matrimônio se já vivido, por um matrimônio em crise, ou pela santidade dos casamentos — é prática devocional fundamental na espiritualidade familiar católica. A Igreja ensina que o matrimônio sacramental é um dos sete sacramentos (Mateus 19,6: «o que Deus uniu, não separe o homem»). São João Paulo II elaborou a teología do matrimônio em Familiaris Consortio (1981) e na Teologia do Corpo. O Papa Francisco continuou em Amoris Laetitia (2016). A oração reconhece que o amor conjugal não é proeza natural dos esposos, mas dom de Deus que requer ser pedido, cuidado e renovado.",
+    prayerText:
+      "Senhor Deus, autor do matrimônio, que no princípio criastes o homem e a mulher à vossa imagem, e em Caná da Galileia revelastes a dignidade sacramental do amor conjugal, suplico-vos por (mencionar a intenção). Concedei-nos o dom do amor que é paciente, serviçal, não invejoso (1 Cor 13). Concedei-nos a fidelidade, a paciência, a generosidade, e a abertura aos filhos como Vós os queirais enviar. São José e Santa Maria, rogai por nós. Amém.",
+    instructions:
+      "A oração pode rezar-se em casal (cada noite antes de dormir, em voz alta ou em silêncio compartilhado), individualmente ou em família. Estrutura: (1) Sinal da Cruz; (2) breve gratidão pelos dons do matrimônio; (3) a oração; (4) uma dezena do Rosário (gozosos: Anunciação, Visitação, Bodas de Caná); (5) ato de reconciliação se necessário. Para matrimônios em crise: Missa pela reconciliação, consulta com sacerdote ou terapeuta católico, novena à Sagrada Família, retiros de Casamentos Worldwide. A tradição ensina que o matrimônio é vocação tão exigente como a consagrada.",
+    patronSaint: "Sagrada Família · São José e Santa Maria",
+    feastDay: "Domingo na Oitava do Natal (Sagrada Família)",
+    source: "CNBB + Vatican.va Português (Familiaris Consortio 1981; Amoris Laetitia 2016) + Catecismo §§ 1601-1666. Retrieved 2026-05-18.",
+    reviewedAt: new Date("2026-05-18"),
+  },
+  {
+    prayerSlug: "prayer-safe-travel",
+    name: "Oração por uma Viagem Segura",
+    description:
+      "A oração católica por uma viagem segura é prática devocional muito antiga. São Cristóvão, padroeiro universal dos viajantes (pela lenda do rio), é o santo invocado por antonomásia. O Anjo Custódio pessoal é também companheiro em todo deslocamento. A prática devocional brasileira inclui: a oração antes de partir, a bênção do veículo na festa de São Cristóvão (25 de julho), a medalha de São Cristóvão no automóvel. Não é supersticiosa quando se entende corretamente: não transforma o viagem perigoso em seguro automático, mas coloca-a sob a providência de Deus e dissuade tanto a imprudência como o medo paralisante.",
+    prayerText:
+      "Senhor Deus, Pai todo-poderoso, que vigias com olho paterno teus filhos no caminho, encomenda-me à tua proteção durante esta viagem. Afasta de mim os perigos do corpo, acidentes, avarias mecânicas, condutores imprudentes, animais na estrada, inclemências do tempo. Envia o auxílio de teu Santo Anjo Custódio para me guiar e proteger. São Cristóvão, gigante portador de Cristo, rogai por mim. Amém.",
+    instructions:
+      "Rezar antes de cada viagem: (1) ao entrar no veículo, antes de ligar o motor; (2) com Sinal da Cruz; (3) com breve menção da pessoa, destino e motivo; (4) renovada após paradas longas. Para viagens longas: confissão sacramental antes; Missa de despedida se for traslado definitivo; bênção do veículo; Salmo 91 e Rosário durante o trajeto. Para família: oração em voz alta com as crianças. A medalha de São Cristóvão é sacramental, não amuleto.",
+    patronSaint: "São Cristóvão · Santo Anjo Custódio · São Rafael",
+    feastDay: "25 de julho",
+    source: "CNBB + Vatican.va Português + tradição brasileira da bênção de veículos + Salmo 91. Retrieved 2026-05-18.",
+    reviewedAt: new Date("2026-05-18"),
+  },
+  {
+    prayerSlug: "prayer-serenity",
+    name: "Oração da Serenidade",
+    description:
+      "A Oração da Serenidade — «Deus, conceda-me a serenidade para aceitar as coisas que não posso mudar, coragem para mudar as coisas que posso, e sabedoria para distinguir uma da outra» — é uma das orações mais universalmente difundidas do cristianismo do século XX. Atribuída ao teólogo protestante Reinhold Niebuhr (1934), foi adoptada por Alcoólicos Anônimos nos anos 1940 e desde então estendeu-se por todo o mundo. A oração não é exclusivamente católica — é genuinamente ecumênica — mas a Igreja católica incorporou-a com naturalidade porque coincide com a espiritualidade clássica do «abandono na divina providência» (Jean-Pierre de Caussade). É particularmente apropriada para situações em que o cristão enfrenta circunstâncias que não pode modificar.",
+    prayerText:
+      "Deus, conceda-me a serenidade para aceitar as coisas que não posso mudar, a coragem para mudar as coisas que posso, e a sabedoria para distinguir uma da outra. Vivendo um dia de cada vez, aproveitando um momento de cada vez, aceitando as dificuldades como caminho para a paz; recebendo, como Jesus o fez, este mundo de pecado tal como é, e não como eu gostaria que fosse; confiando que Tu farás bem todas as coisas, se eu me entregar à Tua vontade. Amém.",
+    instructions:
+      "Reze: (a) como oração diária matinal, especialmente para programas de recuperação (AA, NA, Al-Anon); (b) em momentos de angústia aguda; (c) em reuniões de grupos de doze passos; (d) em momentos de perda ou crise. A forma curta (as primeiras três linhas) é facilmente memorizável; a forma estendida adiciona o contexto cristão explícito. Acompanhe com: (a) Salmo 23 ou 131; (b) confiança na divina providência (Mt 6,25-34); (c) confissão sacramental se a oração revelar pecado próprio que pode mudar-se; (d) ação concreta para o que pode mudar.",
+    patronSaint: "Cristo, Príncipe da Paz",
+    feastDay: "Último domingo do Tempo Comum (Cristo Rei)",
+    source: "CNBB + Reinhold Niebuhr (1934) + AA Brasil + tradição católica do abandono (Jean-Pierre de Caussade). Retrieved 2026-05-18.",
+    reviewedAt: new Date("2026-05-18"),
+  },
+  {
+    prayerSlug: "prayer-st-francis",
+    name: "Oração Atribuída a São Francisco (Senhor, Fazei-me Instrumento de Vossa Paz)",
+    description:
+      "A Oração Atribuída a São Francisco — mais conhecida como «Senhor, fazei-me instrumento de vossa paz» — é uma das orações cristãs mais célebres do século XX. Apesar da atribuição tradicional a São Francisco de Assis, a composição específica não aparece nos escritos conhecidos do santo; sua forma atual foi publicada pela primeira vez no periódico católico francês La Clochette em 1912, atribuída anonimamente. Desde então tem sido recitada por Madre Teresa, São João Paulo II, o Papa Francisco e milhões de cristãos. Expressa a espiritualidade franciscana: o cristão se oferece como mediador do amor de Deus ao mundo ferido. O Papa Francisco escolheu o nome Francisco em parte por essa espiritualidade da pacificação e do cuidado dos pobres.",
+    prayerText:
+      "Senhor, fazei-me um instrumento de vossa paz: onde houver ódio, que eu leve o amor; onde houver ofensa, que eu leve o perdão; onde houver discórdia, que eu leve a união; onde houver dúvida, que eu leve a fé; onde houver erro, que eu leve a verdade; onde houver desespero, que eu leve a esperança; onde houver tristeza, que eu leve a alegria; onde houver trevas, que eu leve a luz. Ó Mestre, fazei que eu procure mais consolar que ser consolado; compreender que ser compreendido; amar que ser amado. Pois é dando que se recebe, é perdoando que se é perdoado, e é morrendo que se vive para a vida eterna. Amém.",
+    instructions:
+      "Reze: (a) como oração diária matinal; (b) antes de uma conversa difícil, mediação ou reunião tensa; (c) após uma ofensa recebida, como ato explícito de perdão. Estrutura recomendada: Sinal da Cruz; breve silêncio; a oração rezada devagar, deixando cada antítese ser plenamente verbalizada; pausa de silêncio antes do Amém. Para franciscanos seculares: leitura do Cantico das Criaturas, das Florinhas, prática de pobreza voluntária, bênção dos animais no 4 de outubro. No Brasil, a oração é parte do patrimônio espiritual nacional.",
+    patronSaint: "São Francisco de Assis",
+    feastDay: "4 de outubro",
+    source: "CNBB + Vatican.va Português + La Clochette (1912) + Tradição franciscana brasileira. Retrieved 2026-05-18.",
+    reviewedAt: new Date("2026-05-18"),
+  },
+  {
+    prayerSlug: "psalm-23",
+    name: "Salmo 23 (O Senhor é meu Pastor)",
+    description:
+      "O Salmo 23 — «O Senhor é meu pastor, nada me faltará» — é um dos salmos mais amados da Escritura, atribuído ao rei David. Sua imagem central — a do Senhor que apascenta seu povo como pastor que cuida das ovelhas, levando-as a pastos verdes, a águas tranquilas, e guardando-as «ainda que ande pelo vale tenebroso» — recolhe uma das imagens mais profundas da teologia bíblica. Cristo aplicou a si próprio a imagem do Bom Pastor (Jo 10,11). O salmo reza-se tradicionalmente em momentos de luto (os funerais católicos o incluem sempre), em provas ou medo, em leitos de enfermos terminais, e como confissão cotidiana de confiança.",
+    prayerText:
+      "O Senhor é meu pastor, nada me faltará. Em verdes prados me faz repousar; conduz-me às águas tranquilas e refresca minha alma. Guia-me por sendas retas pelo amor do seu Nome. Ainda que eu ande pelo vale tenebroso, nenhum mal temerei, porque tu estás comigo: tua vara e teu cajado me consolam. Preparas-me uma mesa diante de meus adversários; unges com óleo minha cabeça, e meu cálice transborda. Bondade e graça me acompanham todos os dias da minha vida, e habitarei na casa do Senhor para sempre. (Salmo 23, tradução litúrgica da CNBB)",
+    instructions:
+      "Pode rezar-se: (a) como oração diária, especialmente no início e fim do dia; (b) em provas ou medo, devagar; (c) ante um funeral ou luto recente; (d) ante enfermo grave; (e) como meditação na Lectio Divina. A Liturgia das Horas inclui-o em diferentes posições. Memorize-o; cabe em uma só leitura atenta. A tradução litúrgica da CNBB é a mais usada no Brasil. Tradição brasileira: rezá-lo cada noite antes de dormir, no início de uma viagem, ou em ação de graças.",
+    patronSaint: "Cristo, Bom Pastor · Rei David",
+    feastDay: "Quarto Domingo da Páscoa (Bom Pastor)",
+    source: "CNBB + Sagrada Bíblia, tradução litúrgica da CNBB + Liturgia das Horas + Tradição patrística (Santo Agostinho). Retrieved 2026-05-18.",
+    reviewedAt: new Date("2026-05-18"),
+  },
+  {
+    prayerSlug: "psalm-91",
+    name: "Salmo 91 (Aquele que habita ao abrigo do Altíssimo)",
+    description:
+      "O Salmo 91 — «Aquele que habita ao abrigo do Altíssimo morará à sombra do Onipotente» — é o grande salmo bíblico da proteção divina. A tradição associou-o tão fortemente à luta contra os demônios e à proteção espiritual que se reza em cada Completas (oração noturna da Liturgia das Horas) no sábado, e é parte do rito tradicional dos exorcismos. O salmo enuncia as promessas mais radicais da proteção de Deus sobre quem confia n'Ele. As imagens — entendidas espiritualmente — descrevem a proteção sobre o cristão que se acolhe sob a providência divina. É citado pelo próprio demônio na terceira tentação de Cristo (Mt 4,6). A tradição reza-o ante perigos físicos e espirituais, e como proteção da família.",
+    prayerText:
+      "Aquele que habita ao abrigo do Altíssimo morará à sombra do Onipotente. Direi ao Senhor: «Meu refúgio e fortaleza meu, meu Deus, em quem confio». Ele te livrará do laço do caçador e da peste mortífera. Com suas penas te cobrirá, e debaixo de suas asas hallarás refúgio. Não temerás os terrores da noite, nem a flecha que voa de dia, nem a peste que avança nas trevas, nem a praga que devasta ao meio-dia. Caem mil à tua esquerda e dez mil à tua direita, mas a ti não chegará. A seus anjos deu ordens para que te guardem em todos os teus caminhos. (Salmo 91, tradução litúrgica da CNBB)",
+    instructions:
+      "Pode rezar-se: (a) cada noite antes de dormir, como oração tradicional de Completas; (b) antes de viagem, especialmente longa ou perigosa; (c) em momento de medo ou ataque espiritual; (d) como meditação em provas. A tradição católica recomenda memorizá-lo. Em espiritualidade familiar, reza-se pelas crianças, pelos doentes, pelos que vivem sozinhos. Acompanhe com Ato de Contrição, Sinal da Cruz, Bênção ordinária («Que o Senhor te abençoe e te guarde»). Para asedio espiritual grave, consultar sacerdote sábio.",
+    patronSaint: "São Miguel Arcanjo · todos os Santos Anjos Custódios",
+    feastDay: "29 de setembro · 2 de outubro",
+    source: "CNBB + Sagrada Bíblia, tradução litúrgica da CNBB + Liturgia das Horas + tradição exorcística católica + Mt 4,6. Retrieved 2026-05-18.",
+    reviewedAt: new Date("2026-05-18"),
+  },
+  {
+    prayerSlug: "rosary-for-healing",
+    name: "Rosário pela Cura",
+    description:
+      "O Rosário pela Cura é a prática católica de rezar o Santo Rosário com intenção específica de pedir a Maria, pela intercessão de Cristo Médico Divino, a cura física, emocional ou espiritual de si próprio ou de um ente querido. Os milagres marianos de cura em Lourdes, Aparecida, Fátima sempre estiveram vinculados ao Rosário rezado com fé. O Rosário em si mesmo não é talismã; é meditação contemplativa dos mistérios centrais da fé em companhia de Maria. A cura vem do Pai por meio de Cristo, e Maria é mediadora. A prática é apropriada para doenças graves, doenças crônicas, acidentes recentes, momentos pré-cirúrgicos, tratamentos oncológicos, depressão, ansiedade, e a cura interior após trauma.",
+    instructions:
+      "Reze o Rosário completo (cinco dezenas), idealmente com os mistérios luminosos (que incluem as Bodas de Caná). Para doença prolongada, considere diário durante todo o tratamento. Estrutura: (1) Sinal da Cruz e Credo; (2) Pai-Nosso, três Ave-Marias e Glória (petições iniciais pela cura); (3) cinco dezenas com meditação; (4) Ladainhas da Bem-Aventurada Virgem Maria, incluindo «Saúde dos enfermos, rogai por nós»; (5) Salve. Variantes: para câncer, cinco Pai-Nossos por intercessão de São Peregrino após cada dezena; para sanação emocional, mistérios dolorosos; para relacionamento rompido, mistérios gloriosos. Empareja com sacramentos (Confissão, Comunhão, Unção dos Enfermos) e tratamento médico responsável.",
+    patronSaint: "Maria, Saúde dos Enfermos · Cristo, Médico Divino",
+    feastDay: "7 de outubro (Nossa Senhora do Rosário)",
+    source: "CNBB + Vatican.va Português (Rosarium Virginis Mariae, JPII 2002) + Marialis Cultus (Paulo VI 1974). Retrieved 2026-05-18.",
+    reviewedAt: new Date("2026-05-18"),
+  },
+  {
+    prayerSlug: "seven-sorrows-rosary",
+    name: "Rosário das Sete Dores de Maria",
+    description:
+      "O Rosário das Sete Dores de Maria, também chamado Coroa das Sete Dores ou Rosário Servita, é devoção mariana fundada pela Ordem dos Servitas (Florença, 1233). Medita as Sete Espadas que traspassaram o coração de Maria segundo a profecia de Simeão (Lc 2,35). A estrutura: corona específica de sete grupos (um Pai-Nosso e sete Ave-Marias por grupo), mais três Ave-Marias finais em honra às lágrimas de Maria. Confirmada por Bento XIII em 1727 e aprovada por Pio IX em 1860. É a devoção mariana por excelência para a dor maternal — mães que perderam filhos, esposas que assistem ao leito de marido moribundo, pais que sofrem rebeldia de filho. No Brasil tem profunda tradição na Semana Santa.",
+    instructions:
+      "Precisa de coroa Servita (sete grupos) ou rosário comum contando mentalmente. Estrutura: (1) Sinal da Cruz; (2) **1ª Dor**: profecia de Simeão. Pai-Nosso e sete Ave-Marias; (3) **2ª**: fuga ao Egito; (4) **3ª**: perda no Templo três dias; (5) **4ª**: encontro na via dolorosa; (6) **5ª**: crucificação; (7) **6ª**: Pietà; (8) **7ª**: sepultamento; (9) três Ave-Marias finais; (10) oração tradicional Servita. Tradições brasileiras: rezar nas sextas (dia da Paixão); durante a Quaresma; na Sexta-feira Santa e Sábado Santo.",
+    patronSaint: "Mater Dolorosa · Ordem dos Servitas",
+    feastDay: "15 de setembro",
+    source: "CNBB + Vatican.va Português + Ordem dos Servitas (1233) + Bento XIII (1727) + Pio IX (1860). Retrieved 2026-05-18.",
+    reviewedAt: new Date("2026-05-18"),
+  },
+  {
+    prayerSlug: "surrender-novena",
+    name: "Novena do Abandono (Pe. Dolindo Ruotolo)",
+    description:
+      "A Novena do Abandono foi composta pelo servo de Deus Dom Dolindo Ruotolo (1882-1970), sacerdote napolitano. Dom Dolindo recebeu em oração a jaculatória central — «Jesus, pensa Tu nisso» — como ditado de Cristo mesmo. A novena tem nove dias com estrutura única: cada dia se rezam dez vezes a mesma jaculatória com crescente confiança. A ideia central é radical: o cristão deve entregar absolutamente a solução do problema a Cristo, sem adiantar-se à providência divina. «Fecha os olhos da alma e diz-me: 'Jesus, pensa Tu nisso', e tem paz». É apropriada para situações em que a mente cristã se queda atrapada em preocupação obsessiva por problema que não pode resolver.",
+    prayerText:
+      "Jesus, pensa Tu nisso.",
+    instructions:
+      "Reze por nove dias consecutivos. Cada dia tem jaculatória diferente que enquadra o «Jesus, pensa Tu nisso», seguida 10 vezes. **Dia 1**: «Por que vos confundis e vos agitais? Deixai-me o cuidado das vossas coisas e tudo se acalmará». **Dia 2**: «Filho, perturbas e dificultas minha obra quando quereis ocupar-vos vós». **Dia 3**: «Razonar, agitar-se, querer pensar nas consequências é contrário ao abandono em mim». **Dia 4**: «Estais cego nestas coisas; sofrereis mais». **Dia 5**: «Fechai os olhos da alma e dizei: 'Jesus, pensa Tu nisso'». **Dia 6**: «Me fazeis um grandíssimo dano quando, em vez de vos abandonardes a mim, vos pondes a dar-me conselhos». **Dia 7**: «Quantas coisas não faço quando a alma se volta a mim e diz: 'Jesus, pensa Tu nisso'!». **Dia 8**: «Fechai os olhos e passai tranquilamente». **Dia 9**: «Filhos meus, façam três horas santas». A novena tem fama no Brasil entre as mais eficazes para situações bloqueadas.",
+    patronSaint: "Cristo Menino · Sagrado Coração",
+    feastDay: "19 de novembro (Pe. Dolindo, servo de Deus)",
+    source: "CNBB + Vatican.va Português + Pe. Dolindo Ruotolo (1882-1970) + Diocese de Nápoles. Retrieved 2026-05-18.",
+    reviewedAt: new Date("2026-05-18"),
+  },
+  // Locale-anchored para pt-BR (9 entries — pt-BR já tem aparecida da seed
+  // original; faltam akita, czestochowa, guadalupe, knock, la-vang,
+  // maximilian-kolbe, santo-nino, st-juan-diego, simbang-gabi)
+  {
+    prayerSlug: "novena-akita",
+    name: "Novena a Nossa Senhora de Akita",
+    description:
+      "A devoção a Nossa Senhora de Akita honra as aparições marianas à irmã Agnes Sasagawa em Akita, Japão, entre 1973 e 1981. A estátua da Virgem chorou 101 vezes lágrimas humanas (verificadas cientificamente como sangue, suor e água do tipo humano AB) entre 1975 e 1981. As mensagens pedem penitência, oração do Rosário e consagração ao Imaculado Coração de Maria — em termos que evocam claramente Fátima. As aparições foram oficialmente reconhecidas pelo bispo de Niigata em 1984, com aprovação do então cardeal Joseph Ratzinger. Akita é a primeira aparição mariana aprovada na Ásia oriental.",
+    prayerText:
+      "Ó dulce Mãe de Akita, que com vossas lágrimas humanas comoveste o coração de vossos filhos no Japão, comovei também o meu. Alcançai-me a graça da conversão sincera e a fortaleza para fazer reparação pelos pecados que ofendem o Sagrado Coração de Jesus e o vosso. Peço-vos a graça que com confiança filial vos suplico (mencionar a intenção). Nossa Senhora de Akita, rogai por nós e pelo mundo em oração pela paz. Amém.",
+    instructions:
+      "Reze nove dias consecutivos. Estrutura: (1) Sinal da Cruz; (2) um mistério do Rosário, idealmente os gloriosos; (3) a oração; (4) consagração ao Imaculado Coração; (5) mencione a intenção.",
+    patronSaint: "Nossa Senhora de Akita",
+    feastDay: "12 de outubro (aproximada)",
+    source: "CNBB + Vatican.va Português + Aprovação do bispo John Shojiro Ito (Niigata, 1984) + CDF (Card. Ratzinger). Retrieved 2026-05-18.",
+    reviewedAt: new Date("2026-05-18"),
+  },
+  {
+    prayerSlug: "novena-czestochowa",
+    name: "Novena a Nossa Senhora de Częstochowa (Virgem Negra da Polônia)",
+    description:
+      "Nossa Senhora de Częstochowa — a Virgem Negra da Polônia — é o ícone mariano mais venerado da Polônia. Atribuído por tradição a São Lucas evangelista, conserva-se no mosteiro paulino de Jasna Góra em Częstochowa. A devoção vincula-se ao milagre de 26 de agosto de 1655 durante a invasão sueca da Polônia: o exército sueco assediante, muito maior em número, não pôde tomar o mosteiro. O rei Jan II Casimir consagrou o reino da Polônia a Maria como sua Rainha (1656). São João Paulo II era particularmente devoto: visitou o santuário muitas vezes como Karol Wojtyła, como bispo, como cardeal e como Papa. No Brasil, a devoção é vivida especialmente nas comunidades polonesas do sul (Curitiba, Porto Alegre).",
+    prayerText:
+      "Ó Virgem Negra de Częstochowa, Rainha e Padroeira da Polônia, que defendestes a Polônia no século XVII e a guiastes pelo século XX através dos totalitarismos, alcançai-me por vossa intercessão a graça que com confiança filial vos peço (mencionar a intenção). Conservai na fé o povo polonês e a diáspora polonesa dispersa pelo mundo. Rainha da Polônia, rogai por nós. Amém.",
+    instructions:
+      "Reze nove dias consecutivos, idealmente de 18 a 25 de agosto. Estrutura: (1) Sinal da Cruz; (2) breve evocação da defesa de Jasna Góra (1655); (3) a oração; (4) os mistérios gloriosos do Rosário; (5) mencione a intenção.",
+    patronSaint: "Nossa Senhora de Częstochowa (Rainha da Polônia)",
+    feastDay: "26 de agosto",
+    source: "CNBB + Vatican.va Português (homilias de JPII em Jasna Góra) + Mosteiro paulino de Jasna Góra. Retrieved 2026-05-18.",
+    reviewedAt: new Date("2026-05-18"),
+  },
+  {
+    prayerSlug: "novena-guadalupe",
+    name: "Novena a Nossa Senhora de Guadalupe",
+    description:
+      "Nossa Senhora de Guadalupe é a Padroeira das Américas, declarada por São Pio X em 1910 e confirmada por Pio XII como «Imperatriz das Américas». A aparição ocorreu entre 9 e 12 de dezembro de 1531 no morro do Tepeyac, perto da Cidade do México, ao indígena recém-converso Juan Diego Cuauhtlatoatzin. Maria apareceu-se com pele e traços indígenas, vestida com o áo cingido das mulheres grávidas mexicanas, indicando sua maternal cercanía com o povo nativo. A imagem de Guadalupe ficou impressa milagrosamente em sua tilma (manto de fibra de maguey) — imagem que se conserva intacta após quase cinco séculos na Basílica de Guadalupe na Cidade do México, o santuário mariano mais visitado do mundo. A devoção em todo o continente americano, incluindo o Brasil, é uma das mais difundidas; a fiesta de 12 de dezembro é dia nacional do México.",
+    prayerText:
+      "Ó dulce Virgem de Guadalupe, Mãe e Imperatriz das Américas, que apareceste no morro do Tepeyac vestida com o áo cingido das mulheres indígenas, alcançai-me por vossa maternal intercessão a graça que com confiança filial vos peço (mencionar a intenção). Por toda a unidade do continente americano, pela conversão dos pueblos indígenas e dos hispanos da diáspora, intercedei. Nossa Senhora de Guadalupe, rogai por nós. Amém.",
+    instructions:
+      "Reze nove dias consecutivos, idealmente de 3 a 11 de dezembro em preparação para a festa de 12 de dezembro. Estrutura: (1) Sinal da Cruz; (2) leitura breve do Nican Mopohua (relato em náhuatl da aparição); (3) os mistérios gozosos do Rosário; (4) a oração; (5) mencione a intenção.",
+    patronSaint: "Nossa Senhora de Guadalupe (Padroeira das Américas)",
+    feastDay: "12 de dezembro",
+    source: "CNBB + Vatican.va Português (São Pio X 1910; Pio XII Imperatriz; São João Paulo II canonização Juan Diego 2002) + Nican Mopohua. Retrieved 2026-05-18.",
+    reviewedAt: new Date("2026-05-18"),
+  },
+  {
+    prayerSlug: "novena-knock",
+    name: "Novena a Nossa Senhora de Knock (Irlanda)",
+    description:
+      "Nossa Senhora de Knock é uma das advocações marianas modernas mais reconhecidas do mundo de fala inglesa. A aparição ocorreu em 21 de agosto de 1879 em Knock, condado de Mayo, Irlanda. Quinze testemunhas viram simultaneamente uma aparição de Maria, São José e São João Evangelista, junto a um altar sobre o qual estava um Cordeiro (símbolo do Cordeiro de Deus). A aparição foi completamente silenciosa e durou aproximadamente duas horas sob chuva contínua, sem que as figuras se molhassem. A autenticidade foi declarada digna de fé. São João Paulo II visitou Knock em 1979; o Papa Francisco em 2018. A novena é apropriada para católicos irlandeses e da diáspora irlandesa.",
+    prayerText:
+      "Ó dulce Virgem de Knock, Mãe Imaculada que em silêncio aparecestes com José e João junto ao Cordeiro divino, alcançai-me por vossa intercessão a graça que com confiança filial vos peço (mencionar a intenção). Mantém em vosso cuidado a todos os filhos da Irlanda dispersos pelo mundo. Nossa Senhora de Knock, rogai por nós. Amém.",
+    instructions:
+      "Reze nove dias consecutivos, idealmente de 13 a 20 de agosto. Estrutura: (1) Sinal da Cruz; (2) leitura de Apocalipse 5,6 (Cristo Cordeiro); (3) um mistério do Rosário; (4) a oração; (5) mencione a intenção. A aparição foi silenciosa — incluir 15 minutos de oração em silêncio cada dia, em imitação do silêncio mariano de Knock.",
+    patronSaint: "Nossa Senhora de Knock · São José · São João Evangelista",
+    feastDay: "21 de agosto",
+    source: "CNBB + Vatican.va Português (visita de JPII a Knock, 1979) + Santuário Nacional de Knock + Comissão canônica de 1879. Retrieved 2026-05-18.",
+    reviewedAt: new Date("2026-05-18"),
+  },
+  {
+    prayerSlug: "novena-la-vang",
+    name: "Novena a Nossa Senhora de La Vang (Vietnã)",
+    description:
+      "Nossa Senhora de La Vang é a principal advocação mariana do Vietnã e da diáspora vietnamita católica. A aparição ocorreu em 1798 durante a cruel perseguição do imperador Cảnh Thịnh contra os católicos: centenas de fiéis fugiram à selva de La Vang. Maria apareceu vestida com o áo dài tradicional vietnamita, com o Menino Jesus nos braços, e disse-lhes que rezassem e que ela os protegeria. A Basílica de La Vang foi elevada a Basílica Menor pelo Papa Francisco em 2017. É um dos grandes lugares marianos da Ásia. No Brasil, comunidades vietnamitas católicas existem em São Paulo, com fraternidade entre as diásporas asiáticas.",
+    prayerText:
+      "Ó Virgem de La Vang, dulce Mãe que viestes consolar vossos filhos vietnamitas na perseguição mais dura, vestida com o áo dài tradicional para que vos reconhecessem como própria, alcançai-me por vossa intercessão a graça que com confiança filial vos peço (mencionar a intenção). Por todos os cristãos perseguidos pela fé no mundo — especialmente no Vietnã, China, Coreia do Norte, Paquistão, Nigéria e Oriente Médio — alcançai-nos a fidelidade até a morte se necessário. Nossa Senhora de La Vang, rogai por nós. Amém.",
+    instructions:
+      "Reze nove dias consecutivos. Estrutura: (1) Sinal da Cruz; (2) um mistério do Rosário (dolorosos); (3) a oração; (4) mencione a intenção.",
+    patronSaint: "Nossa Senhora de La Vang",
+    feastDay: "15 de agosto (associada à Assunção)",
+    source: "CNBB + Vatican.va Português + Conferência Episcopal Vietnamita + Papa Francisco (elevação à Basílica Menor 2017). Retrieved 2026-05-18.",
+    reviewedAt: new Date("2026-05-18"),
+  },
+  {
+    prayerSlug: "novena-maximilian-kolbe",
+    name: "Novena a São Maximiliano Kolbe",
+    description:
+      "São Maximiliano Maria Kolbe (Rajmund Kolbe, 1894-1941) — sacerdote franciscano conventual polonês — é o padroeiro universal dos prisioneiros de consciência, dos jornalistas católicos, das famílias e do movimento pró-vida. Fundou a Milícia da Imaculada (1917) e a cidade-mosteiro de Niepokalanów na Polônia. Durante a ocupação nazista, foi arrestado e deportado a Auschwitz em maio de 1941. Em agosto, quando um prisioneiro escapou e os nazistas decidiram matar de fome dez prisioneiros como castigo coletivo, Maximiliano Kolbe voluntariamente tomou o lugar de Franciszek Gajowniczek — um pai de família. Sobreviveu duas semanas no bunker da fome, animando seus companheiros com cantos, e foi executado por injeção de fenol em 14 de agosto de 1941. Gajowniczek sobreviveu até 1995. Canonizado por São João Paulo II em 1982 como «mártir da caridade».",
+    prayerText:
+      "Ó glorioso São Maximiliano Maria Kolbe, mártir da caridade e cavaleiro da Imaculada, vós que destes vossa vida em Auschwitz para que um pai de família voltasse para casa, alcançai-me por vossa intercessão a graça que com confiança filial vos peço (mencionar a intenção). Por todos os presos de consciência, por todos os refugiados das guerras de nosso tempo, intercedei. E sobretudo, alcançai-me a disposição a dar o melhor de mim mesmo pelos que Deus colocou ao meu lado. Amém.",
+    instructions:
+      "Reze nove dias consecutivos, idealmente de 5 a 13 de agosto. Estrutura: (1) Sinal da Cruz; (2) ato de consagração à Imaculada; (3) a oração; (4) um mistério do Rosário (dolorosos); (5) mencione a intenção. Para causas de justiça: ação concreta de solidariedade — carta a um prisioneiro, doação a causa pró-vida; leitura de Filipenses 2,5-11; jejum semanal pela intenção.",
+    patronSaint: "São Maximiliano Maria Kolbe, OFMConv (mártir de Auschwitz)",
+    feastDay: "14 de agosto",
+    source: "CNBB + Vatican.va Português (São João Paulo II, canonização 1982) + Niepokalanów + testemunho de Franciszek Gajowniczek. Retrieved 2026-05-18.",
+    reviewedAt: new Date("2026-05-18"),
+  },
+  {
+    prayerSlug: "novena-santo-nino",
+    name: "Novena ao Santo Niño de Cebu (Filipinas)",
+    description:
+      "O Santo Niño de Cebu é a imagem religiosa católica mais antiga e venerada das Filipinas. Uma pequena figura de madeira do Menino Jesus, presenteada por Fernando de Magalhães à rainha Juana de Cebu em seu batismo em 14 de abril de 1521. Redescoberta intacta 44 anos depois (1565) pelos soldados espanhóis de Miguel López de Legazpi. A imagem conserva-se na Basílica Menor do Santo Niño de Cebu. A festa principal é o Sinulog, terceiro domingo de janeiro. No Brasil, comunidades filipinas católicas em São Paulo celebram com a mesma reverência tradicional.",
+    prayerText:
+      "Ó dulce Santo Niño de Cebu, Menino Jesus que sois presença católica viva nas Filipinas há mais de quinhentos anos, alcançai-me por vossa intercessão a graça que com humilde confiança vos peço (mencionar a intenção). Por todas as crianças filipinas, por todas as famílias filipinas dispersas pela migração. Pit Señor, viva Señor Santo Niño. Amém.",
+    instructions:
+      "Reze nove dias consecutivos, idealmente os nove dias prévios ao terceiro domingo de janeiro (Sinulog). Estrutura: (1) Sinal da Cruz; (2) um mistério do Rosário (gozosos); (3) a oração; (4) jaculatória filipina «Pit Señor, viva Señor Santo Niño»; (5) mencione a intenção.",
+    patronSaint: "Santo Niño de Cebu · Menino Jesus",
+    feastDay: "Terceiro domingo de janeiro (Sinulog)",
+    source: "CNBB + CBCP + Basílica Menor do Santo Niño de Cebu + Magalhães (1521) + Legazpi (1565). Retrieved 2026-05-18.",
+    reviewedAt: new Date("2026-05-18"),
+  },
+  {
+    prayerSlug: "novena-st-juan-diego",
+    name: "Novena a São Juan Diego",
+    description:
+      "São Juan Diego Cuauhtlatoatzin (1474-1548) — o indígena a quem a Virgem Maria se apareceu no Tepeyac entre 9 e 12 de dezembro de 1531, manifestando-se como Nossa Senhora de Guadalupe. Bautizado pelos franciscanos antes de 1525, viúvo desde 1529, Juan Diego é a figura humana central da conversão do México e de toda a América hispana ao catolicismo. A imagem de Guadalupe ficou impressa milagrosamente em sua tilma. Canonizado por São João Paulo II na Basílica de Guadalupe em 31 de julho de 2002, durante sua última visita pastoral. Padroeiro dos indígenas, dos humildes, e dos pueblos das Américas.",
+    prayerText:
+      "Ó humilde São Juan Diego, águia indígena que a Virgem Maria escolheu para ser portador da imagem de Guadalupe a todo o continente americano, alcançai-me por vossa intercessão a graça que com confiança filial vos peço (mencionar a intenção). Vós que ouvistes a Mãe Celestial chamar-vos «filho meu mais pequeno», alcançai-me a graça de me sentir também eu, em minhas humildes circunstâncias, filho ou filha predileto da Mãe de Deus. E por todos os indígenas, por todos os hispanos discriminados, intercedei. Amém.",
+    instructions:
+      "Reze nove dias consecutivos, idealmente de 30 de novembro a 8 de dezembro em preparação para Guadalupe (12 de dezembro), ou de 1 a 8 de dezembro em preparação para a festa de Juan Diego (9 de dezembro). Estrutura: (1) Sinal da Cruz; (2) um mistério do Rosário (gozosos); (3) a oração; (4) jaculatória «São Juan Diego, rogai por nós»; (5) mencione a intenção.",
+    patronSaint: "São Juan Diego Cuauhtlatoatzin",
+    feastDay: "9 de dezembro",
+    source: "CNBB + Vatican.va Português (São João Paulo II, canonização 31 de julho de 2002) + Nican Mopohua. Retrieved 2026-05-18.",
+    reviewedAt: new Date("2026-05-18"),
+  },
+  {
+    prayerSlug: "simbang-gabi",
+    name: "Simbang Gabi (Missa do Galo Filipina)",
+    description:
+      "O Simbang Gabi — literalmente «Missa Noturna» em filipino, também chamada Missa do Galo — é a série de nove Missas católicas matutinas celebradas nas Filipinas de 16 a 24 de dezembro em preparação para o Natal. A tradição remonta ao século XVII, quando os missionários agostinianos e dominicanos espanhóis celebraram Missas tempranas (ao amanecer, cerca das 4:00 AM) para que os agricultores e pescadores filipinos pudessem assistir antes de começar a jornada. A promessa popular — completar as nove Missas consecutivas assegura uma intenção particular — é devocional. A diáspora filipina nos EUA, Canadá, Austrália e Brasil tem levado o Simbang Gabi a paróquias de muitas nações.",
+    instructions:
+      "Assista à Missa cada um dos nove dias consecutivos de 16 a 24 de dezembro. Nas Filipinas, ao amanecer (4:00-5:00 AM); na diáspora, normalmente à noite (18:00-20:00). Algumas paróquias hispano-filipinas oferecem Missas bilíngues. Tradições: (1) compartilhar o «bibingka» e o «puto bumbong» após cada Missa; (2) confessar-se pelo menos uma vez durante os nove dias; (3) novena familiar ao Menino Jesus cada noite após a Missa; (4) levar os filhos para transmitir a tradição. Para católicos brasileiros sem acesso a paróquia com Simbang Gabi, assista à Missa diária durante os nove dias prévios ao Natal.",
+    patronSaint: "Menino Jesus · Sagrada Família",
+    feastDay: "16 a 24 de dezembro (anual)",
+    source: "CNBB + CBCP + tradição agostiniana-dominicana nas Filipinas (s. XVII) + comunidades filipinas na diáspora brasileira. Retrieved 2026-05-18.",
+    reviewedAt: new Date("2026-05-18"),
+  },
 ];

@@ -307,6 +307,7 @@
   "wizard": {
     "step1Heading": "Para kanino ang prayer train na ito?",
     "step1Subheading": "Sabihin sa amin ang tungkol sa taong nangangailangan ng panalangin",
+    "step1PrivacyReassurance": "Pribado bilang default ang inyong PrayerTrain. Tanging ang mga taong ibibigayan ninyo ng link ang makakakita nito. Maaari ninyong baguhin ito sa mga susunod na hakbang.",
     "organizerNameLabel": "Iyong pangalan",
     "organizerNamePlaceholder": "Paano nais mong magmukha sa prayer page",
     "organizerNameHelpShown": "Lalabas bilang «Inorganisa ni [iyong pangalan]» sa public page.",

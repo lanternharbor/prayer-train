@@ -307,6 +307,7 @@
   "wizard": {
     "step1Heading": "Por quem é este PrayerTrain?",
     "step1Subheading": "Conte-nos sobre a pessoa que precisa de orações",
+    "step1PrivacyReassurance": "Seu PrayerTrain é privado por padrão. Só quem você compartilhar o link poderá vê-lo. Você pode mudar isso nas próximas etapas.",
     "organizerNameLabel": "Seu nome",
     "organizerNamePlaceholder": "Como você gostaria de aparecer na página de oração",
     "organizerNameHelpShown": "Vai aparecer como «Organizado por [seu nome]» na página pública.",

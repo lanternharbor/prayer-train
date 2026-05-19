@@ -14,8 +14,12 @@ import {
   Loader2,
   Camera,
   Lock,
+  Church,
+  MapPin,
 } from "lucide-react";
 import { ParishAutocomplete } from "@/components/ui/parish-autocomplete";
+import { RecipientAvatar } from "@/components/ui/catholic-icons";
+import { cleanDisplayText } from "@/lib/text-display";
 import type { PrayerCategory, SituationCategory, DifficultyLevel } from "@/generated/prisma/client";
 import type { Dictionary } from "@/i18n/dictionaries";
 
@@ -601,6 +605,85 @@ export function CreateWizard({
               )}
             </div>
           </div>
+
+          {/* Public card preview. Renders a faithful (simplified) copy
+              of the /browse card so the organizer sees exactly what
+              the public listing will look like before they ship. Reads
+              form state directly; the slot count is the upper bound
+              (durationDays * slotsPerDay) since no one has claimed yet.
+              Visible only when isPublic is true. */}
+          {isPublic && (
+            <div className="mt-2">
+              <p className="text-xs font-medium text-navy-700 uppercase tracking-wide mb-2">
+                {t.visibilityPreviewLabel}
+              </p>
+              <div className="rounded-lg border border-cream-300 bg-white p-4">
+                {situation && (
+                  <div className="mb-3">
+                    <span className="px-2.5 py-1 rounded-full text-xs font-medium bg-navy-100 text-navy-700">
+                      {situationLabels[situation]}
+                    </span>
+                  </div>
+                )}
+                <div className="flex items-center gap-3 mb-2">
+                  <RecipientAvatar
+                    imageUrl={photoPreview}
+                    name={recipientName || t.visibilityPreviewNamePlaceholder}
+                    size="sm"
+                  />
+                  <h3 className="font-heading text-xl font-semibold text-navy-800">
+                    {t.visibilityPreviewPrayersFor.replace(
+                      "{name}",
+                      recipientName || t.visibilityPreviewNamePlaceholder,
+                    )}
+                  </h3>
+                </div>
+                {(parish || location) && (
+                  <p className="text-xs text-muted-foreground mb-2 flex items-center gap-3">
+                    {parish && (
+                      <span className="flex items-center gap-1">
+                        <Church className="w-3 h-3 text-gold-400" />
+                        {parish}
+                      </span>
+                    )}
+                    {location && (
+                      <span className="flex items-center gap-1">
+                        <MapPin className="w-3 h-3 text-gold-400" />
+                        {location}
+                      </span>
+                    )}
+                  </p>
+                )}
+                <p
+                  className={`text-sm leading-relaxed mb-4 line-clamp-2 ${
+                    intention ? "text-foreground" : "text-muted-foreground italic"
+                  }`}
+                >
+                  {intention
+                    ? cleanDisplayText(intention)
+                    : t.visibilityPreviewIntentionPlaceholder}
+                </p>
+                <div className="w-full h-2.5 bg-cream-200 rounded-full overflow-hidden mb-2">
+                  <div
+                    className="h-full rounded-full bg-gold-400"
+                    style={{ width: "0%" }}
+                  />
+                </div>
+                <div className="flex items-center justify-between text-xs text-muted-foreground">
+                  <span className="flex items-center gap-1">
+                    <Heart className="w-3.5 h-3.5 text-gold-400" />
+                    {t.visibilityPreviewCovered}
+                  </span>
+                  <span className="font-medium text-green-600">
+                    {t.visibilityPreviewSlotsTotal.replace(
+                      "{n}",
+                      String(durationDays * slotsPerDay),
+                    )}
+                  </span>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       )}
 

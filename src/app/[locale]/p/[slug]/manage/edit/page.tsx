@@ -4,6 +4,8 @@ import { notFound, redirect } from "next/navigation";
 import { ArrowLeft, Pencil } from "lucide-react";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
+import { getLocale } from "@/i18n/get-locale";
+import { pathForLocale } from "@/i18n/links";
 import { EditTrainForm } from "./edit-train-form";
 
 export async function generateMetadata({
@@ -29,7 +31,7 @@ export default async function EditTrainPage({
 }) {
   const { slug } = await params;
   const session = await auth();
-  if (!session?.user?.id) redirect("/signin");
+  if (!session?.user?.id) redirect(pathForLocale(await getLocale(), "/signin"));
 
   const train = await prisma.prayerTrain.findUnique({
     where: { slug },

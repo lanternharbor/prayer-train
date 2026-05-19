@@ -3,6 +3,7 @@ import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import { redirect } from "next/navigation";
 import { LocaleLink as Link } from "@/components/locale-link";
+import { pathForLocale } from "@/i18n/links";
 import { formatDate, formatSituation, calculateFillRate } from "@/lib/utils";
 import {
   Heart,
@@ -49,7 +50,7 @@ export default async function DashboardPage({
   const dict = await getDictionary(locale);
   const t = dict.dashboard;
   const session = await auth();
-  if (!session?.user?.id) redirect("/signin");
+  if (!session?.user?.id) redirect(pathForLocale(locale, "/signin"));
 
   const userId = session.user.id;
 

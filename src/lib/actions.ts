@@ -8,6 +8,7 @@ import { sendClaimConfirmation } from "@/lib/email";
 import { enforceRateLimit } from "@/lib/rate-limit";
 import { getRateLimitId } from "@/lib/request";
 import { getLocale } from "@/i18n/get-locale";
+import { pathForLocale } from "@/i18n/links";
 import {
   addPrayerWarriorSchema,
   cancelPrayerChainSchema,
@@ -67,7 +68,7 @@ import { put } from "@vercel/blob";
 export async function createPrayerTrain(formData: FormData) {
   const session = await auth();
   if (!session?.user?.id) {
-    redirect("/signin");
+    redirect(pathForLocale(await getLocale(), "/signin"));
   }
 
   await enforceRateLimit("createTrain", await getRateLimitId(session.user.id));
@@ -633,7 +634,7 @@ async function assertOrganizesSlot(
 
 export async function hideGuestbookEntry(entryId: string) {
   const session = await auth();
-  if (!session?.user?.id) redirect("/signin");
+  if (!session?.user?.id) redirect(pathForLocale(await getLocale(), "/signin"));
   const { trainSlug } = await assertOrganizesGuestbookEntry(
     entryId,
     session.user.id,
@@ -647,7 +648,7 @@ export async function hideGuestbookEntry(entryId: string) {
 
 export async function unhideGuestbookEntry(entryId: string) {
   const session = await auth();
-  if (!session?.user?.id) redirect("/signin");
+  if (!session?.user?.id) redirect(pathForLocale(await getLocale(), "/signin"));
   const { trainSlug } = await assertOrganizesGuestbookEntry(
     entryId,
     session.user.id,
@@ -661,7 +662,7 @@ export async function unhideGuestbookEntry(entryId: string) {
 
 export async function deleteGuestbookEntry(entryId: string) {
   const session = await auth();
-  if (!session?.user?.id) redirect("/signin");
+  if (!session?.user?.id) redirect(pathForLocale(await getLocale(), "/signin"));
   const { trainSlug } = await assertOrganizesGuestbookEntry(
     entryId,
     session.user.id,
@@ -675,7 +676,7 @@ export async function deleteGuestbookEntry(entryId: string) {
 
 export async function hideSlotNote(slotId: string) {
   const session = await auth();
-  if (!session?.user?.id) redirect("/signin");
+  if (!session?.user?.id) redirect(pathForLocale(await getLocale(), "/signin"));
   const { trainSlug } = await assertOrganizesSlot(slotId, session.user.id);
   await prisma.prayerSlot.update({
     where: { id: slotId },
@@ -689,7 +690,7 @@ export async function hideSlotNote(slotId: string) {
 
 export async function unhideSlotNote(slotId: string) {
   const session = await auth();
-  if (!session?.user?.id) redirect("/signin");
+  if (!session?.user?.id) redirect(pathForLocale(await getLocale(), "/signin"));
   const { trainSlug } = await assertOrganizesSlot(slotId, session.user.id);
   await prisma.prayerSlot.update({
     where: { id: slotId },
@@ -700,7 +701,7 @@ export async function unhideSlotNote(slotId: string) {
 
 export async function deleteSlotNote(slotId: string) {
   const session = await auth();
-  if (!session?.user?.id) redirect("/signin");
+  if (!session?.user?.id) redirect(pathForLocale(await getLocale(), "/signin"));
   const { trainSlug } = await assertOrganizesSlot(slotId, session.user.id);
   // Hard delete — but note the SLOT record itself stays. The slot
   // represents the prayer commitment that was made and fulfilled,
@@ -723,7 +724,7 @@ export async function deleteSlotNote(slotId: string) {
 
 export async function postTrainUpdate(formData: FormData) {
   const session = await auth();
-  if (!session?.user?.id) redirect("/signin");
+  if (!session?.user?.id) redirect(pathForLocale(await getLocale(), "/signin"));
 
   const { trainId, title, content } = parseFormData(
     trainUpdateSchema,
@@ -758,7 +759,7 @@ export async function updateTrainStatus(
   status: "ACTIVE" | "PAUSED" | "COMPLETED"
 ) {
   const session = await auth();
-  if (!session?.user?.id) redirect("/signin");
+  if (!session?.user?.id) redirect(pathForLocale(await getLocale(), "/signin"));
 
   const train = await prisma.prayerTrain.findUnique({
     where: { id: trainId },
@@ -845,7 +846,7 @@ export async function updateTrainStatus(
 
 export async function toggleTrainVisibility(trainId: string, isPublic: boolean) {
   const session = await auth();
-  if (!session?.user?.id) redirect("/signin");
+  if (!session?.user?.id) redirect(pathForLocale(await getLocale(), "/signin"));
 
   const train = await prisma.prayerTrain.findUnique({
     where: { id: trainId },
@@ -877,7 +878,7 @@ export async function toggleTrainVisibility(trainId: string, isPublic: boolean) 
 
 export async function updateTrainDetails(formData: FormData) {
   const session = await auth();
-  if (!session?.user?.id) redirect("/signin");
+  if (!session?.user?.id) redirect(pathForLocale(await getLocale(), "/signin"));
 
   const input = parseFormData(updateTrainSchema, formData);
 
@@ -985,7 +986,7 @@ export async function updateTrainDetails(formData: FormData) {
 
 export async function deletePrayerTrain(formData: FormData) {
   const session = await auth();
-  if (!session?.user?.id) redirect("/signin");
+  if (!session?.user?.id) redirect(pathForLocale(await getLocale(), "/signin"));
 
   const input = parseFormData(deletePrayerTrainSchema, formData);
 
@@ -1039,7 +1040,7 @@ export async function deletePrayerTrain(formData: FormData) {
 
 export async function cancelPrayerTrain(formData: FormData) {
   const session = await auth();
-  if (!session?.user?.id) redirect("/signin");
+  if (!session?.user?.id) redirect(pathForLocale(await getLocale(), "/signin"));
 
   const input = parseFormData(cancelPrayerTrainSchema, formData);
 
@@ -1123,7 +1124,7 @@ export async function cancelPrayerTrain(formData: FormData) {
 
 export async function reactivatePrayerTrain(formData: FormData) {
   const session = await auth();
-  if (!session?.user?.id) redirect("/signin");
+  if (!session?.user?.id) redirect(pathForLocale(await getLocale(), "/signin"));
 
   const input = parseFormData(reactivatePrayerTrainSchema, formData);
 
@@ -1199,7 +1200,7 @@ function chainConfirmationMatches(
 
 export async function deletePrayerChain(formData: FormData) {
   const session = await auth();
-  if (!session?.user?.id) redirect("/signin");
+  if (!session?.user?.id) redirect(pathForLocale(await getLocale(), "/signin"));
 
   const input = parseFormData(deletePrayerChainSchema, formData);
 
@@ -1251,7 +1252,7 @@ export async function deletePrayerChain(formData: FormData) {
 
 export async function cancelPrayerChain(formData: FormData) {
   const session = await auth();
-  if (!session?.user?.id) redirect("/signin");
+  if (!session?.user?.id) redirect(pathForLocale(await getLocale(), "/signin"));
 
   const input = parseFormData(cancelPrayerChainSchema, formData);
 
@@ -1344,7 +1345,7 @@ export async function cancelPrayerChain(formData: FormData) {
 
 export async function reactivatePrayerChain(formData: FormData) {
   const session = await auth();
-  if (!session?.user?.id) redirect("/signin");
+  if (!session?.user?.id) redirect(pathForLocale(await getLocale(), "/signin"));
 
   const input = parseFormData(reactivatePrayerChainSchema, formData);
 
@@ -1392,7 +1393,7 @@ export async function reactivatePrayerChain(formData: FormData) {
 
 export async function setUserDisplayName(name: string) {
   const session = await auth();
-  if (!session?.user?.id) redirect("/signin");
+  if (!session?.user?.id) redirect(pathForLocale(await getLocale(), "/signin"));
 
   const trimmed = name.trim();
   if (!trimmed) {
@@ -1488,7 +1489,7 @@ export async function addPrayerWarrior(formData: FormData) {
 export async function createPrayerChain(formData: FormData) {
   const session = await auth();
   if (!session?.user?.id) {
-    redirect("/signin");
+    redirect(pathForLocale(await getLocale(), "/signin"));
   }
 
   await enforceRateLimit(
@@ -1752,7 +1753,7 @@ export async function markChainDayCompleteByToken(
 
 export async function updateChainDetails(formData: FormData) {
   const session = await auth();
-  if (!session?.user?.id) redirect("/signin");
+  if (!session?.user?.id) redirect(pathForLocale(await getLocale(), "/signin"));
 
   const input = parseFormData(updateChainSchema, formData);
 
@@ -1831,7 +1832,7 @@ export async function updateChainDetails(formData: FormData) {
 
 export async function closePrayerChain(formData: FormData) {
   const session = await auth();
-  if (!session?.user?.id) redirect("/signin");
+  if (!session?.user?.id) redirect(pathForLocale(await getLocale(), "/signin"));
 
   const { chainId, closingNote } = parseFormData(closeChainSchema, formData);
 

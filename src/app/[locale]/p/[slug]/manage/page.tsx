@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { notFound, redirect } from "next/navigation";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
+import { getLocale } from "@/i18n/get-locale";
+import { pathForLocale } from "@/i18n/links";
 import {
   formatDate,
   formatDateLocale,
@@ -49,7 +51,7 @@ export default async function ManagePage({
 }) {
   const { slug } = await params;
   const session = await auth();
-  if (!session?.user?.id) redirect("/signin");
+  if (!session?.user?.id) redirect(pathForLocale(await getLocale(), "/signin"));
 
   const train = await prisma.prayerTrain.findUnique({
     where: { slug },

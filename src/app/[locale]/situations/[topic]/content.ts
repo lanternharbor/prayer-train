@@ -168,7 +168,7 @@ const sickChild: SituationContent = {
     },
     {
       slug: "psalm-91",
-      why: "He shall give His angels charge over thee, to keep thee in all thy ways. Psalm 91 was one of the prayers our family prayed during three NICU stays. It does not promise outcomes. It promises presence.",
+      why: "He shall give His angels charge over thee, to keep thee in all thy ways. Psalm 91 was one of the prayers our family prayed during a NICU stay and other hospital crises. It does not promise outcomes. It promises presence.",
     },
   ],
   pastoralNote:

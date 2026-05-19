@@ -601,6 +601,10 @@
   "chainShareButton": {
     "heading": "Udostępnij tę modlitwę",
     "description": "Zaproś przyjaciół, rodzinę i swoją parafię, aby modlili się razem z tobą.",
+    "shareTextWithOrganizer": "Módl się z {organizerFirstName} {phrase}:",
+    "shareTextAnonymous": "Módl się {phrase}:",
+    "recipientPhraseForName": "za {name}",
+    "recipientPhraseForIntention": "za {snippet}",
     "share": "Udostępnij",
     "copyLink": "Kopiuj link",
     "copied": "Skopiowano!",

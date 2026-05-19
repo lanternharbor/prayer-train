@@ -601,6 +601,10 @@
   "chainShareButton": {
     "heading": "Share this prayer",
     "description": "Invite friends, family, and your parish to pray along with you.",
+    "shareTextWithOrganizer": "Pray along with {organizerFirstName} {phrase}:",
+    "shareTextAnonymous": "Pray along {phrase}:",
+    "recipientPhraseForName": "for {name}",
+    "recipientPhraseForIntention": "for {snippet}",
     "share": "Share",
     "copyLink": "Copy Link",
     "copied": "Copied!",

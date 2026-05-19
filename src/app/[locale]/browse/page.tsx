@@ -201,7 +201,7 @@ export default async function BrowsePage({
         <h1 className="font-heading text-3xl sm:text-4xl font-bold text-navy-800 mb-3 gold-accent">
           {t.heading}
         </h1>
-        <p className="text-muted-foreground text-lg max-w-2xl">
+        <p className="text-foreground text-lg max-w-2xl">
           {t.subheading}
         </p>
       </div>
@@ -338,7 +338,7 @@ export default async function BrowsePage({
                     )}
                   </p>
                 )}
-                <p className="text-sm text-muted-foreground leading-relaxed mb-4 line-clamp-2 flex-1">
+                <p className="text-sm text-foreground leading-relaxed mb-4 line-clamp-2 flex-1">
                   {train.intention}
                 </p>
 
@@ -404,7 +404,7 @@ export default async function BrowsePage({
           <h2 className="font-heading text-2xl font-semibold text-navy-700 mb-3">
             {q || situation ? t.searchNoResultsTitle : t.emptyTitle}
           </h2>
-          <p className="text-muted-foreground mb-6 max-w-md mx-auto">
+          <p className="text-foreground mb-6 max-w-md mx-auto">
             {q || situation ? t.searchNoResultsBody : t.emptyBody}
           </p>
           {!q && !situation && (
@@ -447,7 +447,7 @@ export default async function BrowsePage({
                   {t.prayTogetherHeading}
                 </h2>
               </div>
-              <p className="text-muted-foreground mb-6 max-w-2xl">
+              <p className="text-foreground mb-6 max-w-2xl">
                 {t.prayTogetherBody}
               </p>
             </>
@@ -489,7 +489,7 @@ export default async function BrowsePage({
                       ? fmt(t.chainTitleSuffix, { name: chain.recipientName })
                       : ""}
                   </h3>
-                  <p className="text-sm text-muted-foreground leading-relaxed mb-4 line-clamp-2 flex-1">
+                  <p className="text-sm text-foreground leading-relaxed mb-4 line-clamp-2 flex-1">
                     {chain.intention}
                   </p>
                   <div className="w-full h-2 bg-cream-200 rounded-full overflow-hidden mb-2">

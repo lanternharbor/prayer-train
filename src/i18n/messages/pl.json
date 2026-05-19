@@ -89,6 +89,8 @@
   "prayers": {
     "heading": "Biblioteka modlitw",
     "subheading": "Przeglądaj naszą wybraną kolekcję katolickich modlitw. Każda zawiera pełne instrukcje, aby każdy mógł modlić się z ufnością.",
+    "byNeedBanner": "Szukasz modlitw na konkretną sytuację?",
+    "byNeedBannerCTA": "Przeglądaj według potrzeb",
     "searchPlaceholder": "Szukaj modlitw — np. św. Błażej, żałoba, operacja, różaniec",
     "searchAriaLabel": "Szukaj w bibliotece modlitw",
     "filterAll": "Wszystkie",

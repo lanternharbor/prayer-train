@@ -8,6 +8,7 @@ import {
   calculateFillRate,
 } from "@/lib/utils";
 import { cleanDisplayText } from "@/lib/text-display";
+import { displayRecipientName } from "@/lib/recipient-display";
 import { getDictionary } from "@/i18n/dictionaries";
 import { localizedMetadata } from "@/i18n/metadata";
 import { isLocale, defaultLocale } from "@/i18n/config";
@@ -316,11 +317,11 @@ export default async function BrowsePage({
                 <div className="flex items-center gap-3 mb-2">
                   <RecipientAvatar
                     imageUrl={train.recipientImageUrl}
-                    name={train.recipientName}
+                    name={displayRecipientName(train)}
                     size="sm"
                   />
                   <h2 className="font-heading text-xl font-semibold text-navy-800 group-hover:text-navy-600 transition-colors">
-                    {fmt(t.prayersForName, { name: train.recipientName })}
+                    {fmt(t.prayersForName, { name: displayRecipientName(train) })}
                   </h2>
                 </div>
                 {(train.parish || train.location) && (

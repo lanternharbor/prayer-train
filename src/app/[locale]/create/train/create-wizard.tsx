@@ -20,6 +20,7 @@ import {
 import { ParishAutocomplete } from "@/components/ui/parish-autocomplete";
 import { RecipientAvatar } from "@/components/ui/catholic-icons";
 import { cleanDisplayText } from "@/lib/text-display";
+import { displayRecipientName } from "@/lib/recipient-display";
 import type { PrayerCategory, SituationCategory, DifficultyLevel } from "@/generated/prisma/client";
 import type { Dictionary } from "@/i18n/dictionaries";
 
@@ -113,6 +114,10 @@ export function CreateWizard({
   // The toggle below makes the choice prominent and explains exactly
   // what "public" entails (browse listing, sitemap, search indexing).
   const [isPublic, setIsPublic] = useState(false);
+  // Default true — matches the schema default and pre-T3a behavior.
+  // When false, public surfaces (browse card, train page H1, OG meta)
+  // render only the first whitespace token of recipientName.
+  const [showNames, setShowNames] = useState(true);
   const [selectedPrayerIds, setSelectedPrayerIds] = useState<string[]>(
     initialSelectedPrayerIds,
   );
@@ -178,6 +183,7 @@ export function CreateWizard({
     );
     formData.set("slotsPerDay", slotsPerDay.toString());
     formData.set("isPublic", isPublic ? "true" : "false");
+    formData.set("showNames", showNames ? "true" : "false");
     formData.set("organizerName", organizerName);
     formData.set("organizerAnonymous", organizerAnonymous ? "true" : "false");
     formData.set("prayerTypeIds", selectedPrayerIds.join(","));
@@ -606,6 +612,28 @@ export function CreateWizard({
             </div>
           </div>
 
+          {/* Name-display control. Independent of the public/private
+              toggle above: even on private (link-only) trains, the
+              page is reachable to anyone with the slug, so a family
+              who wants only first-name exposure can opt in here.
+              Default ON (showNames=true) — the pre-T3a behavior. */}
+          <label className="flex items-start gap-3 p-4 rounded-lg bg-cream-50 border border-cream-300 cursor-pointer">
+            <input
+              type="checkbox"
+              checked={!showNames}
+              onChange={(e) => setShowNames(!e.target.checked)}
+              className="mt-0.5"
+            />
+            <div>
+              <p className="text-sm font-medium text-navy-700">
+                {t.showNamesFirstOnlyLabel}
+              </p>
+              <p className="text-xs text-muted-foreground mt-0.5">
+                {t.showNamesFirstOnlyHelp}
+              </p>
+            </div>
+          </label>
+
           {/* Public card preview. Renders a faithful (simplified) copy
               of the /browse card so the organizer sees exactly what
               the public listing will look like before they ship. Reads
@@ -628,13 +656,19 @@ export function CreateWizard({
                 <div className="flex items-center gap-3 mb-2">
                   <RecipientAvatar
                     imageUrl={photoPreview}
-                    name={recipientName || t.visibilityPreviewNamePlaceholder}
+                    name={
+                      recipientName
+                        ? displayRecipientName({ recipientName, showNames })
+                        : t.visibilityPreviewNamePlaceholder
+                    }
                     size="sm"
                   />
                   <h3 className="font-heading text-xl font-semibold text-navy-800">
                     {t.visibilityPreviewPrayersFor.replace(
                       "{name}",
-                      recipientName || t.visibilityPreviewNamePlaceholder,
+                      recipientName
+                        ? displayRecipientName({ recipientName, showNames })
+                        : t.visibilityPreviewNamePlaceholder,
                     )}
                   </h3>
                 </div>

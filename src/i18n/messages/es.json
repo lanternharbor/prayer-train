@@ -365,6 +365,8 @@
     "visibilityPreviewIntentionPlaceholder": "Tu intención de oración aparecerá aquí para los visitantes.",
     "visibilityPreviewCovered": "0% cubierto",
     "visibilityPreviewSlotsTotal": "{n} espacios abiertos",
+    "showNamesFirstOnlyLabel": "Mostrar solo el primer nombre en las páginas públicas",
+    "showNamesFirstOnlyHelp": "Se aplica al directorio público y al encabezado del PrayerTrain. Los recordatorios diarios por correo y el bouquet espiritual siguen usando el nombre completo.",
     "step4Heading": "Elige oraciones para el calendario",
     "step4SubheadingWithSituation": "Hemos resaltado las oraciones recomendadas para esta situación.",
     "step4SubheadingNoSituation": "Selecciona oraciones, o déjalo en blanco para una selección automática.",

@@ -13,6 +13,7 @@ import {
   calculateFillRate,
 } from "@/lib/utils";
 import { cleanDisplayText } from "@/lib/text-display";
+import { displayRecipientName } from "@/lib/recipient-display";
 import { getDictionary } from "@/i18n/dictionaries";
 import { t as interpolate } from "@/i18n/format";
 import { buildAlternates } from "@/i18n/metadata";
@@ -137,6 +138,7 @@ export async function generateMetadata({
       recipientImageUrl: true,
       intention: true,
       isPublic: true,
+      showNames: true,
     },
   });
 
@@ -147,7 +149,7 @@ export async function generateMetadata({
   // (translated UI noun phrases) could prepend "Oraciones por X" /
   // "Orações por X" instead of "Prayers for X" when the dict provides
   // a per-locale "prayersFor" prefix; deferred for now.
-  const title = `Prayers for ${train.recipientName}`;
+  const title = `Prayers for ${displayRecipientName(train)}`;
   const description = cleanDisplayText(train.intention).slice(0, 200);
   const baseUrl = getBaseUrl();
   const path = `/p/${train.slug}`;
@@ -388,7 +390,9 @@ export default async function PrayerTrainPage({
           </span>
         </div>
         <h1 className="font-heading text-3xl sm:text-4xl font-bold text-navy-800 mb-2">
-          {interpolate(t.h1PrayersFor, { recipientName: train.recipientName })}
+          {interpolate(t.h1PrayersFor, {
+            recipientName: displayRecipientName(train),
+          })}
         </h1>
         <ExpandableText
           text={cleanDisplayText(train.intention)}

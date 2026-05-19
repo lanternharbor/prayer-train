@@ -80,6 +80,12 @@ export const createTrainSchema = z
     durationDays: z.coerce.number().int().min(1).max(365).default(30),
     slotsPerDay: z.coerce.number().int().min(1).max(24).default(3),
     isPublic: formBoolean(),
+    // Show the full recipient name on public surfaces. When false,
+    // public surfaces (browse card, individual train page H1, OG meta)
+    // render only the first whitespace-separated token of recipientName.
+    // Default true — matches the schema default and the pre-T3a behavior
+    // of every train created before this control existed.
+    showNames: formBoolean(),
     // Organizer's display name. Required unless they opt into anonymity
     // (refinement below). Stored on User.name when set, so it appears on
     // every train this user organizes — anonymity per train is the

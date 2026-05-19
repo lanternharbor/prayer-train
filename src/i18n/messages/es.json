@@ -601,6 +601,10 @@
   "chainShareButton": {
     "heading": "Comparte esta oración",
     "description": "Invita a amigos, familia y a tu parroquia a orar junto contigo.",
+    "shareTextWithOrganizer": "Reza con {organizerFirstName} {phrase}:",
+    "shareTextAnonymous": "Reza {phrase}:",
+    "recipientPhraseForName": "por {name}",
+    "recipientPhraseForIntention": "por {snippet}",
     "share": "Compartir",
     "copyLink": "Copiar enlace",
     "copied": "¡Copiado!",

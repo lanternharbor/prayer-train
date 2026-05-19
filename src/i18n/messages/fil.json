@@ -601,6 +601,10 @@
   "chainShareButton": {
     "heading": "Ibahagi ang panalanging ito",
     "description": "Imbitahan ang mga kaibigan, pamilya, at parokya na manalangin kasama mo.",
+    "shareTextWithOrganizer": "Manalangin kasama si {organizerFirstName} {phrase}:",
+    "shareTextAnonymous": "Manalangin {phrase}:",
+    "recipientPhraseForName": "para kay {name}",
+    "recipientPhraseForIntention": "para sa {snippet}",
     "share": "Ibahagi",
     "copyLink": "Kopyahin ang link",
     "copied": "Nakopya na!",

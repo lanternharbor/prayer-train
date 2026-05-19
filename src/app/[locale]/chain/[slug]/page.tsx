@@ -19,7 +19,7 @@ import { reflectionForDay } from "@/lib/daily-reflections";
 import { JoinChainButton } from "./join-button";
 import { ChainShareButton } from "./share-button";
 import { BookOpen, CalendarDays, HandHeart, Settings, Users } from "lucide-react";
-import { getDictionary } from "@/i18n/dictionaries";
+import { getDictionary, type Dictionary } from "@/i18n/dictionaries";
 import { t as interpolate } from "@/i18n/format";
 import { buildAlternates } from "@/i18n/metadata";
 import { localizedHref } from "@/i18n/links";
@@ -28,10 +28,18 @@ import { isLocale, defaultLocale } from "@/i18n/config";
 function recipientPhrase(
   recipientName: string | null,
   intention: string,
+  t: Pick<
+    Dictionary["chainShareButton"],
+    "recipientPhraseForName" | "recipientPhraseForIntention"
+  >,
 ): string {
-  if (recipientName?.trim()) return `for ${recipientName.trim()}`;
-  const words = intention.trim().split(/\s+/).slice(0, 8).join(" ");
-  return `for ${words}${intention.trim().split(/\s+/).length > 8 ? "…" : ""}`;
+  if (recipientName?.trim()) {
+    return interpolate(t.recipientPhraseForName, { name: recipientName.trim() });
+  }
+  const tokens = intention.trim().split(/\s+/);
+  const words = tokens.slice(0, 8).join(" ");
+  const snippet = `${words}${tokens.length > 8 ? "…" : ""}`;
+  return interpolate(t.recipientPhraseForIntention, { snippet });
 }
 
 // Server-side: setHours(0,0,0,0) zeroes to LOCAL midnight, which on
@@ -80,7 +88,12 @@ export async function generateMetadata({
   );
 
   const orgFirstOrNull = organizerFirstNameOrNull(chain);
-  const phrase = recipientPhrase(chain.recipientName, chain.intention);
+  const metadataDict = await getDictionary(locale);
+  const phrase = recipientPhrase(
+    chain.recipientName,
+    chain.intention,
+    metadataDict.chainShareButton,
+  );
   const day = dayNumberFor(chain.startDate, chain.durationDays);
   const baseUrl = getBaseUrl();
   const path = `/chain/${chain.slug}`;
@@ -197,7 +210,11 @@ export default async function ChainDetailPage({
 
   const orgFirst = organizerFirstName(chain);
   const orgFirstOrNull = organizerFirstNameOrNull(chain);
-  const phrase = recipientPhrase(chain.recipientName, chain.intention);
+  const phrase = recipientPhrase(
+    chain.recipientName,
+    chain.intention,
+    dict.chainShareButton,
+  );
   // H1 drops the "[name]'s" possessive prefix when no real organizer
   // name is available (anonymous chain OR User.name is null).
   // Possessive would yield "the organizer's Novena to ..." in either

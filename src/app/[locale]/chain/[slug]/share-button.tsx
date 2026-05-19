@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { Share2, Copy, Check, QrCode, X, MessageCircle, Mail } from "lucide-react";
 import type { Dictionary } from "@/i18n/dictionaries";
+import { t as interpolate } from "@/i18n/format";
 
 /**
  * Share affordance for the "pray together" PrayerTrain detail page.
@@ -14,13 +15,13 @@ import type { Dictionary } from "@/i18n/dictionaries";
  * /chain/[slug] route group, even though both formats are PrayerTrain
  * under the umbrella branding.
  *
- * The share text composition still embeds the organizer's first name +
- * recipient phrase when not anonymous. That dynamic string is rendered
- * in English regardless of locale for now — i18n-ing the share text
- * itself requires placeholder-format strings in the dictionary
- * (`{organizerFirstName}`, `{recipientPhrase}`) and a follow-up pass.
- * The static chrome (heading, button labels, modal copy, hints) is
- * fully localized via the `t` prop below.
+ * Share text is localized end-to-end. The chain page composes the
+ * locale-specific `recipientPhrase` (e.g. "por Juan" / "para kay
+ * John") and passes it in; this component slots it into the matching
+ * `shareTextWithOrganizer` / `shareTextAnonymous` template from the
+ * `chainShareButton` dict so a Spanish-speaking visitor who shares
+ * sees "Reza con Bill por John:" instead of the old hardcoded
+ * "Pray along with Bill for John:".
  */
 export function ChainShareButton({
   slug,
@@ -50,8 +51,11 @@ export function ChainShareButton({
       : `/chain/${slug}`;
 
   const shareText = isAnonymous
-    ? `Pray along ${recipientPhrase}:`
-    : `Pray along with ${organizerFirstName} ${recipientPhrase}:`;
+    ? interpolate(t.shareTextAnonymous, { phrase: recipientPhrase })
+    : interpolate(t.shareTextWithOrganizer, {
+        organizerFirstName,
+        phrase: recipientPhrase,
+      });
 
   const handleCopy = async () => {
     try {

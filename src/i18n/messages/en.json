@@ -307,6 +307,7 @@
   "wizard": {
     "step1Heading": "Who is this prayer train for?",
     "step1Subheading": "Tell us about the person who needs prayers",
+    "step1PrivacyReassurance": "Your train is private by default. Only people you share the link with can see it. You can change this on the next steps.",
     "organizerNameLabel": "Your name",
     "organizerNamePlaceholder": "How you'd like to appear on the prayer page",
     "organizerNameHelpShown": "Shown as “Organized by [your name]” on the public page.",

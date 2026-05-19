@@ -307,6 +307,7 @@
   "wizard": {
     "step1Heading": "Za kogo jest ten PrayerTrain?",
     "step1Subheading": "Opowiedz nam o osobie, która potrzebuje modlitwy",
+    "step1PrivacyReassurance": "Twój PrayerTrain jest domyślnie prywatny. Tylko osoby, którym udostępnisz link, mogą go zobaczyć. Możesz to zmienić w kolejnych krokach.",
     "organizerNameLabel": "Twoje imię",
     "organizerNamePlaceholder": "Jak chcesz pojawić się na stronie modlitwy",
     "organizerNameHelpShown": "Wyświetli się jako «Zorganizowane przez [twoje imię]» na stronie publicznej.",

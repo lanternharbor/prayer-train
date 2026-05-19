@@ -13,6 +13,7 @@ import {
   Check,
   Loader2,
   Camera,
+  Lock,
 } from "lucide-react";
 import { ParishAutocomplete } from "@/components/ui/parish-autocomplete";
 import type { PrayerCategory, SituationCategory, DifficultyLevel } from "@/generated/prisma/client";
@@ -222,6 +223,19 @@ export function CreateWizard({
                 {t.step1Subheading}
               </p>
             </div>
+          </div>
+
+          {/* Privacy reassurance. Step 1 is where organizers type the
+              recipient's name, photo, and (optionally) parish — the
+              most sensitive surface of the wizard. The actual public/
+              private toggle is at step 3 (duration), so without this
+              note the organizer would fill in family details with no
+              visible answer to "where does this end up?". Calm gold-
+              lock framing; the message itself defers the toggle to
+              the user on the duration step. */}
+          <div className="flex items-start gap-2 text-sm text-navy-700 bg-cream-50 border border-cream-300 rounded-lg p-3">
+            <Lock className="w-4 h-4 text-gold-500 shrink-0 mt-0.5" aria-hidden="true" />
+            <span>{t.step1PrivacyReassurance}</span>
           </div>
 
           {/* Organizer self-identification. Shown FIRST so the framing

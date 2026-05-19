@@ -7,6 +7,7 @@ import {
   formatDate,
   calculateFillRate,
 } from "@/lib/utils";
+import { cleanDisplayText } from "@/lib/text-display";
 import { getDictionary } from "@/i18n/dictionaries";
 import { localizedMetadata } from "@/i18n/metadata";
 import { isLocale, defaultLocale } from "@/i18n/config";
@@ -339,7 +340,7 @@ export default async function BrowsePage({
                   </p>
                 )}
                 <p className="text-sm text-foreground leading-relaxed mb-4 line-clamp-2 flex-1">
-                  {train.intention}
+                  {cleanDisplayText(train.intention)}
                 </p>
 
                 {/* Progress */}
@@ -490,7 +491,7 @@ export default async function BrowsePage({
                       : ""}
                   </h3>
                   <p className="text-sm text-foreground leading-relaxed mb-4 line-clamp-2 flex-1">
-                    {chain.intention}
+                    {cleanDisplayText(chain.intention)}
                   </p>
                   <div className="w-full h-2 bg-cream-200 rounded-full overflow-hidden mb-2">
                     <div

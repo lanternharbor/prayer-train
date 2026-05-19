@@ -12,6 +12,7 @@ import {
   formatDate,
   calculateFillRate,
 } from "@/lib/utils";
+import { cleanDisplayText } from "@/lib/text-display";
 import { getDictionary } from "@/i18n/dictionaries";
 import { t as interpolate } from "@/i18n/format";
 import { buildAlternates } from "@/i18n/metadata";
@@ -147,7 +148,7 @@ export async function generateMetadata({
   // "Orações por X" instead of "Prayers for X" when the dict provides
   // a per-locale "prayersFor" prefix; deferred for now.
   const title = `Prayers for ${train.recipientName}`;
-  const description = train.intention.slice(0, 200);
+  const description = cleanDisplayText(train.intention).slice(0, 200);
   const baseUrl = getBaseUrl();
   const path = `/p/${train.slug}`;
   // Prefer the recipient photo for share previews; fall back to the
@@ -390,7 +391,7 @@ export default async function PrayerTrainPage({
           {interpolate(t.h1PrayersFor, { recipientName: train.recipientName })}
         </h1>
         <ExpandableText
-          text={train.intention}
+          text={cleanDisplayText(train.intention)}
           threshold={2000}
           className="text-lg text-muted-foreground leading-relaxed mb-4"
           readMoreLabel={t.readMore}
@@ -398,7 +399,7 @@ export default async function PrayerTrainPage({
         />
         {train.situationDetail && (
           <ExpandableText
-            text={train.situationDetail}
+            text={cleanDisplayText(train.situationDetail)}
             threshold={2000}
             className="text-sm text-muted-foreground bg-cream-50 rounded-lg p-3 border border-cream-300"
             readMoreLabel={t.readMore}
@@ -488,7 +489,7 @@ export default async function PrayerTrainPage({
           </p>
           <div className="bg-white border border-cream-300 rounded-lg p-5">
             <p className="font-heading text-base sm:text-lg leading-relaxed text-navy-700 italic whitespace-pre-line">
-              {train.customPrayerText}
+              {cleanDisplayText(train.customPrayerText)}
             </p>
           </div>
         </div>

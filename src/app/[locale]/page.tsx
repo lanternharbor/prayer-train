@@ -5,6 +5,7 @@ import {
   CalendarDays,
   ArrowRight,
   Search,
+  Check,
 } from "lucide-react";
 import {
   CrossIcon,
@@ -96,6 +97,25 @@ export default async function HomePage({
                   {t.heroSecondaryCTA}
                 </Link>
               </div>
+              {/* Trust microcopies: surface the three anchors that
+                  previously lived on /our-story, /parish-kit, and
+                  /signin so a first-time visitor sees them above the
+                  fold. Calm gold-on-navy treatment, no decorative
+                  weight competing with the CTAs above. */}
+              <ul className="mt-8 flex flex-col gap-2 items-center lg:items-start text-sm text-navy-100">
+                <li className="flex items-center gap-2">
+                  <Check className="w-4 h-4 text-gold-300 shrink-0" aria-hidden="true" />
+                  <span>{t.trustNoAccount}</span>
+                </li>
+                <li className="flex items-center gap-2">
+                  <Check className="w-4 h-4 text-gold-300 shrink-0" aria-hidden="true" />
+                  <span>{t.trustFreeMinistry}</span>
+                </li>
+                <li className="flex items-center gap-2">
+                  <Check className="w-4 h-4 text-gold-300 shrink-0" aria-hidden="true" />
+                  <span>{t.trustPrivate}</span>
+                </li>
+              </ul>
             </div>
 
             {/* Right: Logo illustration */}

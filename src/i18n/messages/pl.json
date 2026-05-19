@@ -365,6 +365,8 @@
     "visibilityPreviewIntentionPlaceholder": "Twoja intencja modlitewna pojawi się tutaj dla odwiedzających.",
     "visibilityPreviewCovered": "0% pokryte",
     "visibilityPreviewSlotsTotal": "{n} miejsc dostępnych",
+    "showNamesFirstOnlyLabel": "Pokaż tylko imię na publicznych stronach",
+    "showNamesFirstOnlyHelp": "Dotyczy publicznego katalogu i nagłówka strony PrayerTrain. Codzienne przypomnienia e-mail i duchowy bukiet nadal używają pełnego imienia i nazwiska.",
     "step4Heading": "Wybierz modlitwy do kalendarza",
     "step4SubheadingWithSituation": "Wyróżniliśmy modlitwy zalecane dla tej sytuacji.",
     "step4SubheadingNoSituation": "Wybierz modlitwy lub zostaw puste, aby wybrać automatycznie.",

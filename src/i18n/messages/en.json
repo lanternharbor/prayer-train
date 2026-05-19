@@ -365,6 +365,8 @@
     "visibilityPreviewIntentionPlaceholder": "Your prayer intention will appear here for visitors.",
     "visibilityPreviewCovered": "0% covered",
     "visibilityPreviewSlotsTotal": "{n} slots open",
+    "showNamesFirstOnlyLabel": "Show only the recipient's first name on public surfaces",
+    "showNamesFirstOnlyHelp": "Applies to the public directory and the train page header. Daily reminder emails and the spiritual bouquet still use the full name.",
     "step4Heading": "Choose prayers for the calendar",
     "step4SubheadingWithSituation": "We've highlighted prayers recommended for this situation.",
     "step4SubheadingNoSituation": "Select prayers, or leave blank for auto-selection.",

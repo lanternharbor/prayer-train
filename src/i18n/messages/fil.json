@@ -365,6 +365,8 @@
     "visibilityPreviewIntentionPlaceholder": "Ang inyong intensyon sa panalangin ay lalabas dito para sa mga bisita.",
     "visibilityPreviewCovered": "0% nasaklawan",
     "visibilityPreviewSlotsTotal": "{n} bukas na puwesto",
+    "showNamesFirstOnlyLabel": "Ipakita lamang ang unang pangalan sa mga pampublikong pahina",
+    "showNamesFirstOnlyHelp": "Aplikable ito sa pampublikong direktoryo at sa header ng PrayerTrain. Ang araw-araw na paalala sa email at ang spiritual bouquet ay gumagamit pa rin ng buong pangalan.",
     "step4Heading": "Pumili ng mga panalangin para sa kalendaryo",
     "step4SubheadingWithSituation": "Naka-highlight ang mga panalanging inirerekomenda para sa sitwasyong ito.",
     "step4SubheadingNoSituation": "Pumili ng mga panalangin, o iwanang blangko para sa awtomatikong pagpili.",

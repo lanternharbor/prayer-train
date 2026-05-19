@@ -51,14 +51,20 @@ export async function generateMetadata({
   const locale = isLocale(rawLocale) ? rawLocale : defaultLocale;
   const content = getSituationContent(locale, topic);
   if (!content) return { title: "Not Found" };
-  // No per-topic imagery — `localizedMetadata` falls through to the
-  // locale's auto-generated 1200x630 OG share card.
+  // Per-topic OG share card. Topic heading is rendered in
+  // src/app/[locale]/situations/[topic]/opengraph-image.tsx so each
+  // shared link surfaces its own h1 (Catholic prayers for surgery /
+  // for grief / etc.) rather than the generic locale brand card.
+  const baseUrl = getBaseUrl();
   return localizedMetadata({
     locale,
     path: `/situations/${content.topic}`,
     title: content.title,
     description: smartTruncate(content.description, 160),
     ogType: "article",
+    ogImage: `${baseUrl}/${locale}/situations/${content.topic}/opengraph-image`,
+    ogImageWidth: 1200,
+    ogImageHeight: 630,
   });
 }
 

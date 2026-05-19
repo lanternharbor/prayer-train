@@ -86,6 +86,8 @@
   "prayers": {
     "heading": "Aklatan ng panalangin",
     "subheading": "Tingnan ang aming pinaghandang koleksyon ng mga Catholic na panalangin. Bawat isa ay may kumpletong tagubilin upang ang sinuman ay makapagdasal nang may tiwala.",
+    "byNeedBanner": "Naghahanap ng panalangin para sa partikular na sitwasyon?",
+    "byNeedBannerCTA": "Maghanap ayon sa pangangailangan",
     "searchPlaceholder": "Maghanap ng panalangin — hal. San Blas, pighati, operasyon, rosaryo",
     "searchAriaLabel": "Maghanap sa aklatan ng panalangin",
     "filterAll": "Lahat",

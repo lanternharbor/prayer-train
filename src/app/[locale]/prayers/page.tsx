@@ -8,6 +8,8 @@ import {
   Star,
   CalendarDays,
   Search,
+  Heart,
+  ArrowRight,
 } from "lucide-react";
 import { PrayerCategory, type Prisma } from "@/generated/prisma/client";
 import { getDictionary } from "@/i18n/dictionaries";
@@ -133,6 +135,27 @@ export default async function PrayersPage({
           {t.subheading}
         </p>
       </div>
+
+      {/* Cross-link to the by-need taxonomy. This library is organized
+          by prayer type (novena, rosary, chaplet); /situations is
+          organized by what the visitor is praying for (illness,
+          surgery, grief). Both indices exist on the site — this
+          surfaces the by-need axis from the by-category entry so a
+          visitor who arrived with "I'm praying for healing" doesn't
+          have to know the /situations URL. */}
+      <Link
+        href="/situations"
+        className="prayer-card bg-cream-50 border-cream-300 group mb-8 flex items-center gap-3 sm:gap-4"
+      >
+        <Heart className="w-5 h-5 text-gold-500 shrink-0" aria-hidden="true" />
+        <span className="flex-1 text-sm sm:text-base text-foreground">
+          {t.byNeedBanner}
+        </span>
+        <span className="inline-flex items-center gap-1.5 text-sm font-medium text-gold-700 group-hover:text-gold-800 shrink-0">
+          {t.byNeedBannerCTA}
+          <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" aria-hidden="true" />
+        </span>
+      </Link>
 
       {/* Search — plain GET form so the URL stays canonical and shareable.
           Preserves the active category filter across searches via a hidden

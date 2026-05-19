@@ -86,6 +86,8 @@
   "prayers": {
     "heading": "Prayer Library",
     "subheading": "Browse our curated collection of Catholic prayers. Each includes full instructions so anyone can pray with confidence.",
+    "byNeedBanner": "Looking for prayers for a specific situation?",
+    "byNeedBannerCTA": "Browse by need",
     "searchPlaceholder": "Search prayers — e.g. St. Blaise, grief, surgery, rosary",
     "searchAriaLabel": "Search the prayer library",
     "filterAll": "All",

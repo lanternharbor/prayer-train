@@ -86,6 +86,8 @@
   "prayers": {
     "heading": "Biblioteca de oraciones",
     "subheading": "Explora nuestra colección cuidadosamente seleccionada de oraciones católicas. Cada una incluye instrucciones completas para que cualquiera pueda orar con confianza.",
+    "byNeedBanner": "¿Buscas oraciones para una situación específica?",
+    "byNeedBannerCTA": "Buscar por necesidad",
     "searchPlaceholder": "Busca oraciones — ej. San Blas, duelo, cirugía, rosario",
     "searchAriaLabel": "Buscar en la biblioteca de oraciones",
     "filterAll": "Todas",

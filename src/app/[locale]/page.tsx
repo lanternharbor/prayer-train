@@ -139,6 +139,37 @@ export default async function HomePage({
       {/* Prayer Counter */}
       <PrayerCounter />
 
+      {/* Audience self-identification. Six chips pointing to the
+          /situations/[topic] pages that cover the most common reasons
+          visitors arrive. Cuts the "is this for me?" question by
+          handing the visitor a specific use-case rather than asking
+          them to project themselves into the implied audience. */}
+      <section className="py-12 sm:py-16">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+          <h2 className="font-heading text-2xl sm:text-3xl font-semibold text-navy-800 text-center mb-8">
+            {t.audienceHeading}
+          </h2>
+          <div className="flex flex-wrap justify-center gap-3">
+            {[
+              { href: "/situations/cancer", label: t.audienceChipIllness },
+              { href: "/situations/surgery", label: t.audienceChipSurgery },
+              { href: "/situations/sick-child", label: t.audienceChipSickChild },
+              { href: "/situations/grief", label: t.audienceChipGrief },
+              { href: "/situations/addiction", label: t.audienceChipAddiction },
+              { href: "/situations/infertility", label: t.audienceChipInfertility },
+            ].map(({ href, label }) => (
+              <Link
+                key={href}
+                href={href}
+                className="inline-flex items-center px-4 py-2.5 rounded-full bg-card border border-cream-300 text-navy-800 text-sm sm:text-base hover:border-gold-400 hover:bg-cream-50 transition-colors"
+              >
+                {label}
+              </Link>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* How It Works */}
       <section id="how-it-works" className="py-20 sm:py-28">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">

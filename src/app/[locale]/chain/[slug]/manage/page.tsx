@@ -4,6 +4,8 @@ import { LocaleLink as Link } from "@/components/locale-link";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import { closePrayerChain } from "@/lib/actions";
+import { getLocale } from "@/i18n/get-locale";
+import { pathForLocale } from "@/i18n/links";
 import { ArrowLeft, Settings, Users, FileDown, Pencil } from "lucide-react";
 import { ChainDangerZone } from "./chain-danger-zone";
 import { isProtectedChain } from "@/lib/train-protection";
@@ -48,7 +50,7 @@ export default async function ChainManagePage({
 }) {
   const { slug } = await params;
   const session = await auth();
-  if (!session?.user?.id) redirect("/signin");
+  if (!session?.user?.id) redirect(pathForLocale(await getLocale(), "/signin"));
 
   const chain = await prisma.prayerChain.findUnique({
     where: { slug },

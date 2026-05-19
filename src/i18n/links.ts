@@ -57,6 +57,29 @@ export function localizedHref(locale: Locale, path: string): string {
 }
 
 /**
+ * Locale-aware redirect target.
+ *
+ * Unlike `localizedHref`, this preserves the clean URL convention for
+ * default-locale visitors: an English visitor redirected to /signin
+ * sees `/signin` in the URL bar (the proxy rewrites internally to
+ * `/en/signin`), while a Spanish visitor redirected to /signin sees
+ * `/es/signin` so the locale stays sticky across the auth bounce.
+ *
+ * Use this for `redirect(...)` in server actions and server-component
+ * pages that may receive non-default-locale visitors.
+ *
+ * @example
+ *   pathForLocale("en", "/signin")    // "/signin"
+ *   pathForLocale("es", "/signin")    // "/es/signin"
+ *   pathForLocale("pl", "/dashboard") // "/pl/dashboard"
+ */
+export function pathForLocale(locale: Locale, path: string): string {
+  if (locale === defaultLocale) return path;
+  const trimmed = path.startsWith("/") ? path : `/${path}`;
+  return `/${locale}${trimmed}`;
+}
+
+/**
  * Strip the locale prefix from a pathname, returning the bare route.
  * Useful for the LocaleSwitcher (it needs to know which page the user
  * is on regardless of current locale, so it can navigate the same

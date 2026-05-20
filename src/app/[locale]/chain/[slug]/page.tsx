@@ -11,6 +11,7 @@ import { getBaseUrl } from "@/lib/url";
 import { SaintPortrait } from "@/components/saint-portrait";
 import { RecipientAvatar } from "@/components/ui/catholic-icons";
 import { dayNumberInTimezone, DEFAULT_DISPLAY_TZ } from "@/lib/dates";
+import { shouldShowLiveDayCounter } from "@/lib/chain-lifecycle";
 import {
   organizerFirstName,
   organizerFirstNameOrNull,
@@ -95,6 +96,13 @@ export async function generateMetadata({
     metadataDict.chainShareButton,
   );
   const day = dayNumberFor(chain.startDate, chain.durationDays);
+  // Gate the OG "Day X of Y" line. Past endDate (or non-ACTIVE), the
+  // counter is misleading — the chain is wrapping up, not mid-flight.
+  const showLiveDay = shouldShowLiveDayCounter(
+    { status: chain.status, endDate: chain.endDate },
+    new Date(),
+    DEFAULT_DISPLAY_TZ,
+  );
   const baseUrl = getBaseUrl();
   const path = `/chain/${chain.slug}`;
   // Prefer the recipient's uploaded photo for the share preview — it
@@ -116,7 +124,9 @@ export async function generateMetadata({
   const title = orgFirstOrNull
     ? `${orgFirstOrNull}'s ${localizedPrayer.name} ${phrase}`
     : `${localizedPrayer.name} ${phrase}`;
-  const description = `Day ${day} of ${chain.durationDays}. Pray along.`;
+  const description = showLiveDay
+    ? `Day ${day} of ${chain.durationDays}. Pray along.`
+    : `Pray along.`;
 
   return {
     title,
@@ -227,6 +237,16 @@ export default async function ChainDetailPage({
     ? `${orgFirstOrNull}'s ${titleSuffix}`
     : titleSuffix;
   const day = dayNumberFor(chain.startDate, chain.durationDays);
+  // Mirrors the predicate in generateMetadata above. Once today >
+  // chain.endDate (or status leaves ACTIVE), the page swaps the live
+  // "Day X of Y" counter for a terminal label — the chain has reached
+  // its final day even while the cron-driven auto-close grace window
+  // keeps the row ACTIVE in the DB.
+  const showLiveDay = shouldShowLiveDayCounter(
+    { status: chain.status, endDate: chain.endDate },
+    new Date(),
+    DEFAULT_DISPLAY_TZ,
+  );
   const isOrganizer = session?.user?.id === chain.organizerId;
   const progressPct = Math.min(
     100,
@@ -278,19 +298,24 @@ export default async function ChainDetailPage({
       <div className="mb-8">
         <div className="flex flex-col sm:flex-row sm:items-start sm:gap-6">
           <div className="flex-1 min-w-0">
-            {/* Day counter. Multi-day chains show "Day X of Y" with an
-                optional status suffix. Single-day chains (durationDays
-                === 1) skip the day count entirely — "Day 1 of 1" reads
-                like a bug — and fall through to a status-only label
-                when the chain is complete or cancelled. */}
-            {chain.durationDays === 1 ? (
-              chain.status === "COMPLETED" ? (
-                <p className="text-xs uppercase tracking-widest text-gold-700 mb-2">
-                  {t.complete}
-                </p>
-              ) : chain.status === "CANCELLED" ? (
+            {/* Lifecycle label. Three phases drive the render:
+                  1. ACTIVE + today <= endDate → live "Day X of Y" counter
+                  2. ACTIVE + today > endDate  → show "Complete" (chain
+                     reached its final day; cron-driven auto-close grace
+                     window keeps status ACTIVE for up to 7 more days,
+                     but the prayer itself is done)
+                  3. COMPLETED / CANCELLED → terminal label only
+                Single-day chains (durationDays === 1) skip the counter
+                entirely — "Day 1 of 1" reads like a bug — and fall
+                through to a status-only label. */}
+            {chain.durationDays === 1 || !showLiveDay ? (
+              chain.status === "CANCELLED" ? (
                 <p className="text-xs uppercase tracking-widest text-gold-700 mb-2">
                   {t.cancelled}
+                </p>
+              ) : chain.status === "COMPLETED" || !showLiveDay ? (
+                <p className="text-xs uppercase tracking-widest text-gold-700 mb-2">
+                  {t.complete}
                 </p>
               ) : null
             ) : (
@@ -299,11 +324,6 @@ export default async function ChainDetailPage({
                   day,
                   total: chain.durationDays,
                 })}
-                {chain.status === "COMPLETED"
-                  ? ` · ${t.complete}`
-                  : chain.status === "CANCELLED"
-                  ? ` · ${t.cancelled}`
-                  : ""}
               </p>
             )}
             <div className="flex items-start gap-4 mb-3">

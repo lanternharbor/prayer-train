@@ -184,6 +184,7 @@
     "prayTogetherBody": "Mga novena at devosyon na sama-samang dinadasal ng isang maliit na grupo — sumali sa kanila at manalangin araw-araw.",
     "prayTogetherBadge": "Sama-samang dasalan",
     "dayOfTotal": "Araw {day} ng {total}",
+    "dayOfTotalComplete": "Tapos na",
     "chainTitleSuffix": " para kay {name}",
     "peoplePrayingOne": "{n} taong nagdarasal",
     "peoplePrayingMany": "{n} taong nagdarasal",

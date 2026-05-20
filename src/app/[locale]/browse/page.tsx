@@ -28,6 +28,7 @@ import {
   daysLeftInTimezone,
   DEFAULT_DISPLAY_TZ,
 } from "@/lib/dates";
+import { shouldShowLiveDayCounter } from "@/lib/chain-lifecycle";
 
 export async function generateMetadata({
   params,
@@ -470,6 +471,15 @@ export default async function BrowsePage({
                 chain.startDate,
                 chain.durationDays,
               );
+              // Past endDate (in the auto-close grace window) the
+              // chain's days are all in the past; "Day 9 of 9" frozen
+              // in the badge reads as stuck. Swap to "Complete" until
+              // the cron flips status next firing.
+              const showLiveDayBadge = shouldShowLiveDayCounter(
+                { status: "ACTIVE", endDate: chain.endDate },
+                new Date(),
+                DEFAULT_DISPLAY_TZ,
+              );
               return (
                 <Link
                   key={chain.id}
@@ -481,7 +491,12 @@ export default async function BrowsePage({
                       {t.prayTogetherBadge}
                     </span>
                     <span className="px-2.5 py-1 rounded-full text-xs font-medium bg-cream-200 text-cream-700">
-                      {fmt(t.dayOfTotal, { day: dayInRange, total: chain.durationDays })}
+                      {showLiveDayBadge
+                        ? fmt(t.dayOfTotal, {
+                            day: dayInRange,
+                            total: chain.durationDays,
+                          })
+                        : t.dayOfTotalComplete}
                     </span>
                   </div>
                   <h3 className="font-heading text-xl font-semibold text-navy-800 group-hover:text-navy-600 transition-colors mb-2">

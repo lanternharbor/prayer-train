@@ -184,6 +184,7 @@
     "prayTogetherBody": "Novenas y devociones que un pequeño grupo está rezando junto — únete y reza cada día.",
     "prayTogetherBadge": "Rezar juntos",
     "dayOfTotal": "Día {day} de {total}",
+    "dayOfTotalComplete": "Completo",
     "chainTitleSuffix": " por {name}",
     "peoplePrayingOne": "{n} persona orando",
     "peoplePrayingMany": "{n} personas orando",

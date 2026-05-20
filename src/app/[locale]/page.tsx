@@ -69,10 +69,6 @@ export default async function HomePage({
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             {/* Left: Text content */}
             <div className="text-center lg:text-left">
-              <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/10 border border-white/20 text-sm text-gold-200 mb-8">
-                <CrossIcon className="w-4 h-4" />
-                <span>{t.heroBadge}</span>
-              </div>
               <h1 className="font-heading text-4xl sm:text-5xl lg:text-6xl font-bold leading-tight mb-6">
                 {t.heroTitleLine1}
                 <br />

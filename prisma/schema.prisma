@@ -196,6 +196,20 @@ model PrayerTrain {
   // shape and the 7-day-grace auto-close pattern that pairs with it.
   closingPromptSentAt DateTime?
 
+  // Idempotency tracker for the organizer-facing abandonment-prompt
+  // email. Set when the daily-reminders cron has dispatched the
+  // "your prayer train hasn't picked up momentum yet" nudge for an
+  // empty train (zero claimed slots, zero warriors) that's been
+  // ACTIVE for at least 14 days. Null = never sent. Once set, the
+  // cron skips this train on subsequent abandonment-prompt runs;
+  // a 7-day grace later, the auto-cancel pass flips the train to
+  // CANCELLED. Mirrors closingPromptSentAt above for the natural-
+  // completion path. The two trackers are independent: a train can
+  // pick up signups between the abandonment prompt and grace expiry,
+  // in which case the auto-cancel predicate sees signupCount > 0
+  // and the train continues toward its natural endDate.
+  abandonmentPromptSentAt DateTime?
+
   // Relations
   slots     PrayerSlot[]
   guestbook GuestbookEntry[]
@@ -531,6 +545,17 @@ model PrayerChain {
   // auto-close in the same cron eventually flips status to
   // COMPLETED for chains the organizer doesn't close manually.
   closingPromptSentAt DateTime?
+
+  // Idempotency tracker for the organizer-facing abandonment-prompt
+  // email. Set when the chain-reminders cron has dispatched the
+  // "your prayer hasn't picked up momentum yet" nudge for an empty
+  // chain (zero members) that's been ACTIVE for at least 14 days.
+  // Null = never sent. Once set, the cron skips this chain on
+  // subsequent abandonment-prompt runs; a 7-day grace later, the
+  // auto-cancel pass flips the chain to CANCELLED. Mirrors
+  // PrayerTrain.abandonmentPromptSentAt — see that field for the
+  // full shape and the 14-day + 7-day timing rationale.
+  abandonmentPromptSentAt DateTime?
 
   // State
   status      ChainStatus @default(ACTIVE)

@@ -4,18 +4,25 @@ import { prisma } from "@/lib/db";
 import { localizePrayer } from "@/lib/prayer-localization";
 import {
   sendDailyReminder,
+  sendTrainAbandonmentArchived,
+  sendTrainAbandonmentPrompt,
   sendTrainBouquetReady,
   sendTrainClosingPrompt,
 } from "@/lib/email";
 import { getBaseUrl } from "@/lib/url";
 import { signCompletionToken } from "@/lib/completion-tokens";
 import {
+  shouldAutoCancelAbandoned,
   shouldAutoClose,
+  shouldSendAbandonmentPrompt,
   shouldSendClosingPrompt,
+  TRAIN_ABANDONMENT_GRACE_DAYS,
+  TRAIN_ABANDONMENT_PROMPT_DAYS,
   TRAIN_AUTO_CLOSE_GRACE_DAYS,
 } from "@/lib/train-lifecycle";
 import { DEFAULT_DISPLAY_TZ } from "@/lib/dates";
 import { organizerFirstName } from "@/lib/organizer-display";
+import { PROTECTED_SLUGS } from "@/lib/train-protection";
 
 /**
  * Resend's free-tier API rate limit is 2 requests per second. The
@@ -368,6 +375,188 @@ export async function GET(request: Request) {
     }
   }
 
+  // ─── Abandonment-cleanup passes ──────────────────────────────
+  //
+  // Two more sweeps for empty trains (zero claimed slots + zero
+  // warriors) keyed off createdAt rather than endDate. Pre-existing
+  // auto-close above only fires after a train reaches its endDate, so
+  // a 30-day train with no signups would sit ACTIVE for 37 days
+  // before any cleanup. These passes catch the abandoned case earlier:
+  //
+  //   3. Abandonment prompt — fires 14 days after createdAt for an
+  //      empty ACTIVE train. One-shot per train via
+  //      PrayerTrain.abandonmentPromptSentAt. Email offers share /
+  //      edit / close options and announces the 7-day archive timer.
+  //
+  //   4. Abandonment auto-cancel — fires 7 days after the prompt for
+  //      trains still empty + still ACTIVE. Flips status to CANCELLED
+  //      (not COMPLETED — these trains never completed anything, so a
+  //      bouquet email would be wrong). Sends a brief archived-
+  //      notification to the organizer.
+  //
+  // Protected slugs (Spina, Denis Wilson) get a defense-in-depth
+  // skip even though they'll never satisfy the empty-train query.
+
+  let abandonmentPromptsSent = 0;
+  let abandonedCancelled = 0;
+
+  // Pass 3: abandonment prompt to organizer
+  const abandonmentPromptCandidates = await prisma.prayerTrain.findMany({
+    where: {
+      status: "ACTIVE",
+      abandonmentPromptSentAt: null,
+      createdAt: {
+        // Pull anything 14+ days old. (graceDays buffer not needed
+        // here because the predicate compares calendar keys exactly.)
+        lt: new Date(
+          nowForCron.getTime() -
+            TRAIN_ABANDONMENT_PROMPT_DAYS * 24 * 60 * 60 * 1000,
+        ),
+      },
+      // SQL-level empty filter: no CLAIMED or COMPLETED slots, no
+      // warriors. The predicate below re-checks with counts passed
+      // in so the gate is unit-testable.
+      slots: { none: { status: { in: ["CLAIMED", "COMPLETED"] } } },
+      warriors: { none: {} },
+    },
+    select: {
+      id: true,
+      slug: true,
+      status: true,
+      createdAt: true,
+      recipientName: true,
+      abandonmentPromptSentAt: true,
+      organizerAnonymous: true,
+      organizer: { select: { name: true, email: true } },
+    },
+  });
+
+  for (const train of abandonmentPromptCandidates) {
+    // SQL already filtered to empty + 14d+ old + null-prompt + ACTIVE,
+    // so the count args here are 0/0 by construction. Pass them
+    // through anyway so the predicate's signup-count gate is
+    // exercised end-to-end (defense in depth for a future SQL change).
+    if (
+      !shouldSendAbandonmentPrompt(
+        {
+          slug: train.slug,
+          status: train.status,
+          createdAt: train.createdAt,
+          abandonmentPromptSentAt: train.abandonmentPromptSentAt,
+          organizer: { email: train.organizer?.email ?? null },
+        },
+        0,
+        0,
+        nowForCron,
+        DEFAULT_DISPLAY_TZ,
+      )
+    ) {
+      continue;
+    }
+    // Belt-and-suspenders protected-slug skip on top of the predicate.
+    if (PROTECTED_SLUGS.has(train.slug)) continue;
+    try {
+      await sendTrainAbandonmentPrompt({
+        to: train.organizer!.email!,
+        organizerFirstName: organizerFirstName({
+          organizerAnonymous: train.organizerAnonymous,
+          organizer: { name: train.organizer?.name ?? null },
+        }),
+        recipientName: train.recipientName,
+        trainUrl: `${baseUrl}/p/${train.slug}`,
+        trainManageUrl: `${baseUrl}/p/${train.slug}/manage`,
+      });
+      // Set idempotency timestamp regardless of helper outcome.
+      // sendTrainAbandonmentPrompt swallows + logs its own errors;
+      // if a send genuinely failed, the column would stay null on the
+      // next cron run and retry. Acceptable trade-off: mirrors the
+      // closing-prompt path above.
+      await prisma.prayerTrain.update({
+        where: { id: train.id },
+        data: { abandonmentPromptSentAt: new Date() },
+      });
+      abandonmentPromptsSent++;
+      await sleep(RESEND_RATE_LIMIT_DELAY_MS);
+    } catch (e) {
+      console.error(
+        `[cron] abandonment prompt failed for train ${train.id}:`,
+        e,
+      );
+      errors++;
+    }
+  }
+
+  // Pass 4: abandonment auto-cancel past the grace period
+  const abandonedCancelCandidates = await prisma.prayerTrain.findMany({
+    where: {
+      status: "ACTIVE",
+      abandonmentPromptSentAt: {
+        lt: new Date(
+          nowForCron.getTime() -
+            TRAIN_ABANDONMENT_GRACE_DAYS * 24 * 60 * 60 * 1000,
+        ),
+      },
+      // Still empty.
+      slots: { none: { status: { in: ["CLAIMED", "COMPLETED"] } } },
+      warriors: { none: {} },
+    },
+    select: {
+      id: true,
+      slug: true,
+      status: true,
+      abandonmentPromptSentAt: true,
+      recipientName: true,
+      organizerAnonymous: true,
+      organizer: { select: { name: true, email: true } },
+    },
+  });
+
+  for (const train of abandonedCancelCandidates) {
+    if (
+      !shouldAutoCancelAbandoned(
+        {
+          slug: train.slug,
+          status: train.status,
+          abandonmentPromptSentAt: train.abandonmentPromptSentAt,
+        },
+        0,
+        0,
+        nowForCron,
+        DEFAULT_DISPLAY_TZ,
+      )
+    ) {
+      continue;
+    }
+    if (PROTECTED_SLUGS.has(train.slug)) continue;
+    try {
+      await prisma.prayerTrain.update({
+        where: { id: train.id },
+        data: { status: "CANCELLED" },
+      });
+      abandonedCancelled++;
+      // Brief archived-notification to the organizer. NOT the bouquet
+      // email — these trains have nothing to bouquet. Best-effort;
+      // helper swallows its own errors.
+      if (train.organizer?.email) {
+        await sendTrainAbandonmentArchived({
+          to: train.organizer.email,
+          organizerFirstName: organizerFirstName({
+            organizerAnonymous: train.organizerAnonymous,
+            organizer: { name: train.organizer?.name ?? null },
+          }),
+          recipientName: train.recipientName,
+        });
+        await sleep(RESEND_RATE_LIMIT_DELAY_MS);
+      }
+    } catch (e) {
+      console.error(
+        `[cron] abandonment auto-cancel failed for train ${train.id}:`,
+        e,
+      );
+      errors++;
+    }
+  }
+
   // Heartbeat ping to Healthchecks.io (or any compatible monitor). Opt-in
   // via env var — zero behavior change if not set. Wrapped to never throw,
   // so a Healthchecks outage cannot mask or fail an otherwise successful
@@ -379,7 +568,7 @@ export async function GET(request: Request) {
     try {
       await fetch(healthcheckUrl, {
         method: "POST",
-        body: `slotsFound=${slotsToRemind.length} sent=${sent} closingPrompts=${closingPromptsSent} autoClosed=${autoClosed} errors=${errors}`,
+        body: `slotsFound=${slotsToRemind.length} sent=${sent} closingPrompts=${closingPromptsSent} autoClosed=${autoClosed} abandonmentPrompts=${abandonmentPromptsSent} abandonedCancelled=${abandonedCancelled} errors=${errors}`,
       });
     } catch (e) {
       console.error("[cron] healthcheck ping failed:", e);
@@ -393,6 +582,8 @@ export async function GET(request: Request) {
     sent,
     closingPromptsSent,
     autoClosed,
+    abandonmentPromptsSent,
+    abandonedCancelled,
     errors,
   });
 }

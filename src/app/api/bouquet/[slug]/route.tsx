@@ -60,33 +60,30 @@ export async function GET(
     return NextResponse.json({ error: "Not found." }, { status: 404 });
   }
 
+  const reqUrl = new URL(req.url);
+
   // Preview is organizer-only and requires sign-in (it bypasses the
   // COMPLETED gate, so we don't want it to leak to anyone with the URL).
   if (isPreview) {
     const session = await auth();
     if (!session?.user?.id) {
-      return NextResponse.json(
-        { error: "Sign in to preview a spiritual bouquet." },
-        { status: 401 },
-      );
+      // Redirect to /signin with callbackUrl so the user lands back
+      // here after auth. Mirrors the chain-bouquet fix from May 20 —
+      // raw JSON 401 dead-ended a real organizer on DDG iOS.
+      const signinUrl = new URL("/signin", reqUrl.origin);
+      signinUrl.searchParams.set("callbackUrl", reqUrl.pathname + reqUrl.search);
+      return NextResponse.redirect(signinUrl, 302);
     }
     if (train.organizerId !== session.user.id) {
-      return NextResponse.json(
-        { error: "Only the train organizer can preview the bouquet." },
-        { status: 403 },
-      );
+      // Signed in but not the organizer. Send to the public train page.
+      return NextResponse.redirect(new URL(`/p/${slug}`, reqUrl.origin), 302);
     }
   } else if (train.status !== "COMPLETED") {
     // Standard (non-preview) download requires the train to be marked
     // complete. Anyone with the slug can download once it is — no
-    // sign-in needed.
-    return NextResponse.json(
-      {
-        error:
-          "The spiritual bouquet is available once the prayer train is marked complete.",
-      },
-      { status: 403 },
-    );
+    // sign-in needed. Redirect to the public train page so the visitor
+    // sees the current status rather than a raw 403.
+    return NextResponse.redirect(new URL(`/p/${slug}`, reqUrl.origin), 302);
   }
 
   // Build BouquetData from completed slots only. A "completed" slot is one

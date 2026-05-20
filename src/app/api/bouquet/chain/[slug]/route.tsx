@@ -51,30 +51,42 @@ export async function GET(
     return NextResponse.json({ error: "Not found." }, { status: 404 });
   }
 
+  const reqUrl = new URL(req.url);
+
   // Preview is organizer-only and requires sign-in (it bypasses the
   // COMPLETED gate, so we don't want it to leak to anyone with the URL).
   if (isPreview) {
     const session = await auth();
     if (!session?.user?.id) {
-      return NextResponse.json(
-        { error: "Sign in to preview a spiritual bouquet." },
-        { status: 401 },
-      );
+      // Redirect unauthenticated organizers to /signin with a
+      // callbackUrl pointing back here, so after sign-in NextAuth
+      // lands them on the bouquet. Previously returned a raw JSON
+      // 401, which dead-ended Krysta on DDG iOS (May 20 report) —
+      // the manage-page Preview link opens in a new tab and her
+      // session cookie wasn't carried across; she saw the raw error
+      // body and had no clear path to recover even after manually
+      // signing in elsewhere.
+      const signinUrl = new URL("/signin", reqUrl.origin);
+      signinUrl.searchParams.set("callbackUrl", reqUrl.pathname + reqUrl.search);
+      return NextResponse.redirect(signinUrl, 302);
     }
     if (chain.organizerId !== session.user.id) {
-      return NextResponse.json(
-        { error: "Only the organizer can preview the bouquet." },
-        { status: 403 },
+      // Signed in but not the organizer. Send them to the public
+      // chain page rather than a raw 403 — that page shows the
+      // chain's state and gives the visitor somewhere to go.
+      return NextResponse.redirect(
+        new URL(`/chain/${slug}`, reqUrl.origin),
+        302,
       );
     }
   } else if (chain.status !== "COMPLETED") {
     // Standard (non-preview) download requires the prayer to be closed.
     // Anyone with the slug can download once it is — no sign-in needed.
-    return NextResponse.json(
-      {
-        error: "The spiritual bouquet is available once the prayer is closed.",
-      },
-      { status: 403 },
+    // Redirect to the public chain page so the visitor sees the
+    // current status rather than a raw 403.
+    return NextResponse.redirect(
+      new URL(`/chain/${slug}`, reqUrl.origin),
+      302,
     );
   }
 

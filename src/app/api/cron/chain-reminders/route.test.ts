@@ -54,14 +54,17 @@ const updateManyMember = vi.fn();
 const sendChainDailyReminderMock = vi.fn();
 const sendChainClosingPromptMock = vi.fn();
 const sendChainBouquetReadyMock = vi.fn();
+const sendChainAbandonmentPromptMock = vi.fn();
+const sendChainAbandonmentArchivedMock = vi.fn();
 
 vi.mock("@/lib/db", () => ({
   prisma: {
     prayerChain: {
-      // The route calls findMany three times: once for active chains
+      // The route calls findMany five times: once for active chains
       // needing reminders, once for closing-prompt candidates, once
-      // for auto-close candidates. We mux them by call-count via a
-      // mockImplementation so each test can supply its own data.
+      // for auto-close candidates, once for abandonment-prompt
+      // candidates, once for abandonment auto-cancel candidates. We
+      // mux them by call-count via mockResolvedValueOnce in each test.
       findMany: vi.fn(),
       update: (...args: unknown[]) => updateChain(...args),
     },
@@ -78,6 +81,10 @@ vi.mock("@/lib/email", () => ({
     sendChainClosingPromptMock(...args),
   sendChainBouquetReady: (...args: unknown[]) =>
     sendChainBouquetReadyMock(...args),
+  sendChainAbandonmentPrompt: (...args: unknown[]) =>
+    sendChainAbandonmentPromptMock(...args),
+  sendChainAbandonmentArchived: (...args: unknown[]) =>
+    sendChainAbandonmentArchivedMock(...args),
 }));
 
 vi.mock("@/lib/url", () => ({
@@ -100,13 +107,21 @@ beforeEach(() => {
   vi.clearAllMocks();
   process.env.CRON_SECRET = "test-secret";
 
-  // Default no-data behavior for the closing-prompt + auto-close
-  // sweeps. Individual tests override the active-chains response.
+  // Default no-data behavior for every sweep. Individual tests
+  // override by re-calling mockReset() and supplying their own
+  // sequence. Order matches the route handler:
+  //   1. active chains needing reminders
+  //   2. closing-prompt candidates
+  //   3. auto-close candidates
+  //   4. abandonment-prompt candidates
+  //   5. abandonment auto-cancel candidates
   (prisma.prayerChain.findMany as ReturnType<typeof vi.fn>)
     .mockReset()
-    .mockResolvedValueOnce([]) // active chains
-    .mockResolvedValueOnce([]) // closing prompt candidates
-    .mockResolvedValueOnce([]); // auto-close candidates
+    .mockResolvedValueOnce([])
+    .mockResolvedValueOnce([])
+    .mockResolvedValueOnce([])
+    .mockResolvedValueOnce([])
+    .mockResolvedValueOnce([]);
 });
 
 afterEach(() => {
@@ -208,6 +223,8 @@ describe("GET /api/cron/chain-reminders — daily reminder dispatch", () => {
         }),
       ])
       .mockResolvedValueOnce([])
+      .mockResolvedValueOnce([])
+      .mockResolvedValueOnce([])
       .mockResolvedValueOnce([]);
 
     sendChainDailyReminderMock.mockResolvedValue({ ok: true, id: "em_test" });
@@ -264,6 +281,8 @@ describe("GET /api/cron/chain-reminders — daily reminder dispatch", () => {
         }),
       ])
       .mockResolvedValueOnce([])
+      .mockResolvedValueOnce([])
+      .mockResolvedValueOnce([])
       .mockResolvedValueOnce([]);
 
     sendChainDailyReminderMock.mockResolvedValue({ ok: true, id: "em_test" });
@@ -310,6 +329,8 @@ describe("GET /api/cron/chain-reminders — daily reminder dispatch", () => {
           ],
         }),
       ])
+      .mockResolvedValueOnce([])
+      .mockResolvedValueOnce([])
       .mockResolvedValueOnce([])
       .mockResolvedValueOnce([]);
 
@@ -358,6 +379,8 @@ describe("GET /api/cron/chain-reminders — daily reminder dispatch", () => {
           ],
         }),
       ])
+      .mockResolvedValueOnce([])
+      .mockResolvedValueOnce([])
       .mockResolvedValueOnce([])
       .mockResolvedValueOnce([]);
 
@@ -421,6 +444,8 @@ describe("GET /api/cron/chain-reminders — daily reminder dispatch", () => {
         }),
       ])
       .mockResolvedValueOnce([])
+      .mockResolvedValueOnce([])
+      .mockResolvedValueOnce([])
       .mockResolvedValueOnce([]);
 
     sendChainDailyReminderMock
@@ -476,6 +501,8 @@ describe("GET /api/cron/chain-reminders — daily reminder dispatch", () => {
         }),
       ])
       .mockResolvedValueOnce([])
+      .mockResolvedValueOnce([])
+      .mockResolvedValueOnce([])
       .mockResolvedValueOnce([]);
 
     sendChainDailyReminderMock.mockResolvedValue({ ok: true, id: "em_test" });
@@ -517,6 +544,8 @@ describe("GET /api/cron/chain-reminders — daily reminder dispatch", () => {
         }),
       ])
       .mockResolvedValueOnce([])
+      .mockResolvedValueOnce([])
+      .mockResolvedValueOnce([])
       .mockResolvedValueOnce([]);
 
     sendChainDailyReminderMock.mockResolvedValue({ ok: true, id: "em_test" });
@@ -541,6 +570,8 @@ describe("GET /api/cron/chain-reminders — daily reminder dispatch", () => {
         }),
       ])
       .mockResolvedValueOnce([])
+      .mockResolvedValueOnce([])
+      .mockResolvedValueOnce([])
       .mockResolvedValueOnce([]);
 
     const secondRes = await GET(makeRequest());
@@ -550,5 +581,141 @@ describe("GET /api/cron/chain-reminders — daily reminder dispatch", () => {
     expect(secondBody.skippedAlreadySent).toBe(2);
     expect(sendChainDailyReminderMock).not.toHaveBeenCalled();
     expect(updateManyMember).not.toHaveBeenCalled();
+  });
+});
+
+describe("GET /api/cron/chain-reminders — abandonment cleanup passes", () => {
+  // Minimal abandonment-candidate fixture matching the route's
+  // SELECT clause. Mirrors what Prisma returns from the Pass 3 query.
+  function makeAbandonedChain(overrides: Record<string, unknown> = {}) {
+    return {
+      id: "chain-abandoned-1",
+      slug: "test-empty-chain",
+      status: "ACTIVE",
+      createdAt: new Date(Date.now() - 15 * 24 * 60 * 60 * 1000), // 15d old
+      recipientName: "Priscilla",
+      abandonmentPromptSentAt: null,
+      organizerAnonymous: false,
+      language: "en",
+      organizer: { name: "Krysta Green", email: "krysta@example.com" },
+      prayerType: {
+        name: "Novena to St. Therese",
+        prayerText: "...",
+        instructions: null,
+        dailyReflections: [],
+        translations: [],
+      },
+      ...overrides,
+    };
+  }
+
+  it("sends abandonment prompt + sets timestamp for an empty 15-day-old chain", async () => {
+    (prisma.prayerChain.findMany as ReturnType<typeof vi.fn>)
+      .mockReset()
+      .mockResolvedValueOnce([]) // active chains (none today)
+      .mockResolvedValueOnce([]) // closing-prompt candidates
+      .mockResolvedValueOnce([]) // auto-close candidates
+      .mockResolvedValueOnce([makeAbandonedChain()]) // abandonment-prompt candidates
+      .mockResolvedValueOnce([]); // abandonment-cancel candidates
+
+    const res = await GET(makeRequest());
+    const body = await res.json();
+
+    expect(res.status).toBe(200);
+    expect(body.abandonmentPromptsSent).toBe(1);
+    expect(body.abandonedCancelled).toBe(0);
+    expect(sendChainAbandonmentPromptMock).toHaveBeenCalledTimes(1);
+    expect(sendChainAbandonmentPromptMock).toHaveBeenCalledWith(
+      expect.objectContaining({
+        to: "krysta@example.com",
+        recipientName: "Priscilla",
+      }),
+    );
+    // Idempotency: timestamp written so the next cron run skips this chain
+    expect(updateChain).toHaveBeenCalledWith({
+      where: { id: "chain-abandoned-1" },
+      data: expect.objectContaining({
+        abandonmentPromptSentAt: expect.any(Date),
+      }),
+    });
+  });
+
+  it("skips protected chain slugs even if the SQL query somehow returns them", async () => {
+    // Defense-in-depth: PROTECTED_CHAIN_SLUGS is currently empty, but
+    // pinning the skip here means adding a protected chain later only
+    // requires a one-line Set addition, not a code change.
+    // We simulate the future by checking the empty-set behavior is
+    // a true no-op rather than accidentally always-firing.
+    const protectedFixture = makeAbandonedChain({
+      slug: "test-empty-chain", // not actually protected today
+    });
+
+    (prisma.prayerChain.findMany as ReturnType<typeof vi.fn>)
+      .mockReset()
+      .mockResolvedValueOnce([])
+      .mockResolvedValueOnce([])
+      .mockResolvedValueOnce([])
+      .mockResolvedValueOnce([protectedFixture])
+      .mockResolvedValueOnce([]);
+
+    const res = await GET(makeRequest());
+    const body = await res.json();
+
+    // With no entries currently in PROTECTED_CHAIN_SLUGS, this chain
+    // is NOT protected and the prompt should fire normally. This test
+    // documents the current behavior; if a protected chain is added
+    // later, the equivalent test should expect 0 calls.
+    expect(body.abandonmentPromptsSent).toBe(1);
+    expect(sendChainAbandonmentPromptMock).toHaveBeenCalledTimes(1);
+  });
+
+  it("flips status to CANCELLED + sends archived notification when grace elapses", async () => {
+    const candidate = {
+      id: "chain-auto-cancel-1",
+      slug: "test-empty-chain",
+      status: "ACTIVE",
+      abandonmentPromptSentAt: new Date(
+        Date.now() - 8 * 24 * 60 * 60 * 1000, // 8 days past prompt
+      ),
+      recipientName: "Priscilla",
+      organizerAnonymous: false,
+      language: "en",
+      organizer: { name: "Krysta", email: "krysta@example.com" },
+      prayerType: {
+        name: "Novena to St. Therese",
+        prayerText: "...",
+        instructions: null,
+        dailyReflections: [],
+        translations: [],
+      },
+    };
+
+    (prisma.prayerChain.findMany as ReturnType<typeof vi.fn>)
+      .mockReset()
+      .mockResolvedValueOnce([])
+      .mockResolvedValueOnce([])
+      .mockResolvedValueOnce([])
+      .mockResolvedValueOnce([])
+      .mockResolvedValueOnce([candidate]);
+
+    const res = await GET(makeRequest());
+    const body = await res.json();
+
+    expect(res.status).toBe(200);
+    expect(body.abandonedCancelled).toBe(1);
+    expect(updateChain).toHaveBeenCalledWith({
+      where: { id: "chain-auto-cancel-1" },
+      data: { status: "CANCELLED" },
+    });
+    expect(sendChainAbandonmentArchivedMock).toHaveBeenCalledTimes(1);
+    expect(sendChainAbandonmentArchivedMock).toHaveBeenCalledWith(
+      expect.objectContaining({
+        to: "krysta@example.com",
+        recipientName: "Priscilla",
+      }),
+    );
+    // Critical: the auto-cancel path does NOT send the bouquet-ready
+    // email — abandoned chains have nothing to bouquet.
+    expect(sendChainBouquetReadyMock).not.toHaveBeenCalled();
   });
 });

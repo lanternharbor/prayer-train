@@ -1215,6 +1215,271 @@ export async function sendChainClosingPrompt({
   }
 }
 
+// ─── Train abandonment prompt to organizer ────────────────────
+//
+// Fires from the daily-reminders cron after 14 days from createdAt
+// for trains still ACTIVE with zero claimed slots and zero warriors.
+// Mirrors sendTrainClosingPrompt's shape but the trigger is empty-
+// engagement (not endDate) and the action set is broader (share /
+// edit / close). Idempotency via PrayerTrain.abandonmentPromptSentAt.
+//
+// Tone guardrails: no em dashes in body copy (William's preference
+// for new user-facing text). Don't quantify shame ("nobody signed
+// up"); frame as "hasn't received signups yet" so the door stays
+// open. Always announce the auto-archive timer so the organizer
+// isn't surprised by Pass 4 a week later.
+//
+// CTA links to /p/[slug]/manage where the organizer can copy the
+// train link to share, edit details, or click cancel.
+
+export async function sendTrainAbandonmentPrompt({
+  to,
+  organizerFirstName,
+  recipientName,
+  trainUrl,
+  trainManageUrl,
+}: {
+  to: string;
+  organizerFirstName: string;
+  recipientName: string;
+  /** /p/[slug] — public train page the organizer copies + shares. */
+  trainUrl: string;
+  /** /p/[slug]/manage — where the organizer edits or closes the train. */
+  trainManageUrl: string;
+}) {
+  const subject = `A few options for your prayer train for ${recipientName}`;
+  const eOrgFirst = escapeHtml(organizerFirstName);
+  const eRecipientName = escapeHtml(recipientName);
+  try {
+    await resend.emails.send({
+      from: FROM,
+      to,
+      subject,
+      html: `
+        <div style="font-family: Georgia, 'Times New Roman', serif; max-width: 560px; margin: 0 auto; padding: 32px 24px; background: #faf8f5;">
+          <div style="background: #ffffff; border: 1px solid #e8e0d5; border-radius: 16px; padding: 32px 28px;">
+            <h1 style="color: #11152c; font-family: 'EB Garamond', Georgia, serif; font-size: 26px; font-weight: 700; margin: 0 0 16px; line-height: 1.3;">
+              Prayers for ${eRecipientName}
+            </h1>
+            <p style="color: #11152c; font-size: 15px; line-height: 1.7; margin: 0 0 16px;">
+              ${eOrgFirst}, the prayer train you started for ${eRecipientName} hasn&rsquo;t received any signups yet. We&rsquo;re holding the space, and here are a few options if you&rsquo;d like to take action.
+            </p>
+            <p style="color: #11152c; font-size: 15px; line-height: 1.7; margin: 0 0 8px;">
+              <strong>Share the link.</strong> Most trains pick up momentum when an organizer texts or emails it to a few friends and family.
+            </p>
+            <p style="color: #11152c; font-size: 14px; line-height: 1.6; margin: 0 0 18px; word-break: break-all;">
+              <a href="${trainUrl}" style="color: #242e58; text-decoration: underline;">${trainUrl}</a>
+            </p>
+            <p style="color: #11152c; font-size: 15px; line-height: 1.7; margin: 0 0 18px;">
+              <strong>Edit the train.</strong> If the recipient&rsquo;s situation has changed, you can update details or the intention on the manage page.
+            </p>
+            <p style="color: #11152c; font-size: 15px; line-height: 1.7; margin: 0 0 24px;">
+              <strong>Close the train.</strong> If you&rsquo;d rather wind it down, the manage page has a close option.
+            </p>
+            <div style="text-align: center; margin: 8px 0 4px;">
+              <a href="${trainManageUrl}" style="display: inline-block; background: #242e58; color: #ffffff; padding: 12px 28px; border-radius: 10px; text-decoration: none; font-weight: 600; font-size: 15px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;">
+                Open the manage page
+              </a>
+            </div>
+            <p style="color: #b8a994; font-size: 13px; font-style: italic; line-height: 1.6; margin: 24px 0 0; text-align: center;">
+              If we don&rsquo;t hear from you within 7 days, we&rsquo;ll quietly archive this train so it doesn&rsquo;t sit unattended. You can always reach out to restore it.
+            </p>
+          </div>
+          <p style="text-align: center; color: #b8a994; font-size: 12px; margin: 18px 0 0;">
+            PrayerTrain &middot; A Lantern Harbor project
+          </p>
+        </div>
+      `,
+      text: `Prayers for ${recipientName}\n\n${organizerFirstName}, the prayer train you started for ${recipientName} hasn't received any signups yet. We're holding the space, and here are a few options if you'd like to take action.\n\nShare the link. Most trains pick up momentum when an organizer texts or emails it to a few friends and family.\n${trainUrl}\n\nEdit the train. If the recipient's situation has changed, you can update details or the intention on the manage page.\n\nClose the train. If you'd rather wind it down, the manage page has a close option.\n\nOpen the manage page: ${trainManageUrl}\n\nIf we don't hear from you within 7 days, we'll quietly archive this train so it doesn't sit unattended. You can always reach out to restore it.`,
+    });
+  } catch (error) {
+    console.error("Failed to send train abandonment-prompt email:", error);
+  }
+}
+
+// ─── Train abandonment archived notification ───────────────────
+//
+// Sent on the auto-cancel path (Pass 4) after the 7-day grace window
+// elapsed without engagement. Brief and pastoral; the train is gone
+// from public listings now, so the organizer should know it happened
+// and how to come back if they want to.
+
+export async function sendTrainAbandonmentArchived({
+  to,
+  organizerFirstName,
+  recipientName,
+}: {
+  to: string;
+  organizerFirstName: string;
+  recipientName: string;
+}) {
+  const subject = `Your prayer train for ${recipientName} has been archived`;
+  const eOrgFirst = escapeHtml(organizerFirstName);
+  const eRecipientName = escapeHtml(recipientName);
+  try {
+    await resend.emails.send({
+      from: FROM,
+      to,
+      subject,
+      html: `
+        <div style="font-family: Georgia, 'Times New Roman', serif; max-width: 560px; margin: 0 auto; padding: 32px 24px; background: #faf8f5;">
+          <div style="background: #ffffff; border: 1px solid #e8e0d5; border-radius: 16px; padding: 32px 28px;">
+            <h1 style="color: #11152c; font-family: 'EB Garamond', Georgia, serif; font-size: 24px; font-weight: 700; margin: 0 0 14px; line-height: 1.3;">
+              Your prayer train has been archived.
+            </h1>
+            <p style="color: #11152c; font-size: 15px; line-height: 1.7; margin: 0 0 14px;">
+              ${eOrgFirst}, we&rsquo;ve quietly archived your prayer train for ${eRecipientName}. It sat without signups for three weeks, so we tucked it away.
+            </p>
+            <p style="color: #11152c; font-size: 15px; line-height: 1.7; margin: 0 0 14px;">
+              If you&rsquo;d like to start fresh or restore this one, just reply to this email and we&rsquo;ll help.
+            </p>
+            <p style="color: #b8a994; font-size: 13px; font-style: italic; line-height: 1.6; margin: 18px 0 0; text-align: center;">
+              May the Lord bless and keep ${eRecipientName} and your family.
+            </p>
+          </div>
+          <p style="text-align: center; color: #b8a994; font-size: 12px; margin: 18px 0 0;">
+            PrayerTrain &middot; A Lantern Harbor project
+          </p>
+        </div>
+      `,
+      text: `Your prayer train has been archived.\n\n${organizerFirstName}, we've quietly archived your prayer train for ${recipientName}. It sat without signups for three weeks, so we tucked it away.\n\nIf you'd like to start fresh or restore this one, just reply to this email and we'll help.\n\nMay the Lord bless and keep ${recipientName} and your family.`,
+    });
+  } catch (error) {
+    console.error("Failed to send train abandonment-archived email:", error);
+  }
+}
+
+// ─── Chain abandonment prompt to organizer ────────────────────
+//
+// Chain-side mirror of sendTrainAbandonmentPrompt. Triggered from the
+// chain-reminders cron after 14 days for chains still ACTIVE with
+// zero members. Idempotency via PrayerChain.abandonmentPromptSentAt.
+
+export async function sendChainAbandonmentPrompt({
+  to,
+  organizerFirstName,
+  prayerName,
+  recipientName,
+  chainUrl,
+  chainManageUrl,
+}: {
+  to: string;
+  organizerFirstName: string;
+  prayerName: string;
+  recipientName: string | null;
+  /** /chain/[slug] — public chain page to share. */
+  chainUrl: string;
+  /** /chain/[slug]/manage — where the organizer edits or closes. */
+  chainManageUrl: string;
+}) {
+  const recipientPhraseShort = recipientName?.trim()
+    ? `for ${recipientName.trim()}`
+    : "";
+  const subject = recipientName?.trim()
+    ? `A few options for your ${prayerName} for ${recipientName.trim()}`
+    : `A few options for your ${prayerName}`;
+  const eOrgFirst = escapeHtml(organizerFirstName);
+  const ePrayerName = escapeHtml(prayerName);
+  const eRecipientPhraseShort = escapeHtml(recipientPhraseShort);
+  try {
+    await resend.emails.send({
+      from: FROM,
+      to,
+      subject,
+      html: `
+        <div style="font-family: Georgia, 'Times New Roman', serif; max-width: 560px; margin: 0 auto; padding: 32px 24px; background: #faf8f5;">
+          <div style="background: #ffffff; border: 1px solid #e8e0d5; border-radius: 16px; padding: 32px 28px;">
+            <h1 style="color: #11152c; font-family: 'EB Garamond', Georgia, serif; font-size: 26px; font-weight: 700; margin: 0 0 16px; line-height: 1.3;">
+              ${ePrayerName} ${eRecipientPhraseShort}
+            </h1>
+            <p style="color: #11152c; font-size: 15px; line-height: 1.7; margin: 0 0 16px;">
+              ${eOrgFirst}, the ${ePrayerName} you started ${eRecipientPhraseShort} hasn&rsquo;t picked up any other members yet. We&rsquo;re holding the space, and here are a few options if you&rsquo;d like to take action.
+            </p>
+            <p style="color: #11152c; font-size: 15px; line-height: 1.7; margin: 0 0 8px;">
+              <strong>Share the link.</strong> A short text or email to a few friends or family is usually all it takes.
+            </p>
+            <p style="color: #11152c; font-size: 14px; line-height: 1.6; margin: 0 0 18px; word-break: break-all;">
+              <a href="${chainUrl}" style="color: #242e58; text-decoration: underline;">${chainUrl}</a>
+            </p>
+            <p style="color: #11152c; font-size: 15px; line-height: 1.7; margin: 0 0 18px;">
+              <strong>Edit the prayer.</strong> If the intention has changed, the manage page lets you update it.
+            </p>
+            <p style="color: #11152c; font-size: 15px; line-height: 1.7; margin: 0 0 24px;">
+              <strong>Close it.</strong> If you&rsquo;d rather wind it down, the manage page has a close option.
+            </p>
+            <div style="text-align: center; margin: 8px 0 4px;">
+              <a href="${chainManageUrl}" style="display: inline-block; background: #242e58; color: #ffffff; padding: 12px 28px; border-radius: 10px; text-decoration: none; font-weight: 600; font-size: 15px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;">
+                Open the manage page
+              </a>
+            </div>
+            <p style="color: #b8a994; font-size: 13px; font-style: italic; line-height: 1.6; margin: 24px 0 0; text-align: center;">
+              If we don&rsquo;t hear from you within 7 days, we&rsquo;ll quietly archive this prayer so it doesn&rsquo;t sit unattended. You can always reach out to restore it.
+            </p>
+          </div>
+          <p style="text-align: center; color: #b8a994; font-size: 12px; margin: 18px 0 0;">
+            PrayerTrain &middot; A Lantern Harbor project
+          </p>
+        </div>
+      `,
+      text: `${prayerName} ${recipientPhraseShort}\n\n${organizerFirstName}, the ${prayerName} you started ${recipientPhraseShort} hasn't picked up any other members yet. We're holding the space, and here are a few options if you'd like to take action.\n\nShare the link. A short text or email to a few friends or family is usually all it takes.\n${chainUrl}\n\nEdit the prayer. If the intention has changed, the manage page lets you update it.\n\nClose it. If you'd rather wind it down, the manage page has a close option.\n\nOpen the manage page: ${chainManageUrl}\n\nIf we don't hear from you within 7 days, we'll quietly archive this prayer so it doesn't sit unattended. You can always reach out to restore it.`,
+    });
+  } catch (error) {
+    console.error("Failed to send chain abandonment-prompt email:", error);
+  }
+}
+
+// ─── Chain abandonment archived notification ───────────────────
+
+export async function sendChainAbandonmentArchived({
+  to,
+  organizerFirstName,
+  prayerName,
+  recipientName,
+}: {
+  to: string;
+  organizerFirstName: string;
+  prayerName: string;
+  recipientName: string | null;
+}) {
+  const recipientPhraseShort = recipientName?.trim()
+    ? `for ${recipientName.trim()}`
+    : "";
+  const subject = recipientName?.trim()
+    ? `Your ${prayerName} for ${recipientName.trim()} has been archived`
+    : `Your ${prayerName} has been archived`;
+  const eOrgFirst = escapeHtml(organizerFirstName);
+  const ePrayerName = escapeHtml(prayerName);
+  const eRecipientPhraseShort = escapeHtml(recipientPhraseShort);
+  try {
+    await resend.emails.send({
+      from: FROM,
+      to,
+      subject,
+      html: `
+        <div style="font-family: Georgia, 'Times New Roman', serif; max-width: 560px; margin: 0 auto; padding: 32px 24px; background: #faf8f5;">
+          <div style="background: #ffffff; border: 1px solid #e8e0d5; border-radius: 16px; padding: 32px 28px;">
+            <h1 style="color: #11152c; font-family: 'EB Garamond', Georgia, serif; font-size: 24px; font-weight: 700; margin: 0 0 14px; line-height: 1.3;">
+              Your ${ePrayerName} has been archived.
+            </h1>
+            <p style="color: #11152c; font-size: 15px; line-height: 1.7; margin: 0 0 14px;">
+              ${eOrgFirst}, we&rsquo;ve quietly archived your ${ePrayerName} ${eRecipientPhraseShort}. It sat without any other members for three weeks, so we tucked it away.
+            </p>
+            <p style="color: #11152c; font-size: 15px; line-height: 1.7; margin: 0 0 14px;">
+              If you&rsquo;d like to start fresh or restore this one, just reply to this email and we&rsquo;ll help.
+            </p>
+          </div>
+          <p style="text-align: center; color: #b8a994; font-size: 12px; margin: 18px 0 0;">
+            PrayerTrain &middot; A Lantern Harbor project
+          </p>
+        </div>
+      `,
+      text: `Your ${prayerName} has been archived.\n\n${organizerFirstName}, we've quietly archived your ${prayerName} ${recipientPhraseShort}. It sat without any other members for three weeks, so we tucked it away.\n\nIf you'd like to start fresh or restore this one, just reply to this email and we'll help.`,
+    });
+  } catch (error) {
+    console.error("Failed to send chain abandonment-archived email:", error);
+  }
+}
+
 // Cancellation notice (chain) — same shape and pastoral framing as the
 // train version. Sent to every active member (unsubscribedAt is null)
 // when an organizer cancels the chain. Caller dedupes by email and

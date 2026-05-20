@@ -4,6 +4,8 @@ import { prisma } from "@/lib/db";
 import { localizePrayer } from "@/lib/prayer-localization";
 import type { EmailDispatchResult } from "@/lib/email";
 import {
+  sendChainAbandonmentArchived,
+  sendChainAbandonmentPrompt,
   sendChainBouquetReady,
   sendChainClosingPrompt,
   sendChainDailyReminder,
@@ -12,12 +14,17 @@ import { getBaseUrl } from "@/lib/url";
 import { chainDayTokenId, signCompletionToken } from "@/lib/completion-tokens";
 import {
   AUTO_CLOSE_GRACE_DAYS,
+  CHAIN_ABANDONMENT_GRACE_DAYS,
+  CHAIN_ABANDONMENT_PROMPT_DAYS,
+  shouldAutoCancelAbandoned,
   shouldAutoClose,
+  shouldSendAbandonmentPrompt,
   shouldSendClosingPrompt,
 } from "@/lib/chain-lifecycle";
 import { DEFAULT_DISPLAY_TZ } from "@/lib/dates";
 import { organizerFirstName } from "@/lib/organizer-display";
 import { reflectionForDay } from "@/lib/daily-reflections";
+import { PROTECTED_CHAIN_SLUGS } from "@/lib/train-protection";
 
 /**
  * Resend's free-tier API rate limit is 2 requests per second. Sequential
@@ -500,6 +507,174 @@ export async function GET(request: Request) {
     }
   }
 
+  // ─── Abandonment-cleanup passes ──────────────────────────────
+  //
+  // Mirrors the train-side passes in daily-reminders/route.ts. See
+  // that file's section header for the full rationale. Chain-specific
+  // detail: "empty" means zero members. Chains have no warrior-
+  // equivalent overflow primitive.
+
+  let abandonmentPromptsSent = 0;
+  let abandonedCancelled = 0;
+
+  // Pass 3: abandonment prompt to organizer
+  const abandonmentPromptCandidates = await prisma.prayerChain.findMany({
+    where: {
+      status: "ACTIVE",
+      abandonmentPromptSentAt: null,
+      createdAt: {
+        lt: new Date(
+          nowForCron.getTime() -
+            CHAIN_ABANDONMENT_PROMPT_DAYS * 24 * 60 * 60 * 1000,
+        ),
+      },
+      members: { none: {} },
+    },
+    select: {
+      id: true,
+      slug: true,
+      status: true,
+      createdAt: true,
+      recipientName: true,
+      abandonmentPromptSentAt: true,
+      organizerAnonymous: true,
+      language: true,
+      organizer: { select: { name: true, email: true } },
+      prayerType: {
+        include: {
+          translations: { where: { reviewedAt: { not: null } } },
+        },
+      },
+    },
+  });
+
+  for (const chain of abandonmentPromptCandidates) {
+    if (
+      !shouldSendAbandonmentPrompt(
+        {
+          slug: chain.slug,
+          status: chain.status,
+          createdAt: chain.createdAt,
+          abandonmentPromptSentAt: chain.abandonmentPromptSentAt,
+          organizer: { email: chain.organizer?.email ?? null },
+        },
+        0,
+        nowForCron,
+        DEFAULT_DISPLAY_TZ,
+      )
+    ) {
+      continue;
+    }
+    if (PROTECTED_CHAIN_SLUGS.has(chain.slug)) continue;
+    try {
+      const localizedPrayer = localizePrayer(
+        chain.prayerType,
+        chain.prayerType.translations,
+        chain.language,
+      );
+      await sendChainAbandonmentPrompt({
+        to: chain.organizer!.email!,
+        organizerFirstName: organizerFirstName({
+          organizerAnonymous: chain.organizerAnonymous,
+          organizer: { name: chain.organizer?.name ?? null },
+        }),
+        prayerName: localizedPrayer.name,
+        recipientName: chain.recipientName,
+        chainUrl: `${baseUrl}/chain/${chain.slug}`,
+        chainManageUrl: `${baseUrl}/chain/${chain.slug}/manage`,
+      });
+      await prisma.prayerChain.update({
+        where: { id: chain.id },
+        data: { abandonmentPromptSentAt: new Date() },
+      });
+      abandonmentPromptsSent++;
+      await sleep(RESEND_RATE_LIMIT_DELAY_MS);
+    } catch (e) {
+      console.error(
+        `[chain-cron] abandonment prompt failed for chain ${chain.id}:`,
+        e,
+      );
+      errors++;
+    }
+  }
+
+  // Pass 4: abandonment auto-cancel past the grace period
+  const abandonedCancelCandidates = await prisma.prayerChain.findMany({
+    where: {
+      status: "ACTIVE",
+      abandonmentPromptSentAt: {
+        lt: new Date(
+          nowForCron.getTime() -
+            CHAIN_ABANDONMENT_GRACE_DAYS * 24 * 60 * 60 * 1000,
+        ),
+      },
+      members: { none: {} },
+    },
+    select: {
+      id: true,
+      slug: true,
+      status: true,
+      abandonmentPromptSentAt: true,
+      recipientName: true,
+      organizerAnonymous: true,
+      language: true,
+      organizer: { select: { name: true, email: true } },
+      prayerType: {
+        include: {
+          translations: { where: { reviewedAt: { not: null } } },
+        },
+      },
+    },
+  });
+
+  for (const chain of abandonedCancelCandidates) {
+    if (
+      !shouldAutoCancelAbandoned(
+        {
+          slug: chain.slug,
+          status: chain.status,
+          abandonmentPromptSentAt: chain.abandonmentPromptSentAt,
+        },
+        0,
+        nowForCron,
+        DEFAULT_DISPLAY_TZ,
+      )
+    ) {
+      continue;
+    }
+    if (PROTECTED_CHAIN_SLUGS.has(chain.slug)) continue;
+    try {
+      await prisma.prayerChain.update({
+        where: { id: chain.id },
+        data: { status: "CANCELLED" },
+      });
+      abandonedCancelled++;
+      if (chain.organizer?.email) {
+        const localizedPrayer = localizePrayer(
+          chain.prayerType,
+          chain.prayerType.translations,
+          chain.language,
+        );
+        await sendChainAbandonmentArchived({
+          to: chain.organizer.email,
+          organizerFirstName: organizerFirstName({
+            organizerAnonymous: chain.organizerAnonymous,
+            organizer: { name: chain.organizer?.name ?? null },
+          }),
+          prayerName: localizedPrayer.name,
+          recipientName: chain.recipientName,
+        });
+        await sleep(RESEND_RATE_LIMIT_DELAY_MS);
+      }
+    } catch (e) {
+      console.error(
+        `[chain-cron] abandonment auto-cancel failed for chain ${chain.id}:`,
+        e,
+      );
+      errors++;
+    }
+  }
+
   // Heartbeat ping. Same opt-in env-var pattern as the train cron — see
   // docs/operational-safety.md for the Healthchecks.io setup. Wrapped to
   // never throw so a Healthchecks outage cannot mask a successful run.
@@ -508,7 +683,7 @@ export async function GET(request: Request) {
     try {
       await fetch(healthcheckUrl, {
         method: "POST",
-        body: `chains=${chainsProcessed} sent=${sent} skipped=${skippedAlreadySent} closingPrompts=${closingPromptsSent} autoClosed=${autoClosed} errors=${errors}`,
+        body: `chains=${chainsProcessed} sent=${sent} skipped=${skippedAlreadySent} closingPrompts=${closingPromptsSent} autoClosed=${autoClosed} abandonmentPrompts=${abandonmentPromptsSent} abandonedCancelled=${abandonedCancelled} errors=${errors}`,
       });
     } catch (e) {
       console.error("[chain-cron] healthcheck ping failed:", e);
@@ -523,6 +698,8 @@ export async function GET(request: Request) {
     skippedAlreadySent,
     closingPromptsSent,
     autoClosed,
+    abandonmentPromptsSent,
+    abandonedCancelled,
     errors,
   });
 }

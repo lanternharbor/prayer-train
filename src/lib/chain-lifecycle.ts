@@ -1,8 +1,11 @@
 import { dateKeyInTimezone } from "./dates";
+import { isProtectedChain } from "./train-protection";
 
 /**
  * Pure-function predicates that drive the chain end-of-life cron
- * passes (closing-prompt email + grace-period auto-close).
+ * passes (closing-prompt email + grace-period auto-close, plus the
+ * abandonment-prompt + auto-cancel pair for chains that never
+ * picked up members).
  *
  * The chain-reminders cron query already filters at the SQL level
  * (status, endDate, closingPromptSentAt), but these predicates run
@@ -20,6 +23,14 @@ import { dateKeyInTimezone } from "./dates";
 /** Default grace period for auto-close. Used as the public constant
  *  so the cron + tests stay in sync with the documented behavior. */
 export const AUTO_CLOSE_GRACE_DAYS = 7;
+
+/** Days from createdAt before the abandonment-prompt fires for an
+ *  empty chain (zero members). Mirrors the train-side constant. */
+export const CHAIN_ABANDONMENT_PROMPT_DAYS = 14;
+
+/** Days after abandonmentPromptSentAt before auto-cancel fires.
+ *  Mirrors the train-side constant. */
+export const CHAIN_ABANDONMENT_GRACE_DAYS = 7;
 
 export type ChainForClosingPrompt = {
   status: string;
@@ -82,4 +93,81 @@ export function shouldAutoClose(
   const endMs = Date.parse(endKey + "T00:00:00Z");
   const daysPastEnd = Math.floor((todayMs - endMs) / (1000 * 60 * 60 * 24));
   return daysPastEnd > graceDays;
+}
+
+// ─── Abandonment-cleanup predicates ─────────────────────────────
+//
+// Mirrors the train-side pair. Triggers off createdAt + zero
+// members rather than endDate, so an empty chain gets archived
+// well before its natural endDate-plus-grace would touch it.
+
+export type ChainForAbandonmentPrompt = {
+  slug: string;
+  status: string;
+  createdAt: Date;
+  abandonmentPromptSentAt: Date | null;
+  organizer: { email: string | null } | null;
+};
+
+export type ChainForAutoCancelAbandoned = {
+  slug: string;
+  status: string;
+  abandonmentPromptSentAt: Date | null;
+};
+
+/**
+ * Returns true when the cron should send the organizer the
+ * abandonment-prompt email. Mirrors shouldSendAbandonmentPrompt
+ * on the train side — see train-lifecycle.ts for the full rationale.
+ *
+ * "Empty" for chains means `memberCount === 0`. Chains have no
+ * warrior-equivalent overflow primitive; membership is the only
+ * engagement signal.
+ */
+export function shouldSendAbandonmentPrompt(
+  chain: ChainForAbandonmentPrompt,
+  memberCount: number,
+  now: Date,
+  timeZone: string,
+  daysSinceCreated: number = CHAIN_ABANDONMENT_PROMPT_DAYS,
+): boolean {
+  if (chain.status !== "ACTIVE") return false;
+  if (chain.abandonmentPromptSentAt !== null) return false;
+  if (!chain.organizer?.email) return false;
+  if (isProtectedChain(chain.slug)) return false;
+  if (memberCount > 0) return false;
+  const todayKey = dateKeyInTimezone(now, timeZone);
+  const createdKey = dateKeyInTimezone(chain.createdAt, "UTC");
+  const todayMs = Date.parse(todayKey + "T00:00:00Z");
+  const createdMs = Date.parse(createdKey + "T00:00:00Z");
+  const daysSinceCreate = Math.floor(
+    (todayMs - createdMs) / (1000 * 60 * 60 * 24),
+  );
+  return daysSinceCreate >= daysSinceCreated;
+}
+
+/**
+ * Returns true when the cron should auto-flip status to CANCELLED
+ * for an abandoned chain. Mirrors shouldAutoCancelAbandoned on the
+ * train side — see train-lifecycle.ts for the full rationale.
+ */
+export function shouldAutoCancelAbandoned(
+  chain: ChainForAutoCancelAbandoned,
+  memberCount: number,
+  now: Date,
+  timeZone: string,
+  graceDays: number = CHAIN_ABANDONMENT_GRACE_DAYS,
+): boolean {
+  if (chain.status !== "ACTIVE") return false;
+  if (chain.abandonmentPromptSentAt === null) return false;
+  if (isProtectedChain(chain.slug)) return false;
+  if (memberCount > 0) return false;
+  const todayKey = dateKeyInTimezone(now, timeZone);
+  const promptKey = dateKeyInTimezone(chain.abandonmentPromptSentAt, "UTC");
+  const todayMs = Date.parse(todayKey + "T00:00:00Z");
+  const promptMs = Date.parse(promptKey + "T00:00:00Z");
+  const daysSincePrompt = Math.floor(
+    (todayMs - promptMs) / (1000 * 60 * 60 * 24),
+  );
+  return daysSincePrompt >= graceDays;
 }

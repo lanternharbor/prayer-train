@@ -1,7 +1,11 @@
 import { describe, expect, it } from "vitest";
 import {
   AUTO_CLOSE_GRACE_DAYS,
+  CHAIN_ABANDONMENT_GRACE_DAYS,
+  CHAIN_ABANDONMENT_PROMPT_DAYS,
+  shouldAutoCancelAbandoned,
   shouldAutoClose,
+  shouldSendAbandonmentPrompt,
   shouldSendClosingPrompt,
 } from "./chain-lifecycle";
 
@@ -134,5 +138,138 @@ describe("AUTO_CLOSE_GRACE_DAYS", () => {
     // Pinned so docs / cron logic / tests stay in sync. Changing
     // the default is a deliberate product call, not a side-effect.
     expect(AUTO_CLOSE_GRACE_DAYS).toBe(7);
+  });
+});
+
+describe("shouldSendAbandonmentPrompt (chain)", () => {
+  const baseChain = {
+    slug: "test-chain-abcd",
+    status: "ACTIVE",
+    createdAt: new Date("2026-05-05T00:00:00Z"),
+    abandonmentPromptSentAt: null,
+    organizer: { email: "william@example.com" },
+  };
+  const now14 = new Date("2026-05-19T15:00:00Z");
+
+  it("returns true on day 14 with zero members", () => {
+    expect(shouldSendAbandonmentPrompt(baseChain, 0, now14, TZ)).toBe(true);
+  });
+
+  it("returns false on day 13 (boundary)", () => {
+    const now13 = new Date("2026-05-18T15:00:00Z");
+    expect(shouldSendAbandonmentPrompt(baseChain, 0, now13, TZ)).toBe(false);
+  });
+
+  it("returns false when chain has any member", () => {
+    expect(shouldSendAbandonmentPrompt(baseChain, 1, now14, TZ)).toBe(false);
+  });
+
+  it("returns false when chain is not ACTIVE", () => {
+    expect(
+      shouldSendAbandonmentPrompt(
+        { ...baseChain, status: "COMPLETED" },
+        0,
+        now14,
+        TZ,
+      ),
+    ).toBe(false);
+    expect(
+      shouldSendAbandonmentPrompt(
+        { ...baseChain, status: "CANCELLED" },
+        0,
+        now14,
+        TZ,
+      ),
+    ).toBe(false);
+  });
+
+  it("returns false when prompt has already been sent (idempotency)", () => {
+    expect(
+      shouldSendAbandonmentPrompt(
+        {
+          ...baseChain,
+          abandonmentPromptSentAt: new Date("2026-05-19T11:05:00Z"),
+        },
+        0,
+        now14,
+        TZ,
+      ),
+    ).toBe(false);
+  });
+
+  it("returns false when organizer has no email", () => {
+    expect(
+      shouldSendAbandonmentPrompt(
+        { ...baseChain, organizer: { email: null } },
+        0,
+        now14,
+        TZ,
+      ),
+    ).toBe(false);
+    expect(
+      shouldSendAbandonmentPrompt(
+        { ...baseChain, organizer: null },
+        0,
+        now14,
+        TZ,
+      ),
+    ).toBe(false);
+  });
+
+  it("respects an overridden daysSinceCreated threshold", () => {
+    const now5 = new Date("2026-05-10T15:00:00Z");
+    expect(shouldSendAbandonmentPrompt(baseChain, 0, now5, TZ, 3)).toBe(true);
+    expect(shouldSendAbandonmentPrompt(baseChain, 0, now5, TZ, 30)).toBe(false);
+  });
+});
+
+describe("shouldAutoCancelAbandoned (chain)", () => {
+  const baseChain = {
+    slug: "test-chain-abcd",
+    status: "ACTIVE",
+    abandonmentPromptSentAt: new Date("2026-05-12T11:05:00Z"),
+  };
+  const now7 = new Date("2026-05-19T11:05:00Z");
+
+  it("returns true on day 7 after prompt with zero members", () => {
+    expect(shouldAutoCancelAbandoned(baseChain, 0, now7, TZ)).toBe(true);
+  });
+
+  it("returns false on day 6 (grace not yet elapsed)", () => {
+    const now6 = new Date("2026-05-18T11:05:00Z");
+    expect(shouldAutoCancelAbandoned(baseChain, 0, now6, TZ)).toBe(false);
+  });
+
+  it("returns false when chain picked up any member since the prompt", () => {
+    expect(shouldAutoCancelAbandoned(baseChain, 1, now7, TZ)).toBe(false);
+  });
+
+  it("returns false when chain is no longer ACTIVE", () => {
+    expect(
+      shouldAutoCancelAbandoned(
+        { ...baseChain, status: "COMPLETED" },
+        0,
+        now7,
+        TZ,
+      ),
+    ).toBe(false);
+  });
+
+  it("returns false when prompt was never fired", () => {
+    expect(
+      shouldAutoCancelAbandoned(
+        { ...baseChain, abandonmentPromptSentAt: null },
+        0,
+        now7,
+        TZ,
+      ),
+    ).toBe(false);
+  });
+});
+
+describe("CHAIN_ABANDONMENT_PROMPT_DAYS / CHAIN_ABANDONMENT_GRACE_DAYS", () => {
+  it("are pinned constants", () => {
+    expect(CHAIN_ABANDONMENT_PROMPT_DAYS).toBe(14);
+    expect(CHAIN_ABANDONMENT_GRACE_DAYS).toBe(7);
   });
 });

@@ -2,6 +2,44 @@ import { dateKeyInTimezone } from "./dates";
 import { isProtectedChain } from "./train-protection";
 
 /**
+ * Returns true when the public UI should render a live "Day X of Y"
+ * counter for a chain. Returns false when the chain has reached or
+ * passed its endDate, or is no longer ACTIVE — callers then render a
+ * terminal label ("Novena complete", "Cancelled") instead of a counter
+ * that keeps incrementing math-wise past the chain's natural window.
+ *
+ * Motivated by the Priscilla novena (May 6–14, 2026): the cron's
+ * closing-prompt fired correctly on endDate, and auto-close fires 7
+ * days later on May 22, but in the 7-day grace window the chain
+ * remains ACTIVE in the DB while the day counter on every UI surface
+ * keeps showing "Day 9 of 9" (the clamp). To organizers this reads as
+ * "stuck" — they see the chain frozen at its final day with no signal
+ * that the prayer has actually wrapped.
+ *
+ * The fix is purely visual: status stays ACTIVE during the grace
+ * window (the cron + auto-close pattern owns that transition); the UI
+ * just stops pretending the chain is still in flight.
+ */
+export type ChainForDayCounter = {
+  status: string;
+  endDate: Date;
+};
+
+export function shouldShowLiveDayCounter(
+  chain: ChainForDayCounter,
+  now: Date,
+  timeZone: string,
+): boolean {
+  if (chain.status !== "ACTIVE") return false;
+  const todayKey = dateKeyInTimezone(now, timeZone);
+  const endKey = dateKeyInTimezone(chain.endDate, "UTC");
+  // Show counter only when today is on or before endDate. The day OF
+  // endDate is still mid-flight (the final day's prayer is "today");
+  // the day after endDate is the first day we should hide the counter.
+  return todayKey <= endKey;
+}
+
+/**
  * Pure-function predicates that drive the chain end-of-life cron
  * passes (closing-prompt email + grace-period auto-close, plus the
  * abandonment-prompt + auto-cancel pair for chains that never

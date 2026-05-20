@@ -184,6 +184,7 @@
     "prayTogetherBody": "Novenas and devotions a small group is praying together — join them and pray every day.",
     "prayTogetherBadge": "Pray together",
     "dayOfTotal": "Day {day} of {total}",
+    "dayOfTotalComplete": "Complete",
     "chainTitleSuffix": " for {name}",
     "peoplePrayingOne": "{n} person praying",
     "peoplePrayingMany": "{n} people praying",

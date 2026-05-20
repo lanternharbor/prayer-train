@@ -7,6 +7,7 @@ import {
   shouldAutoClose,
   shouldSendAbandonmentPrompt,
   shouldSendClosingPrompt,
+  shouldShowLiveDayCounter,
 } from "./chain-lifecycle";
 
 const TZ = "America/New_York";
@@ -271,5 +272,57 @@ describe("CHAIN_ABANDONMENT_PROMPT_DAYS / CHAIN_ABANDONMENT_GRACE_DAYS", () => {
   it("are pinned constants", () => {
     expect(CHAIN_ABANDONMENT_PROMPT_DAYS).toBe(14);
     expect(CHAIN_ABANDONMENT_GRACE_DAYS).toBe(7);
+  });
+});
+
+describe("shouldShowLiveDayCounter (chain)", () => {
+  // Priscilla-style fixture: 9-day novena, May 6–14. Today is May 19
+  // (5 days past endDate); the cron-driven auto-close grace window
+  // keeps status ACTIVE until May 22.
+  const baseChain = {
+    status: "ACTIVE",
+    endDate: new Date("2026-05-14T00:00:00Z"),
+  };
+
+  it("returns true on or before endDate while ACTIVE", () => {
+    const dayBefore = new Date("2026-05-13T20:00:00Z");
+    const lastDay = new Date("2026-05-14T20:00:00Z");
+    expect(shouldShowLiveDayCounter(baseChain, dayBefore, TZ)).toBe(true);
+    expect(shouldShowLiveDayCounter(baseChain, lastDay, TZ)).toBe(true);
+  });
+
+  it("returns false the day AFTER endDate (Priscilla case)", () => {
+    // First day the counter should swap to a terminal label.
+    const dayAfter = new Date("2026-05-15T20:00:00Z");
+    expect(shouldShowLiveDayCounter(baseChain, dayAfter, TZ)).toBe(false);
+  });
+
+  it("returns false within the auto-close grace window (today = 5 days past)", () => {
+    // The original Priscilla state: ACTIVE, 5 days past endDate, cron
+    // auto-close not yet fired. Counter must stay hidden.
+    const fiveDaysPast = new Date("2026-05-19T15:00:00Z");
+    expect(shouldShowLiveDayCounter(baseChain, fiveDaysPast, TZ)).toBe(false);
+  });
+
+  it("returns false when status is COMPLETED regardless of date", () => {
+    const midRun = new Date("2026-05-10T15:00:00Z");
+    expect(
+      shouldShowLiveDayCounter(
+        { ...baseChain, status: "COMPLETED" },
+        midRun,
+        TZ,
+      ),
+    ).toBe(false);
+  });
+
+  it("returns false when status is CANCELLED regardless of date", () => {
+    const midRun = new Date("2026-05-10T15:00:00Z");
+    expect(
+      shouldShowLiveDayCounter(
+        { ...baseChain, status: "CANCELLED" },
+        midRun,
+        TZ,
+      ),
+    ).toBe(false);
   });
 });

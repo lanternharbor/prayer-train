@@ -10,6 +10,7 @@ import { ArrowLeft, Settings, Users, FileDown, Pencil } from "lucide-react";
 import { ChainDangerZone } from "./chain-danger-zone";
 import { isProtectedChain } from "@/lib/train-protection";
 import { dayNumberInTimezone, DEFAULT_DISPLAY_TZ } from "@/lib/dates";
+import { shouldShowLiveDayCounter } from "@/lib/chain-lifecycle";
 
 // Module-level helper. Defined outside the component to satisfy the
 // react-hooks/purity rule, which rejects Date.now() inside render.
@@ -78,6 +79,20 @@ export default async function ChainManagePage({
 
   const activeCount = chain.members.filter((m) => !m.unsubscribedAt).length;
   const dayNum = currentDayNumber(chain.startDate, chain.durationDays);
+  // Gate the live "Day X of Y" label the same way the public chain
+  // page does. Past endDate the chain is wrapping up; the organizer
+  // header reads cleaner as "Complete / Awaiting close" than "Day 9
+  // of 9" frozen for the 7-day auto-close grace window.
+  const showLiveDay = shouldShowLiveDayCounter(
+    { status: chain.status, endDate: chain.endDate },
+    new Date(),
+    DEFAULT_DISPLAY_TZ,
+  );
+  const lifecycleLabel = showLiveDay
+    ? `Day ${dayNum} of ${chain.durationDays}`
+    : chain.status === "CANCELLED"
+      ? "Cancelled"
+      : "Complete";
 
   return (
     <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
@@ -98,8 +113,8 @@ export default async function ChainManagePage({
               {chain.recipientName ?? chain.prayerType.name}
             </h1>
             <p className="text-sm text-muted-foreground">
-              {chain.prayerType.name} &bull; Day {dayNum} of{" "}
-              {chain.durationDays} &bull; {activeCount} active{" "}
+              {chain.prayerType.name} &bull; {lifecycleLabel} &bull;{" "}
+              {activeCount} active{" "}
               {activeCount === 1 ? "member" : "members"}
             </p>
           </div>

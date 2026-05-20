@@ -1151,9 +1151,22 @@ export async function reactivatePrayerTrain(formData: FormData) {
   // No protected-slug check or recipient-name confirmation: reactivation
   // is non-destructive (the inverse of cancel) and itself reversible.
   // Auth + ownership + state precondition is the full guard.
+  //
+  // Reset both lifecycle-prompt timestamps so the cron can re-fire
+  // them naturally if/when the train next crosses its endDate or
+  // abandonment threshold. Without this reset, a train that was
+  // auto-cancelled by the abandonment cron would be eligible for
+  // immediate re-cancellation on the next cron run (abandonment
+  // prompt is still set + grace window is still elapsed + empty),
+  // which would loop forever. Resetting both prompts gives the
+  // reactivated train a clean lifecycle.
   await prisma.prayerTrain.update({
     where: { id: train.id },
-    data: { status: "ACTIVE" },
+    data: {
+      status: "ACTIVE",
+      abandonmentPromptSentAt: null,
+      closingPromptSentAt: null,
+    },
   });
 
   revalidatePath(`/p/${train.slug}`);
@@ -1367,9 +1380,18 @@ export async function reactivatePrayerChain(formData: FormData) {
     throw new Error("Only cancelled shared prayers can be reactivated.");
   }
 
+  // Reset both lifecycle-prompt timestamps so the cron can re-fire
+  // them naturally. See the train-side counterpart for the full
+  // rationale — the short version is that an abandonment-cancelled
+  // chain reactivated without this reset would loop straight back
+  // into auto-cancel on the next cron firing.
   await prisma.prayerChain.update({
     where: { id: chain.id },
-    data: { status: "ACTIVE" },
+    data: {
+      status: "ACTIVE",
+      abandonmentPromptSentAt: null,
+      closingPromptSentAt: null,
+    },
   });
 
   revalidatePath(`/chain/${chain.slug}`);

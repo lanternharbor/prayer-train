@@ -184,6 +184,7 @@
     "prayTogetherBody": "Nowenny i nabożeństwa odmawiane wspólnie przez małą grupę — dołącz i módl się każdego dnia.",
     "prayTogetherBadge": "Módlcie się razem",
     "dayOfTotal": "Dzień {day} z {total}",
+    "dayOfTotalComplete": "Ukończona",
     "chainTitleSuffix": " za {name}",
     "peoplePrayingOne": "{n} osoba modli się",
     "peoplePrayingMany": "{n} osób się modli",

@@ -371,6 +371,12 @@
     "step4SubheadingWithSituation": "Destacamos as orações recomendadas para esta situação.",
     "step4SubheadingNoSituation": "Selecione orações, ou deixe em branco para uma seleção automática.",
     "noneSelected": "Nenhuma oração selecionada — vamos escolher automaticamente orações alinhadas à situação.",
+    "anchorHelpText": "Toque na estrela de uma oração para rezá-la todos os dias. As outras vão alternar nos espaços restantes.",
+    "dailyBadge": "Diária",
+    "maxAnchorsReached": "Você atingiu o máximo de orações diárias para este train (um a menos que os espaços por dia).",
+    "anchorRequiresMoreSlots": "Aumente os espaços por dia para fixar uma oração diária.",
+    "setAsDailyAria": "Rezar esta oração todos os dias",
+    "unsetAsDailyAria": "Parar de rezar esta oração todos os dias",
     "customPrayerLabel": "Uma oração pessoal para incluir",
     "customPrayerHelp": "Tem alguma oração específica que você gostaria que todos rezassem junto com as orações acima? Cole aqui. Vamos mostrá-la na página do PrayerTrain e incluí-la nos lembretes diários.",
     "customPrayerPlaceholder": "ex.: uma oração da família, uma oração que um amigo escreveu, palavras do seu coração…",
@@ -625,5 +631,18 @@
     "startPrayerTrainCTA": "Começar um PrayerTrain",
     "faqsHeading": "Perguntas frequentes",
     "readFullGuide": "Não tem certeza de como funciona? Leia o guia completo"
+  },
+  "manageSchedule": {
+    "pageTitle": "Editar o calendário de oração",
+    "pageSubtitle": "Mude quais orações fazem parte deste train e qual (se houver) é rezada todos os dias. Os espaços já reservados são preservados.",
+    "bannerOnePerOne": "1 espaço aberto será substituído. 1 espaço já reservado será preservado.",
+    "bannerOnePerMany": "1 espaço aberto será substituído. {claimed} espaços já reservados serão preservados.",
+    "bannerManyPerOne": "{open} espaços abertos serão substituídos. 1 espaço já reservado será preservado.",
+    "bannerManyPerMany": "{open} espaços abertos serão substituídos. {claimed} espaços já reservados serão preservados.",
+    "bannerNothingToRebuild": "Não há espaços abertos futuros para reconstruir. Você ainda pode atualizar sua preferência de oração diária para a próxima vez que o calendário mudar.",
+    "submitButton": "Reconstruir o calendário",
+    "submitting": "Reconstruindo…",
+    "backToManage": "Voltar para gerenciar",
+    "cancelLink": "Cancelar"
   }
 }

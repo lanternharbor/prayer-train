@@ -25,6 +25,7 @@ import {
   parseFormData,
   reactivatePrayerChainSchema,
   reactivatePrayerTrainSchema,
+  rebuildScheduleSchema,
   submitSlotNoteByTokenSchema,
   submitSlotNoteSchema,
   trainUpdateSchema,
@@ -62,6 +63,7 @@ import {
   verifyCompletionToken,
 } from "@/lib/completion-tokens";
 import { put } from "@vercel/blob";
+import { buildSlotData } from "@/lib/slot-generation";
 
 // ─── Create PrayerTrain ─────────────────────────────────────
 
@@ -91,6 +93,7 @@ export async function createPrayerTrain(formData: FormData) {
     organizerName,
     organizerAnonymous,
     prayerTypeIds,
+    anchorPrayerTypeIds,
   } = input;
 
   // Persist the organizer's display name to User.name. Skipped when
@@ -145,6 +148,49 @@ export async function createPrayerTrain(formData: FormData) {
   // PrayerTrain.language comment for the full contract.
   const language = await getLocale();
 
+  // Get selected prayer types (or default to situation-appropriate ones)
+  // before creating the train, so we can determine the effective anchor
+  // set when defaults kick in (anchors must be a subset of the actual
+  // prayer types we'll generate slots for).
+  type SelectedPrayerType = Awaited<
+    ReturnType<typeof prisma.prayerType.findMany>
+  >[number];
+  let prayerTypes: SelectedPrayerType[];
+  if (prayerTypeIds && prayerTypeIds.length > 0) {
+    prayerTypes = await prisma.prayerType.findMany({
+      where: { id: { in: prayerTypeIds } },
+    });
+  } else {
+    // Auto-select based on situation
+    prayerTypes = await prisma.prayerType.findMany({
+      where: { situationTags: { has: situation } },
+      take: 10,
+    });
+  }
+
+  if (prayerTypes.length === 0) {
+    prayerTypes = await prisma.prayerType.findMany({ take: 5 });
+  }
+
+  // Preserve the user-picked order rather than the DB's natural order
+  // when the user provided an explicit selection. Order matters for
+  // slot generation: rotators cycle in user-pick order.
+  if (prayerTypeIds && prayerTypeIds.length > 0) {
+    const byId = new Map(prayerTypes.map((p) => [p.id, p]));
+    prayerTypes = prayerTypeIds
+      .map((id) => byId.get(id))
+      .filter((p): p is SelectedPrayerType => p != null);
+  }
+
+  // Anchor IDs are only valid if they're in the prayer-type set we're
+  // about to use. Cardinality (anchors <= slotsPerDay - 1) was already
+  // enforced by the Zod schema; here we just drop any anchors that
+  // would refer to a prayer type that fell out (e.g. the default
+  // fallback path that overrides prayerTypeIds).
+  const effectiveAnchorIds = anchorPrayerTypeIds.filter((id) =>
+    prayerTypes.some((p) => p.id === id),
+  );
+
   // Create the train
   const train = await prisma.prayerTrain.create({
     data: {
@@ -167,46 +213,20 @@ export async function createPrayerTrain(formData: FormData) {
       showNames,
       organizerAnonymous,
       language,
+      anchorPrayerTypeIds: effectiveAnchorIds,
     },
   });
 
-  // Generate prayer slots
+  // Generate prayer slots via the shared buildSlotData helper so the
+  // create path and the rebuild path stay in lockstep.
   const days = eachDayOfInterval({ start: startDate, end: endDate });
-
-  // Get selected prayer types (or default to situation-appropriate ones)
-  let prayerTypes;
-  if (prayerTypeIds && prayerTypeIds.length > 0) {
-    prayerTypes = await prisma.prayerType.findMany({
-      where: { id: { in: prayerTypeIds } },
-    });
-  } else {
-    // Auto-select based on situation
-    prayerTypes = await prisma.prayerType.findMany({
-      where: { situationTags: { has: situation } },
-      take: 10,
-    });
-  }
-
-  if (prayerTypes.length === 0) {
-    prayerTypes = await prisma.prayerType.findMany({ take: 5 });
-  }
-
-  // Build slot data
-  const slotData = [];
-  let prayerIdx = 0;
-
-  for (const day of days) {
-    for (let slotIndex = 0; slotIndex < slotsPerDay; slotIndex++) {
-      const prayer = prayerTypes[prayerIdx % prayerTypes.length];
-      slotData.push({
-        trainId: train.id,
-        date: day,
-        slotIndex,
-        prayerTypeId: prayer.id,
-      });
-      prayerIdx++;
-    }
-  }
+  const slotData = buildSlotData({
+    trainId: train.id,
+    days,
+    slotsPerDay,
+    prayerTypes,
+    anchorPrayerTypeIds: effectiveAnchorIds,
+  });
 
   await prisma.prayerSlot.createMany({ data: slotData });
 
@@ -960,6 +980,153 @@ export async function updateTrainDetails(formData: FormData) {
   revalidatePath(`/p/${train.slug}`);
   revalidatePath(`/p/${train.slug}/manage`);
   revalidatePath("/browse");
+  redirect(`/p/${train.slug}/manage`);
+}
+
+// ─── Rebuild PrayerTrain Schedule (Organizer) ────────────────
+//
+// Lets the organizer change the prayer mix + daily-anchor selection
+// on a live train. Already-claimed slots are preserved (and any past
+// slots, claimed or not, since they're historical). Only OPEN slots
+// dated today-or-later are deleted; new slots covering the same date
+// range are inserted via the shared buildSlotData helper.
+//
+// Why not just call this "updateSchedule"? It's specifically
+// destructive-then-additive on the slot table — calling it "rebuild"
+// reflects what the action actually does, which matters when an
+// organizer is staring at a confirmation dialog.
+
+export async function rebuildTrainSchedule(formData: FormData) {
+  const session = await auth();
+  if (!session?.user?.id) redirect(pathForLocale(await getLocale(), "/signin"));
+
+  const input = parseFormData(rebuildScheduleSchema, formData);
+
+  const train = await prisma.prayerTrain.findUnique({
+    where: { id: input.trainId },
+    select: {
+      id: true,
+      slug: true,
+      organizerId: true,
+      slotsPerDay: true,
+      status: true,
+    },
+  });
+  if (!train) throw new Error("That prayer train no longer exists.");
+  if (train.organizerId !== session.user.id) {
+    throw new Error("Only the organizer can rebuild this prayer train's schedule.");
+  }
+  if (train.status !== "ACTIVE") {
+    throw new Error(
+      "This prayer train isn't accepting schedule changes (status is not ACTIVE).",
+    );
+  }
+
+  // Enforce anchor cardinality against the train's actual slotsPerDay
+  // here, since the schema doesn't carry slotsPerDay (it's not editable
+  // from this form). Mirrors the create-time refinement.
+  if (input.anchorPrayerTypeIds.length > train.slotsPerDay - 1) {
+    throw new Error(
+      `You can mark up to ${train.slotsPerDay - 1} prayer${
+        train.slotsPerDay - 1 === 1 ? "" : "s"
+      } as daily on a train with ${train.slotsPerDay} slot${
+        train.slotsPerDay === 1 ? "" : "s"
+      } per day.`,
+    );
+  }
+
+  // Resolve PrayerTypes in the user-picked order so rotators cycle in
+  // that order. Same shape as the create path.
+  const prayerTypes = await prisma.prayerType.findMany({
+    where: { id: { in: input.prayerTypeIds } },
+  });
+  if (prayerTypes.length === 0) {
+    throw new Error("Pick at least one valid prayer for the schedule.");
+  }
+  const byId = new Map(prayerTypes.map((p) => [p.id, p]));
+  const orderedPrayerTypes = input.prayerTypeIds
+    .map((id) => byId.get(id))
+    .filter((p): p is (typeof prayerTypes)[number] => p != null);
+
+  const effectiveAnchorIds = input.anchorPrayerTypeIds.filter((id) =>
+    byId.has(id),
+  );
+
+  // Today, zeroed to local midnight, mirrors createPrayerTrain. Slots
+  // strictly before today stay regardless of status — they're already
+  // historical from the recipient's perspective.
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  await prisma.$transaction(async (tx) => {
+    // 1. Find OPEN slots dated today-or-later; capture their dates so
+    //    we can regenerate exactly the same calendar surface.
+    const openFutureSlots = await tx.prayerSlot.findMany({
+      where: {
+        trainId: train.id,
+        status: "OPEN",
+        date: { gte: today },
+      },
+      select: { date: true },
+      orderBy: { date: "asc" },
+    });
+
+    if (openFutureSlots.length === 0) {
+      // Nothing to rebuild: persist the anchor preference for future
+      // reference, but no slot churn needed.
+      await tx.prayerTrain.update({
+        where: { id: train.id },
+        data: { anchorPrayerTypeIds: effectiveAnchorIds },
+      });
+      return;
+    }
+
+    // 2. Compute the unique date range covered by the open future
+    //    slots. Deduped because each day may have multiple open slots.
+    const uniqueDays = Array.from(
+      new Map(
+        openFutureSlots.map((s) => {
+          const d = new Date(s.date);
+          d.setHours(0, 0, 0, 0);
+          return [d.toISOString(), d];
+        }),
+      ).values(),
+    ).sort((a, b) => a.getTime() - b.getTime());
+
+    // 3. Delete the open-future slots in bulk.
+    await tx.prayerSlot.deleteMany({
+      where: {
+        trainId: train.id,
+        status: "OPEN",
+        date: { gte: today },
+      },
+    });
+
+    // 4. Persist the new anchor preference on the train row.
+    await tx.prayerTrain.update({
+      where: { id: train.id },
+      data: { anchorPrayerTypeIds: effectiveAnchorIds },
+    });
+
+    // 5. Regenerate fresh slots over the same date range via the
+    //    shared helper. createMany is fine here — no race because
+    //    we're inside the transaction.
+    const newSlots = buildSlotData({
+      trainId: train.id,
+      days: uniqueDays,
+      slotsPerDay: train.slotsPerDay,
+      prayerTypes: orderedPrayerTypes,
+      anchorPrayerTypeIds: effectiveAnchorIds,
+    });
+
+    if (newSlots.length > 0) {
+      await tx.prayerSlot.createMany({ data: newSlots });
+    }
+  });
+
+  revalidatePath(`/p/${train.slug}`);
+  revalidatePath(`/p/${train.slug}/manage`);
+  revalidatePath(`/p/${train.slug}/manage/schedule`);
   redirect(`/p/${train.slug}/manage`);
 }
 

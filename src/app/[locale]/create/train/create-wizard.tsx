@@ -9,7 +9,6 @@ import {
   User,
   BookOpen,
   CalendarDays,
-  Clock,
   Check,
   Loader2,
   Camera,
@@ -19,6 +18,7 @@ import {
 } from "lucide-react";
 import { ParishAutocomplete } from "@/components/ui/parish-autocomplete";
 import { RecipientAvatar } from "@/components/ui/catholic-icons";
+import { PrayerTypePicker } from "@/components/prayer-type-picker";
 import { cleanDisplayText } from "@/lib/text-display";
 import { displayRecipientName } from "@/lib/recipient-display";
 import type { PrayerCategory, SituationCategory, DifficultyLevel } from "@/generated/prisma/client";
@@ -121,6 +121,14 @@ export function CreateWizard({
   const [selectedPrayerIds, setSelectedPrayerIds] = useState<string[]>(
     initialSelectedPrayerIds,
   );
+  // IDs the organizer flagged as "pray every day" via the star button
+  // in step 4. Mutually-constrained with selectedPrayerIds: unselecting
+  // a prayer also drops its anchor; star UI is disabled past the
+  // (slotsPerDay - 1) cap so the wizard can't reach an invalid state.
+  // Order is preserved so anchors[0] → slot 0 every day.
+  const [anchorPrayerTypeIds, setAnchorPrayerTypeIds] = useState<string[]>(
+    [],
+  );
   // Optional free-form prayer the organizer wants every volunteer to also
   // pray. Renders as its own card on the detail page and gets appended to
   // daily reminder emails. Lives outside the situationDetail field so the
@@ -135,9 +143,38 @@ export function CreateWizard({
     : prayerTypes;
 
   const togglePrayer = (id: string) => {
-    setSelectedPrayerIds((prev) =>
-      prev.includes(id) ? prev.filter((p) => p !== id) : [...prev, id]
+    setSelectedPrayerIds((prev) => {
+      const isRemoving = prev.includes(id);
+      if (isRemoving) {
+        // Unselecting a prayer must also drop its anchor — anchors
+        // are required to be a subset of selectedPrayerIds.
+        setAnchorPrayerTypeIds((anchors) => anchors.filter((a) => a !== id));
+        return prev.filter((p) => p !== id);
+      }
+      return [...prev, id];
+    });
+  };
+
+  const maxAnchors = Math.max(0, slotsPerDay - 1);
+
+  // Drop in for setSlotsPerDay so the anchor list stays bounded when
+  // the organizer goes back to step 3 and lowers slotsPerDay. Doing
+  // the trim here (rather than in a useEffect) avoids the
+  // set-state-in-effect lint warning and keeps the data flow explicit.
+  const updateSlotsPerDay = (next: number) => {
+    setSlotsPerDay(next);
+    const newMax = Math.max(0, next - 1);
+    setAnchorPrayerTypeIds((anchors) =>
+      anchors.length > newMax ? anchors.slice(0, newMax) : anchors,
     );
+  };
+
+  const toggleAnchor = (id: string) => {
+    setAnchorPrayerTypeIds((prev) => {
+      if (prev.includes(id)) return prev.filter((a) => a !== id);
+      if (prev.length >= maxAnchors) return prev; // capped
+      return [...prev, id];
+    });
   };
 
   const canProceed = () => {
@@ -187,6 +224,7 @@ export function CreateWizard({
     formData.set("organizerName", organizerName);
     formData.set("organizerAnonymous", organizerAnonymous ? "true" : "false");
     formData.set("prayerTypeIds", selectedPrayerIds.join(","));
+    formData.set("anchorPrayerTypeIds", anchorPrayerTypeIds.join(","));
     await createPrayerTrain(formData);
   };
 
@@ -552,7 +590,7 @@ export function CreateWizard({
                 <button
                   key={n}
                   type="button"
-                  onClick={() => setSlotsPerDay(n)}
+                  onClick={() => updateSlotsPerDay(n)}
                   className={`px-4 py-2 rounded-lg text-sm font-medium border transition-colors ${
                     slotsPerDay === n
                       ? "bg-navy-600 text-white border-navy-600"
@@ -740,59 +778,25 @@ export function CreateWizard({
             </div>
           </div>
 
-          <div className="space-y-3 max-h-[60vh] overflow-y-auto pr-2">
-            {suggestedPrayers.map((prayer) => (
-              <button
-                key={prayer.id}
-                type="button"
-                onClick={() => togglePrayer(prayer.id)}
-                className={`w-full text-left px-4 py-3 rounded-lg border transition-colors ${
-                  selectedPrayerIds.includes(prayer.id)
-                    ? "bg-gold-50 border-gold-400"
-                    : "bg-cream-50 border-border hover:border-navy-300"
-                }`}
-              >
-                <div className="flex items-start justify-between">
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2 mb-1">
-                      <span className="font-medium text-navy-800 text-sm">
-                        {prayer.name}
-                      </span>
-                      <span className="px-1.5 py-0.5 rounded text-xs bg-cream-200 text-cream-600">
-                        {prayerCategoryLabels[prayer.category]}
-                      </span>
-                    </div>
-                    <p className="text-xs text-muted-foreground line-clamp-2">
-                      {prayer.description}
-                    </p>
-                    <div className="flex items-center gap-3 mt-1.5 text-xs text-muted-foreground">
-                      <span className="flex items-center gap-1">
-                        <Clock className="w-3 h-3" />
-                        {prayer.duration} {t.minutesShort}
-                      </span>
-                      {prayer.daysRequired > 1 && (
-                        <span className="flex items-center gap-1">
-                          <CalendarDays className="w-3 h-3" />
-                          {prayer.daysRequired} {t.daysSuffix}
-                        </span>
-                      )}
-                    </div>
-                  </div>
-                  <div
-                    className={`w-5 h-5 rounded border-2 flex items-center justify-center shrink-0 ml-3 mt-0.5 ${
-                      selectedPrayerIds.includes(prayer.id)
-                        ? "bg-gold-400 border-gold-400"
-                        : "border-cream-400"
-                    }`}
-                  >
-                    {selectedPrayerIds.includes(prayer.id) && (
-                      <Check className="w-3 h-3 text-white" />
-                    )}
-                  </div>
-                </div>
-              </button>
-            ))}
-          </div>
+          <PrayerTypePicker
+            prayerTypes={suggestedPrayers}
+            selectedIds={selectedPrayerIds}
+            anchorIds={anchorPrayerTypeIds}
+            slotsPerDay={slotsPerDay}
+            onToggleSelected={togglePrayer}
+            onToggleAnchor={toggleAnchor}
+            prayerCategoryLabels={prayerCategoryLabels}
+            strings={{
+              anchorHelpText: t.anchorHelpText,
+              dailyBadge: t.dailyBadge,
+              maxAnchorsReached: t.maxAnchorsReached,
+              anchorRequiresMoreSlots: t.anchorRequiresMoreSlots,
+              setAsDailyAria: t.setAsDailyAria,
+              unsetAsDailyAria: t.unsetAsDailyAria,
+              minutesShort: t.minutesShort,
+              daysSuffix: t.daysSuffix,
+            }}
+          />
 
           {selectedPrayerIds.length === 0 && (
             <p className="text-sm text-muted-foreground bg-cream-50 rounded-lg p-3">

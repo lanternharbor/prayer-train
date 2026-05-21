@@ -371,6 +371,12 @@
     "step4SubheadingWithSituation": "Wyróżniliśmy modlitwy zalecane dla tej sytuacji.",
     "step4SubheadingNoSituation": "Wybierz modlitwy lub zostaw puste, aby wybrać automatycznie.",
     "noneSelected": "Nie wybrano modlitw — wybierzemy automatycznie modlitwy pasujące do sytuacji.",
+    "anchorHelpText": "Dotknij gwiazdki przy modlitwie, aby odmawiać ją codziennie. Pozostałe modlitwy będą się zmieniać w pozostałych miejscach.",
+    "dailyBadge": "Codziennie",
+    "maxAnchorsReached": "Osiągnięto maksymalną liczbę codziennych modlitw dla tego trainu (o jedną mniej niż slotów dziennie).",
+    "anchorRequiresMoreSlots": "Zwiększ liczbę slotów dziennie, aby zakotwiczyć modlitwę.",
+    "setAsDailyAria": "Odmawiaj tę modlitwę codziennie",
+    "unsetAsDailyAria": "Przestań odmawiać tę modlitwę codziennie",
     "customPrayerLabel": "Osobista modlitwa do dołączenia",
     "customPrayerHelp": "Masz konkretną modlitwę, którą chciałbyś, aby wszyscy odmawiali wraz z modlitwami powyżej? Wklej ją tutaj. Wyświetlimy ją na stronie PrayerTrain i włączymy do codziennych przypomnień e-mail.",
     "customPrayerPlaceholder": "np. modlitwa rodzinna, modlitwa napisana przez przyjaciela, słowa z twojego serca…",
@@ -625,5 +631,18 @@
     "startPrayerTrainCTA": "Rozpocznij PrayerTrain",
     "faqsHeading": "Najczęściej zadawane",
     "readFullGuide": "Nie wiesz, jak to działa? Przeczytaj pełny przewodnik"
+  },
+  "manageSchedule": {
+    "pageTitle": "Edytuj harmonogram modlitwy",
+    "pageSubtitle": "Zmień, które modlitwy są w tym trainie i które (jeśli jakieś) są odmawiane codziennie. Zarezerwowane miejsca pozostają bez zmian.",
+    "bannerOnePerOne": "1 wolne miejsce zostanie zastąpione. 1 zarezerwowane miejsce pozostanie bez zmian.",
+    "bannerOnePerMany": "1 wolne miejsce zostanie zastąpione. {claimed} zarezerwowanych miejsc pozostanie bez zmian.",
+    "bannerManyPerOne": "{open} wolnych miejsc zostanie zastąpionych. 1 zarezerwowane miejsce pozostanie bez zmian.",
+    "bannerManyPerMany": "{open} wolnych miejsc zostanie zastąpionych. {claimed} zarezerwowanych miejsc pozostanie bez zmian.",
+    "bannerNothingToRebuild": "Brak wolnych przyszłych miejsc do odbudowy. Możesz nadal zaktualizować swoją codzienną preferencję modlitewną na kolejną zmianę harmonogramu.",
+    "submitButton": "Odbuduj harmonogram",
+    "submitting": "Odbudowuję…",
+    "backToManage": "Wróć do zarządzania",
+    "cancelLink": "Anuluj"
   }
 }

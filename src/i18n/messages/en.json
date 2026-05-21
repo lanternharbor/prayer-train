@@ -371,6 +371,12 @@
     "step4SubheadingWithSituation": "We've highlighted prayers recommended for this situation.",
     "step4SubheadingNoSituation": "Select prayers, or leave blank for auto-selection.",
     "noneSelected": "No prayers selected — we'll automatically choose prayers matching the situation.",
+    "anchorHelpText": "Tap the star on a prayer to pray it every day. Other prayers rotate across the remaining slots.",
+    "dailyBadge": "Daily",
+    "maxAnchorsReached": "You've reached the max number of daily prayers for this train (one less than slots per day).",
+    "anchorRequiresMoreSlots": "Increase slots per day to anchor a prayer.",
+    "setAsDailyAria": "Pray this every day",
+    "unsetAsDailyAria": "Stop praying this every day",
     "customPrayerLabel": "A personal prayer to include",
     "customPrayerHelp": "Have a specific prayer you'd like everyone to pray alongside the prayers above? Paste it here. We'll show it on the train page and include it in the daily reminder emails.",
     "customPrayerPlaceholder": "e.g., a family prayer, a prayer a friend wrote, words from your heart…",
@@ -625,5 +631,18 @@
     "startPrayerTrainCTA": "Start a PrayerTrain",
     "faqsHeading": "Frequently asked",
     "readFullGuide": "Not sure how it works? Read the full guide"
+  },
+  "manageSchedule": {
+    "pageTitle": "Edit prayer schedule",
+    "pageSubtitle": "Change which prayers are on this train and which (if any) get prayed every day. Already-claimed slots stay as-is.",
+    "bannerOnePerOne": "1 open slot will be replaced. 1 already-claimed slot will stay as-is.",
+    "bannerOnePerMany": "1 open slot will be replaced. {claimed} already-claimed slots will stay as-is.",
+    "bannerManyPerOne": "{open} open slots will be replaced. 1 already-claimed slot will stay as-is.",
+    "bannerManyPerMany": "{open} open slots will be replaced. {claimed} already-claimed slots will stay as-is.",
+    "bannerNothingToRebuild": "No open future slots to rebuild. You can still update your daily-anchor preference for the next time the schedule changes.",
+    "submitButton": "Rebuild schedule",
+    "submitting": "Rebuilding…",
+    "backToManage": "Back to manage",
+    "cancelLink": "Cancel"
   }
 }

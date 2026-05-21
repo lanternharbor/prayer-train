@@ -69,7 +69,13 @@ export default async function HomePage({
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             {/* Left: Text content */}
             <div className="text-center lg:text-left">
-              <h1 className="font-heading text-4xl sm:text-5xl lg:text-6xl font-bold leading-tight mb-6">
+              {/* Caps at text-5xl on sm+. Container is max-w-6xl
+                  (1152px) so each column in lg:grid-cols-2 tops out
+                  around 520px; text-6xl EB Garamond overflows that
+                  width and orphans the final word. text-5xl is the
+                  largest size that fits cleanly without imposing
+                  whitespace-nowrap or asymmetric grid columns. */}
+              <h1 className="font-heading text-4xl sm:text-5xl font-bold leading-tight mb-6">
                 {t.heroTitleLine1}
                 <br />
                 <span className="text-gold-300">{t.heroTitleLine2}</span>
@@ -93,29 +99,14 @@ export default async function HomePage({
                   {t.heroSecondaryCTA}
                 </Link>
               </div>
-              {/* Trust microcopies: surface the three anchors that
-                  previously lived on /our-story, /parish-kit, and
-                  /signin so a first-time visitor sees them above the
-                  fold. Calm gold-on-navy treatment, no decorative
-                  weight competing with the CTAs above. */}
-              <ul className="mt-8 flex flex-col gap-2 items-center lg:items-start text-sm text-navy-100">
-                <li className="flex items-center gap-2">
-                  <Check className="w-4 h-4 text-gold-300 shrink-0" aria-hidden="true" />
-                  <span>{t.trustNoAccount}</span>
-                </li>
-                <li className="flex items-center gap-2">
-                  <Check className="w-4 h-4 text-gold-300 shrink-0" aria-hidden="true" />
-                  <span>{t.trustFreeMinistry}</span>
-                </li>
-                <li className="flex items-center gap-2">
-                  <Check className="w-4 h-4 text-gold-300 shrink-0" aria-hidden="true" />
-                  <span>{t.trustPrivate}</span>
-                </li>
-              </ul>
             </div>
 
-            {/* Right: Logo illustration */}
-            <div className="flex justify-center lg:justify-end">
+            {/* Right: Logo illustration. Centered in its column at all
+                breakpoints (previously lg:justify-end pushed it to the
+                right edge and left the column feeling unbalanced).
+                Grows at lg/xl so it carries equivalent visual weight
+                to the text column. */}
+            <div className="flex justify-center">
               <div className="relative">
                 <div className="absolute inset-0 bg-gold-400/20 rounded-full blur-[80px] scale-75" />
                 <Image
@@ -123,12 +114,31 @@ export default async function HomePage({
                   alt={t.heroLogoAlt}
                   width={480}
                   height={480}
-                  className="relative w-64 sm:w-80 lg:w-[420px] h-auto drop-shadow-2xl"
+                  className="relative w-64 sm:w-80 lg:w-[460px] xl:w-[520px] h-auto drop-shadow-2xl"
                   priority
                 />
               </div>
             </div>
           </div>
+          {/* Trust microcopies: full-width row anchoring the hero.
+              Horizontal at sm+, stacked on mobile. Lives outside the
+              two-column grid so the text column matches the
+              illustration column height. Thin top divider separates
+              message zone from trust zone without heavy treatment. */}
+          <ul className="mt-12 lg:mt-16 flex flex-col sm:flex-row gap-3 sm:gap-8 lg:gap-12 items-center justify-center lg:justify-between text-sm text-navy-100 border-t border-white/10 pt-6 lg:pt-8">
+            <li className="flex items-center gap-2">
+              <Check className="w-4 h-4 text-gold-300 shrink-0" aria-hidden="true" />
+              <span>{t.trustNoAccount}</span>
+            </li>
+            <li className="flex items-center gap-2">
+              <Check className="w-4 h-4 text-gold-300 shrink-0" aria-hidden="true" />
+              <span>{t.trustFreeMinistry}</span>
+            </li>
+            <li className="flex items-center gap-2">
+              <Check className="w-4 h-4 text-gold-300 shrink-0" aria-hidden="true" />
+              <span>{t.trustPrivate}</span>
+            </li>
+          </ul>
         </div>
       </section>
 

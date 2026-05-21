@@ -104,6 +104,23 @@ export const createTrainSchema = z
               .filter(Boolean)
           : []
       ),
+    // Subset of prayerTypeIds the organizer flagged as "pray every day"
+    // (daily-anchor). Order is preserved across the comma-separated
+    // serialization so anchors[0] → slot 0 every day, anchors[1] → slot
+    // 1, etc. Same shape as prayerTypeIds — refinement below enforces
+    // subset + cardinality.
+    anchorPrayerTypeIds: z
+      .string()
+      .max(2000)
+      .optional()
+      .transform((s) =>
+        s
+          ? s
+              .split(",")
+              .map((p) => p.trim())
+              .filter(Boolean)
+          : []
+      ),
   })
   .refine(
     (data) =>
@@ -114,9 +131,75 @@ export const createTrainSchema = z
       message:
         "Please enter your name, or check the box to show as Anonymous.",
     }
+  )
+  .refine(
+    (data) => data.anchorPrayerTypeIds.every((id) => data.prayerTypeIds.includes(id)),
+    {
+      path: ["anchorPrayerTypeIds"],
+      message: "Daily prayers must be among the selected prayers.",
+    }
+  )
+  .refine(
+    // Always leave at least one rotating slot per day. At slotsPerDay=1
+    // anchors must be empty; at slotsPerDay=2 max one anchor, etc.
+    (data) => data.anchorPrayerTypeIds.length <= data.slotsPerDay - 1,
+    {
+      path: ["anchorPrayerTypeIds"],
+      message:
+        "You can mark up to slotsPerDay minus 1 prayers as daily so other prayers can rotate.",
+    }
   );
 
 export type CreateTrainInput = z.infer<typeof createTrainSchema>;
+
+// ─── Rebuild Train Schedule ──────────────────────────────────
+//
+// Used by the organizer-only `rebuildTrainSchedule` action on the
+// /p/<slug>/manage/schedule page. Same cardinality + subset rules as
+// the create schema; durationDays + slotsPerDay are NOT editable
+// (those would invalidate already-claimed slots).
+
+export const rebuildScheduleSchema = z
+  .object({
+    trainId: trimmedString(1, 60),
+    prayerTypeIds: z
+      .string()
+      .max(2000)
+      .optional()
+      .transform((s) =>
+        s
+          ? s
+              .split(",")
+              .map((p) => p.trim())
+              .filter(Boolean)
+          : []
+      ),
+    anchorPrayerTypeIds: z
+      .string()
+      .max(2000)
+      .optional()
+      .transform((s) =>
+        s
+          ? s
+              .split(",")
+              .map((p) => p.trim())
+              .filter(Boolean)
+          : []
+      ),
+  })
+  .refine((data) => data.prayerTypeIds.length > 0, {
+    path: ["prayerTypeIds"],
+    message: "Pick at least one prayer for the rebuilt schedule.",
+  })
+  .refine(
+    (data) => data.anchorPrayerTypeIds.every((id) => data.prayerTypeIds.includes(id)),
+    {
+      path: ["anchorPrayerTypeIds"],
+      message: "Daily prayers must be among the selected prayers.",
+    }
+  );
+
+export type RebuildScheduleInput = z.infer<typeof rebuildScheduleSchema>;
 
 // ─── Update PrayerTrain Details ─────────────────────────────
 //

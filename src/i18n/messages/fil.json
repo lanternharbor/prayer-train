@@ -371,6 +371,12 @@
     "step4SubheadingWithSituation": "Naka-highlight ang mga panalanging inirerekomenda para sa sitwasyong ito.",
     "step4SubheadingNoSituation": "Pumili ng mga panalangin, o iwanang blangko para sa awtomatikong pagpili.",
     "noneSelected": "Walang napiling panalangin — awtomatiko kaming pipili ng mga panalanging tumutugma sa sitwasyon.",
+    "anchorHelpText": "Pindutin ang bituin sa isang panalangin upang ipagdasal ito araw-araw. Ang iba ay magpapalitan sa natitirang mga slot.",
+    "dailyBadge": "Araw-araw",
+    "maxAnchorsReached": "Naabot mo na ang maximum na bilang ng pang-araw-araw na panalangin para sa train na ito (isa kulang sa slots per day).",
+    "anchorRequiresMoreSlots": "Dagdagan ang slots per day upang i-anchor ang isang panalangin.",
+    "setAsDailyAria": "Ipagdasal ito araw-araw",
+    "unsetAsDailyAria": "Itigil ang pang-araw-araw na panalangin na ito",
     "customPrayerLabel": "Isang personal na panalangin para isama",
     "customPrayerHelp": "May tiyak na panalangin ba na nais ninyong sabay-sabay manalangin kasama ng nasa itaas? I-paste dito. Ipakikita namin ito sa prayer train page at isasama sa mga pang-araw-araw na paalala.",
     "customPrayerPlaceholder": "hal. isang panalangin ng pamilya, isang panalanging isinulat ng kaibigan, mga salita mula sa iyong puso…",
@@ -625,5 +631,18 @@
     "startPrayerTrainCTA": "Magsimula ng PrayerTrain",
     "faqsHeading": "Mga karaniwang tanong",
     "readFullGuide": "Hindi sigurado kung paano ito gumagana? Basahin ang buong gabay"
+  },
+  "manageSchedule": {
+    "pageTitle": "I-edit ang iskedyul ng panalangin",
+    "pageSubtitle": "Baguhin kung anong mga panalangin ang kasama sa train na ito at alin (kung mayroon) ang ipagdarasal araw-araw. Ang mga nakareserbang slot ay mananatiling pareho.",
+    "bannerOnePerOne": "1 bukas na slot ang papalitan. 1 nakareserbang slot ang mananatiling pareho.",
+    "bannerOnePerMany": "1 bukas na slot ang papalitan. {claimed} nakareserbang slot ang mananatiling pareho.",
+    "bannerManyPerOne": "{open} bukas na slot ang papalitan. 1 nakareserbang slot ang mananatiling pareho.",
+    "bannerManyPerMany": "{open} bukas na slot ang papalitan. {claimed} nakareserbang slot ang mananatiling pareho.",
+    "bannerNothingToRebuild": "Walang mga bukas na hinaharap na slot na pwedeng i-rebuild. Maaari mo pa ring i-update ang iyong pang-araw-araw na pagpipilian para sa susunod na pagbabago sa iskedyul.",
+    "submitButton": "I-rebuild ang iskedyul",
+    "submitting": "Nire-rebuild…",
+    "backToManage": "Bumalik sa manage",
+    "cancelLink": "Kanselahin"
   }
 }

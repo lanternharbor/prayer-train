@@ -196,6 +196,18 @@ model PrayerTrain {
   // shape and the 7-day-grace auto-close pattern that pairs with it.
   closingPromptSentAt DateTime?
 
+  /// Prayer-type IDs the organizer marked as "pray every day". Order
+  /// is meaningful: anchors[0] → slot 0 every day, anchors[1] → slot
+  /// 1, etc. Cardinality is enforced at create / rebuild time
+  /// (`anchorPrayerTypeIds.length <= slotsPerDay - 1`) so there's
+  /// always at least one rotating slot. Generation-time input only —
+  /// PrayerSlot rows are the source of truth for what gets prayed
+  /// when, so this column doesn't drive any runtime queries. Persisted
+  /// so the manage/schedule page can pre-populate the current picks
+  /// when an organizer rebuilds the schedule. Empty = pure round-robin
+  /// (legacy behavior); all existing rows get `[]` by default.
+  anchorPrayerTypeIds String[] @default([])
+
   // Idempotency tracker for the organizer-facing abandonment-prompt
   // email. Set when the daily-reminders cron has dispatched the
   // "your prayer train hasn't picked up momentum yet" nudge for an

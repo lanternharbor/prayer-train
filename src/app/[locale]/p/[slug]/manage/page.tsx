@@ -121,13 +121,22 @@ export default async function ManagePage({
             </p>
           </div>
         </div>
-        <Link
-          href={`/p/${slug}/manage/edit`}
-          className="inline-flex items-center justify-center gap-1.5 px-4 py-2 text-sm font-medium text-gold-700 hover:text-gold-800 border border-gold-300 hover:border-gold-400 rounded-lg transition-colors self-start sm:self-auto shrink-0"
-        >
-          <Pencil className="w-4 h-4" />
-          Edit details
-        </Link>
+        <div className="flex flex-col sm:flex-row gap-2 self-start sm:self-auto shrink-0">
+          <Link
+            href={`/p/${slug}/manage/schedule`}
+            className="inline-flex items-center justify-center gap-1.5 px-4 py-2 text-sm font-medium text-gold-700 hover:text-gold-800 border border-gold-300 hover:border-gold-400 rounded-lg transition-colors"
+          >
+            <CalendarDays className="w-4 h-4" />
+            Edit schedule
+          </Link>
+          <Link
+            href={`/p/${slug}/manage/edit`}
+            className="inline-flex items-center justify-center gap-1.5 px-4 py-2 text-sm font-medium text-gold-700 hover:text-gold-800 border border-gold-300 hover:border-gold-400 rounded-lg transition-colors"
+          >
+            <Pencil className="w-4 h-4" />
+            Edit details
+          </Link>
+        </div>
       </div>
 
       {/* Stats */}

@@ -63,7 +63,7 @@ import {
   verifyCompletionToken,
 } from "@/lib/completion-tokens";
 import { put } from "@vercel/blob";
-import { buildSlotData } from "@/lib/slot-generation";
+import { buildSlotData, filterSlotsToOpenCells } from "@/lib/slot-generation";
 
 // ─── Create PrayerTrain ─────────────────────────────────────
 
@@ -1059,16 +1059,20 @@ export async function rebuildTrainSchedule(formData: FormData) {
   today.setHours(0, 0, 0, 0);
 
   await prisma.$transaction(async (tx) => {
-    // 1. Find OPEN slots dated today-or-later; capture their dates so
-    //    we can regenerate exactly the same calendar surface.
+    // 1. Find OPEN slots dated today-or-later. Capture both date AND
+    //    slotIndex per row so we only regenerate the (date, slotIndex)
+    //    pairs we just deleted — any CLAIMED slot already occupying a
+    //    position on the same day stays untouched, and the unique
+    //    `(trainId, date, slotIndex)` index isn't violated when we
+    //    re-insert.
     const openFutureSlots = await tx.prayerSlot.findMany({
       where: {
         trainId: train.id,
         status: "OPEN",
         date: { gte: today },
       },
-      select: { date: true },
-      orderBy: { date: "asc" },
+      select: { date: true, slotIndex: true },
+      orderBy: [{ date: "asc" }, { slotIndex: "asc" }],
     });
 
     if (openFutureSlots.length === 0) {
@@ -1108,16 +1112,21 @@ export async function rebuildTrainSchedule(formData: FormData) {
       data: { anchorPrayerTypeIds: effectiveAnchorIds },
     });
 
-    // 5. Regenerate fresh slots over the same date range via the
-    //    shared helper. createMany is fine here — no race because
-    //    we're inside the transaction.
-    const newSlots = buildSlotData({
+    // 5. Build the theoretical full schedule over the affected days
+    //    via the shared helper, then filter to ONLY the cells we
+    //    just deleted. This preserves the anchor algorithm's slotIndex
+    //    semantics (anchors[i] still lands in slot i where present)
+    //    while skipping any (date, slotIndex) pairs occupied by
+    //    surviving CLAIMED slots. createMany is fine here — no race
+    //    because we're inside the transaction.
+    const fullSchedule = buildSlotData({
       trainId: train.id,
       days: uniqueDays,
       slotsPerDay: train.slotsPerDay,
       prayerTypes: orderedPrayerTypes,
       anchorPrayerTypeIds: effectiveAnchorIds,
     });
+    const newSlots = filterSlotsToOpenCells(fullSchedule, openFutureSlots);
 
     if (newSlots.length > 0) {
       await tx.prayerSlot.createMany({ data: newSlots });

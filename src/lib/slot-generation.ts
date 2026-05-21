@@ -103,3 +103,32 @@ export function buildSlotData({
 
   return slotData;
 }
+
+/**
+ * Filter a full theoretical schedule down to a specific set of
+ * `(date, slotIndex)` cells. Used by `rebuildTrainSchedule` after
+ * computing the theoretical schedule for affected days — only the
+ * cells we just deleted (the OPEN-future positions) get re-inserted.
+ * Cells occupied by surviving CLAIMED slots stay untouched, which
+ * keeps the unique `(trainId, date, slotIndex)` index happy and
+ * preserves existing claims.
+ *
+ * Dates are normalized to local midnight on both sides before
+ * comparison so timezone-shifted equivalents still match.
+ */
+export function filterSlotsToOpenCells(
+  fullSchedule: readonly SlotInput[],
+  openCells: Iterable<{ date: Date; slotIndex: number }>,
+): SlotInput[] {
+  const keys = new Set<string>();
+  for (const c of openCells) {
+    const d = new Date(c.date);
+    d.setHours(0, 0, 0, 0);
+    keys.add(`${d.toISOString()}:${c.slotIndex}`);
+  }
+  return fullSchedule.filter((slot) => {
+    const d = new Date(slot.date);
+    d.setHours(0, 0, 0, 0);
+    return keys.has(`${d.toISOString()}:${slot.slotIndex}`);
+  });
+}

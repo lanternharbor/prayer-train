@@ -200,6 +200,72 @@ describe("buildSlotData", () => {
     });
   });
 
+  describe("filterSlotsToOpenCells (rebuild path)", () => {
+    it("returns only cells listed as open, preserves the rest", async () => {
+      const { filterSlotsToOpenCells } = await import("./slot-generation");
+      const schedule = buildSlotData({
+        trainId: "t1",
+        days: days(2),
+        slotsPerDay: 3,
+        prayerTypes: [pt("a"), pt("b"), pt("c")],
+        anchorPrayerTypeIds: ["a"],
+      });
+      // Day 1 slot 1 + slot 2 are open; slot 0 stays (claimed).
+      // Day 2 all three slots are open.
+      const openCells = [
+        { date: day(1), slotIndex: 1 },
+        { date: day(1), slotIndex: 2 },
+        { date: day(2), slotIndex: 0 },
+        { date: day(2), slotIndex: 1 },
+        { date: day(2), slotIndex: 2 },
+      ];
+      const filtered = filterSlotsToOpenCells(schedule, openCells);
+      expect(filtered).toHaveLength(5);
+      // Day 1 slot 0 (where anchor would land) is correctly omitted —
+      // because it's already CLAIMED with some old prayer.
+      const day1Slot0 = filtered.find(
+        (s) => s.date.getTime() === day(1).getTime() && s.slotIndex === 0,
+      );
+      expect(day1Slot0).toBeUndefined();
+      // Day 2 slot 0 IS in the output and holds the anchor.
+      const day2Slot0 = filtered.find(
+        (s) => s.date.getTime() === day(2).getTime() && s.slotIndex === 0,
+      );
+      expect(day2Slot0?.prayerTypeId).toBe("a");
+    });
+
+    it("returns empty when openCells is empty", async () => {
+      const { filterSlotsToOpenCells } = await import("./slot-generation");
+      const schedule = buildSlotData({
+        trainId: "t1",
+        days: days(3),
+        slotsPerDay: 3,
+        prayerTypes: [pt("a"), pt("b")],
+        anchorPrayerTypeIds: [],
+      });
+      expect(filterSlotsToOpenCells(schedule, [])).toEqual([]);
+    });
+
+    it("normalizes dates to local midnight on both sides", async () => {
+      const { filterSlotsToOpenCells } = await import("./slot-generation");
+      const schedule = buildSlotData({
+        trainId: "t1",
+        days: [day(1)],
+        slotsPerDay: 2,
+        prayerTypes: [pt("a"), pt("b")],
+        anchorPrayerTypeIds: [],
+      });
+      // openCell with the same calendar day but a non-midnight time
+      const nonMidnight = new Date(day(1));
+      nonMidnight.setHours(14, 30, 0, 0);
+      const filtered = filterSlotsToOpenCells(schedule, [
+        { date: nonMidnight, slotIndex: 0 },
+        { date: nonMidnight, slotIndex: 1 },
+      ]);
+      expect(filtered).toHaveLength(2);
+    });
+  });
+
   describe("trainId + date + slotIndex shape", () => {
     it("stamps every slot with the provided trainId", () => {
       const slots = buildSlotData({

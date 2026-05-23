@@ -3,7 +3,13 @@ import { getBaseUrl } from "./url";
 import { getEmailDictionary } from "@/i18n/email";
 import { t as interpolate } from "@/i18n/format";
 
-const FROM = process.env.EMAIL_FROM || "PrayerTrain <noreply@ourfaithtrain.com>";
+// Default sender address. Override via the EMAIL_FROM env var in
+// Vercel (e.g. for a per-environment alias). The default uses the
+// site's primary domain so the From address users see in their inbox
+// matches the URL they signed up at. The previous default
+// (noreply@ourfaithtrain.com) was a holdover from an earlier brand;
+// kept for historical context in commit history but no longer used.
+const FROM = process.env.EMAIL_FROM || "PrayerTrain <noreply@prayertrains.com>";
 
 /**
  * Escape user-controlled content before injecting it into HTML email

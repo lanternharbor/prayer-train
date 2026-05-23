@@ -38,17 +38,26 @@ import { sendSignInEmail } from "./email";
 //
 // import Apple from "next-auth/providers/apple";
 
+// Sender address for the magic-link sign-in email. Mirrors the
+// pattern in src/lib/email.ts so both surfaces respect the same
+// EMAIL_FROM env override and fall back to the same prayertrains.com
+// default. Previously hard-coded to noreply@ourfaithtrain.com from
+// an earlier brand; cleaned up so the From address users see in
+// their inbox matches the URL they signed in at.
+const EMAIL_FROM =
+  process.env.EMAIL_FROM || "PrayerTrain <noreply@prayertrains.com>";
+
 export const { handlers, signIn, signOut, auth } = NextAuth({
   adapter: PrismaAdapter(prisma),
   providers: [
     Resend({
       apiKey: process.env.RESEND_API_KEY,
-      from: "PrayerTrain <noreply@ourfaithtrain.com>",
+      from: EMAIL_FROM,
       async sendVerificationRequest({ identifier: to, url, provider }) {
         await sendSignInEmail({
           to,
           url,
-          from: provider.from ?? "PrayerTrain <noreply@ourfaithtrain.com>",
+          from: provider.from ?? EMAIL_FROM,
         });
       },
     }),

@@ -96,29 +96,39 @@ export function TrainRowActions({
     }
   }
 
+  // Shared button styles. Outline is the default (most-used), filled
+  // primary for "destructive completion" (gold accent + navy text),
+  // navy-fill for cancel since the palette has no red.
+  const btnOutline =
+    "text-xs px-2.5 py-1 rounded-md border border-border bg-card text-navy-700 hover:bg-cream-100 disabled:opacity-50 transition-colors";
+  const btnAccent =
+    "text-xs px-2.5 py-1 rounded-md border border-gold-400 bg-gold-100 text-gold-900 hover:bg-gold-200 disabled:opacity-50 transition-colors";
+  const btnCancel =
+    "text-xs px-2.5 py-1 rounded-md bg-navy-700 text-white hover:bg-navy-800 disabled:opacity-50 transition-colors";
+
   if (confirmMode) {
     return (
-      <div className="inline-flex flex-col items-end gap-1">
-        <div className="text-xs text-stone-600">
-          Type <span className="font-mono text-stone-900">{slug}</span>:
+      <div className="inline-flex flex-col items-end gap-1.5">
+        <div className="text-xs text-muted-foreground">
+          Type{" "}
+          <span className="font-mono text-navy-800 bg-cream-200 px-1.5 py-0.5 rounded">
+            {slug}
+          </span>{" "}
+          to confirm:
         </div>
-        <div className="flex items-center gap-1">
+        <div className="flex items-center gap-1.5">
           <input
             type="text"
             value={confirmText}
             onChange={(e) => setConfirmText(e.target.value)}
-            className="text-xs px-2 py-1 border border-stone-300 rounded font-mono w-44"
+            className="text-xs px-2 py-1 border border-border rounded-md font-mono w-48 bg-card text-navy-900"
             placeholder={slug}
             autoFocus
           />
           <button
             onClick={handleConfirm}
             disabled={pending || confirmText !== slug}
-            className={
-              confirmMode === "cancel"
-                ? "text-xs px-2 py-1 rounded bg-red-700 text-white disabled:opacity-50"
-                : "text-xs px-2 py-1 rounded bg-sky-700 text-white disabled:opacity-50"
-            }
+            className={confirmMode === "cancel" ? btnCancel : btnAccent}
           >
             {pending
               ? "…"
@@ -133,13 +143,13 @@ export function TrainRowActions({
               setError(null);
             }}
             disabled={pending}
-            className="text-xs px-2 py-1 rounded border border-stone-300 hover:bg-stone-100"
+            className={btnOutline}
           >
             Back
           </button>
         </div>
         {error && (
-          <p role="alert" className="text-xs text-red-700">
+          <p role="alert" className="text-xs text-navy-700 font-medium">
             {error}
           </p>
         )}
@@ -149,11 +159,11 @@ export function TrainRowActions({
 
   return (
     <div className="inline-flex flex-col items-end gap-1">
-      <div className="flex flex-wrap items-center justify-end gap-1">
+      <div className="flex flex-wrap items-center justify-end gap-1.5">
         <button
           onClick={handleToggleVisibility}
           disabled={pending}
-          className="text-xs px-2 py-1 rounded border border-stone-300 bg-white hover:bg-stone-100 disabled:opacity-50"
+          className={btnOutline}
         >
           {isPublic ? "Make private" : "Make public"}
         </button>
@@ -164,7 +174,7 @@ export function TrainRowActions({
               setError(null);
             }}
             disabled={pending}
-            className="text-xs px-2 py-1 rounded border border-sky-300 text-sky-800 bg-sky-50 hover:bg-sky-100 disabled:opacity-50"
+            className={btnAccent}
           >
             Complete
           </button>
@@ -176,14 +186,14 @@ export function TrainRowActions({
               setError(null);
             }}
             disabled={pending}
-            className="text-xs px-2 py-1 rounded border border-red-300 text-red-800 bg-red-50 hover:bg-red-100 disabled:opacity-50"
+            className={btnCancel}
           >
             Cancel
           </button>
         )}
       </div>
       {error && (
-        <p role="alert" className="text-xs text-red-700">
+        <p role="alert" className="text-xs text-navy-700 font-medium">
           {error}
         </p>
       )}

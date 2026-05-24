@@ -127,7 +127,11 @@ export async function proxy(request: NextRequest) {
     pathname === "/manifest.json" ||
     pathname.startsWith("/favicon") ||
     pathname.startsWith("/apple-touch-icon") ||
-    pathname === "/logo.png"
+    pathname === "/logo.png" ||
+    // /admin lives outside the [locale] tree — it's an internal tool
+    // for one person, English-only, and doesn't need locale routing.
+    pathname === "/admin" ||
+    pathname.startsWith("/admin/")
   ) {
     return NextResponse.next();
   }

@@ -12,6 +12,7 @@ export default function robots(): MetadataRoute.Robots {
         // pages, or API routes — none of those are useful in search results.
         disallow: [
           "/api/",
+          "/admin",
           "/dashboard",
           "/signin",
           "/signin/verify",

@@ -2,6 +2,7 @@
 
 import { prisma } from "@/lib/db";
 import { auth } from "@/lib/auth";
+import { isAdmin } from "@/lib/admin";
 import { generateSlug, formatDateLong } from "@/lib/utils";
 import { getBaseUrl } from "@/lib/url";
 import { sendClaimConfirmation } from "@/lib/email";
@@ -801,7 +802,13 @@ export async function updateTrainStatus(
   // the email-payload builders below so anonymous organizers don't
   // leak their name into closing-day notifications.
 
-  if (!train || train.organizerId !== session.user.id) {
+  if (!train) {
+    throw new Error("Only the organizer can update the train status.");
+  }
+  if (
+    train.organizerId !== session.user.id &&
+    !isAdmin(session.user.email)
+  ) {
     throw new Error("Only the organizer can update the train status.");
   }
 
@@ -872,7 +879,13 @@ export async function toggleTrainVisibility(trainId: string, isPublic: boolean) 
     where: { id: trainId },
   });
 
-  if (!train || train.organizerId !== session.user.id) {
+  if (!train) {
+    throw new Error("Only the organizer can change visibility.");
+  }
+  if (
+    train.organizerId !== session.user.id &&
+    !isAdmin(session.user.email)
+  ) {
     throw new Error("Only the organizer can change visibility.");
   }
 
@@ -1243,7 +1256,9 @@ export async function cancelPrayerTrain(formData: FormData) {
   });
 
   if (!train) throw new Error("That prayer train no longer exists.");
-  if (train.organizerId !== session.user.id) {
+  const isOrganizer = train.organizerId === session.user.id;
+  const isAdminCaller = !isOrganizer && isAdmin(session.user.email);
+  if (!isOrganizer && !isAdminCaller) {
     throw new Error("Only the organizer can cancel this prayer train.");
   }
   if (isProtectedTrain(train.slug)) {
@@ -1295,6 +1310,10 @@ export async function cancelPrayerTrain(formData: FormData) {
   revalidatePath(`/p/${train.slug}`);
   revalidatePath(`/p/${train.slug}/manage`);
   revalidatePath("/browse");
+  if (isAdminCaller) {
+    revalidatePath("/admin");
+    redirect("/admin");
+  }
   redirect(`/p/${train.slug}/manage`);
 }
 

@@ -6,10 +6,10 @@ import type { EmailDispatchResult } from "@/lib/email";
 import {
   sendChainAbandonmentArchived,
   sendChainAbandonmentPrompt,
-  sendChainBouquetReady,
   sendChainClosingPrompt,
   sendChainDailyReminder,
 } from "@/lib/email";
+import { sendChainClosingFanout } from "@/lib/closing-fanout";
 import { getBaseUrl } from "@/lib/url";
 import { chainDayTokenId, signCompletionToken } from "@/lib/completion-tokens";
 import {
@@ -455,6 +455,15 @@ export async function GET(request: Request) {
           translations: { where: { reviewedAt: { not: null } } },
         },
       },
+      // Active members for the closing fan-out — they get the same
+      // closing-day email (now with bouquet link) as the manual-close
+      // path sends. Pre-May-2026 the cron path skipped members
+      // entirely on auto-close, so a chain that aged out left every
+      // member hanging without a goodbye.
+      members: {
+        where: { unsubscribedAt: null },
+        select: { name: true, email: true },
+      },
     },
   });
 
@@ -474,30 +483,30 @@ export async function GET(request: Request) {
         data: { status: "COMPLETED" },
       });
       autoClosed++;
-      // Bouquet-ready email to the organizer. Auto-close means the
-      // organizer missed the closing prompt + 7-day grace; this email
-      // catches them up by surfacing the artifact (the bouquet PDF)
-      // they would have gotten on the manual-close path. Best-effort;
-      // helper swallows errors so a single send failure doesn't stall
-      // the rest of the auto-close loop.
-      if (chain.organizer?.email) {
-        const localizedPrayer = localizePrayer(
-          chain.prayerType,
-          chain.prayerType.translations,
-          chain.language,
-        );
-        await sendChainBouquetReady({
-          to: chain.organizer.email,
-          organizerName:
-            chain.organizerAnonymous || !chain.organizer.name
-              ? null
-              : chain.organizer.name,
-          prayerName: localizedPrayer.name,
+      // Closing fan-out: members (with bouquet link) + organizer
+      // bouquet-ready. Shared with the manual-close path in
+      // src/lib/actions.ts closePrayerChain. closingNote is null on
+      // auto-close because the organizer never had the chance to
+      // write one. Prayer name is localized via the existing
+      // translation rows so multilingual chains get the right
+      // name in the closing email.
+      const localizedPrayer = localizePrayer(
+        chain.prayerType,
+        chain.prayerType.translations,
+        chain.language,
+      );
+      await sendChainClosingFanout(
+        {
+          slug: chain.slug,
           recipientName: chain.recipientName,
-          bouquetUrl: `${baseUrl}/api/bouquet/chain/${chain.slug}`,
-          chainUrl: `${baseUrl}/chain/${chain.slug}`,
-        });
-      }
+          organizerAnonymous: chain.organizerAnonymous,
+          organizer: chain.organizer,
+          prayerType: { name: localizedPrayer.name },
+          members: chain.members,
+        },
+        null,
+        baseUrl,
+      );
     } catch (e) {
       console.error(
         `[chain-cron] auto-close failed for chain ${chain.id}:`,

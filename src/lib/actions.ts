@@ -46,15 +46,15 @@ import {
   checkUpdateCountMatches,
 } from "@/lib/claim-guard";
 import {
-  sendChainBouquetReady,
   sendChainCancellationNotice,
-  sendChainClosingDayEmail,
   sendChainJoinConfirmation,
-  sendTrainBouquetReady,
-  sendPrayerWarriorClosing,
   sendPrayerWarriorWelcome,
   sendTrainCancellationNotice,
 } from "@/lib/email";
+import {
+  sendTrainClosingFanout,
+  sendChainClosingFanout,
+} from "@/lib/closing-fanout";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { addDays, eachDayOfInterval } from "date-fns";
@@ -794,6 +794,21 @@ export async function updateTrainStatus(
       warriors: {
         select: { id: true, name: true, email: true },
       },
+      // Pull slot claimers too. Under the presumed-prayed model
+      // (commit 24f7432, May 24 2026), every CLAIMED-or-COMPLETED
+      // claimer is on the family's bouquet — so every one of them
+      // deserves the closing email with the bouquet link. Without
+      // this, slot claimers were silently dropped on close: their
+      // reminders just stopped, with no goodbye and no link to the
+      // keepsake their names appear on.
+      slots: {
+        where: { status: { in: ["CLAIMED", "COMPLETED"] } },
+        select: {
+          status: true,
+          claimerName: true,
+          claimerEmail: true,
+        },
+      },
     },
   });
 
@@ -824,44 +839,11 @@ export async function updateTrainStatus(
   });
 
   if (isTransitioningToCompleted) {
-    const baseUrl = getBaseUrl();
-    const trainUrl = `${baseUrl}/p/${train.slug}`;
-    const bouquetUrl = `${baseUrl}/api/bouquet/${train.slug}`;
-    const orgFirst = train.organizerAnonymous
-      ? null
-      : (train.organizer?.name?.trim().split(/\s+/)[0] ?? null);
-
-    // Fire warrior closing emails sequentially, never blocking the
-    // status update. Each send is wrapped in the email function's
-    // try/catch so a single failure doesn't stop the rest from
-    // going out.
-    for (const warrior of train.warriors) {
-      await sendPrayerWarriorClosing({
-        to: warrior.email,
-        warriorName: warrior.name,
-        recipientName: train.recipientName,
-        organizerFirstName: orgFirst,
-        trainUrl,
-        bouquetUrl,
-      });
-    }
-
-    // Bouquet-ready email to the organizer. Fires whether or not
-    // there are warriors — the bouquet PDF is meaningful even on
-    // a slot-only train. Anonymous organizers still receive the
-    // delivery; only the rendered "from" name is suppressed.
-    if (train.organizer?.email) {
-      await sendTrainBouquetReady({
-        to: train.organizer.email,
-        organizerName:
-          train.organizerAnonymous || !train.organizer.name
-            ? null
-            : train.organizer.name,
-        recipientName: train.recipientName,
-        bouquetUrl,
-        trainUrl,
-      });
-    }
+    // Closing fan-out: warriors + slot-claimers + organizer
+    // bouquet-ready. Shared with the cron auto-close path so both
+    // close-trigger sources notify the same audience. See
+    // src/lib/closing-fanout.ts for the dedup + ordering details.
+    await sendTrainClosingFanout(train, getBaseUrl());
   }
 
   revalidatePath(`/p/${train.slug}`);
@@ -2082,45 +2064,10 @@ export async function closePrayerChain(formData: FormData) {
     },
   });
 
-  // Closing-day emails to all active members. Best-effort.
-  const baseUrl = getBaseUrl();
-  const chainUrl = `${baseUrl}/chain/${chain.slug}`;
-  for (const member of chain.members) {
-    await sendChainClosingDayEmail({
-      to: member.email,
-      memberName: member.name,
-      // null = anonymous OR no User.name. The render helper drops the
-      // possessive in the subject/body and uses generic "A note from
-      // the organizer" attribution. See renderChainClosingDayEmail.
-      organizerName:
-        chain.organizerAnonymous || !chain.organizer?.name
-          ? null
-          : chain.organizer.name,
-      prayerName: chain.prayerType.name,
-      recipientName: chain.recipientName,
-      closingNote: closingNote ?? null,
-      chainUrl,
-    });
-  }
-
-  // Bouquet-ready email to the organizer. Sent after the member
-  // fan-out so a slow Resend call earlier in the loop never delays
-  // the organizer's notification. Always sends regardless of
-  // organizerAnonymous (anonymity is about public display, not
-  // delivery), as long as we have an email on the User row.
-  if (chain.organizer?.email) {
-    await sendChainBouquetReady({
-      to: chain.organizer.email,
-      organizerName:
-        chain.organizerAnonymous || !chain.organizer.name
-          ? null
-          : chain.organizer.name,
-      prayerName: chain.prayerType.name,
-      recipientName: chain.recipientName,
-      bouquetUrl: `${baseUrl}/api/bouquet/chain/${chain.slug}`,
-      chainUrl,
-    });
-  }
+  // Closing fan-out: members (with bouquet link folded into their
+  // closing-day email) + organizer bouquet-ready. Shared with the
+  // cron auto-close path. See src/lib/closing-fanout.ts.
+  await sendChainClosingFanout(chain, closingNote ?? null, getBaseUrl());
 
   revalidatePath(`/chain/${chain.slug}`);
   revalidatePath(`/chain/${chain.slug}/manage`);

@@ -905,6 +905,15 @@ export interface ChainClosingDayEmailInput {
   recipientName: string | null;
   closingNote: string | null;
   chainUrl: string;
+  /**
+   * Spiritual bouquet PDF URL. Added May 2026 — chain members used to
+   * get the closing-day email without any link to the bouquet their
+   * daily prayers contributed to. Rendered as a gold CTA button below
+   * the closing note (if any). Optional only for backwards-compat
+   * with any callers that haven't been updated; new callers should
+   * always pass it.
+   */
+  bouquetUrl?: string;
 }
 
 export function renderChainClosingDayEmail(input: ChainClosingDayEmailInput): {
@@ -957,6 +966,15 @@ export function renderChainClosingDayEmail(input: ChainClosingDayEmailInput): {
                   </div>`
                 : ""
             }
+            ${
+              input.bouquetUrl
+                ? `<div style="text-align: center; margin: 8px 0 16px;">
+                    <a href="${input.bouquetUrl}" style="display: inline-block; background: #d4a843; color: #0a0c1a; padding: 12px 28px; border-radius: 10px; text-decoration: none; font-weight: 600; font-size: 15px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;">
+                      View the spiritual bouquet
+                    </a>
+                  </div>`
+                : ""
+            }
             <p style="color: #6e6150; font-size: 14px; font-style: italic; line-height: 1.7; margin: 18px 0 0;">
               May the Lord bless and keep all who carried this prayer.
             </p>
@@ -973,7 +991,10 @@ export function renderChainClosingDayEmail(input: ChainClosingDayEmailInput): {
     ? `Thank you for praying with ${orgFirst} ${recipientPhraseShort}, ${input.memberName}.`
     : `Thank you for praying ${recipientPhraseShort}, ${input.memberName}.`;
   const textCloseAttrib = orgFirst ? `A note from ${orgFirst}` : `A note from the organizer`;
-  const text = `The ${input.prayerName} is complete.\n\n${textThank}\n\n${input.closingNote ? textCloseAttrib + ":\n" + input.closingNote + "\n\n" : ""}May the Lord bless and keep all who carried this prayer.\n\n${input.chainUrl}`;
+  const bouquetLine = input.bouquetUrl
+    ? `View the spiritual bouquet: ${input.bouquetUrl}\n\n`
+    : "";
+  const text = `The ${input.prayerName} is complete.\n\n${textThank}\n\n${input.closingNote ? textCloseAttrib + ":\n" + input.closingNote + "\n\n" : ""}${bouquetLine}May the Lord bless and keep all who carried this prayer.\n\n${input.chainUrl}`;
   return { subject, html, text };
 }
 

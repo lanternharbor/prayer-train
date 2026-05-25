@@ -6,9 +6,9 @@ import {
   sendDailyReminder,
   sendTrainAbandonmentArchived,
   sendTrainAbandonmentPrompt,
-  sendTrainBouquetReady,
   sendTrainClosingPrompt,
 } from "@/lib/email";
+import { sendTrainClosingFanout } from "@/lib/closing-fanout";
 import { getBaseUrl } from "@/lib/url";
 import { signCompletionToken } from "@/lib/completion-tokens";
 import {
@@ -319,9 +319,11 @@ export async function GET(request: Request) {
         ),
       },
     },
-    // Pull organizer + recipient fields for the bouquet-ready email
-    // below. organizerAnonymous + organizer.name route through the
-    // null-name branch in the helper when needed.
+    // Pull everything the closing fan-out needs: organizer (for the
+    // bouquet-ready email), warriors (overflow pledgers), and slots
+    // (CLAIMED or COMPLETED — under the presumed-prayed model both
+    // belong on the bouquet and both populations deserve the closing
+    // email). Mirrors the manual-close path's findUnique include.
     select: {
       id: true,
       status: true,
@@ -330,6 +332,11 @@ export async function GET(request: Request) {
       recipientName: true,
       organizerAnonymous: true,
       organizer: { select: { name: true, email: true } },
+      warriors: { select: { name: true, email: true } },
+      slots: {
+        where: { status: { in: ["CLAIMED", "COMPLETED"] } },
+        select: { claimerName: true, claimerEmail: true },
+      },
     },
   });
 
@@ -349,23 +356,14 @@ export async function GET(request: Request) {
         data: { status: "COMPLETED" },
       });
       autoClosed++;
-      // Bouquet-ready email to the organizer on the auto-close path.
-      // Mirrors the chain auto-close behavior so a train that ages
-      // out without manual close still surfaces the artifact (the
-      // bouquet PDF) the organizer would have gotten on the manual
-      // path. Best-effort; helper swallows errors.
-      if (train.organizer?.email) {
-        await sendTrainBouquetReady({
-          to: train.organizer.email,
-          organizerName:
-            train.organizerAnonymous || !train.organizer.name
-              ? null
-              : train.organizer.name,
-          recipientName: train.recipientName,
-          bouquetUrl: `${baseUrl}/api/bouquet/${train.slug}`,
-          trainUrl: `${baseUrl}/p/${train.slug}`,
-        });
-      }
+      // Closing fan-out: warriors + slot-claimers + organizer
+      // bouquet-ready. Shared with the manual-close path in
+      // src/lib/actions.ts updateTrainStatus. Pre-May-2026 the cron
+      // path only notified the organizer, leaving slot-claimers and
+      // warriors to silently lose their reminders — fixed here so
+      // every participant hears the closing-day blessing whether the
+      // organizer manually closed or the train aged out on its own.
+      await sendTrainClosingFanout(train, baseUrl);
     } catch (e) {
       console.error(
         `[cron] auto-close failed for train ${train.id}:`,

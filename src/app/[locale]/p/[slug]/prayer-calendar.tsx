@@ -9,6 +9,7 @@ import {
   ChevronUp,
   MessageSquare,
   Pencil,
+  Sparkles,
 } from "lucide-react";
 import { ClaimModal } from "./claim-modal";
 import { CompletionModal } from "./completion-modal";
@@ -375,7 +376,7 @@ function SlotCard({
         <span className="font-medium text-navy-700 text-xs truncate">
           {slot.prayerType.name}
         </span>
-        {completed && <Check className="w-3.5 h-3.5 text-blue-500" />}
+        {completed && <Sparkles className="w-3.5 h-3.5 text-gold-500" />}
       </div>
       <div className="flex items-center gap-2 text-xs text-muted-foreground">
         <Clock className="w-3 h-3" />
@@ -407,8 +408,8 @@ function SlotCard({
         </div>
       ) : completed && slot.claimerName ? (
         <div className="mt-2">
-          <div className="flex items-center gap-1.5 text-xs text-blue-600">
-            <Check className="w-3 h-3" />
+          <div className="flex items-center gap-1.5 text-xs text-gold-700">
+            <Sparkles className="w-3 h-3" />
             <span className="flex-1">
               {slot.claimerName} — {publicTrainT.slotPrayedSuffix}
             </span>
@@ -422,7 +423,7 @@ function SlotCard({
                     ? publicTrainT.slotHideNote
                     : publicTrainT.slotShowNote
                 }
-                className="text-blue-600 hover:text-blue-700 transition-colors"
+                className="text-gold-700 hover:text-gold-800 transition-colors"
               >
                 <MessageSquare className="w-3.5 h-3.5" />
               </button>
@@ -431,20 +432,20 @@ function SlotCard({
               <button
                 type="button"
                 onClick={() => setShowModal(true)}
-                className="text-blue-600 hover:text-blue-700 text-xs underline-offset-2 hover:underline"
+                className="text-gold-700 hover:text-gold-800 text-xs underline-offset-2 hover:underline"
               >
                 {publicTrainT.slotAddNote}
               </button>
             )}
           </div>
           {hasNote && noteExpanded && (
-            <div className="mt-2 px-3 py-2 bg-white/60 border border-blue-100 rounded text-xs text-navy-700 italic leading-relaxed">
+            <div className="mt-2 px-3 py-2 bg-white/60 border border-gold-200 rounded text-xs text-navy-700 italic leading-relaxed">
               &ldquo;{slot.completionNote}&rdquo;
               {canEdit && (
                 <button
                   type="button"
                   onClick={() => setShowModal(true)}
-                  className="mt-2 inline-flex items-center gap-1 text-blue-600 hover:text-blue-700 not-italic text-[11px] underline-offset-2 hover:underline"
+                  className="mt-2 inline-flex items-center gap-1 text-gold-700 hover:text-gold-800 not-italic text-[11px] underline-offset-2 hover:underline"
                 >
                   <Pencil className="w-3 h-3" />
                   {publicTrainT.slotEdit}

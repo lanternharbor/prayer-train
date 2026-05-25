@@ -434,10 +434,10 @@
   },
   "completionModal": {
     "titleEdit": "Edytuj swoją notatkę",
-    "titleCreate": "Oznacz tę modlitwę jako ukończoną",
+    "titleCreate": "Dodaj swoją pieczęć",
     "closeAria": "Zamknij okno zakończenia",
     "leadEdit": "Zaktualizuj lub usuń notatkę, którą zostawiłeś, gdy oznaczyłeś {prayerName} jako odmówioną.",
-    "leadCreate": "Odmówiłeś {prayerName}. Jeśli chcesz, zostaw krótką notatkę dla rodziny — lub po prostu naciśnij «Oznacz jako ukończone» poniżej.",
+    "leadCreate": "Odmówiłeś {prayerName}. Twoje miejsce jest już w bukiecie. Dodaj poniżej złotą pieczęć, a jeśli chcesz, zostaw krótką notatkę dla rodziny.",
     "noteLabel": "Zostaw notatkę",
     "notePlaceholder": "Krótkie słowo otuchy, werset, cokolwiek chciałbyś podzielić…",
     "noteOverCap": "{over} ponad limit {max} znaków",
@@ -447,7 +447,7 @@
     "deleteNote": "Usuń notatkę",
     "deletingNote": "Usuwanie…",
     "saveChanges": "Zapisz zmiany",
-    "markComplete": "Oznacz jako ukończone",
+    "markComplete": "Dodaj moją pieczęć",
     "saving": "Zapisywanie…",
     "errorFallback": "Coś poszło nie tak. Spróbuj ponownie.",
     "errorDeleteFallback": "Coś poszło nie tak podczas usuwania notatki."

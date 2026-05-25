@@ -46,6 +46,8 @@ export const ptBR: EnglishEmailDictionary = {
     howToPrayLabel: "Como rezar:",
     customPrayerHeadingNamed: "Uma oração de {organizerName}",
     customPrayerHeadingAnon: "Uma oração pessoal incluída",
+    ctaLead:
+      "Seu lugar já está no buquê. Quando tiver rezado hoje, você pode adicionar um pequeno selo dourado abaixo.",
     cta: "Já rezei",
     viewLink: "Ver o PrayerTrain",
     footer: "PrayerTrain — Oração organizada para quem precisa",

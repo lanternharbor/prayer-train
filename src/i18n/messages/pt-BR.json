@@ -434,10 +434,10 @@
   },
   "completionModal": {
     "titleEdit": "Editar sua nota",
-    "titleCreate": "Marcar esta oração como concluída",
+    "titleCreate": "Adicione seu selo",
     "closeAria": "Fechar o diálogo de conclusão",
     "leadEdit": "Atualize ou remova a nota que você deixou quando marcou o(a) {prayerName} como rezado.",
-    "leadCreate": "Você rezou o(a) {prayerName}. Se quiser, deixe uma breve nota para a família — ou apenas toque em «Marcar como concluído» abaixo.",
+    "leadCreate": "Você rezou o(a) {prayerName}. Seu lugar já está no buquê. Adicione um selo dourado abaixo, e deixe uma breve nota para a família se quiser.",
     "noteLabel": "Deixar uma nota",
     "notePlaceholder": "Uma breve palavra de encorajamento, um versículo, o que você quiser compartilhar…",
     "noteOverCap": "{over} acima do limite de {max} caracteres",
@@ -447,7 +447,7 @@
     "deleteNote": "Excluir nota",
     "deletingNote": "Excluindo…",
     "saveChanges": "Salvar alterações",
-    "markComplete": "Marcar como concluído",
+    "markComplete": "Adicionar meu selo",
     "saving": "Salvando…",
     "errorFallback": "Algo deu errado. Por favor, tente de novo.",
     "errorDeleteFallback": "Algo deu errado ao excluir a nota."

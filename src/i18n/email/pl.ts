@@ -54,6 +54,8 @@ export const pl: EnglishEmailDictionary = {
     howToPrayLabel: "Jak się modlić:",
     customPrayerHeadingNamed: "Modlitwa od {organizerName}",
     customPrayerHeadingAnon: "Dołączona osobista modlitwa",
+    ctaLead:
+      "Twoje miejsce jest już w bukiecie. Gdy się dziś pomodlisz, możesz dodać poniżej małą złotą pieczęć.",
     cta: "Pomodliłem się",
     viewLink: "Zobacz PrayerTrain",
     footer: "PrayerTrain — Zorganizowana modlitwa za potrzebujących",

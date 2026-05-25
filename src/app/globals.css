@@ -52,13 +52,23 @@
   --muted-foreground: var(--cream-700);
   --border: var(--cream-300);
 
-  /* Slot states */
+  /* Slot states.
+   *
+   * CLAIMED is the default "filled on the bouquet" look — someone
+   * signed up, so that slot is presumed prayed. COMPLETED is the
+   * same family of tones but slightly richer/deeper gold: it marks
+   * the slot as sealed, the optional flourish a prayer warrior adds
+   * by tapping "I prayed" in their reminder email. Both states honor
+   * the signup; COMPLETED just adds a small gold sparkle on top.
+   * Pre-May 2026 the COMPLETED state was light blue (#e3f2fd /
+   * #64b5f6) — too SaaS-data-flavored next to the holy-card register
+   * of the rest of the page. */
   --slot-open: #e8f5e9;
   --slot-open-border: #81c784;
   --slot-claimed: #fff3e0;
   --slot-claimed-border: var(--gold-400);
-  --slot-completed: #e3f2fd;
-  --slot-completed-border: #64b5f6;
+  --slot-completed: var(--gold-50);
+  --slot-completed-border: var(--gold-500);
 }
 
 @theme inline {

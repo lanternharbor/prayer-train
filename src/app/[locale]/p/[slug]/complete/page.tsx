@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { LocaleLink as Link } from "@/components/locale-link";
 import { notFound } from "next/navigation";
-import { Check, Heart, AlertCircle } from "lucide-react";
+import { Sparkles, Heart, AlertCircle } from "lucide-react";
 import { prisma } from "@/lib/db";
 import { markSlotCompleteByToken } from "@/lib/actions";
 import { CrossDivider } from "@/components/ui/catholic-icons";
@@ -96,15 +96,14 @@ export default async function CompleteSlotPage({
         {outcome === "success" ? (
           <>
             <div className="w-14 h-14 rounded-full bg-gold-100 flex items-center justify-center mx-auto mb-4">
-              <Check className="w-7 h-7 text-gold-600" />
+              <Sparkles className="w-7 h-7 text-gold-600" />
             </div>
             <h1 className="font-heading text-2xl font-bold text-navy-800 mb-2">
               Thank you for your prayer.
             </h1>
             <p className="text-muted-foreground mb-2">
-              Your prayer for{" "}
-              <strong className="text-navy-700">{train.recipientName}</strong>{" "}
-              is marked complete.
+              Your seal has been added to the bouquet for{" "}
+              <strong className="text-navy-700">{train.recipientName}</strong>.
             </p>
             <p className="text-sm text-muted-foreground italic">
               May the Lord receive your intercession.

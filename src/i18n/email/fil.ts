@@ -58,6 +58,8 @@ export const fil: EnglishEmailDictionary = {
     howToPrayLabel: "Paano manalangin:",
     customPrayerHeadingNamed: "Isang panalangin mula kay {organizerName}",
     customPrayerHeadingAnon: "May personal na panalanging kasama",
+    ctaLead:
+      "Ang iyong puwesto ay nasa bouquet na. Kapag nakapanalangin ka na ngayon, maaari kang magdagdag ng maliit na gintong sello sa ibaba.",
     cta: "Naidasal ko na",
     viewLink: "Tingnan ang PrayerTrain",
     footer: "PrayerTrain — Sama-samang panalangin para sa nangangailangan",

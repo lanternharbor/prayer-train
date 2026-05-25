@@ -434,10 +434,10 @@
   },
   "completionModal": {
     "titleEdit": "I-edit ang iyong tala",
-    "titleCreate": "Markahan ang panalanging ito bilang tapos",
+    "titleCreate": "Idagdag ang iyong sello",
     "closeAria": "Isara ang completion dialog",
     "leadEdit": "I-update o tanggalin ang talang iniwan mo nang minarkahan mo ang {prayerName} bilang naidasal.",
-    "leadCreate": "Naidasal mo na ang {prayerName}. Kung gusto, mag-iwan ng maikling tala para sa pamilya — o pindutin lamang ang «Markahang tapos» sa ibaba.",
+    "leadCreate": "Naidasal mo na ang {prayerName}. Ang iyong puwesto ay nasa bouquet na. Magdagdag ng gintong sello sa ibaba, at mag-iwan ng maikling tala para sa pamilya kung gusto.",
     "noteLabel": "Mag-iwan ng tala",
     "notePlaceholder": "Isang maikling salita ng paghihikayat, isang verse, anumang gusto mong ibahagi…",
     "noteOverCap": "{over} lampas sa {max}-character na limit",
@@ -447,7 +447,7 @@
     "deleteNote": "Tanggalin ang tala",
     "deletingNote": "Tinatanggal…",
     "saveChanges": "I-save ang mga pagbabago",
-    "markComplete": "Markahang tapos",
+    "markComplete": "Idagdag ang aking sello",
     "saving": "Sina-save…",
     "errorFallback": "May nangyaring problema. Pakisubukang muli.",
     "errorDeleteFallback": "May nangyaring problema sa pagtanggal ng tala."

@@ -34,6 +34,15 @@ type EmailDictionaryShape = {
     howToPrayLabel: string;
     customPrayerHeadingNamed: string;
     customPrayerHeadingAnon: string;
+    /**
+     * Reassurance shown directly above the "I prayed" button. Reframes
+     * the click as adding an optional gold seal on top of the slot
+     * (which is already on the bouquet by virtue of having been
+     * claimed), rather than as a required "mark complete" step. See
+     * the May 2026 Greens thread + plans/bit-of-a-debate-tranquil-wand.md
+     * for the product reframe.
+     */
+    ctaLead: string;
     cta: string;
     viewLink: string;
     footer: string;
@@ -83,6 +92,8 @@ export const en: EmailDictionaryShape = {
     howToPrayLabel: "How to pray:",
     customPrayerHeadingNamed: "A prayer from {organizerName}",
     customPrayerHeadingAnon: "A personal prayer included",
+    ctaLead:
+      "Your slot is already on the bouquet. When you've prayed today, you can add a small gold seal below.",
     cta: "I prayed",
     viewLink: "View the prayer train",
     footer: "PrayerTrain — Organized prayer for those in need",

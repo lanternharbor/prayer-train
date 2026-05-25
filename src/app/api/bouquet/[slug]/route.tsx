@@ -86,8 +86,19 @@ export async function GET(
     return NextResponse.redirect(new URL(`/p/${slug}`, reqUrl.origin), 302);
   }
 
-  // Build BouquetData from completed slots only. A "completed" slot is one
-  // a volunteer actually prayed (not just claimed and abandoned).
+  // Build BouquetData from any slot a volunteer signed up for. Under
+  // the presumed-prayed model (see /our-story copy + the May 2026
+  // "Greens debate"), CLAIMED counts as filled on the bouquet just
+  // like COMPLETED — the only difference is that COMPLETED slots have
+  // an explicit "I prayed" confirmation tap behind them. We honor
+  // everyone who signed up, not just the ones who tapped the email
+  // link, since a faithful prayer warrior who prays from a wall planner
+  // without ever opening the email is no less of a prayer warrior.
+  // Notes still gate on COMPLETED below — notes only exist on COMPLETED
+  // by schema (writing a note via submitSlotNoteByToken flips status).
+  const prayedSlots = train.slots.filter(
+    (s) => s.status === "CLAIMED" || s.status === "COMPLETED",
+  );
   const completedSlots = train.slots.filter((s) => s.status === "COMPLETED");
 
   // Prayers offered, grouped by prayer-type name.
@@ -95,7 +106,7 @@ export async function GET(
     string,
     { name: string; timesOffered: number; uniquePrayerEmails: Set<string> }
   >();
-  for (const slot of completedSlots) {
+  for (const slot of prayedSlots) {
     const name = slot.prayerType.name;
     if (!byPrayer.has(name)) {
       byPrayer.set(name, {
@@ -122,7 +133,7 @@ export async function GET(
   // when email is missing (rare).
   const seenEmails = new Set<string>();
   const warriors: string[] = [];
-  for (const slot of completedSlots) {
+  for (const slot of prayedSlots) {
     const key = (slot.claimerEmail ?? slot.claimerName ?? "").toLowerCase();
     if (!key || seenEmails.has(key)) continue;
     seenEmails.add(key);
@@ -136,7 +147,7 @@ export async function GET(
   // (under the slot-holder section, which represents the heavier
   // commitment). Sort alphabetically for the bouquet's calm aesthetic.
   const slotHolderEmails = new Set(
-    completedSlots
+    prayedSlots
       .map((s) => s.claimerEmail?.toLowerCase())
       .filter((e): e is string => Boolean(e)),
   );

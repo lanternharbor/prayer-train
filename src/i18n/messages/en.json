@@ -434,10 +434,10 @@
   },
   "completionModal": {
     "titleEdit": "Edit your note",
-    "titleCreate": "Mark this prayer complete",
+    "titleCreate": "Add your seal",
     "closeAria": "Close completion dialog",
     "leadEdit": "Update or remove the note you left when you marked the {prayerName} as prayed.",
-    "leadCreate": "You've prayed the {prayerName}. If you'd like, leave a short note for the family — or just hit “Mark complete” below.",
+    "leadCreate": "You prayed the {prayerName}. Your slot is already on the bouquet. Add a gold seal below, and leave a short note for the family if you'd like.",
     "noteLabel": "Leave a note",
     "notePlaceholder": "A short word of encouragement, a verse, anything you want to share…",
     "noteOverCap": "{over} over the {max}-character limit",
@@ -447,7 +447,7 @@
     "deleteNote": "Delete note",
     "deletingNote": "Deleting…",
     "saveChanges": "Save changes",
-    "markComplete": "Mark complete",
+    "markComplete": "Add my seal",
     "saving": "Saving…",
     "errorFallback": "Something went wrong. Please try again.",
     "errorDeleteFallback": "Something went wrong deleting the note."

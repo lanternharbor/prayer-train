@@ -35,6 +35,8 @@ export const es: EnglishEmailDictionary = {
     howToPrayLabel: "Cómo rezar:",
     customPrayerHeadingNamed: "Una oración de {organizerName}",
     customPrayerHeadingAnon: "Una oración personal incluida",
+    ctaLead:
+      "Tu lugar ya está en el bouquet. Cuando hayas rezado hoy, puedes añadir un pequeño sello dorado abajo.",
     cta: "Ya recé",
     viewLink: "Ver el PrayerTrain",
     footer: "PrayerTrain — Oración organizada para quienes la necesitan",

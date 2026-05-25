@@ -450,7 +450,10 @@ export function renderTrainDailyReminder(input: TrainDailyReminderInput): {
               </p>
             </div>
           ` : ""}
-          <div style="text-align: center; margin-top: 24px;">
+          <p style="color: #6e6150; font-size: 13px; text-align: center; margin: 24px 0 10px; line-height: 1.6;">
+            ${t.ctaLead}
+          </p>
+          <div style="text-align: center;">
             <a href="${input.completeUrl}" style="display: inline-block; background: #d4a843; color: #0a0c1a; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: bold; font-size: 14px;">
               ${t.cta}
             </a>
@@ -478,7 +481,7 @@ export function renderTrainDailyReminder(input: TrainDailyReminderInput): {
   const textGreeting2 = interpolate(t.greeting, {
     claimerName: input.claimerName,
   });
-  const text = `${textGreetingLine}\n\n${textGreeting2}\n\n${input.prayerName}\n${input.prayerInstructions ? input.prayerInstructions + "\n" : ""}${input.prayerText ? "\n" + input.prayerText + "\n" : ""}${input.customPrayerText ? "\n" + customPrayerHeadingPlain + ":\n" + input.customPrayerText + "\n" : ""}\n${t.textCTA} ${input.completeUrl}\n${t.textViewLink} ${input.trainUrl}`;
+  const text = `${textGreetingLine}\n\n${textGreeting2}\n\n${input.prayerName}\n${input.prayerInstructions ? input.prayerInstructions + "\n" : ""}${input.prayerText ? "\n" + input.prayerText + "\n" : ""}${input.customPrayerText ? "\n" + customPrayerHeadingPlain + ":\n" + input.customPrayerText + "\n" : ""}\n${t.ctaLead}\n\n${t.textCTA} ${input.completeUrl}\n${t.textViewLink} ${input.trainUrl}`;
   return { subject, html, text };
 }
 

@@ -434,10 +434,10 @@
   },
   "completionModal": {
     "titleEdit": "Editar tu nota",
-    "titleCreate": "Marcar esta oración como completada",
+    "titleCreate": "Añade tu sello",
     "closeAria": "Cerrar diálogo de finalización",
     "leadEdit": "Actualiza o quita la nota que dejaste cuando marcaste el {prayerName} como rezado.",
-    "leadCreate": "Has rezado el {prayerName}. Si quieres, deja una breve nota para la familia — o simplemente presiona «Marcar como completado» abajo.",
+    "leadCreate": "Rezaste el {prayerName}. Tu lugar ya está en el bouquet. Añade un sello dorado abajo, y deja una breve nota para la familia si quieres.",
     "noteLabel": "Dejar una nota",
     "notePlaceholder": "Una breve palabra de aliento, un versículo, lo que quieras compartir…",
     "noteOverCap": "{over} sobre el límite de {max} caracteres",
@@ -447,7 +447,7 @@
     "deleteNote": "Eliminar nota",
     "deletingNote": "Eliminando…",
     "saveChanges": "Guardar cambios",
-    "markComplete": "Marcar como completado",
+    "markComplete": "Añadir mi sello",
     "saving": "Guardando…",
     "errorFallback": "Algo salió mal. Por favor, inténtalo de nuevo.",
     "errorDeleteFallback": "Algo salió mal al eliminar la nota."

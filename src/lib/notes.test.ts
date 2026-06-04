@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
+  isGuestbookEntryIncludedInBouquet,
   isNoteIncludedInBouquet,
   isNoteVisibleToOrganizer,
   normalizeNoteText,
@@ -178,6 +179,45 @@ describe("isNoteIncludedInBouquet", () => {
         completionNote: null,
         completionNoteHiddenAt: null,
       }),
+    ).toBe(false);
+  });
+});
+
+describe("isGuestbookEntryIncludedInBouquet", () => {
+  it("includes a real post that has not been hidden", () => {
+    expect(
+      isGuestbookEntryIncludedInBouquet({
+        message: "Thinking of you and the whole family",
+        hiddenAt: null,
+      }),
+    ).toBe(true);
+  });
+
+  it("treats a missing hiddenAt as not hidden", () => {
+    expect(
+      isGuestbookEntryIncludedInBouquet({
+        message: "Sending love",
+      }),
+    ).toBe(true);
+  });
+
+  it("excludes a post the organizer soft-hid", () => {
+    // Same moderation guarantee as completion notes: content the
+    // organizer suppressed must not reach the family's keepsake.
+    expect(
+      isGuestbookEntryIncludedInBouquet({
+        message: "Inappropriate text",
+        hiddenAt: new Date("2026-05-05T00:00:00Z"),
+      }),
+    ).toBe(false);
+  });
+
+  it("excludes empty or whitespace-only posts", () => {
+    expect(
+      isGuestbookEntryIncludedInBouquet({ message: null, hiddenAt: null }),
+    ).toBe(false);
+    expect(
+      isGuestbookEntryIncludedInBouquet({ message: "   ", hiddenAt: null }),
     ).toBe(false);
   });
 });

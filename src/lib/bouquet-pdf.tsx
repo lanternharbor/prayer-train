@@ -86,6 +86,16 @@ export type BouquetData = {
    * caller; the route currently passes ascending by completedAt.
    */
   notes?: Array<{ name: string; date: Date; note: string }>;
+  /**
+   * Free-form encouragement-wall posts (guestbook entries) left for
+   * the recipient and family. Unlike `notes`, these aren't tied to a
+   * prayer slot — they're general messages of support. Optional;
+   * empty/undefined renders nothing. The caller filters out
+   * organizer-hidden posts and passes the rest; rendered in their own
+   * "With Love and Encouragement" section, attributed by author name +
+   * the date the post was left.
+   */
+  messages?: Array<{ name: string; date: Date; message: string }>;
 };
 
 const PALETTE = {
@@ -344,6 +354,35 @@ export function BouquetDocument({ data }: { data: BouquetData }) {
                 <Text style={styles.noteAttribution}>
                   — {n.name},{" "}
                   {n.date.toLocaleDateString("en-US", {
+                    month: "long",
+                    day: "numeric",
+                    timeZone: "UTC",
+                  })}
+                </Text>
+              </View>
+            ))}
+          </View>
+        )}
+
+        {/* Encouragement-wall posts. Same italic-quote treatment as the
+            prayer notes above, but a distinct section so attribution
+            stays honest: these are general messages of support, not tied
+            to a claimed prayer slot. Hidden posts are filtered upstream
+            by the route via isGuestbookEntryIncludedInBouquet. */}
+        {data.messages && data.messages.length > 0 && (
+          <View style={styles.section}>
+            <Text style={styles.sectionLabel}>With Love and Encouragement</Text>
+            {data.messages.map((m, i) => (
+              <View
+                style={i === data.messages!.length - 1
+                  ? { ...styles.noteRow, borderBottomWidth: 0 }
+                  : styles.noteRow}
+                key={`${m.name}-${m.date.toISOString()}-${i}`}
+              >
+                <Text style={styles.noteText}>&ldquo;{m.message}&rdquo;</Text>
+                <Text style={styles.noteAttribution}>
+                  — {m.name},{" "}
+                  {m.date.toLocaleDateString("en-US", {
                     month: "long",
                     day: "numeric",
                     timeZone: "UTC",

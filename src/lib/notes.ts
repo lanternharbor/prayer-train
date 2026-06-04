@@ -1,5 +1,6 @@
 /**
- * Small helpers for slot completion notes.
+ * Visibility helpers for the encouragement wall and spiritual bouquet —
+ * the two surfaces fed by slot completion notes and guestbook entries.
  *
  * Notes live as two columns on PrayerSlot: `completionNote` (nullable
  * text) and `completionNoteShareWall` (boolean, default false). The
@@ -7,6 +8,11 @@
  * marking a slot complete; the shareWall flag controls whether the
  * note also surfaces on the public encouragement wall in addition to
  * the spiritual bouquet.
+ *
+ * Guestbook entries are the free-form encouragement-wall posts that
+ * aren't tied to any prayer slot. They share the bouquet's
+ * comprehensive-record rule: included unless the organizer soft-hid
+ * them. See `isGuestbookEntryIncludedInBouquet`.
  *
  * Pure functions only; this module is import-safe everywhere
  * (server actions, server components, client components, tests).
@@ -76,6 +82,23 @@ export function isNoteIncludedInBouquet(slot: {
 }): boolean {
   if (slot.completionNoteHiddenAt) return false;
   return normalizeNoteText(slot.completionNote) !== null;
+}
+
+/**
+ * Returns true when a guestbook entry — a free-form encouragement-wall
+ * post, not tied to any prayer slot — should be included in the
+ * spiritual bouquet PDF. Mirrors `isNoteIncludedInBouquet`: the bouquet
+ * is the comprehensive keepsake for the family, so every post counts
+ * EXCEPT ones the organizer soft-hid via wall moderation (`hiddenAt`),
+ * which shouldn't reach the printed keepsake either. Hard-deleted
+ * entries are already gone and never reach this predicate.
+ */
+export function isGuestbookEntryIncludedInBouquet(entry: {
+  message: string | null;
+  hiddenAt?: Date | null;
+}): boolean {
+  if (entry.hiddenAt) return false;
+  return normalizeNoteText(entry.message) !== null;
 }
 
 /** Maximum length of a completion note in characters. */

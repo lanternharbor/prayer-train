@@ -3,6 +3,7 @@ import { renderToBuffer } from "@react-pdf/renderer";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import { BouquetDocument, type BouquetData } from "@/lib/bouquet-pdf";
+import { isGuestbookEntryIncludedInBouquet } from "@/lib/notes";
 
 /**
  * GET /api/bouquet/[slug]
@@ -52,6 +53,20 @@ export async function GET(
       // so attribution stays accurate.
       warriors: {
         select: { name: true, email: true },
+      },
+      // Encouragement-wall posts (GuestbookEntry) — free-form messages
+      // of support, not tied to any prayer slot. Surfaced in the
+      // bouquet's "With Love and Encouragement" section. Ordered
+      // oldest-first to read chronologically alongside the notes
+      // section; organizer-hidden posts are filtered out below.
+      guestbook: {
+        select: {
+          authorName: true,
+          message: true,
+          createdAt: true,
+          hiddenAt: true,
+        },
+        orderBy: { createdAt: "asc" },
       },
     },
   });
@@ -186,6 +201,19 @@ export async function GET(
     .filter((n) => n.note.length > 0)
     .sort((a, b) => a.date.getTime() - b.date.getTime());
 
+  // Encouragement-wall posts for the family's keepsake. Same
+  // comprehensive-record rule as notes (include everything EXCEPT what
+  // the organizer soft-hid), enforced by the shared predicate so the
+  // moderation guarantee is unit-tested. Already ordered oldest-first
+  // by the query.
+  const messages = train.guestbook
+    .filter(isGuestbookEntryIncludedInBouquet)
+    .map((g) => ({
+      name: g.authorName,
+      date: g.createdAt,
+      message: g.message.trim(),
+    }));
+
   const data: BouquetData = {
     recipientName: train.recipientName,
     // Pass null (not "the organizer") when the User row has no name OR
@@ -203,6 +231,7 @@ export async function GET(
     prayerWarriors: warriors,
     additionalWarriors,
     notes,
+    messages,
   };
 
   const pdfBuffer = await renderToBuffer(

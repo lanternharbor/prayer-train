@@ -3,6 +3,7 @@ import { renderToBuffer } from "@react-pdf/renderer";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import { BouquetDocument, type BouquetData } from "@/lib/bouquet-pdf";
+import { sanitizeBouquetText } from "@/lib/pdf-text";
 
 /**
  * GET /api/bouquet/chain/[slug]
@@ -100,25 +101,32 @@ export async function GET(
     return sum + Math.max(1, m.lastDayCompleted ?? 1);
   }, 0);
 
+  // Strip emoji from every free-text field — the standard PDF font
+  // can't render them and emits mojibake otherwise (same fix as the
+  // train bouquet route).
   const data: BouquetData = {
-    recipientName: chain.recipientName ?? chain.intention,
+    recipientName: sanitizeBouquetText(chain.recipientName ?? chain.intention),
     // Pass null (not "the organizer") when the User row has no name
     // OR when the organizer chose anonymity. BouquetDocument omits
     // the line entirely rather than rendering a placeholder.
     organizerName: chain.organizerAnonymous
       ? null
-      : (chain.organizer?.name ?? null),
+      : (sanitizeBouquetText(chain.organizer?.name ?? "") || null),
     startDate: chain.startDate,
     endDate: chain.endDate,
     prayers: [
       {
-        name: chain.prayerType.name,
+        name: sanitizeBouquetText(chain.prayerType.name),
         timesOffered: totalPrayers,
         uniquePrayers: chain.members.length,
       },
     ],
     prayerWarriors: Array.from(
-      new Set(chain.members.map((m) => m.name)),
+      new Set(
+        chain.members
+          .map((m) => sanitizeBouquetText(m.name))
+          .filter((n) => n.length > 0),
+      ),
     ).sort((a, b) => a.localeCompare(b)),
   };
 

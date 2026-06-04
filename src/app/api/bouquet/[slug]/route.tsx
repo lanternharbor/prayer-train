@@ -4,6 +4,7 @@ import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import { BouquetDocument, type BouquetData } from "@/lib/bouquet-pdf";
 import { isGuestbookEntryIncludedInBouquet } from "@/lib/notes";
+import { sanitizeBouquetText } from "@/lib/pdf-text";
 
 /**
  * GET /api/bouquet/[slug]
@@ -137,7 +138,7 @@ export async function GET(
 
   const prayers = Array.from(byPrayer.values())
     .map((p) => ({
-      name: p.name,
+      name: sanitizeBouquetText(p.name),
       timesOffered: p.timesOffered,
       uniquePrayers: p.uniquePrayerEmails.size,
     }))
@@ -152,7 +153,10 @@ export async function GET(
     const key = (slot.claimerEmail ?? slot.claimerName ?? "").toLowerCase();
     if (!key || seenEmails.has(key)) continue;
     seenEmails.add(key);
-    if (slot.claimerName) warriors.push(slot.claimerName);
+    if (slot.claimerName) {
+      const name = sanitizeBouquetText(slot.claimerName);
+      if (name) warriors.push(name);
+    }
   }
   warriors.sort((a, b) => a.localeCompare(b));
 
@@ -173,7 +177,8 @@ export async function GET(
     if (slotHolderEmails.has(emailKey)) continue;
     if (additionalWarriorEmails.has(emailKey)) continue;
     additionalWarriorEmails.add(emailKey);
-    additionalWarriors.push(w.name);
+    const name = sanitizeBouquetText(w.name);
+    if (name) additionalWarriors.push(name);
   }
   additionalWarriors.sort((a, b) => a.localeCompare(b));
 
@@ -194,9 +199,11 @@ export async function GET(
         !s.completionNoteHiddenAt,
     )
     .map((s) => ({
-      name: s.claimerName!,
+      name: sanitizeBouquetText(s.claimerName!),
       date: s.completedAt!,
-      note: s.completionNote!.trim(),
+      // Strip emoji the standard PDF font can't render. The length
+      // filter below then drops any note that was emoji-only.
+      note: sanitizeBouquetText(s.completionNote!),
     }))
     .filter((n) => n.note.length > 0)
     .sort((a, b) => a.date.getTime() - b.date.getTime());
@@ -209,13 +216,16 @@ export async function GET(
   const messages = train.guestbook
     .filter(isGuestbookEntryIncludedInBouquet)
     .map((g) => ({
-      name: g.authorName,
+      name: sanitizeBouquetText(g.authorName),
+      // Strip emoji the standard PDF font can't render; the length
+      // filter below drops posts that were emoji-only.
+      message: sanitizeBouquetText(g.message),
       date: g.createdAt,
-      message: g.message.trim(),
-    }));
+    }))
+    .filter((m) => m.message.length > 0);
 
   const data: BouquetData = {
-    recipientName: train.recipientName,
+    recipientName: sanitizeBouquetText(train.recipientName),
     // Pass null (not "the organizer") when the User row has no name OR
     // when the organizer chose anonymity for this train — the
     // BouquetDocument omits the line entirely rather than printing
@@ -224,7 +234,7 @@ export async function GET(
     // of which look off on a personalized memorial PDF.
     organizerName: train.organizerAnonymous
       ? null
-      : (train.organizer?.name ?? null),
+      : (sanitizeBouquetText(train.organizer?.name ?? "") || null),
     startDate: train.startDate,
     endDate: train.endDate,
     prayers,

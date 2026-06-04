@@ -15,8 +15,9 @@ describe("stripEmoji", () => {
     expect(stripEmoji("👍🏽")).toBe("");
   });
 
-  it("preserves Latin accents and Polish letters (the font-coverage follow-up)", () => {
+  it("preserves Latin accents and Polish letters (now rendered via embedded EB Garamond)", () => {
     // Critical: a naive non-ASCII strip would corrupt these real names.
+    // EB Garamond covers Latin Extended-A, so these must survive intact.
     expect(stripEmoji("María Ángeles")).toBe("María Ángeles");
     expect(stripEmoji("João Łukasz")).toBe("João Łukasz");
   });

@@ -20,9 +20,65 @@ import {
   View,
   Image,
   StyleSheet,
+  Font,
 } from "@react-pdf/renderer";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
+
+/**
+ * Embed EB Garamond (OFL) so the bouquet can render the whole Latin
+ * alphabet, not just WinAnsi/CP1252.
+ *
+ * The 14 built-in PDF fonts (Times-Roman et al.) are CP1252-encoded and
+ * cover ~256 Latin characters — fine for English/Spanish/Portuguese
+ * accents (é, ñ, ç, ã …) but NOT Latin Extended-A. PrayerTrain ships
+ * Polish (pl) as a live locale, and recipient names, claimer names, and
+ * guestbook / completion notes flow into the bouquet verbatim. Under
+ * Times, a recipient named "Łukasz" or a Polish note rendered as
+ * mojibake on the family's keepsake — ł ę ą ś ć ż ź ń all live outside
+ * CP1252. (Emoji are a separate problem, handled upstream by
+ * sanitizeBouquetText; EB Garamond has no emoji glyphs either, so we
+ * keep stripping them.)
+ *
+ * EB Garamond is the brand serif (see the holy-card visual identity), so
+ * the swap fixes the glyphs AND tightens the typography. We embed four
+ * STATIC instances keyed by fontWeight/fontStyle — variable fonts don't
+ * let react-pdf resolve a discrete weight/style, and each static face
+ * carries the full glyph set (latin + latin-ext) in one file.
+ *
+ * The .ttf files live in /public/fonts (same readable-at-runtime root as
+ * the emblem) and are force-included in the serverless trace via
+ * next.config's outputFileTracingIncludes. react-pdf reads each face
+ * lazily with fontkit.open(path) at render time, so the file must exist
+ * in the deployed lambda — registering here (module load) only records
+ * the path; nothing is read until renderToBuffer runs.
+ */
+const FONT_DIR = join(process.cwd(), "public", "fonts");
+Font.register({
+  family: "EB Garamond",
+  fonts: [
+    {
+      src: join(FONT_DIR, "EBGaramond-Regular.ttf"),
+      fontWeight: "normal",
+      fontStyle: "normal",
+    },
+    {
+      src: join(FONT_DIR, "EBGaramond-Bold.ttf"),
+      fontWeight: "bold",
+      fontStyle: "normal",
+    },
+    {
+      src: join(FONT_DIR, "EBGaramond-Italic.ttf"),
+      fontWeight: "normal",
+      fontStyle: "italic",
+    },
+    {
+      src: join(FONT_DIR, "EBGaramond-BoldItalic.ttf"),
+      fontWeight: "bold",
+      fontStyle: "italic",
+    },
+  ],
+});
 
 /**
  * Lazy-load the bouquet emblem from /public/bouquet-emblem.png. Cached
@@ -113,7 +169,7 @@ const styles = StyleSheet.create({
   page: {
     padding: 56,
     backgroundColor: PALETTE.cream,
-    fontFamily: "Times-Roman",
+    fontFamily: "EB Garamond",
     color: PALETTE.text,
   },
   header: {
@@ -134,13 +190,15 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   title: {
-    fontFamily: "Times-Italic",
+    fontFamily: "EB Garamond",
+    fontStyle: "italic",
     fontSize: 28,
     color: PALETTE.navyDark,
     marginBottom: 4,
   },
   recipientName: {
-    fontFamily: "Times-Bold",
+    fontFamily: "EB Garamond",
+    fontWeight: "bold",
     fontSize: 32,
     color: PALETTE.navyDark,
     marginBottom: 12,
@@ -154,7 +212,8 @@ const styles = StyleSheet.create({
   },
   organizerLine: {
     fontSize: 11,
-    fontFamily: "Times-Italic",
+    fontFamily: "EB Garamond",
+    fontStyle: "italic",
     color: PALETTE.muted,
     marginBottom: 4,
   },
@@ -188,7 +247,8 @@ const styles = StyleSheet.create({
   prayerCount: {
     fontSize: 10,
     color: PALETTE.muted,
-    fontFamily: "Times-Italic",
+    fontFamily: "EB Garamond",
+    fontStyle: "italic",
   },
   warriorsParagraph: {
     fontSize: 10,
@@ -202,7 +262,8 @@ const styles = StyleSheet.create({
     borderBottomColor: PALETTE.border,
   },
   noteText: {
-    fontFamily: "Times-Italic",
+    fontFamily: "EB Garamond",
+    fontStyle: "italic",
     fontSize: 10.5,
     lineHeight: 1.55,
     color: PALETTE.text,
@@ -211,11 +272,12 @@ const styles = StyleSheet.create({
   noteAttribution: {
     fontSize: 9,
     color: PALETTE.muted,
-    fontFamily: "Times-Roman",
+    fontFamily: "EB Garamond",
   },
   total: {
     fontSize: 12,
-    fontFamily: "Times-Italic",
+    fontFamily: "EB Garamond",
+    fontStyle: "italic",
     color: PALETTE.navy,
     marginTop: 14,
     textAlign: "center",
@@ -226,7 +288,8 @@ const styles = StyleSheet.create({
     borderTopWidth: 0.5,
     borderTopColor: PALETTE.border,
     fontSize: 11,
-    fontFamily: "Times-Italic",
+    fontFamily: "EB Garamond",
+    fontStyle: "italic",
     color: PALETTE.text,
     textAlign: "center",
     lineHeight: 1.5,
@@ -337,7 +400,7 @@ export function BouquetDocument({ data }: { data: BouquetData }) {
         {/* Personal notes left by individual prayer warriors. The
             bouquet includes EVERY note regardless of the in-product
             shareWall flag — this is the comprehensive private record
-            the recipient family receives. Italic Times-Italic at
+            the recipient family receives. Italic EB Garamond at
             slightly smaller size keeps the section reading as
             personal reflection rather than tabular data. */}
         {data.notes && data.notes.length > 0 && (

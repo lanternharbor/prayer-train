@@ -18,6 +18,19 @@ const nextConfig: NextConfig = {
   // play well with the bundler — externalize so Vercel runs it from
   // node_modules at runtime instead of trying to inline it into the lambda.
   serverExternalPackages: ["@react-pdf/renderer"],
+  // The spiritual-bouquet PDF embeds EB Garamond (public/fonts/*.ttf) so it
+  // can render Polish and other Latin-Extended names; react-pdf reads each
+  // face from disk at render time via fontkit.open(<path>). That path is
+  // computed at runtime (process.cwd()/public/fonts/...), so Next's static
+  // tracer can't see it and won't bundle the .ttf files into the serverless
+  // function — without this, the two /api/bouquet routes would 500 in
+  // production with a missing-font error. Force the fonts into the trace.
+  // The global "/*" key (rather than the bracketed bouquet route paths, which
+  // are easy to mis-escape for picomatch) is the documented can't-miss option;
+  // the files are tiny and only actually loaded by the bouquet routes.
+  outputFileTracingIncludes: {
+    "/*": ["./public/fonts/*.ttf"],
+  },
   redirects: async () => [
     {
       source: "/:path*",

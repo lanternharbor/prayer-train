@@ -1,19 +1,21 @@
 /**
- * Text sanitization for the standard-font PDF renderer.
+ * Emoji sanitization for the bouquet PDF renderer.
  *
- * The spiritual bouquet renders with Times-Roman, one of the 14 built-in
- * PDF fonts. Those fonts are WinAnsi-encoded (~256 Latin characters) and
- * contain no emoji glyphs, so emoji in user text — encouragement-wall
- * posts, completion notes, display names — render as mojibake like
- * "≝O<ü" instead of the intended emoji. `stripEmoji` removes emoji and
- * the joiners / selectors / modifiers that compose them while preserving
- * ordinary letters, digits, punctuation, and Latin accents (é, ñ, ü, ç,
- * …) so multilingual names and messages survive intact.
+ * The spiritual bouquet renders with embedded EB Garamond (see
+ * bouquet-pdf.tsx), which covers the full Latin alphabet but — like any
+ * text serif — has no emoji glyphs. Emoji in user text (encouragement-
+ * wall posts, completion notes, display names) would render as mojibake
+ * like "≝O<ü" instead of the intended emoji. `stripEmoji` removes emoji
+ * and the joiners / selectors / modifiers that compose them while
+ * preserving ordinary letters, digits, punctuation, and accents so
+ * multilingual names and messages survive intact.
  *
- * Scope note: this does NOT rescue non-WinAnsi *letters* (e.g. Polish
- * ł, ę). Those need a Unicode-capable embedded font; stripping them
- * would corrupt real names, so they're deliberately left alone and
- * tracked as a separate font-coverage follow-up.
+ * Critically, this PRESERVES non-WinAnsi *letters* (Polish ł ę ą ś ć ż
+ * ź ń, the rest of Latin Extended-A, etc.). Those used to garble under
+ * the old built-in Times-Roman face; now that EB Garamond is embedded
+ * they render correctly, so stripping them here would corrupt real
+ * names. The emoji regex below is deliberately scoped to pictographic
+ * code points so it never touches a letter.
  *
  * Pure functions only; import-safe everywhere (routes, components, tests).
  */

@@ -222,6 +222,20 @@ model PrayerTrain {
   // and the train continues toward its natural endDate.
   abandonmentPromptSentAt DateTime?
 
+  // First-party acquisition attribution. Records which in-product CTA
+  // the organizer arrived from when they created this train — the
+  // "participant → organizer" growth-loop touchpoints (closing-email,
+  // completion, bouquet, guestbook, completed-train) vs. "organic"
+  // (homepage, prayer pages, direct link). Set from a same-site
+  // `?from=` query param at create time, coerced against
+  // ACQUISITION_SOURCES in src/lib/validation.ts (unknown / absent →
+  // "organic"). First-party only: no cookie, no third-party tracker,
+  // no external call — the privacy policy's "no third-party analytics"
+  // promise stays literally true. Null only on rows created before this
+  // column existed. A constrained string rather than a DB enum so a new
+  // source can be added in validation.ts without a migration.
+  acquisitionSource String?
+
   // Relations
   slots     PrayerSlot[]
   guestbook GuestbookEntry[]
@@ -568,6 +582,13 @@ model PrayerChain {
   // PrayerTrain.abandonmentPromptSentAt — see that field for the
   // full shape and the 14-day + 7-day timing rationale.
   abandonmentPromptSentAt DateTime?
+
+  // First-party acquisition attribution. Mirrors
+  // PrayerTrain.acquisitionSource — see that field for the full
+  // contract. Records which growth-loop CTA the organizer arrived from
+  // when they created this chain (or "organic"). Coerced against
+  // ACQUISITION_SOURCES in src/lib/validation.ts; first-party only.
+  acquisitionSource String?
 
   // State
   status      ChainStatus @default(ACTIVE)

@@ -3,6 +3,7 @@ import Link from "next/link";
 import { prisma } from "@/lib/db";
 import { formatSituation } from "@/lib/utils";
 import { isProtectedTrain } from "@/lib/train-protection";
+import { ACQUISITION_SOURCES } from "@/lib/validation";
 import type { Prisma } from "@/generated/prisma/client";
 import { TrainRowActions } from "./train-row-actions";
 
@@ -103,6 +104,44 @@ export default async function AdminTrainsPage({
   const totalAll =
     totalActive + totalPaused + totalCompleted + totalCancelled;
 
+  // ── Acquisition by source ──
+  // The headline the growth loop is built to move: how many trains /
+  // chains each in-product CTA produced vs. "organic". First-party only
+  // (a scalar column on the create row), so this is a plain groupBy — no
+  // event pipeline. Unattributed = rows created before the column shipped.
+  const [trainSources, chainSources] = await Promise.all([
+    prisma.prayerTrain.groupBy({
+      by: ["acquisitionSource"],
+      _count: { _all: true },
+    }),
+    prisma.prayerChain.groupBy({
+      by: ["acquisitionSource"],
+      _count: { _all: true },
+    }),
+  ]);
+  const UNATTRIBUTED = "(unattributed)";
+  const acqRows = new Map<string, { trains: number; chains: number }>();
+  // Seed the known vocabulary so every loop source shows even at zero.
+  for (const s of ACQUISITION_SOURCES) acqRows.set(s, { trains: 0, chains: 0 });
+  for (const r of trainSources) {
+    const key = r.acquisitionSource ?? UNATTRIBUTED;
+    const cur = acqRows.get(key) ?? { trains: 0, chains: 0 };
+    cur.trains += r._count._all;
+    acqRows.set(key, cur);
+  }
+  for (const r of chainSources) {
+    const key = r.acquisitionSource ?? UNATTRIBUTED;
+    const cur = acqRows.get(key) ?? { trains: 0, chains: 0 };
+    cur.chains += r._count._all;
+    acqRows.set(key, cur);
+  }
+  const acqSummary = [...acqRows.entries()]
+    .map(([source, v]) => ({ source, ...v, total: v.trains + v.chains }))
+    .sort((a, b) => b.total - a.total);
+  const loopTotal = acqSummary
+    .filter((r) => r.source !== "organic" && r.source !== UNATTRIBUTED)
+    .reduce((sum, r) => sum + r.total, 0);
+
   return (
     <div className="min-h-screen bg-background py-8 px-4 sm:px-6">
       <div className="max-w-[1400px] mx-auto">
@@ -119,6 +158,64 @@ export default async function AdminTrainsPage({
             {totalCancelled} cancelled.
           </p>
         </header>
+
+        {/* Acquisition by source — the growth-loop scoreboard. */}
+        <section className="mb-6 bg-card border border-border rounded-xl overflow-hidden shadow-sm">
+          <div className="px-4 py-3 border-b border-border bg-cream-200 flex items-baseline justify-between gap-3">
+            <h2 className="font-heading text-lg font-semibold text-navy-800">
+              Acquisition by source
+            </h2>
+            <p className="text-xs text-muted-foreground">
+              <span className="text-navy-700 font-medium">{loopTotal}</span>{" "}
+              from growth-loop CTAs
+            </p>
+          </div>
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead className="text-navy-800">
+                <tr className="border-b border-border">
+                  <th className="text-left px-4 py-2 font-semibold">Source</th>
+                  <th className="text-right px-4 py-2 font-semibold">Trains</th>
+                  <th className="text-right px-4 py-2 font-semibold">Chains</th>
+                  <th className="text-right px-4 py-2 font-semibold">Total</th>
+                </tr>
+              </thead>
+              <tbody>
+                {acqSummary.map((row) => {
+                  const isLoop =
+                    row.source !== "organic" && row.source !== "(unattributed)";
+                  return (
+                    <tr
+                      key={row.source}
+                      className="border-t border-border first:border-t-0 hover:bg-cream-100/60"
+                    >
+                      <td className="px-4 py-2">
+                        <span
+                          className={
+                            isLoop
+                              ? "inline-block px-2 py-0.5 text-xs font-medium rounded-full border border-gold-300 bg-gold-50 text-gold-800"
+                              : "text-muted-foreground"
+                          }
+                        >
+                          {row.source}
+                        </span>
+                      </td>
+                      <td className="px-4 py-2 text-right tabular-nums text-navy-800">
+                        {row.trains}
+                      </td>
+                      <td className="px-4 py-2 text-right tabular-nums text-navy-800">
+                        {row.chains}
+                      </td>
+                      <td className="px-4 py-2 text-right tabular-nums font-medium text-navy-800">
+                        {row.total}
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        </section>
 
         <div className="flex flex-col sm:flex-row sm:items-center sm:gap-6 gap-3 mb-5 text-sm">
           <FilterGroup
@@ -155,6 +252,7 @@ export default async function AdminTrainsPage({
                   <th className="text-left px-4 py-3 font-semibold">
                     Visibility
                   </th>
+                  <th className="text-left px-4 py-3 font-semibold">Source</th>
                   <th className="text-right px-4 py-3 font-semibold">Slots</th>
                   <th className="text-right px-4 py-3 font-semibold">
                     Warriors
@@ -232,6 +330,18 @@ export default async function AdminTrainsPage({
                           </span>
                         )}
                       </td>
+                      <td className="px-4 py-3">
+                        {train.acquisitionSource &&
+                        train.acquisitionSource !== "organic" ? (
+                          <span className="inline-block px-2 py-0.5 text-xs font-medium rounded-full border border-gold-300 bg-gold-50 text-gold-800">
+                            {train.acquisitionSource}
+                          </span>
+                        ) : (
+                          <span className="text-xs text-muted-foreground">
+                            {train.acquisitionSource ?? "—"}
+                          </span>
+                        )}
+                      </td>
                       <td className="px-4 py-3 text-right tabular-nums text-navy-800">
                         <div className="font-medium">
                           {claimed}/{total}
@@ -263,7 +373,7 @@ export default async function AdminTrainsPage({
                 {trains.length === 0 && (
                   <tr>
                     <td
-                      colSpan={9}
+                      colSpan={10}
                       className="px-4 py-10 text-center text-muted-foreground"
                     >
                       No trains match the current filters.

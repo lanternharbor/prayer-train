@@ -95,6 +95,7 @@ export async function createPrayerTrain(formData: FormData) {
     organizerAnonymous,
     prayerTypeIds,
     anchorPrayerTypeIds,
+    acquisitionSource,
   } = input;
 
   // Persist the organizer's display name to User.name. Skipped when
@@ -215,6 +216,7 @@ export async function createPrayerTrain(formData: FormData) {
       organizerAnonymous,
       language,
       anchorPrayerTypeIds: effectiveAnchorIds,
+      acquisitionSource,
     },
   });
 
@@ -1705,6 +1707,7 @@ export async function createPrayerChain(formData: FormData) {
     isPublic,
     organizerName,
     organizerAnonymous,
+    acquisitionSource,
   } = parseFormData(createChainSchema, formData);
 
   // Persist the organizer's display name to User.name. See createPrayerTrain
@@ -1791,6 +1794,7 @@ export async function createPrayerChain(formData: FormData) {
       isPublic,
       organizerAnonymous,
       language,
+      acquisitionSource,
       members: {
         create: {
           userId: session.user.id,

@@ -1,6 +1,8 @@
 import { describe, expect, it } from "vitest";
 import {
+  ACQUISITION_SOURCES,
   addPrayerWarriorSchema,
+  coerceAcquisitionSource,
   createChainSchema,
   createTrainSchema,
   markChainDayCompleteSchema,
@@ -120,6 +122,35 @@ describe("markChainDayCompleteSchema", () => {
       day: 1,
     });
     expect(result.success).toBe(false);
+  });
+});
+
+describe("coerceAcquisitionSource (first-party attribution)", () => {
+  // Strict-clamp policy: every growth-loop source passes through; any
+  // unknown / absent / malformed value becomes "organic". This NEVER
+  // throws, so a hand-crafted ?from= can't break train creation. If the
+  // policy is ever flipped to preserve-unknown, these tests change with it.
+  it("passes through each known source unchanged", () => {
+    for (const source of ACQUISITION_SOURCES) {
+      expect(coerceAcquisitionSource(source)).toBe(source);
+    }
+  });
+
+  it("lowercases and trims before matching", () => {
+    expect(coerceAcquisitionSource("  Closing-Email  ")).toBe("closing-email");
+  });
+
+  it("clamps an unknown value to organic", () => {
+    expect(coerceAcquisitionSource("evil-campaign")).toBe("organic");
+    expect(coerceAcquisitionSource("'; DROP TABLE--")).toBe("organic");
+  });
+
+  it("clamps absent / non-string input to organic without throwing", () => {
+    expect(coerceAcquisitionSource(undefined)).toBe("organic");
+    expect(coerceAcquisitionSource(null)).toBe("organic");
+    expect(coerceAcquisitionSource("")).toBe("organic");
+    expect(coerceAcquisitionSource(42)).toBe("organic");
+    expect(coerceAcquisitionSource({})).toBe("organic");
   });
 });
 
@@ -250,6 +281,32 @@ describe("createTrainSchema", () => {
     });
     expect(result.success).toBe(false);
   });
+
+  describe("acquisitionSource (first-party attribution)", () => {
+    it("defaults an omitted source to organic", () => {
+      const result = createTrainSchema.safeParse(validBase);
+      expect(result.success).toBe(true);
+      if (result.success) expect(result.data.acquisitionSource).toBe("organic");
+    });
+
+    it("keeps a known growth-loop source", () => {
+      const result = createTrainSchema.safeParse({
+        ...validBase,
+        acquisitionSource: "bouquet",
+      });
+      expect(result.success).toBe(true);
+      if (result.success) expect(result.data.acquisitionSource).toBe("bouquet");
+    });
+
+    it("clamps an unknown source to organic instead of failing", () => {
+      const result = createTrainSchema.safeParse({
+        ...validBase,
+        acquisitionSource: "spam",
+      });
+      expect(result.success).toBe(true);
+      if (result.success) expect(result.data.acquisitionSource).toBe("organic");
+    });
+  });
 });
 
 describe("createChainSchema", () => {
@@ -278,6 +335,20 @@ describe("createChainSchema", () => {
     const result = createChainSchema.safeParse(validBase);
     expect(result.success).toBe(true);
     if (result.success) expect(result.data.isPublic).toBe(false);
+  });
+
+  it("defaults acquisitionSource to organic and keeps a known source", () => {
+    const omitted = createChainSchema.safeParse(validBase);
+    expect(omitted.success).toBe(true);
+    if (omitted.success) expect(omitted.data.acquisitionSource).toBe("organic");
+
+    const known = createChainSchema.safeParse({
+      ...validBase,
+      acquisitionSource: "completed-train",
+    });
+    expect(known.success).toBe(true);
+    if (known.success)
+      expect(known.data.acquisitionSource).toBe("completed-train");
   });
 
   it("accepts a payload with organizerAnonymous=true and no name", () => {

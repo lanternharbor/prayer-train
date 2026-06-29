@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import { createPrayerChain } from "@/lib/actions";
+import { coerceAcquisitionSource } from "@/lib/validation";
 import { Users, Heart } from "lucide-react";
 import { SaintPortrait } from "@/components/saint-portrait";
 import { PhotoUploadField } from "@/components/photo-upload-field";
@@ -23,7 +24,7 @@ export default async function NewChainPage({
   searchParams,
 }: {
   params: Promise<{ locale: string }>;
-  searchParams: Promise<{ prayerType?: string }>;
+  searchParams: Promise<{ prayerType?: string; from?: string }>;
 }) {
   const { locale } = await params;
   const dict = await getDictionary(locale);
@@ -32,15 +33,18 @@ export default async function NewChainPage({
   const session = await auth();
   if (!session?.user?.id) {
     // Rename to `sp` to avoid shadowing the route `params` we
-    // destructured for the locale above.
+    // destructured for the locale above. Preserve both the prayer
+    // pre-fill and the ?from= growth-loop attribution across sign-in.
     const sp = await searchParams;
-    const cb = sp.prayerType
-      ? `/${locale}/chain/new?prayerType=${encodeURIComponent(sp.prayerType)}`
-      : `/${locale}/chain/new`;
+    const cbParams = new URLSearchParams();
+    if (sp.prayerType) cbParams.set("prayerType", sp.prayerType);
+    if (sp.from) cbParams.set("from", sp.from);
+    const cbQs = cbParams.toString();
+    const cb = `/${locale}/chain/new${cbQs ? `?${cbQs}` : ""}`;
     redirect(`/${locale}/signin?callbackUrl=${encodeURIComponent(cb)}`);
   }
 
-  const { prayerType: prayerTypeSlug } = await searchParams;
+  const { prayerType: prayerTypeSlug, from: rawFrom } = await searchParams;
 
   // Pre-fill the prayer if the user came from /prayers/[slug].
   const prayerType = prayerTypeSlug
@@ -111,6 +115,13 @@ export default async function NewChainPage({
       {prayerType && (
         <form action={createPrayerChain} className="prayer-card space-y-5">
           <input type="hidden" name="prayerTypeId" value={prayerType.id} />
+          {/* First-party acquisition attribution — coerced server-side
+              from the ?from= param so a bad value can't reach the DB. */}
+          <input
+            type="hidden"
+            name="acquisitionSource"
+            value={coerceAcquisitionSource(rawFrom)}
+          />
 
           {/* Organizer self-identification. Pre-filled with whatever name
               is on the User row (Google sign-in fills it; magic-link

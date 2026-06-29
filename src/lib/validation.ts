@@ -57,6 +57,61 @@ const formBoolean = () =>
       return false;
     });
 
+// ─── Acquisition source (first-party attribution) ───────────
+//
+// The constrained vocabulary of how an organizer arrived at a create
+// flow. The "participant → organizer" growth-loop CTAs each tag their
+// link with `?from=<source>`; everything that isn't one of those (the
+// homepage, prayer pages, a pasted link) is "organic". Exported as the
+// single source of truth shared by the create schemas, the page-level
+// readers that pull `?from=` off the URL, and the CTA components that
+// write it — keep all three in lockstep so a new source is added in
+// exactly one place.
+export const ACQUISITION_SOURCES = [
+  "organic",
+  "closing-email",
+  "completion",
+  "bouquet",
+  "guestbook",
+  "completed-train",
+] as const;
+
+export type AcquisitionSource = (typeof ACQUISITION_SOURCES)[number];
+
+/**
+ * Coerce an untrusted `?from=` value to a known AcquisitionSource.
+ *
+ * Mirrors formBoolean()'s defensive posture: NEVER throws, so a bad,
+ * absent, or hand-crafted `?from=` can never break train/chain
+ * creation — the worst case is an attribution of "organic".
+ *
+ * Policy is STRICT CLAMP: any value not in ACQUISITION_SOURCES becomes
+ * "organic". The trade-off worth knowing — strict clamp keeps the
+ * column clean (every row is one of a known set, so the admin rollup is
+ * a fixed shape), but it means a brand-new `?from=` value you start
+ * linking with BEFORE adding it here is silently recorded as "organic"
+ * until you register it. The alternative (preserve unknown-but-bounded
+ * strings) would surface unregistered experiments immediately at the
+ * cost of a messier column. We chose clamp because the loop's sources
+ * are a closed, code-defined set; revisit if ad-hoc campaign tags
+ * become a thing.
+ */
+export function coerceAcquisitionSource(raw: unknown): AcquisitionSource {
+  if (typeof raw !== "string") return "organic";
+  const norm = raw.trim().toLowerCase();
+  return (ACQUISITION_SOURCES as readonly string[]).includes(norm)
+    ? (norm as AcquisitionSource)
+    : "organic";
+}
+
+// FormData/URL-aware Zod field wrapping coerceAcquisitionSource. Absent
+// or any unexpected value resolves to "organic" without a parse error.
+const formAcquisitionSource = () =>
+  z
+    .union([z.string(), z.undefined()])
+    .optional()
+    .transform((v) => coerceAcquisitionSource(v));
+
 // ─── Create PrayerTrain ─────────────────────────────────────
 
 const situationValues = Object.values(SituationCategory) as [
@@ -121,6 +176,9 @@ export const createTrainSchema = z
               .filter(Boolean)
           : []
       ),
+    // First-party acquisition attribution — which growth-loop CTA (or
+    // "organic") the organizer came from. See formAcquisitionSource.
+    acquisitionSource: formAcquisitionSource(),
   })
   .refine(
     (data) =>
@@ -387,6 +445,8 @@ export const createChainSchema = z
     // refinement there for the contract.
     organizerName: optionalTrimmed(80),
     organizerAnonymous: formBoolean(),
+    // First-party acquisition attribution — mirrors createTrainSchema.
+    acquisitionSource: formAcquisitionSource(),
   })
   .refine(
     (data) =>

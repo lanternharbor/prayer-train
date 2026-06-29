@@ -61,6 +61,7 @@ export function CreateWizard({
   situationLabels,
   prayerCategoryLabels,
   initialSelectedPrayerIds = [],
+  acquisitionSource = "organic",
 }: {
   prayerTypes: PrayerTypeSelect[];
   /** session.user.name if known — pre-fills "Your name" so users with
@@ -73,6 +74,10 @@ export function CreateWizard({
    *  parent resolved the slug to an ID. Empty array (default) =
    *  no pre-fill — the wizard renders with nothing selected. */
   initialSelectedPrayerIds?: string[];
+  /** First-party acquisition attribution. The parent already coerced
+   *  the `?from=` param to a known source (defaults to "organic"); we
+   *  just forward it on the submitted FormData. */
+  acquisitionSource?: string;
 }) {
   // Locale-aware duration labels. Built inside the component so they
   // can reference the dict the server resolved. Three canonical
@@ -225,6 +230,7 @@ export function CreateWizard({
     formData.set("organizerAnonymous", organizerAnonymous ? "true" : "false");
     formData.set("prayerTypeIds", selectedPrayerIds.join(","));
     formData.set("anchorPrayerTypeIds", anchorPrayerTypeIds.join(","));
+    formData.set("acquisitionSource", acquisitionSource);
     await createPrayerTrain(formData);
   };
 

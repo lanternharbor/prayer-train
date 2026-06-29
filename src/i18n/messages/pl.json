@@ -655,5 +655,15 @@
     "chainHeading": "Módlcie się razem za kogoś",
     "chainBody": "Zbierz kilkoro przyjaciół lub rodziny, by modlić się tą samą modlitwą, w te same dni, za kogoś, kto tego potrzebuje.",
     "chainCta": "Módlcie się razem"
+  },
+  "bouquetPage": {
+    "heading": "Duchowy bukiet",
+    "intro": "Pamiątka każdej modlitwy ofiarowanej za {name}.",
+    "gatheredBy": "Zebrane przez {name}",
+    "statPrayers": "Ofiarowane modlitwy",
+    "statPeople": "Modlące się osoby",
+    "statDays": "Objęte dni",
+    "encouragementHeading": "Z miłością i otuchą",
+    "download": "Pobierz bukiet (PDF)"
   }
 }

@@ -655,5 +655,15 @@
     "chainHeading": "Sama-samang ipanalangin ang isang tao",
     "chainBody": "Tipunin ang ilang kaibigan o kapamilya upang sabay-sabay na idasal ang parehong panalangin, sa parehong mga araw, para sa isang nangangailangan.",
     "chainCta": "Sumamang manalangin"
+  },
+  "bouquetPage": {
+    "heading": "Spiritual Bouquet",
+    "intro": "Isang alaala ng bawat panalanging inialay para kay {name}.",
+    "gatheredBy": "Tinipon ni {name}",
+    "statPrayers": "Mga panalanging inialay",
+    "statPeople": "Mga taong nanalangin",
+    "statDays": "Mga araw na sakop",
+    "encouragementHeading": "Nang may pagmamahal at pampalakas-loob",
+    "download": "I-download ang bouquet (PDF)"
   }
 }

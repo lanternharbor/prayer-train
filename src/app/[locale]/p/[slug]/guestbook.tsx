@@ -11,7 +11,9 @@ import {
   unhideSlotNote,
 } from "@/lib/actions";
 import { formatDateLocale } from "@/lib/utils";
+import { LocaleLink } from "@/components/locale-link";
 import {
+  ArrowRight,
   Eye,
   EyeOff,
   HandHeart,
@@ -66,6 +68,10 @@ export function Guestbook({
   const [name, setName] = useState("");
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
+  // Set once the visitor posts encouragement. Gates a gentle one-time
+  // "you can start one of your own" prompt — the participant→organizer
+  // loop. Resets to hidden on page refresh (no persistence needed).
+  const [posted, setPosted] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -78,6 +84,7 @@ export function Guestbook({
     await postGuestbookEntry(formData);
     setMessage("");
     setLoading(false);
+    setPosted(true);
   };
 
   return (
@@ -126,6 +133,24 @@ export function Guestbook({
           {t.submitButton}
         </button>
       </form>
+
+      {/* Gentle once-per-session carry-forward prompt after posting.
+          Compact, inline (this is a client component, so it can't render
+          the server CarryForwardCta) — a soft invitation, not a push. */}
+      {posted && (
+        <div className="prayer-card mb-4 bg-navy-50 border-navy-100 text-sm text-foreground">
+          <p className="leading-relaxed">
+            {t.postedThanks} {t.carryForwardPrompt}{" "}
+            <LocaleLink
+              href="/create/train?from=guestbook"
+              className="text-gold-700 font-medium hover:underline underline-offset-2 inline-flex items-center gap-1"
+            >
+              {t.carryForwardCta}
+              <ArrowRight className="w-3.5 h-3.5" />
+            </LocaleLink>
+          </p>
+        </div>
+      )}
 
       {/* Entries — both guestbook posts and shared prayer notes,
           rendered with the same chrome plus a small "from a prayer"

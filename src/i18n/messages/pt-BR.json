@@ -497,7 +497,10 @@
     "messageLabel": "Mensagem de encorajamento",
     "messagePlaceholder": "Deixe uma mensagem de encorajamento…",
     "submitButton": "Publicar",
-    "emptyState": "Seja o primeiro a deixar uma mensagem de encorajamento!"
+    "emptyState": "Seja o primeiro a deixar uma mensagem de encorajamento!",
+    "postedThanks": "Obrigado pelas suas palavras de incentivo.",
+    "carryForwardPrompt": "Se quiser, você pode começar a sua própria corrente de oração.",
+    "carryForwardCta": "Comece uma"
   },
   "addWarrior": {
     "triggerButton": "Junte-se como guerreiro de oração",
@@ -644,5 +647,13 @@
     "submitting": "Reconstruindo…",
     "backToManage": "Voltar para gerenciar",
     "cancelLink": "Cancelar"
+  },
+  "carryForwardCta": {
+    "trainHeading": "Leve isto adiante",
+    "trainBody": "Há mais alguém que você ama carregando algo pesado neste momento? Você pode começar uma corrente de oração por essa pessoa, assim como esta começou.",
+    "trainCta": "Comece uma corrente de oração",
+    "chainHeading": "Rezem juntos por alguém",
+    "chainBody": "Reúna alguns amigos ou familiares para rezar a mesma oração, nos mesmos dias, por alguém que precisa.",
+    "chainCta": "Rezar com amigos"
   }
 }

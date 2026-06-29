@@ -497,7 +497,10 @@
     "messageLabel": "Message of encouragement",
     "messagePlaceholder": "Leave a message of encouragement…",
     "submitButton": "Post",
-    "emptyState": "Be the first to leave an encouraging message!"
+    "emptyState": "Be the first to leave an encouraging message!",
+    "postedThanks": "Thank you for the encouragement.",
+    "carryForwardPrompt": "If you would like, you can begin a prayer train of your own.",
+    "carryForwardCta": "Start one"
   },
   "addWarrior": {
     "triggerButton": "Add yourself as a prayer warrior",
@@ -644,5 +647,13 @@
     "submitting": "Rebuilding…",
     "backToManage": "Back to manage",
     "cancelLink": "Cancel"
+  },
+  "carryForwardCta": {
+    "trainHeading": "Carry this forward",
+    "trainBody": "Is there someone else you love who is carrying something heavy right now? You can begin a prayer train for them, the way this one began.",
+    "trainCta": "Start a prayer train",
+    "chainHeading": "Pray together for someone",
+    "chainBody": "Gather a few friends or family to pray the same prayer, the same days, for someone who needs it.",
+    "chainCta": "Pray with friends"
   }
 }

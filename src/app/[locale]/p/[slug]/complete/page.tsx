@@ -6,6 +6,8 @@ import { prisma } from "@/lib/db";
 import { markSlotCompleteByToken } from "@/lib/actions";
 import { CrossDivider } from "@/components/ui/catholic-icons";
 import { verifyCompletionToken } from "@/lib/completion-tokens";
+import { getDictionary } from "@/i18n/dictionaries";
+import { CarryForwardCta } from "@/components/carry-forward-cta";
 import { CompleteForm } from "./complete-form";
 
 /**
@@ -29,11 +31,12 @@ export default async function CompleteSlotPage({
   params,
   searchParams,
 }: {
-  params: Promise<{ slug: string }>;
+  params: Promise<{ locale: string; slug: string }>;
   searchParams: Promise<{ slot?: string; token?: string }>;
 }) {
-  const { slug } = await params;
+  const { locale, slug } = await params;
   const { slot: slotId, token } = await searchParams;
+  const dict = await getDictionary(locale);
 
   // Resolve the train regardless of token outcome so we can render a
   // useful page even on failure (the visitor still wants context for
@@ -164,6 +167,17 @@ export default async function CompleteSlotPage({
           initialNote={slotState.completionNote ?? ""}
           initialShareWall={slotState.completionNoteShareWall}
           frozen={trainFrozen}
+        />
+      )}
+
+      {/* Carry-this-forward CTA — only after a successful completion. A
+          train slot completes at most once, so this shows once, at the
+          moment the person has just prayed. */}
+      {outcome === "success" && (
+        <CarryForwardCta
+          from="completion"
+          t={dict.carryForwardCta}
+          className="mt-10"
         />
       )}
     </div>

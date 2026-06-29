@@ -497,7 +497,10 @@
     "messageLabel": "Mensaje de aliento",
     "messagePlaceholder": "Deja un mensaje de aliento…",
     "submitButton": "Publicar",
-    "emptyState": "¡Sé el primero en dejar un mensaje de aliento!"
+    "emptyState": "¡Sé el primero en dejar un mensaje de aliento!",
+    "postedThanks": "Gracias por tus palabras de aliento.",
+    "carryForwardPrompt": "Si lo deseas, puedes comenzar tu propia cadena de oración.",
+    "carryForwardCta": "Inicia una"
   },
   "addWarrior": {
     "triggerButton": "Únete como guerrero de oración",
@@ -644,5 +647,13 @@
     "submitting": "Reconstruyendo…",
     "backToManage": "Volver a gestionar",
     "cancelLink": "Cancelar"
+  },
+  "carryForwardCta": {
+    "trainHeading": "Lleva esto adelante",
+    "trainBody": "¿Hay alguien más a quien amas que esté cargando algo pesado en este momento? Puedes comenzar una cadena de oración por esa persona, así como comenzó esta.",
+    "trainCta": "Inicia una cadena de oración",
+    "chainHeading": "Recen juntos por alguien",
+    "chainBody": "Reúne a algunos amigos o familiares para rezar la misma oración, los mismos días, por alguien que lo necesita.",
+    "chainCta": "Reza con amigos"
   }
 }

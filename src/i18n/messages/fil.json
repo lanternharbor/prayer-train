@@ -497,7 +497,10 @@
     "messageLabel": "Mensahe ng paghihikayat",
     "messagePlaceholder": "Mag-iwan ng mensahe ng paghihikayat…",
     "submitButton": "I-post",
-    "emptyState": "Maging una na mag-iwan ng nakapagpapasiglang mensahe!"
+    "emptyState": "Maging una na mag-iwan ng nakapagpapasiglang mensahe!",
+    "postedThanks": "Salamat sa iyong pampalakas-loob.",
+    "carryForwardPrompt": "Kung nais mo, maaari kang magsimula ng sarili mong prayer train.",
+    "carryForwardCta": "Magsimula"
   },
   "addWarrior": {
     "triggerButton": "Sumali bilang prayer warrior",
@@ -644,5 +647,13 @@
     "submitting": "Nire-rebuild…",
     "backToManage": "Bumalik sa manage",
     "cancelLink": "Kanselahin"
+  },
+  "carryForwardCta": {
+    "trainHeading": "Ipagpatuloy ito",
+    "trainBody": "May iba pa bang mahal mo na may pasan ngayong mabigat na bagay? Maaari kang magsimula ng prayer train para sa kanila, tulad ng pagsimula nito.",
+    "trainCta": "Magsimula ng prayer train",
+    "chainHeading": "Sama-samang ipanalangin ang isang tao",
+    "chainBody": "Tipunin ang ilang kaibigan o kapamilya upang sabay-sabay na idasal ang parehong panalangin, sa parehong mga araw, para sa isang nangangailangan.",
+    "chainCta": "Sumamang manalangin"
   }
 }

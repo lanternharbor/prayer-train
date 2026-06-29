@@ -1906,7 +1906,7 @@ export function renderPrayerWarriorClosing({
             </h1>
             <p style="color: #11152c; font-size: 15px; line-height: 1.7; margin: 0 0 18px;">
               Thank you for praying for ${eRecipientName}, ${eWarriorName}.
-              Every prayer offered — every slot, every pledge — is held in the
+              Every prayer offered, every slot, every pledge, is held in the
               spiritual bouquet linked below. May the Lord reward your
               faithfulness.
             </p>

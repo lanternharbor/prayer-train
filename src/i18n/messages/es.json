@@ -655,5 +655,15 @@
     "chainHeading": "Recen juntos por alguien",
     "chainBody": "Reúne a algunos amigos o familiares para rezar la misma oración, los mismos días, por alguien que lo necesita.",
     "chainCta": "Reza con amigos"
+  },
+  "bouquetPage": {
+    "heading": "Ramillete espiritual",
+    "intro": "Un recuerdo de cada oración ofrecida por {name}.",
+    "gatheredBy": "Reunido por {name}",
+    "statPrayers": "Oraciones ofrecidas",
+    "statPeople": "Personas que rezaron",
+    "statDays": "Días cubiertos",
+    "encouragementHeading": "Con amor y aliento",
+    "download": "Descargar el ramillete (PDF)"
   }
 }

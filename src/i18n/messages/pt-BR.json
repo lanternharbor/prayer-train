@@ -655,5 +655,15 @@
     "chainHeading": "Rezem juntos por alguém",
     "chainBody": "Reúna alguns amigos ou familiares para rezar a mesma oração, nos mesmos dias, por alguém que precisa.",
     "chainCta": "Rezar com amigos"
+  },
+  "bouquetPage": {
+    "heading": "Buquê espiritual",
+    "intro": "Uma lembrança de cada oração oferecida por {name}.",
+    "gatheredBy": "Reunido por {name}",
+    "statPrayers": "Orações oferecidas",
+    "statPeople": "Pessoas que rezaram",
+    "statDays": "Dias cobertos",
+    "encouragementHeading": "Com amor e incentivo",
+    "download": "Baixar o buquê (PDF)"
   }
 }

@@ -655,5 +655,15 @@
     "chainHeading": "Pray together for someone",
     "chainBody": "Gather a few friends or family to pray the same prayer, the same days, for someone who needs it.",
     "chainCta": "Pray with friends"
+  },
+  "bouquetPage": {
+    "heading": "Spiritual Bouquet",
+    "intro": "A keepsake of every prayer offered for {name}.",
+    "gatheredBy": "Gathered by {name}",
+    "statPrayers": "Prayers offered",
+    "statPeople": "People praying",
+    "statDays": "Days covered",
+    "encouragementHeading": "With love and encouragement",
+    "download": "Download the bouquet (PDF)"
   }
 }

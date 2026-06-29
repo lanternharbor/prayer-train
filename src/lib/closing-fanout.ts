@@ -72,7 +72,10 @@ export async function sendTrainClosingFanout(
   baseUrl: string,
 ): Promise<void> {
   const trainUrl = `${baseUrl}/p/${train.slug}`;
-  const bouquetUrl = `${baseUrl}/api/bouquet/${train.slug}`;
+  // Point participants at the HTML bouquet landing page (warm view +
+  // download button + carry-forward CTA) rather than the dead-end PDF.
+  // The landing page keeps a Download button to /api/bouquet/[slug].
+  const bouquetUrl = `${baseUrl}/p/${train.slug}/bouquet`;
   const orgFirst = train.organizerAnonymous
     ? null
     : (train.organizer?.name?.trim().split(/\s+/)[0] ?? null);
@@ -171,7 +174,8 @@ export async function sendChainClosingFanout(
   baseUrl: string,
 ): Promise<void> {
   const chainUrl = `${baseUrl}/chain/${chain.slug}`;
-  const bouquetUrl = `${baseUrl}/api/bouquet/chain/${chain.slug}`;
+  // HTML bouquet landing page (see the train fan-out above for why).
+  const bouquetUrl = `${baseUrl}/chain/${chain.slug}/bouquet`;
   const organizerName =
     chain.organizerAnonymous || !chain.organizer?.name
       ? null

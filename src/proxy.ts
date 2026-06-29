@@ -107,7 +107,16 @@ export async function proxy(request: NextRequest) {
     // /es/dashboard, send them to /es/signin?callbackUrl=/es/dashboard.
     const localeFromPath = extractLocaleFromPath(pathname) ?? defaultLocale;
     const signInUrl = new URL(`/${localeFromPath}/signin`, request.url);
-    signInUrl.searchParams.set("callbackUrl", pathname);
+    // Preserve the original query string on the callback. A logged-out
+    // visitor clicking a growth-loop CTA (e.g. /create/train?from=
+    // bouquet) is exactly the case we most want to attribute, and
+    // `pathname` alone drops the query — so without `+ search` the
+    // `?from=` (and any `?prayerType=` pre-fill) is lost before the
+    // page ever runs and the new train records blank attribution.
+    signInUrl.searchParams.set(
+      "callbackUrl",
+      pathname + request.nextUrl.search,
+    );
     return NextResponse.redirect(signInUrl);
   }
 

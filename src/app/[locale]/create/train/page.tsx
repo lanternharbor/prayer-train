@@ -6,6 +6,7 @@ import { CreateWizard } from "./create-wizard";
 import { getDictionary } from "@/i18n/dictionaries";
 import { localizedMetadata } from "@/i18n/metadata";
 import { isLocale, defaultLocale } from "@/i18n/config";
+import { coerceAcquisitionSource } from "@/lib/validation";
 
 export async function generateMetadata({
   params,
@@ -28,20 +29,24 @@ export default async function CreatePage({
   searchParams,
 }: {
   params: Promise<{ locale: string }>;
-  searchParams: Promise<{ prayerType?: string }>;
+  searchParams: Promise<{ prayerType?: string; from?: string }>;
 }) {
   const { locale } = await params;
-  const { prayerType: prefilledSlug } = await searchParams;
+  const { prayerType: prefilledSlug, from: rawFrom } = await searchParams;
   // Redirect to signin if not authenticated. The edge proxy also gates
   // this route, but it only checks cookie existence — a stale cookie
   // (e.g. session deleted from DB) passes the proxy but fails here.
   const session = await auth();
   if (!session?.user?.id) {
-    // Preserve the ?prayerType=... param across the sign-in round-trip
-    // so the wizard pre-fill survives auth.
-    const callbackUrl = prefilledSlug
-      ? `/${locale}/create/train?prayerType=${encodeURIComponent(prefilledSlug)}`
-      : `/${locale}/create/train`;
+    // Preserve BOTH the ?prayerType=... pre-fill and the ?from=...
+    // growth-loop attribution across the sign-in round-trip, so a
+    // logged-out visitor coming from a loop CTA still pre-fills the
+    // prayer and records the source after they authenticate.
+    const params = new URLSearchParams();
+    if (prefilledSlug) params.set("prayerType", prefilledSlug);
+    if (rawFrom) params.set("from", rawFrom);
+    const qs = params.toString();
+    const callbackUrl = `/${locale}/create/train${qs ? `?${qs}` : ""}`;
     redirect(`/${locale}/signin?callbackUrl=${encodeURIComponent(callbackUrl)}`);
   }
   const dict = await getDictionary(locale);
@@ -90,6 +95,7 @@ export default async function CreatePage({
         situationLabels={dict.situationLabels}
         prayerCategoryLabels={dict.prayerCategoryLabels}
         initialSelectedPrayerIds={initialSelectedPrayerIds}
+        acquisitionSource={coerceAcquisitionSource(rawFrom)}
       />
     </div>
   );

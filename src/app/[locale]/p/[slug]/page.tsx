@@ -31,6 +31,7 @@ import { LocaleLink as Link } from "@/components/locale-link";
 import { PrayerCalendar } from "./prayer-calendar";
 import { Guestbook } from "./guestbook";
 import { UpdatesFeed } from "./updates-feed";
+import { CarryForwardCta } from "@/components/carry-forward-cta";
 import { ShareButton } from "./share-button";
 import { AddWarriorButton } from "./add-warrior-button";
 import { ExpandableText } from "./expandable-text";
@@ -637,6 +638,18 @@ export default async function PrayerTrainPage({
           />
         </div>
       </div>
+
+      {/* Carry-this-forward CTA — only on a COMPLETED train. A visitor
+          landing on a finished train (often via a shared link or the
+          closing email) is a warm lead to become the next organizer.
+          Omits prayerType pre-fill since a train spans several prayers. */}
+      {train.status === "COMPLETED" && (
+        <CarryForwardCta
+          from="completed-train"
+          t={dict.carryForwardCta}
+          className="mt-12"
+        />
+      )}
 
       {/* Floating skip-to-encouragement button. Renders fixed at the
           bottom-right when the viewer has scrolled past the calendar

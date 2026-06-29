@@ -6,6 +6,8 @@ import { prisma } from "@/lib/db";
 import { markChainDayCompleteByToken } from "@/lib/actions";
 import { organizerFirstName } from "@/lib/organizer-display";
 import { CrossDivider } from "@/components/ui/catholic-icons";
+import { getDictionary } from "@/i18n/dictionaries";
+import { CarryForwardCta } from "@/components/carry-forward-cta";
 
 /**
  * Tokenized one-click completion handler for the "pray together"
@@ -25,15 +27,16 @@ export default async function CompleteChainDayPage({
   params,
   searchParams,
 }: {
-  params: Promise<{ slug: string }>;
+  params: Promise<{ locale: string; slug: string }>;
   searchParams: Promise<{
     memberId?: string;
     token?: string;
     day?: string;
   }>;
 }) {
-  const { slug } = await params;
+  const { locale, slug } = await params;
   const { memberId, token, day: dayStr } = await searchParams;
+  const dict = await getDictionary(locale);
 
   const chain = await prisma.prayerChain.findUnique({
     where: { slug },
@@ -43,6 +46,8 @@ export default async function CompleteChainDayPage({
       durationDays: true,
       organizerAnonymous: true,
       organizer: { select: { name: true } },
+      // Pre-fill the carry-forward CTA with the chain's prayer.
+      prayerType: { select: { slug: true } },
     },
   });
   if (!chain) notFound();
@@ -143,6 +148,19 @@ export default async function CompleteChainDayPage({
           Open the prayer
         </Link>
       </div>
+
+      {/* Carry-this-forward CTA — anti-nag: a member taps "I prayed"
+          up to durationDays times, so this shows ONLY on the final day,
+          at the emotional peak of finishing the novena, never on days
+          1..N-1. Pre-fills the chain's prayer. */}
+      {outcome === "success" && dayLabel === chain.durationDays && (
+        <CarryForwardCta
+          from="completion"
+          prayerSlug={chain.prayerType.slug}
+          t={dict.carryForwardCta}
+          className="mt-10"
+        />
+      )}
     </div>
   );
 }

@@ -497,7 +497,10 @@
     "messageLabel": "Wiadomość wsparcia",
     "messagePlaceholder": "Zostaw wiadomość wsparcia…",
     "submitButton": "Opublikuj",
-    "emptyState": "Bądź pierwszą osobą, która zostawi wiadomość wsparcia!"
+    "emptyState": "Bądź pierwszą osobą, która zostawi wiadomość wsparcia!",
+    "postedThanks": "Dziękujemy za słowa otuchy.",
+    "carryForwardPrompt": "Jeśli chcesz, możesz rozpocząć własny łańcuch modlitwy.",
+    "carryForwardCta": "Rozpocznij"
   },
   "addWarrior": {
     "triggerButton": "Dołącz jako wojownik modlitwy",
@@ -644,5 +647,13 @@
     "submitting": "Odbudowuję…",
     "backToManage": "Wróć do zarządzania",
     "cancelLink": "Anuluj"
+  },
+  "carryForwardCta": {
+    "trainHeading": "Nieś to dalej",
+    "trainBody": "Czy jest ktoś jeszcze, kogo kochasz, kto niesie teraz coś ciężkiego? Możesz rozpocząć łańcuch modlitwy za tę osobę, tak jak rozpoczął się ten.",
+    "trainCta": "Rozpocznij łańcuch modlitwy",
+    "chainHeading": "Módlcie się razem za kogoś",
+    "chainBody": "Zbierz kilkoro przyjaciół lub rodziny, by modlić się tą samą modlitwą, w te same dni, za kogoś, kto tego potrzebuje.",
+    "chainCta": "Módlcie się razem"
   }
 }

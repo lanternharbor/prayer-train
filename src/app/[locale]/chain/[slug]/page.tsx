@@ -21,6 +21,7 @@ import { JoinChainButton } from "./join-button";
 import { ChainShareButton } from "./share-button";
 import { BookOpen, CalendarDays, HandHeart, Settings, Users } from "lucide-react";
 import { getDictionary, type Dictionary } from "@/i18n/dictionaries";
+import { CarryForwardCta } from "@/components/carry-forward-cta";
 import { t as interpolate } from "@/i18n/format";
 import { buildAlternates } from "@/i18n/metadata";
 import { localizedHref } from "@/i18n/links";
@@ -531,6 +532,18 @@ export default async function ChainDetailPage({
           </div>
         </div>
       </div>
+
+      {/* Carry-this-forward CTA — only on a COMPLETED chain. Pre-fills
+          the chain's prayer so a moved visitor can pray it for someone
+          of their own with one tap. */}
+      {chain.status === "COMPLETED" && (
+        <CarryForwardCta
+          from="completed-train"
+          prayerSlug={chain.prayerType.slug}
+          t={dict.carryForwardCta}
+          className="mt-12"
+        />
+      )}
     </div>
   );
 }

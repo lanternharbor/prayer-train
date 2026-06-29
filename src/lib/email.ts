@@ -949,6 +949,10 @@ export function renderChainClosingDayEmail(input: ChainClosingDayEmailInput): {
   const closingNoteHeading = eOrgFirst
     ? `A note from ${eOrgFirst}`
     : `A note from the organizer`;
+  // Carry-forward CTA target (chain audience → /chain/new). English-only,
+  // matching this inline template. from=closing-email attributes any
+  // prayer the recipient starts back to this surface.
+  const carryForwardUrl = `${new URL(input.chainUrl).origin}/chain/new?from=closing-email`;
   const html = `
         <div style="font-family: Georgia, 'Times New Roman', serif; max-width: 560px; margin: 0 auto; padding: 32px 24px; background: #faf8f5;">
           <div style="background: #ffffff; border: 1px solid #e8e0d5; border-radius: 16px; padding: 32px 28px; text-align: center;">
@@ -975,6 +979,10 @@ export function renderChainClosingDayEmail(input: ChainClosingDayEmailInput): {
                   </div>`
                 : ""
             }
+            <p style="color: #6e6150; font-size: 14px; line-height: 1.7; margin: 16px 0 0;">
+              Was this prayer a comfort? You can pray one with friends for someone you love.
+              <a href="${carryForwardUrl}" style="color: #947324; text-decoration: none; font-weight: 600;">Pray together for someone</a>
+            </p>
             <p style="color: #6e6150; font-size: 14px; font-style: italic; line-height: 1.7; margin: 18px 0 0;">
               May the Lord bless and keep all who carried this prayer.
             </p>
@@ -994,7 +1002,7 @@ export function renderChainClosingDayEmail(input: ChainClosingDayEmailInput): {
   const bouquetLine = input.bouquetUrl
     ? `View the spiritual bouquet: ${input.bouquetUrl}\n\n`
     : "";
-  const text = `The ${input.prayerName} is complete.\n\n${textThank}\n\n${input.closingNote ? textCloseAttrib + ":\n" + input.closingNote + "\n\n" : ""}${bouquetLine}May the Lord bless and keep all who carried this prayer.\n\n${input.chainUrl}`;
+  const text = `The ${input.prayerName} is complete.\n\n${textThank}\n\n${input.closingNote ? textCloseAttrib + ":\n" + input.closingNote + "\n\n" : ""}${bouquetLine}Was this prayer a comfort? You can pray one with friends for someone you love: ${carryForwardUrl}\n\nMay the Lord bless and keep all who carried this prayer.\n\n${input.chainUrl}`;
   return { subject, html, text };
 }
 
@@ -1863,21 +1871,19 @@ export async function sendPrayerWarriorWelcome({
   }
 }
 
-export async function sendPrayerWarriorClosing({
-  to,
+export function renderPrayerWarriorClosing({
   warriorName,
   recipientName,
   organizerFirstName,
   trainUrl,
   bouquetUrl,
 }: {
-  to: string;
   warriorName: string;
   recipientName: string;
   organizerFirstName: string | null;
   trainUrl: string;
   bouquetUrl: string;
-}) {
+}): { subject: string; html: string; text: string } {
   // organizerFirstName is part of the signature for symmetry with the
   // welcome template and future use; the closing copy doesn't currently
   // reference it.
@@ -1886,12 +1892,13 @@ export async function sendPrayerWarriorClosing({
   // Pre-escape user-controlled fields for safe HTML injection.
   const eWarriorName = escapeHtml(warriorName);
   const eRecipientName = escapeHtml(recipientName);
-  try {
-    await resend.emails.send({
-      from: FROM,
-      to,
-      subject,
-      html: `
+  // Carry-forward CTA target. The site origin is derived from trainUrl
+  // because these closing emails are English-only inline templates (not
+  // in the email dictionary), so the CTA copy is English too. The
+  // `from=closing-email` param attributes any train the recipient starts
+  // back to this surface (see ACQUISITION_SOURCES in lib/validation.ts).
+  const carryForwardUrl = `${new URL(trainUrl).origin}/create/train?from=closing-email`;
+  const html = `
         <div style="font-family: Georgia, 'Times New Roman', serif; max-width: 560px; margin: 0 auto; padding: 32px 24px; background: #faf8f5;">
           <div style="background: #ffffff; border: 1px solid #e8e0d5; border-radius: 16px; padding: 32px 28px; text-align: center;">
             <h1 style="color: #11152c; font-family: 'EB Garamond', Georgia, serif; font-size: 26px; font-weight: 700; margin: 0 0 12px; line-height: 1.3;">
@@ -1908,6 +1915,10 @@ export async function sendPrayerWarriorClosing({
                 View the spiritual bouquet
               </a>
             </div>
+            <p style="color: #6e6150; font-size: 14px; line-height: 1.7; margin: 16px 0 0;">
+              Was this prayer a comfort? You can begin one for someone you love.
+              <a href="${carryForwardUrl}" style="color: #947324; text-decoration: none; font-weight: 600;">Start a prayer train</a>
+            </p>
             <p style="color: #6e6150; font-size: 14px; font-style: italic; line-height: 1.7; margin: 18px 0 0;">
               May the Lord bless and keep all who carried this prayer.
             </p>
@@ -1919,9 +1930,22 @@ export async function sendPrayerWarriorClosing({
             PrayerTrain · A Lantern Harbor project
           </p>
         </div>
-      `,
-      text: `The prayer train for ${recipientName} is complete.\n\nThank you for praying, ${warriorName}. Every prayer offered is held in the spiritual bouquet.\n\nView the bouquet: ${bouquetUrl}\nVisit the train: ${trainUrl}\n\nMay the Lord bless and keep all who carried this prayer.`,
-    });
+      `;
+  const text = `The prayer train for ${recipientName} is complete.\n\nThank you for praying, ${warriorName}. Every prayer offered is held in the spiritual bouquet.\n\nView the bouquet: ${bouquetUrl}\nVisit the train: ${trainUrl}\n\nWas this prayer a comfort? You can begin one for someone you love: ${carryForwardUrl}\n\nMay the Lord bless and keep all who carried this prayer.`;
+  return { subject, html, text };
+}
+
+export async function sendPrayerWarriorClosing(input: {
+  to: string;
+  warriorName: string;
+  recipientName: string;
+  organizerFirstName: string | null;
+  trainUrl: string;
+  bouquetUrl: string;
+}) {
+  const { subject, html, text } = renderPrayerWarriorClosing(input);
+  try {
+    await resend.emails.send({ from: FROM, to: input.to, subject, html, text });
   } catch (error) {
     console.error("Failed to send prayer-warrior closing email:", error);
   }

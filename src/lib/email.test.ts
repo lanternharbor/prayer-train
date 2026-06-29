@@ -8,6 +8,7 @@ import {
   renderChainClosingDayEmail,
   renderChainDailyReminder,
   renderChainJoinConfirmation,
+  renderPrayerWarriorClosing,
   renderTrainBouquetReady,
   renderTrainDailyReminder,
 } from "./email";
@@ -1164,5 +1165,57 @@ describe("renderChainBouquetForMembers", () => {
       expect(all).not.toContain("the organizer's ");
       expect(all).not.toContain("the organizer&#39;s ");
     }
+  });
+});
+
+describe("closing-email carry-forward CTA (participant→organizer loop)", () => {
+  it("warrior closing links to /create/train?from=closing-email (html + text)", () => {
+    const r = renderPrayerWarriorClosing({
+      warriorName: "Maria",
+      recipientName: "Benjamin",
+      organizerFirstName: "William",
+      trainUrl: "https://prayertrains.com/p/benjamin-iaut",
+      bouquetUrl: "https://prayertrains.com/p/benjamin-iaut/bouquet",
+    });
+    // URL rides both html and text; the button label is html-only.
+    expect(r.html).toContain(
+      "https://prayertrains.com/create/train?from=closing-email",
+    );
+    expect(r.text).toContain(
+      "https://prayertrains.com/create/train?from=closing-email",
+    );
+    expect(r.html).toContain("Start a prayer train");
+  });
+
+  it("chain closing links to /chain/new?from=closing-email (html + text)", () => {
+    const r = renderChainClosingDayEmail({
+      to: "ana@example.com",
+      memberName: "Ana",
+      organizerName: "William",
+      prayerName: "Surrender Novena",
+      recipientName: "Benji",
+      closingNote: null,
+      chainUrl: "https://prayertrains.com/chain/benji-6kcs",
+      bouquetUrl: "https://prayertrains.com/chain/benji-6kcs/bouquet",
+    });
+    expect(r.html).toContain(
+      "https://prayertrains.com/chain/new?from=closing-email",
+    );
+    expect(r.text).toContain(
+      "https://prayertrains.com/chain/new?from=closing-email",
+    );
+    expect(r.html).toContain("Pray together for someone");
+  });
+
+  it("the CTA copy this PR added carries no em dashes", () => {
+    // Guards only the strings PR2c introduced. The surrounding closing
+    // copy has a pre-existing em dash that is out of scope here.
+    const ctaStrings = [
+      "Was this prayer a comfort? You can begin one for someone you love.",
+      "Start a prayer train",
+      "Was this prayer a comfort? You can pray one with friends for someone you love.",
+      "Pray together for someone",
+    ];
+    for (const s of ctaStrings) expect(s).not.toContain("—");
   });
 });

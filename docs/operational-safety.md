@@ -127,7 +127,8 @@ Practical signals that something has gone wrong:
 
 | Signal | What it probably means | First action |
 |---|---|---|
-| Healthchecks.io alert at ~12:00 UTC | The 11:00 cron didn't run | Check Vercel cron dashboard + deployment logs |
+| Healthchecks.io alert at ~12:00 UTC | The 11:00 cron didn't run | Check Vercel cron dashboard + deployment logs (and whether the project was disabled, e.g. `402 DEPLOYMENT_DISABLED`) |
+| Healthchecks.io **fail** alert at ~11:05 UTC | The cron ran but every send errored (`sent=0`, `errors>0`) | Check the Resend dashboard (quota, suspension, domain) before anything else |
 | Smoke test fails on `/p/the-spina-family-dlmm` | Train detail page broken | Check Vercel deployment logs for the most recent deploy; consider rollback |
 | Resend dashboard shows zero sends after a deploy | Email integration broken | Check `RESEND_API_KEY` is still set; check `sendDailyReminder` logs |
 | User reports "I'm not getting reminders" | Could be cron, could be Resend, could be Spam | First check Healthchecks.io → if green, problem is downstream |
@@ -168,3 +169,4 @@ needed.
 - **2026-04-26 — Initial version.** Smoke test + Healthchecks ping + workflow rules documented after the Spina family train demonstrated the product is now real.
 - **2026-05-13 — Pending DB schema updates section.** PR #60's `language` column addition (and PR #56's lingering default flip) require `prisma db push` against prod before the merge takes effect for new rows.
 - **2026-05-14 — Phase ε `PrayerTypeTranslation` table.** New per-locale translation table for prayer content. Pure-additive schema; build fails until `prisma db push` runs against prod because the read sites + crons reference the `translations` relation.
+- **2026-11-17 — Healthchecks `/fail` signal.** Both crons now ping `<url>/fail` when a run hit errors and sent nothing. Added after Oct 25 - Nov 5 2026, when every train reminder was rejected by Resend for 11 days while the monitor stayed green (`src/lib/healthcheck.ts`).

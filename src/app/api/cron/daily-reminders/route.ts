@@ -23,6 +23,7 @@ import {
 import { DEFAULT_DISPLAY_TZ } from "@/lib/dates";
 import { organizerFirstName } from "@/lib/organizer-display";
 import { PROTECTED_SLUGS } from "@/lib/train-protection";
+import { pingHealthcheck } from "@/lib/healthcheck";
 
 /**
  * Resend's free-tier API rate limit is 2 requests per second. The
@@ -556,22 +557,16 @@ export async function GET(request: Request) {
   }
 
   // Heartbeat ping to Healthchecks.io (or any compatible monitor). Opt-in
-  // via env var — zero behavior change if not set. Wrapped to never throw,
-  // so a Healthchecks outage cannot mask or fail an otherwise successful
-  // reminder run. This catches the silent-failure mode where the cron
-  // stops invoking entirely (Vercel issue, secret rotation, etc.) — if
-  // Healthchecks doesn't see the ping by ~25 hours, the user gets paged.
-  const healthcheckUrl = process.env.HEALTHCHECKS_DAILY_REMINDERS_URL;
-  if (healthcheckUrl) {
-    try {
-      await fetch(healthcheckUrl, {
-        method: "POST",
-        body: `slotsFound=${slotsToRemind.length} sent=${sent} closingPrompts=${closingPromptsSent} autoClosed=${autoClosed} abandonmentPrompts=${abandonmentPromptsSent} abandonedCancelled=${abandonedCancelled} errors=${errors}`,
-      });
-    } catch (e) {
-      console.error("[cron] healthcheck ping failed:", e);
-    }
-  }
+  // via env var — zero behavior change if not set. Catches two silent-
+  // failure modes: the cron stops invoking entirely (no ping in ~25h),
+  // and the cron runs but every send fails (pings /fail — see
+  // src/lib/healthcheck.ts for the Oct 25 - Nov 5 2026 outage).
+  await pingHealthcheck(
+    process.env.HEALTHCHECKS_DAILY_REMINDERS_URL,
+    { sent, errors },
+    `slotsFound=${slotsToRemind.length} sent=${sent} closingPrompts=${closingPromptsSent} autoClosed=${autoClosed} abandonmentPrompts=${abandonmentPromptsSent} abandonedCancelled=${abandonedCancelled} errors=${errors}`,
+    "[cron]",
+  );
 
   return NextResponse.json({
     ok: true,

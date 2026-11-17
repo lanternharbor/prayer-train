@@ -25,6 +25,7 @@ import { DEFAULT_DISPLAY_TZ } from "@/lib/dates";
 import { organizerFirstName } from "@/lib/organizer-display";
 import { reflectionForDay } from "@/lib/daily-reflections";
 import { PROTECTED_CHAIN_SLUGS } from "@/lib/train-protection";
+import { pingHealthcheck } from "@/lib/healthcheck";
 
 /**
  * Resend's free-tier API rate limit is 2 requests per second. Sequential
@@ -685,19 +686,14 @@ export async function GET(request: Request) {
   }
 
   // Heartbeat ping. Same opt-in env-var pattern as the train cron — see
-  // docs/operational-safety.md for the Healthchecks.io setup. Wrapped to
-  // never throw so a Healthchecks outage cannot mask a successful run.
-  const healthcheckUrl = process.env.HEALTHCHECKS_CHAIN_REMINDERS_URL;
-  if (healthcheckUrl) {
-    try {
-      await fetch(healthcheckUrl, {
-        method: "POST",
-        body: `chains=${chainsProcessed} sent=${sent} skipped=${skippedAlreadySent} closingPrompts=${closingPromptsSent} autoClosed=${autoClosed} abandonmentPrompts=${abandonmentPromptsSent} abandonedCancelled=${abandonedCancelled} errors=${errors}`,
-      });
-    } catch (e) {
-      console.error("[chain-cron] healthcheck ping failed:", e);
-    }
-  }
+  // docs/operational-safety.md for the Healthchecks.io setup. Pings /fail
+  // when the run hit errors and sent nothing (src/lib/healthcheck.ts).
+  await pingHealthcheck(
+    process.env.HEALTHCHECKS_CHAIN_REMINDERS_URL,
+    { sent, errors },
+    `chains=${chainsProcessed} sent=${sent} skipped=${skippedAlreadySent} closingPrompts=${closingPromptsSent} autoClosed=${autoClosed} abandonmentPrompts=${abandonmentPromptsSent} abandonedCancelled=${abandonedCancelled} errors=${errors}`,
+    "[chain-cron]",
+  );
 
   return NextResponse.json({
     ok: true,
